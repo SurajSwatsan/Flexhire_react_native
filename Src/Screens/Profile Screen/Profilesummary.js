@@ -4,6 +4,7 @@ import {Button, IconButton, TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
+import {Dropdown} from 'react-native-element-dropdown';
 
 const validationSchema = Yup.object().shape({
   ProfileSummary: Yup.string().required('Profile Summary is required'),
@@ -13,6 +14,7 @@ const Profilesummary = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [ProfileSummary, setProfileSummary] = useState(''); // State for profile headline
   const [ProfileSummaryHeight, setProfileSummaryHeight] = useState(48); // Initial height
+
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
@@ -98,6 +100,7 @@ const Profilesummary = () => {
                         </Text>
                       )}
                     </View>
+
 
                     <Button
                       onPress={handleSubmit}
@@ -189,6 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ffffff',
   },
+
 });
 
 export default Profilesummary;

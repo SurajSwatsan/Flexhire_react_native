@@ -150,7 +150,7 @@ const JobbasedonPreferences = () => {
       <View style={styles.headingContainer}>
         <Image
           style={styles.itemLogo}
-          source={require('../Assets/Images/It_icon.png')}
+          source={require('../Assets/Logo/TCS_logo.png')}
         />
         <View style={styles.companyContainer}>
           <Text style={styles.companyName}>{item.company_name}</Text>

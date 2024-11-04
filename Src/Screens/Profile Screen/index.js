@@ -8,6 +8,12 @@ import Professionaldetails from './Professionaldetails';
 import Keyskills from './Keyskills';
 import Personaldetails from './Personaldetails';
 import Languages from './Languages';
+import Careerpreferences from './Careerpreferences';
+import Itskills from './Itskills';
+import UserResume from './UserResume';
+import Projects from './Projects';
+import Education from './Education';
+import EmploymentFormModal from './Employment';
 
 const Index = () => {
   return (
@@ -36,6 +42,19 @@ const Index = () => {
       <View style={{}}>
         <Languages />
       </View>
+      <View style={{}}>
+        <Careerpreferences />
+      </View>
+      <View style={{}}>
+        <Itskills />
+      </View>
+      <View style={{}}>
+        <UserResume />
+      </View>
+      <View style={{}}>
+        <Projects />
+      </View>
+      <EmploymentFormModal/>
     </ScrollView>
   );
 };

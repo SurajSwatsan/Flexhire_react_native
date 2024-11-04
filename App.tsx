@@ -1,6 +1,6 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import StackNavigation from './Src/Navigation/stackNavigation';
+import StackNavigation from './src/Navigation/stackNavigation';
 import {PaperProvider} from 'react-native-paper';
 import {StatusBar} from 'react-native';
 

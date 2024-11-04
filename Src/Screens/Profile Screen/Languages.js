@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
-import {Button, IconButton, TextInput} from 'react-native-paper';
+import {Button, TextInput, IconButton} from 'react-native-paper'; // Import IconButton
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
@@ -68,18 +68,12 @@ const Languages = () => {
     closeModal();
   };
 
-  const handleDelete = index => {
-    const updatedLanguages = languagesList.filter((_, i) => i !== index);
-    setLanguagesList(updatedLanguages);
-  };
-
   return (
     <View style={styles.mainContainer}>
       <View style={styles.editContainer}>
         <View style={styles.displayContainer}>
           <Text style={styles.Languages}>Languages</Text>
         </View>
-
         <Text style={styles.AddButton} onPress={openModal}>
           Add
         </Text>
@@ -89,21 +83,29 @@ const Languages = () => {
       {languagesList.map((lang, index) => (
         <TouchableOpacity key={index} onPress={() => handleEdit(index)}>
           <View style={styles.outpurtData}>
-            <Text style={styles.displayText}>{lang.language}</Text>
-            <Text style={styles.displayText1}>
-              {lang.comfortablein.join(', ')}
-            </Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.displayText2}>
+            <View style={styles.languageDetails}>
+              <Text style={styles.displayText}>{lang.language}</Text>
+              <Text style={styles.displayText1}>
+                {lang.comfortablein.join(', ')}
+              </Text>
+              {/* <Text style={styles.displayText2}>
                 Proficiency: {lang.proficiency}
-              </Text>
-
-              <Text
-                style={styles.DeleteButton}
-                onPress={() => handleDelete(index)}>
-                Delete
-              </Text>
+              </Text> */}
+            </View>
+            <View style={styles.iconsContainer}>
+              {/* Delete Icon */}
+              <IconButton
+                icon="delete"
+                iconColor="#ff0000"
+                size={18}
+                onPress={() => {
+                  const updatedLanguages = languagesList.filter(
+                    (_, i) => i !== index,
+                  );
+                  setLanguagesList(updatedLanguages);
+                }}
+                style={styles.iconButton}
+              />
             </View>
           </View>
         </TouchableOpacity>
@@ -248,6 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   editContainer: {
+    marginHorizontal: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
   AddButton: {
     color: '#f2f2f2',
     fontWeight: 'bold',
-    margin: 12,
+    marginVertical: 12,
   },
   modalBackground: {
     flex: 1,
@@ -294,37 +297,42 @@ const styles = StyleSheet.create({
   },
   displayContainer: {
     marginTop: 12,
-    alignItems: 'center',
   },
   Languages: {
-    marginHorizontal: 12,
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
   },
   outpurtData: {
     margin: 12,
-    backgroundColor: '#f0f0f0',
+    // backgroundColor: '#fff',
     padding: 12,
     borderRadius: 8,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#808080',
+    borderBottomWidth: 1,
+  },
+  languageDetails: {
+    flex: 1,
   },
   displayText: {
-    fontSize: 16,
-    color: '#000',
     fontWeight: 'bold',
+    fontSize: 16,
+    color: '#fff',
   },
   displayText1: {
-    fontSize: 14,
-    color: '#555',
+    color: '#fff',
   },
   displayText2: {
-    fontSize: 14,
-    color: '#777',
+    color: '#fff',
   },
-  DeleteButton: {
-    color: 'red',
-    marginLeft: 12,
-    fontSize: 12,
+  iconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    marginLeft: 8,
   },
   proficiencyStatusContainer: {
     flexDirection: 'row',

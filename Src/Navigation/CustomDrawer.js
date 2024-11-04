@@ -84,7 +84,7 @@ const CustomDrawer = ({children}) => {
             backgroundColor: '#00334d',
           }}>
           <Image
-            source={require('../../Src/Assets/Images/Userimage.png')}
+            source={require('../Assets/Images/Userimage.png')}
             style={{height: 80, width: '100%'}}
             resizeMode="contain"
           />

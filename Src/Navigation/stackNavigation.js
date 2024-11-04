@@ -1,14 +1,14 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import homeComponent from '../Components/homeComponent';
-import detailsComponent from '../Components/detailsComponent';
-import SplashScreen from '../Screens/SplashScreen';
-import LoginScreen from '../Screens/UserScreens/LoginScreen';
-import SignupScreen from '../Screens/UserScreens/SignupScreen';
-import ForgotpasswordScreen from '../Screens/UserScreens/ForgotpasswordScreen';
-import LogoutComponent from '../Screens/UserScreens/LogoutScreen';
-import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen';
-import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js';
+import homeComponent from '../Components/homeComponent.js';
+import detailsComponent from '../Components/detailsComponent.js';
+import SplashScreen from '../Screens/SplashScreen.js';
+import LoginScreen from '../Screens/UserScreens/LoginScreen.js';
+import SignupScreen from '../Screens/UserScreens/SignupScreen.js';
+import ForgotpasswordScreen from '../Screens/UserScreens/ForgotpasswordScreen.js';
+import LogoutComponent from '../Screens/UserScreens/LogoutScreen.js';
+import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.js';
+import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
 
 const StackNavigation = () => {

@@ -46,7 +46,7 @@ const Personaldetails = () => {
   const [gender, setGender] = useState('');
   const [moreinformation, setMoreinformation] = useState([]);
   const [maritalStatus, setMaritalStatus] = useState('');
-  const [dateofBirth, setDateofBirth] = useState('');
+  const [dateofBirth, setDateofBirth] = useState();
   const [category, setCategory] = useState('');
 
   const [differentlyabled, setDifferentlyabled] = useState('');
@@ -114,9 +114,8 @@ const Personaldetails = () => {
     <View style={styles.mainContainer}>
       <View style={styles.editContainer}>
         <View style={styles.displayContainer}>
-          <Text style={styles.displayProfileSummary}>Personal details</Text>
+          <Text style={styles.headingText}>Personal details</Text>
         </View>
-
         <IconButton
           icon="lead-pencil"
           iconColor="#f2f2f2"
@@ -1270,9 +1269,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   editContainer: {
+    // margin: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
+    alignItems: 'center',
+  },
+  displayContainer: {
+    marginHorizontal: 12,
+  },
+  headingText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   iconButton: {},
   modalBackground: {

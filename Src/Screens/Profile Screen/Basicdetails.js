@@ -7,120 +7,103 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
-import {Button, TextInput, IconButton} from 'react-native-paper'; // Import IconButton
+import {Button, IconButton, TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-// Validation schema for the form
 const validationSchema = Yup.object().shape({
-  language: Yup.string().required('Language is required'),
-  proficiency: Yup.string().required('Proficiency is required'),
-  comfortablein: Yup.array().min(1, 'At least one option must be selected'),
+  workStatus: Yup.string().required('Work Status is required'),
+  currentCity: Yup.string().required('Current City is required'),
+  mobileNumber: Yup.string().required('Mobile Number is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  availability: Yup.string().when('workStatus', {
+    is: 'availability',
+    then: Yup.string().required('Availability to join is required'),
+  }),
+  experienceYears: Yup.number().when('workStatus', {
+    is: 'Experienced',
+    then: Yup.number().required('Experience in years is required'),
+  }),
+  experienceMonths: Yup.number().when('workStatus', {
+    is: 'Experienced',
+    then: Yup.number().required('Experience in months is required'),
+  }),
+  annualSalary: Yup.number().when('workStatus', {
+    is: 'Experienced',
+    then: Yup.number().required('Annual salary is required'),
+  }),
+  salaryBreakdown: Yup.string().when('workStatus', {
+    is: 'Experienced',
+    then: Yup.string().required('Salary breakdown is required'),
+  }),
 });
 
-const Languages = () => {
+const Basicdetails = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [language, setLanguage] = useState('');
-  const [proficiency, setProficiency] = useState('');
-  const [comfortablein, setComfortablein] = useState([]);
-  const [editIndex, setEditIndex] = useState(null); // Track if editing
-  const [languagesList, setLanguagesList] = useState([]); // Array for multiple languages
+  const [workStatus, setWorkStatus] = useState('');
+  const [currentCity, setCurrentCity] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [availability, setAvailability] = useState('');
+  const [annualSalary, setAnnualSalary] = useState('');
+  const [experienceYears, setExperianceYears] = useState('');
+  const [experienceMonths, setExperianceMonths] = useState('');
+  const [salaryBreakdown, setSalaryBreakdown] = useState('');
 
-  // Open modal for editing a specific language
-  const handleEdit = index => {
-    const langData = languagesList[index];
-    setLanguage(langData.language);
-    setProficiency(langData.proficiency);
-    setComfortablein(langData.comfortablein);
-    setEditIndex(index);
-    setModalVisible(true);
-  };
-
-  const openModal = () => {
-    setLanguage(''); // Clear fields for adding new
-    setProficiency('');
-    setComfortablein([]);
-    setEditIndex(null);
-    setModalVisible(true);
-  };
-
+  const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
 
-  const toggleSelection = (value, values, setFieldValue) => {
-    const updatedSelection = values.comfortablein.includes(value)
-      ? values.comfortablein.filter(item => item !== value)
-      : [...values.comfortablein, value];
-    setFieldValue('comfortablein', updatedSelection);
-  };
-
   const handleFormSubmit = values => {
-    if (editIndex !== null) {
-      // Update existing language
-      const updatedLanguages = languagesList.map((lang, index) =>
-        index === editIndex ? values : lang,
-      );
-      setLanguagesList(updatedLanguages);
-    } else {
-      // Add new language
-      setLanguagesList([...languagesList, values]);
-    }
+    setWorkStatus(values.workStatus);
+    setCurrentCity(values.currentCity);
+    setMobileNumber(values.mobileNumber);
+    setEmail(values.email);
+    setAvailability(values.availability);
+    setAnnualSalary(values.annualSalary);
+    setExperianceYears(values.experienceYears);
+    setExperianceMonths(values.experienceMonths);
+    setSalaryBreakdown(values.salaryBreakdown);
+
     closeModal();
+    // Handle form submission (e.g., save data)
   };
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.editContainer}>
-        <View style={styles.displayContainer}>
-          <Text style={styles.Languages}>Languages</Text>
-        </View>
-
-        <Text style={styles.AddButton} onPress={openModal}>
-          Add
-        </Text>
+        <Text style={styles.heading}>Basic details</Text>
+        <IconButton
+          icon="lead-pencil"
+          iconColor="#f2f2f2"
+          size={18}
+          onPress={openModal}
+          style={styles.iconButton}
+        />
       </View>
-
-      {/* Display List of Languages */}
-      {languagesList.map((lang, index) => (
-        <TouchableOpacity key={index} onPress={() => handleEdit(index)}>
-          <View style={styles.outpurtData}>
-            <View style={styles.languageDetails}>
-              <Text style={styles.displayText}>{lang.language}</Text>
-              <Text style={styles.displayText1}>
-                {lang.comfortablein.join(', ')}
-              </Text>
-              <Text style={styles.displayText2}>
-                Proficiency: {lang.proficiency}
-              </Text>
-            </View>
-            <View style={styles.iconsContainer}>
-              {/* Edit Icon */}
-              <IconButton
-                icon="lead-pencil"
-                iconColor="#217aff"
-                size={18}
-                onPress={() => handleEdit(index)}
-                style={styles.iconButton}
-              />
-              {/* Delete Icon */}
-              <IconButton
-                icon="delete"
-                iconColor="#ff0000"
-                size={18}
-                onPress={() => {
-                  const updatedLanguages = languagesList.filter(
-                    (_, i) => i !== index,
-                  );
-                  setLanguagesList(updatedLanguages);
-                }}
-                style={styles.iconButton}
-              />
-            </View>
-          </View>
-        </TouchableOpacity>
-      ))}
-
-      {/* Modal for Adding or Editing Language */}
+      <View style={styles.displayContainer}>
+        <View style={styles.displayDataContainer}>
+          <Ionicons name="briefcase" size={16} style={styles.iconStyles} />
+          <Text style={styles.submitedData}>{workStatus}</Text>
+        </View>
+        <View style={styles.displayDataContainer}>
+          <Ionicons name="location" size={16} style={styles.iconStyles} />
+          <Text style={styles.submitedData}>{currentCity}</Text>
+        </View>
+        <View style={styles.displayDataContainer}>
+          <Ionicons name="mail" size={16} style={styles.iconStyles} />
+          <Text style={styles.submitedData}>{email}</Text>
+        </View>
+        <View style={styles.displayDataContainer}>
+          <Ionicons name="call" size={16} style={styles.iconStyles} />
+          <Text style={styles.submitedData}>{mobileNumber}</Text>
+        </View>
+        <View style={styles.displayDataContainer}>
+          <Ionicons name="calendar" size={16} style={styles.iconStyles} />
+          <Text style={styles.submitedData}>{availability}</Text>
+        </View>
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -129,16 +112,24 @@ const Languages = () => {
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
             <ScrollView contentContainerStyle={styles.modalContent}>
-              <Text style={styles.heading}>Language proficiency</Text>
-              <Text style={styles.subText1}>
-                Strengthen your resume by letting recruiters know you can
-                communicate in multiple languages
-              </Text>
+              <View>
+                <Text style={styles.heading}>Introduction</Text>
+                <Text style={styles.headingText1}>Work Status</Text>
+                <Text style={styles.headingText2}>
+                  We will personalise your Flexhire experiance based on this
+                </Text>
+              </View>
               <Formik
                 initialValues={{
-                  language: language,
-                  proficiency: proficiency,
-                  comfortablein: comfortablein || [],
+                  workStatus: workStatus, // Set initial value to 'Fresher'
+                  currentCity: currentCity,
+                  mobileNumber: mobileNumber,
+                  email: email,
+                  availability: availability,
+                  experienceYears: experienceYears,
+                  experienceMonths: experienceMonths,
+                  annualSalary: annualSalary,
+                  salaryBreakdown: salaryBreakdown,
                 }}
                 validationSchema={validationSchema}
                 onSubmit={handleFormSubmit}>
@@ -146,92 +137,213 @@ const Languages = () => {
                   handleChange,
                   handleBlur,
                   handleSubmit,
-                  setFieldValue,
                   values,
                   errors,
                   touched,
                 }) => (
                   <View style={styles.container}>
-                    <View style={styles.headlinecontainer}>
-                      <TextInput
-                        style={styles.input}
-                        mode="outlined"
-                        label="Language"
-                        textColor="#333"
-                        outlineColor="lightgray"
-                        activeOutlineColor="gray"
-                        onChangeText={handleChange('language')}
-                        onBlur={handleBlur('language')}
-                        value={values.language}
-                      />
-                      {errors.language && touched.language && (
-                        <Text style={styles.error}>{errors.language}</Text>
-                      )}
+                    <View style={styles.workStatusContainer}>
+                      <TouchableOpacity
+                        style={[
+                          styles.statusButton,
+                          values.workStatus === 'Fresher'
+                            ? styles.selectedButton
+                            : styles.unselectedButton,
+                        ]}
+                        onPress={() => handleChange('workStatus')('Fresher')}>
+                        <Text
+                          style={[
+                            styles.statusText,
+                            values.workStatus === 'Fresher'
+                              ? styles.selectedText
+                              : styles.unselectedText,
+                          ]}>
+                          Fresher
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.statusButton,
+                          values.workStatus === 'Experienced'
+                            ? styles.selectedButton
+                            : styles.unselectedButton,
+                        ]}
+                        onPress={() =>
+                          handleChange('workStatus')('Experienced')
+                        }>
+                        <Text
+                          style={[
+                            styles.statusText,
+                            values.workStatus === 'Experienced'
+                              ? styles.selectedText
+                              : styles.unselectedText,
+                          ]}>
+                          Experienced
+                        </Text>
+                      </TouchableOpacity>
                     </View>
+                    {errors.workStatus && touched.workStatus && (
+                      <Text style={styles.error}>{errors.workStatus}</Text>
+                    )}
 
-                    <View style={{marginVertical: 12}}>
-                      <Text style={{color: '#000', fontWeight: 'bold'}}>
-                        Proficiency
-                      </Text>
-                      <View style={styles.proficiencyStatusContainer}>
-                        {['Beginner', 'Proficient', 'Expert'].map(level => (
-                          <TouchableOpacity
-                            key={level}
-                            style={[
-                              styles.statusButton,
-                              values.proficiency === level
-                                ? styles.selectedButton
-                                : styles.unselectedButton,
-                            ]}
-                            onPress={() => setFieldValue('proficiency', level)}>
-                            <Text
-                              style={[
-                                styles.statusText,
-                                values.proficiency === level
-                                  ? styles.selectedText
-                                  : styles.unselectedText,
-                              ]}>
-                              {level}
+                    <TextInput
+                      mode="outlined"
+                      label="Current City*"
+                      style={styles.input}
+                      textColor="#333"
+                      outlineColor="lightgray"
+                      activeOutlineColor="gray"
+                      onChangeText={handleChange('currentCity')}
+                      onBlur={handleBlur('currentCity')}
+                      value={values.currentCity}
+                    />
+                    {errors.currentCity && touched.currentCity && (
+                      <Text style={styles.error}>{errors.currentCity}</Text>
+                    )}
+
+                    <TextInput
+                      mode="outlined"
+                      label="Mobile Number*"
+                      style={styles.input}
+                      textColor="#333"
+                      outlineColor="lightgray"
+                      activeOutlineColor="gray"
+                      onChangeText={handleChange('mobileNumber')}
+                      onBlur={handleBlur('mobileNumber')}
+                      value={values.mobileNumber}
+                      keyboardType="numeric"
+                    />
+                    {errors.mobileNumber && touched.mobileNumber && (
+                      <Text style={styles.error}>{errors.mobileNumber}</Text>
+                    )}
+
+                    <TextInput
+                      mode="outlined"
+                      label="Email*"
+                      style={styles.input}
+                      textColor="#333"
+                      outlineColor="lightgray"
+                      activeOutlineColor="gray"
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values.email}
+                    />
+                    {errors.email && touched.email && (
+                      <Text style={styles.error}>{errors.email}</Text>
+                    )}
+
+                    {values.workStatus === 'Experienced' && (
+                      <>
+                        <TextInput
+                          mode="outlined"
+                          label="Experience (Years)*"
+                          style={styles.input}
+                          textColor="#333"
+                          outlineColor="lightgray"
+                          activeOutlineColor="gray"
+                          onChangeText={handleChange('experienceYears')}
+                          onBlur={handleBlur('experienceYears')}
+                          value={values.experienceYears}
+                          keyboardType="numeric"
+                        />
+                        {errors.experienceYears && touched.experienceYears && (
+                          <Text style={styles.error}>
+                            {errors.experienceYears}
+                          </Text>
+                        )}
+
+                        <TextInput
+                          mode="outlined"
+                          label="Experience (Months)*"
+                          style={styles.input}
+                          textColor="#333"
+                          outlineColor="lightgray"
+                          activeOutlineColor="gray"
+                          onChangeText={handleChange('experienceMonths')}
+                          onBlur={handleBlur('experienceMonths')}
+                          value={values.experienceMonths}
+                          keyboardType="numeric"
+                        />
+                        {errors.experienceMonths &&
+                          touched.experienceMonths && (
+                            <Text style={styles.error}>
+                              {errors.experienceMonths}
                             </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                      {errors.proficiency && touched.proficiency && (
-                        <Text style={styles.error}>{errors.proficiency}</Text>
-                      )}
-                    </View>
+                          )}
 
-                    <View style={{marginVertical: 12}}>
-                      <Text style={{color: '#000', fontWeight: 'bold'}}>
-                        Comfortable In
-                      </Text>
-                      <View style={styles.comfortableinContainer}>
-                        {['Reading', 'Writing', 'Speaking'].map(option => (
+                        <TextInput
+                          mode="outlined"
+                          label="Annual Salary*"
+                          style={styles.input}
+                          textColor="#333"
+                          outlineColor="lightgray"
+                          activeOutlineColor="gray"
+                          onChangeText={handleChange('annualSalary')}
+                          onBlur={handleBlur('annualSalary')}
+                          value={values.annualSalary}
+                          keyboardType="numeric"
+                        />
+                        {errors.annualSalary && touched.annualSalary && (
+                          <Text style={styles.error}>
+                            {errors.annualSalary}
+                          </Text>
+                        )}
+
+                        <TextInput
+                          mode="outlined"
+                          label="Salary Breakdown*"
+                          style={styles.input}
+                          textColor="#333"
+                          outlineColor="lightgray"
+                          activeOutlineColor="gray"
+                          onChangeText={handleChange('salaryBreakdown')}
+                          onBlur={handleBlur('salaryBreakdown')}
+                          value={values.salaryBreakdown}
+                          placeholder="Fixed / Fixed + Variable"
+                        />
+                        {errors.salaryBreakdown && touched.salaryBreakdown && (
+                          <Text style={styles.error}>
+                            {errors.salaryBreakdown}
+                          </Text>
+                        )}
+                      </>
+                    )}
+
+                    <View>
+                      <Text style={styles.label}>Availability to Join*</Text>
+                      <View style={styles.availabilityContainer}>
+                        {[
+                          '15 days',
+                          '1 month',
+                          '2 months',
+                          '3 months',
+                          'more than 3 months',
+                        ].map(option => (
                           <TouchableOpacity
                             key={option}
                             style={[
-                              styles.statusButton,
-                              values.comfortablein.includes(option)
-                                ? styles.selectedButton
-                                : styles.unselectedButton,
+                              styles.availabilityButton,
+                              values.availability === option
+                                ? styles.selectedAvailabilityButton
+                                : styles.unselectedAvailabilityButton,
                             ]}
                             onPress={() =>
-                              toggleSelection(option, values, setFieldValue)
+                              handleChange('availability')(option)
                             }>
                             <Text
                               style={[
-                                styles.statusText,
-                                values.comfortablein.includes(option)
-                                  ? styles.selectedText
-                                  : styles.unselectedText,
+                                styles.availabilityText,
+                                values.availability === option
+                                  ? styles.selectedAvailabilityText
+                                  : styles.unselectedAvailabilityText,
                               ]}>
                               {option}
                             </Text>
                           </TouchableOpacity>
                         ))}
                       </View>
-                      {errors.comfortablein && touched.comfortablein && (
-                        <Text style={styles.error}>{errors.comfortablein}</Text>
+                      {errors.availability && touched.availability && (
+                        <Text style={styles.error}>{errors.availability}</Text>
                       )}
                     </View>
 
@@ -255,19 +367,17 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     margin: 12,
-    backgroundColor: '#00334d',
     borderRadius: 8,
+    backgroundColor: '#00334d',
   },
   editContainer: {
+    marginLeft: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
+    alignItems: 'center',
   },
-  AddButton: {
-    color: '#f2f2f2',
-    fontWeight: 'bold',
-    margin: 12,
-  },
+  iconButton: {},
   modalBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
@@ -282,79 +392,113 @@ const styles = StyleSheet.create({
     margin: 12,
   },
   heading: {
-    fontSize: 24,
-    color: '#333',
+    fontSize: 18,
+    color: '#000',
     marginVertical: 12,
     fontWeight: 'bold',
   },
-  subText1: {
+  displayContainer: {
+    marginLeft: 12,
+    marginBottom: 12,
+  },
+  iconStyles: {
+    color: '#f2f2f2',
+  },
+  submitedData: {
+    color: '#fff',
+  },
+  displayDataContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  headingText1: {
+    fontSize: 14,
     color: '#333',
-    fontSize: 12,
+    marginVertical: 4,
+    fontWeight: 'bold',
   },
+  headingText2: {
+    fontSize: 14,
+    color: '#333',
+    marginVertical: 4,
+  },
+
   container: {
-    marginVertical: 12,
+    marginVertical: 8,
   },
-  input: {
-    backgroundColor: '#fff',
-    minHeight: 48,
+  label: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  workStatusContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginVertical: 8,
+  },
+  statusButton: {
+    // flex: 1,
+    marginRight: 12,
+    padding: 12,
+    alignItems: 'center',
     borderRadius: 8,
+  },
+  selectedButton: {
+    backgroundColor: '#4caf50', // Change color for selected
+  },
+  unselectedButton: {
+    backgroundColor: '#333', // Change color for unselected
+  },
+  statusText: {
+    fontSize: 16,
+  },
+  selectedText: {
+    color: '#fff', // Text color for selected
+  },
+  unselectedText: {
+    color: '#fff', // Text color for unselected
   },
   error: {
     color: 'red',
-    marginVertical: 6,
+    fontSize: 12,
+    marginTop: 4,
   },
-  displayContainer: {
-    marginTop: 12,
-  },
-  Languages: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  outpurtData: {
-    margin: 12,
-    backgroundColor: '#f0f0f0',
-    padding: 12,
+  input: {
+    backgroundColor: '#fff',
+    minHeight: 48, // Ensures the input field always has at least this height
     borderRadius: 8,
+    marginVertical: 12,
   },
-  languageDetails: {
-    flex: 1,
-  },
-  iconsContainer: {
+  availabilityContainer: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginVertical: 8,
+    flexWrap: 'wrap',
+  },
+  availabilityButton: {
+    padding: 12,
     alignItems: 'center',
+    borderRadius: 8,
+    marginHorizontal: 4,
+    marginVertical: 8,
   },
-  iconButton: {
-    marginLeft: 8,
-    backgroundColor: '#007aff',
+  selectedAvailabilityButton: {
+    backgroundColor: '#4caf50', // Change color for selected
   },
-  proficiencyStatusContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
+  unselectedAvailabilityButton: {
+    backgroundColor: '#333', // Change color for unselected
   },
-  comfortableinContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
+  availabilityText: {
+    fontSize: 16,
   },
-  statusButton: {
-    padding: 8,
-    borderRadius: 4,
-    marginRight: 8,
+  selectedAvailabilityText: {
+    color: '#fff', // Text color for selected
   },
-  selectedButton: {
-    backgroundColor: '#007aff',
-  },
-  unselectedButton: {
-    backgroundColor: '#f0f0f0',
-  },
-  statusText: {
-    fontSize: 14,
-  },
-  selectedText: {
-    color: '#fff',
-  },
-  unselectedText: {
-    color: '#333',
+  unselectedAvailabilityText: {
+    color: '#fff', // Text color for unselected
   },
 });
 
-export default Languages;
+export default Basicdetails;

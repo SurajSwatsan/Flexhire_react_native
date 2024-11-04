@@ -149,7 +149,7 @@ const CompanysList = () => {
       <View style={styles.headingContainer}>
         <Image
           style={styles.itemLogo}
-          source={require('../Assets/Images/It_icon.png')}
+          source={require('../Assets/Logo/TCS_logo.png')}
         />
         <Text style={styles.companyName}>{item.company_name}</Text>
         <Text style={styles.companyindustry}>{item.industry}</Text>
