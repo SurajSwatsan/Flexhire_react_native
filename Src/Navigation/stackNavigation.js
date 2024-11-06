@@ -10,6 +10,11 @@ import LogoutComponent from '../Screens/UserScreens/LogoutScreen.js';
 import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.js';
 import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
+import SearchResults from '../Components/searchResults.js';
+import SearchJobScreen from '../Components/searchResults.js';
+import JobDetailsScreen from '../Components/jobDetail.js';
+import JobDetailScreen from '../Components/jobDetail.js';
+import SavedJobsScreen from '../Components/savedJobs.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -67,6 +72,24 @@ const StackNavigation = () => {
         component={detailsComponent}
         options={{headerShown: false}}
       />
+
+      <Stack.Screen name="searchjob" 
+      component={SearchJobScreen}
+      options={{headerShown: false}}
+      />
+
+      <Stack.Screen name="JobDetailScreen" 
+      component={JobDetailScreen}
+      options={{headerShown: false}}
+       />
+
+     <Stack.Screen
+     name='bookmark'
+     component={SavedJobsScreen}
+     options={{headerShown: false}}
+     
+     />
+
     </Stack.Navigator>
   );
 };

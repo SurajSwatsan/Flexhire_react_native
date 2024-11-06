@@ -119,7 +119,7 @@ const CustomDrawer = ({children}) => {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                navigation.navigate('');
+                navigation.navigate('bookmark');
                 toggleDrawer();
               }}>
               <Ionicons name="briefcase" size={18} style={styles.iconStyles} />
