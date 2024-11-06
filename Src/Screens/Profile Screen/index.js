@@ -14,6 +14,7 @@ import UserResume from './UserResume';
 import Projects from './Projects';
 import Education from './Education';
 import EmploymentFormModal from './Employment';
+import EducationComponent from './Education';
 
 const Index = () => {
   return (
@@ -55,6 +56,7 @@ const Index = () => {
         <Projects />
       </View>
       <EmploymentFormModal/>
+      <EducationComponent />
     </ScrollView>
   );
 };
