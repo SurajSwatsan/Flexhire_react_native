@@ -9,7 +9,7 @@ const CustomHeader = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconContainer}>
-        <Icon name="arrow-back-circle-outline" size={34} color="gray" />
+        <Icon name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -24,13 +24,14 @@ const styles = StyleSheet.create({
   },
 
   iconContainer: {
-    padding: 10,
-    // marginLeft:10,           
+    padding: 8,
+    marginLeft:10,           
     
     borderRadius: 30,       // Makes the container circular
     justifyContent: 'center',
     alignItems: 'center',
-    
+    borderWidth: 1,             // Border width
+    borderColor: 'black',
   },
 });
 
