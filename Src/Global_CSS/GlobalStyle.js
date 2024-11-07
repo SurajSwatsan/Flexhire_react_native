@@ -19,41 +19,26 @@ const GlobalStyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     height: 48,
-    // width: '200',
   },
   closelabelStyle: {
     color: 'red',
-    // backgroundColor: 'red',
     padding: 14,
     borderRadius: 8,
     fontSize: 16,
     fontWeight: 'bold',
     height: 48,
-    // width: '100',
   },
-  headerStyle:{
-    flexDirection:'row',
-   alignItems:'center',
-   marginBottom:12,
-   justifyContent:"space-between",
-  //  backgroundColor: '#fff',
-  //  padding: 5,
-    
-  //   borderRadius: 6,
-  //   shadowColor: '#000',
-  //   shadowOffset: {width: 0, height: 4},
-  //   shadowOpacity: 0.1,
-  //   shadowRadius: 10,
-  //   elevation: 5,
-  //  justifyContent:'space-between',
-  //   margin: 4,
+  headerStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 12,
+    marginVertical: 18,
+    justifyContent: 'space-between',
   },
-  headerText:{
-    fontSize:20,
-    color:'#000',
-    // marginLeft:12,
-    
-  }
+  headerText: {
+    fontSize: 20,
+    color: '#000',
+  },
 });
 
 export default GlobalStyle;

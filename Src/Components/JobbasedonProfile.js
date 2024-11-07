@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import {colors} from '../Global_CSS/theamColors';
 
 const Data = [
   {
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
   },
   companyLocation: {
     fontSize: 12,
-    color: '#fff',
+    color: colors.textprimary,
   },
   flatListContent: {},
   companyContainer: {
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
   },
   viewAll: {
     fontSize: 15,
-    color: '#80d4ff',
+    color: colors.textprimary,
     fontWeight: 'bold',
   },
   itemText: {
@@ -245,8 +246,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   companyName: {
-    color: '#9ee0b4',
-    // color: '#ffc966',
+    color: colors.textprimary,
     fontWeight: 'bold',
     fontSize: 18,
   },
@@ -260,26 +260,15 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     maxHeight: 250,
     borderRadius: 8,
-    // borderWidth: 0.5,
-    // borderColor: 'gray',
-    // backgroundColor: '#e6e6e6',
-    // backgroundColor: '#708090',
-    // backgroundColor: '#4f84c4',
-    backgroundColor: '#004466',
+    backgroundColor: colors.cardcolor,
   },
-  // jobContainer: {
-  //   marginVertical: 8,
-  // },
   jobTitleText: {
-    // color: '#b1e7c3',
-    color: '#fff',
-    // color: '#9ee0b4',
-    // fontWeight: 'bold',
+    color: colors.textprimary,
     fontSize: 15,
     marginBottom: 0,
   },
   experienceText: {
-    color: '#fff',
+    color: colors.textprimary,
     fontSize: 12,
   },
   skillsTextContainer: {
@@ -288,7 +277,7 @@ const styles = StyleSheet.create({
   },
   skill: {
     backgroundColor: '#e6f7ff',
-    color: '#333',
+    color: colors.textprimary,
     marginHorizontal: 4,
     fontSize: 14,
     paddingHorizontal: 8,

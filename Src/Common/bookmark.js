@@ -46,14 +46,14 @@ const BookmarkScreen = ({route, navigation}) => {
     }
   };
 
-  if (!savedJobs || savedJobs.length === 0) {
-    return (
-      <View style={styles.container}>
-        <CustomHeader />
-        <Text style={styles.noJobsText}>No saved jobs</Text>
-      </View>
-    );
-  }
+  // if (!savedJobs || savedJobs.length === 0) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <CustomHeader />
+  //       <Text style={styles.noJobsText}>No saved jobs</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+    width: '100%',
   },
   jobContainer: {
     padding: 10,

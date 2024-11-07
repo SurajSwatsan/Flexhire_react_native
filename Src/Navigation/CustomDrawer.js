@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {colors} from '../Global_CSS/theamColors';
 
 const CustomDrawer = ({children}) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -81,7 +82,7 @@ const CustomDrawer = ({children}) => {
           style={{
             flexDirection: 'row',
             padding: 20,
-            backgroundColor: '#00334d',
+            backgroundColor: colors.primary,
           }}>
           <Image
             source={require('../Assets/Images/Userimage.png')}
@@ -240,9 +241,7 @@ const styles = StyleSheet.create({
     left: 0,
     height: '100%',
     width: 275,
-    // backgroundColor: '#edf3f7',
-    backgroundColor: '#00334d',
-    // backgroundColor: '#003366',
+    backgroundColor: colors.primary,
     zIndex: 1000,
   },
   overlay: {
@@ -255,8 +254,7 @@ const styles = StyleSheet.create({
     zIndex: 999, // Below the drawer but above other content
   },
   nav: {
-    // backgroundColor: '#00334d',
-    backgroundColor: '#4f84c4',
+    backgroundColor: colors.primary,
     height: 65,
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -268,7 +266,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 4,
     paddingHorizontal: 6,
-    // borderBottomWidth: 1,
     borderColor: '#f5f5f5',
   },
   menuItemText: {
@@ -279,7 +276,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    // padding: 10,
   },
   closeIcon: {
     color: '#fff',
