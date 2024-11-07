@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 const GlobalStyle = StyleSheet.create({
   labelStyle: {
     color: '#ffffff',
-    backgroundColor: '#407093',
+    backgroundColor: '#00334d',
     padding: 14,
     borderRadius: 8,
     fontSize: 16,
@@ -13,7 +13,7 @@ const GlobalStyle = StyleSheet.create({
   },
   savelabelStyle: {
     color: '#ffffff',
-    backgroundColor: '#407093',
+    backgroundColor: '#00334d',
     padding: 14,
     borderRadius: 8,
     fontSize: 16,

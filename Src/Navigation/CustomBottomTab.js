@@ -5,6 +5,7 @@ import UserInvites from '../Common/UserInvites';
 import UserApplies from '../Common/UserApplies';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeComponent from '../Common/HomeComponent';
+import BookmarkScreen from '../Common/bookmark';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
@@ -19,6 +20,8 @@ const CustomBottomTab = () => {
         return <UserInvites />;
       case 'Profile':
         return <UserProfile />;
+      case 'Bookmark':
+        return <BookmarkScreen />;
       default:
         return <HomeComponent />;
     }
@@ -101,6 +104,32 @@ const CustomBottomTab = () => {
                 : styles.tabText
             }>
             Invites
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            selectedTab === 'Bookmark'
+              ? styles.selectedTab
+              : styles.notselectedTab,
+          ]}
+          onPress={() => setSelectedTab('Bookmark')}>
+          <Ionicons
+            name="bookmark"
+            size={24}
+            style={
+              selectedTab === 'Bookmark'
+                ? styles.selectedTabicon
+                : styles.tabicon
+            }
+          />
+          <Text
+            style={
+              selectedTab === 'Bookmark'
+                ? styles.selectedTabText
+                : styles.tabText
+            }>
+            Bookmark
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

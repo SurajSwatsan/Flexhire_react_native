@@ -14,7 +14,7 @@ import SearchResults from '../Components/searchResults.js';
 import SearchJobScreen from '../Components/searchResults.js';
 import JobDetailsScreen from '../Components/jobDetail.js';
 import JobDetailScreen from '../Components/jobDetail.js';
-import SavedJobsScreen from '../Components/savedJobs.js';
+import BookmarkScreen from '../Common/bookmark.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -73,23 +73,23 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen name="searchjob" 
-      component={SearchJobScreen}
-      options={{headerShown: false}}
+      <Stack.Screen
+        name="searchjob"
+        component={SearchJobScreen}
+        options={{headerShown: false}}
       />
 
-      <Stack.Screen name="JobDetailScreen" 
-      component={JobDetailScreen}
-      options={{headerShown: false}}
-       />
+      <Stack.Screen
+        name="JobDetailScreen"
+        component={JobDetailScreen}
+        options={{headerShown: false}}
+      />
 
-     <Stack.Screen
-     name='bookmark'
-     component={SavedJobsScreen}
-     options={{headerShown: false}}
-     
-     />
-
+      <Stack.Screen
+        name="bookmark"
+        component={BookmarkScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

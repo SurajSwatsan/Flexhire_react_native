@@ -106,7 +106,7 @@ const CustomDrawer = ({children}) => {
               <Ionicons name="person" size={18} style={styles.iconStyles} />
               <Text style={styles.menuItemText}>Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 navigation.navigate('bookmark');
@@ -114,7 +114,7 @@ const CustomDrawer = ({children}) => {
               }}>
               <Ionicons name="bookmark" size={18} style={styles.iconStyles} />
               <Text style={styles.menuItemText}>Saved Jobs</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.menuItem}

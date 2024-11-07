@@ -9,7 +9,8 @@ const App = () => {
     <PaperProvider>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#00334d"
+        // backgroundColor="#00334d"
+        backgroundColor="#004466"
         // backgroundColor="#4f84c4"
         translucent={false}
       />
