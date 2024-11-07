@@ -322,7 +322,7 @@ const SearchJobScreen = ({navigation, route}) => {
         <Text style={{color:'black',fontSize:16,fontWeight:'bold'}}>BookMark</Text>
         <IconButton
           icon="bookmark-outline"
-          iconColor="#407093"
+          iconColor="#000"
           size={30}
           onPress={() => navigation.navigate('bookmark')}
         />
@@ -359,7 +359,7 @@ const SearchJobScreen = ({navigation, route}) => {
               style={styles.filtericon}
               icon="filter"
               onPress={openFilterModal}
-              iconColor="#407093"
+              iconColor="#000"
               size={30}
             />
           </View>
@@ -383,7 +383,7 @@ const SearchJobScreen = ({navigation, route}) => {
                         ? 'bookmark'
                         : 'bookmark-outline'
                     }
-                    iconColor="#407093"
+                    iconColor="#004466"
                     size={24}
                     onPress={() => toggleSaveJob(job)} // Toggle save/un-save on click
                   />
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
 
-    backgroundColor: '#faf9f6',
+    backgroundColor: '#fbfbfb',
   },
   searchInput: {
     height: 48,
@@ -616,13 +616,15 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingVertical: 8,
     backgroundColor: '#fff',
-    borderRadius: 6,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+    borderRadius: 10,
+    // shadowColor: '#000',
+    // shadowOffset: {width: 0, height: 4},
+    // shadowOpacity: 0.1,
+    // shadowRadius: 10,
+    // elevation: 5,
     // marginHorizontal: 5,
+    borderColor:'lightgray',
+    borderWidth:0.5,
     margin: 8,
   },
   companyName: {
@@ -635,7 +637,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 20,
     margin: 0,
-    color: '#407093',
+    
   },
   companyHeader: {
     flexDirection: 'row',
