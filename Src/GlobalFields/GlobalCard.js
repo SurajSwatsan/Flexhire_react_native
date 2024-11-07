@@ -55,7 +55,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                 ? '#000'
                 : 'gray'
             }
-            size={24}
+            size={28}
             onPress={() => toggleSaveJob(job)}
           />
         </View>
@@ -92,15 +92,17 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
               style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
             />
 
-            <Text style={styles.jobDetails}>{job.salary}</Text>
-
+            {/* <Text style={styles.jobDetails}>{job.salary}</Text> */}
+            <View style={{justifyContent:'space-between'}}>
             <Text style={styles.jobPostedDate}>
+            <Text style={styles.jobDetails}>{job.salary}</Text>
               {job.posted_at
                 ? moment(job.posted_at).isValid()
                   ? moment(job.posted_at).format('MMMM D, YYYY')
                   : 'Invalid Date'
                 : 'January 2024'}
             </Text>
+            </View>
             {/* </View> */}
           </View>
         </View>
@@ -112,7 +114,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
 
 const styles = StyleSheet.create({
   companyContainer: {
-    padding: 5,
+    padding: 12,
     backgroundColor: '#fff',
     borderRadius: 10,
     margin: 5,
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
-    height: 20,
+    // height: 20,
     margin: 0,
   },
   jobContainer: {
@@ -191,6 +193,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     // alignSelf:'flex-end'
+    
     fontWeight:'bold'
   },
   locationContainer: {
@@ -215,8 +218,10 @@ const styles = StyleSheet.create({
   jobPostedDate: {
     fontSize: 12,
     color: '#808080',
-    textAlign: 'right',
+    // textAlign: 'right',
+    // justifyContent:'space-between',
     marginRight: 12,
+    flexDirection:'row',
     // marginTop: 5,
   },
 });
