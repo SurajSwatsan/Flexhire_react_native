@@ -1,6 +1,4 @@
-
-
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -10,13 +8,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { IconButton } from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
+import {IconButton} from 'react-native-paper';
 import JobbasedonProfile from '../Components/JobbasedonProfile';
 import JobbasedonPreferences from '../Components/JobbasedonPreferences';
 import CompanysList from '../Components/CompanysList';
+import {colors} from '../Global_CSS/theamColors';
 
-const HomeComponent = ({ jobsData }) => {
+const HomeComponent = ({jobsData}) => {
   useEffect(() => {
     const backAction = () => {
       Alert.alert('Hold on!', 'Are you sure you want to go back?', [
@@ -25,7 +24,7 @@ const HomeComponent = ({ jobsData }) => {
           onPress: () => null,
           style: 'cancel',
         },
-        { text: 'YES', onPress: () => BackHandler.exitApp() },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
       ]);
       return true; // Prevent default back action
     };
@@ -42,42 +41,42 @@ const HomeComponent = ({ jobsData }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = () => {
-    navigation.navigate('searchjob', { query });
+    navigation.navigate('searchjob', {query});
   };
 
   return (
     <View style={styles.bodycontainer}>
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.searchbarContainer}>
-            <TextInput
-              placeholder="Search"
-              onChangeText={setQuery}
-              value={query}
-              style={styles.searchbar}
-              placeholderTextColor="#000"
-            />
-            <IconButton
-              style={styles.searchIcon}
-              icon="magnify"
-              iconColor="#004466"
-              size={26}
-              onPress={handleSearch}
-            />
+      <View style={styles.container}>
+        <View style={styles.searchbarContainer}>
+          <TextInput
+            placeholder="Search"
+            onChangeText={setQuery}
+            value={query}
+            style={styles.searchbar}
+            placeholderTextColor="#000"
+          />
+          <IconButton
+            style={styles.searchIcon}
+            icon="magnify"
+            iconColor="#004466"
+            size={26}
+            onPress={handleSearch}
+          />
+        </View>
+      </View>
+      <ScrollView style={{flex: 1}}>
+        <View style={styles.headingContainer}>
+          <Text style={styles.heading}>Let's Find a Job</Text>
+          <Text style={styles.heading}>With Flexhire</Text>
+        </View>
+        <View style={styles.JobsContainer}>
+          <View style={{marginVertical: 18, marginLeft: 18}}>
+            <JobbasedonProfile />
+            <JobbasedonPreferences />
           </View>
-          <View style={styles.headingContainer}>
-            <Text style={styles.heading}>Let's Find a Job</Text>
-            <Text style={styles.heading}>With Flexhire</Text>
-          </View>
-          <View style={styles.JobsContainer}>
-            <View style={{ marginVertical: 18, marginLeft: 18 }}>
-              <JobbasedonProfile />
-              <JobbasedonPreferences />
-            </View>
-          </View>
-          <View style={styles.companylistContainer}>
-            <CompanysList />
-          </View>
+        </View>
+        <View style={styles.companylistContainer}>
+          <CompanysList />
         </View>
       </ScrollView>
     </View>
@@ -86,13 +85,17 @@ const HomeComponent = ({ jobsData }) => {
 
 const styles = StyleSheet.create({
   bodycontainer: {
-    flex: 1,
+    backgroundColor: colors.bacground,
   },
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    // paddingTop: 4,
+    backgroundColor: colors.primary,
+    height: 90,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
   },
   headingContainer: {
+    flex: 1,
     marginVertical: 12,
   },
   heading: {
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     flexDirection: 'row',
     marginVertical: 18,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: colors.cardcolor,
     borderRadius: 8,
     height: 56,
   },
@@ -121,9 +124,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: '#fff',
   },
-  JobsContainer: {
-    backgroundColor: '#e0e0e0',
-  },
+  JobsContainer: {},
 });
 
 export default HomeComponent;

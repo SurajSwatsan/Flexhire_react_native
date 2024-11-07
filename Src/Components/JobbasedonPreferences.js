@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import {colors} from '../Global_CSS/theamColors';
 
 const Data = [
   {
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   companyLocation: {
-    color: '#fff',
+    color: colors.textprimary,
     fontSize: 12,
   },
 
@@ -216,12 +217,11 @@ const styles = StyleSheet.create({
     maxWidth: 200,
     fontSize: 18,
     fontWeight: 'bold',
-
     color: '#0a0a0a',
   },
   viewAll: {
     fontSize: 15,
-    color: '#80d4ff',
+    color: colors.textprimary,
     fontWeight: 'bold',
   },
   itemText: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   companyName: {
-    color: '#fff',
+    color: colors.textprimary,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -252,16 +252,15 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     maxHeight: 250,
     borderRadius: 8,
-    backgroundColor: '#4f84c4',
-    // backgroundColor: '#004466',
+    backgroundColor: colors.cardcolor,
   },
 
   jobTitleText: {
-    color: '#fff',
+    color: colors.textprimary,
     fontSize: 15,
   },
   experienceText: {
-    color: '#fff',
+    color: colors.textprimary,
     fontSize: 12,
   },
 });
