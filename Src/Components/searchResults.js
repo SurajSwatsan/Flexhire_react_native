@@ -16,11 +16,13 @@ import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
+import CompanyCard from '../GlobalFields/GlobalCard';
 
 const Data = [
   {
     id: 1,
     company_name: 'Tech Innovations',
+
     about:
       'Tech Innovations is a leading software development company specializing in creating cutting-edge technology solutions.',
     logo: 'https://www.techinnovations.com/logo.png',
@@ -31,14 +33,30 @@ const Data = [
     industry: 'Information Technology',
     posted_jobs: [
       {
+        id: 1,
         job_title: 'Software Engineer',
+        rating: 4.5,
+        reviews: 120,
+        required_experience: '3-5 years',
+        salary: '$70,000 - $90,000',
+        work_modes: ['Hybrid', 'Remote'],
+        location: 'San Francisco, CA',
+        posted_date: '2024-11-01',
+        openings: 3,
+        applications: 75,
+        industry_type: 'Information Technology',
+        department: 'Engineering',
+        employment_types: ['Full-time', 'Part-time'],
+        role_category: 'Development',
+        education: [
+          "Bachelor's in Computer Science",
+          "Master's in Software Engineering",
+        ],
         job_description:
-          'Develop high-quality software solutions by collaborating with cross-functional teams. Participate in code reviews, debugging, and performance tuning to optimize applications. Stay updated with emerging technologies to ensure the implementation of best practices. Contribute to architecture discussions and design processes. Ensure the integrity of the codebase by adhering to coding standards.',
-        experience_required: '3-5 years',
-        salary_range: '$80,000 - $100,000',
-        required_skills: ['JavaScript', 'React', 'Node.js', 'SQL'],
-        positions_available: 3,
-        job_type: 'Onsite',
+          'We are seeking a skilled Software Engineer to join our dynamic team. You will be responsible for developing, testing, and maintaining high-quality software applications. Our ideal candidate is proficient in modern programming languages and has experience with web technologies. You’ll collaborate closely with our product and design teams to create innovative solutions. Responsibilities include debugging, code review, and participating in team standups. The role also involves maintaining best practices in coding standards and agile methodologies. We value creativity, problem-solving skills, and a passion for technology.',
+        key_skills: ['JavaScript', 'React', 'Node.js', 'Problem-solving'],
+        posted_at: '2024-11-01',
+        company_type: 'Private',
       },
     ],
     website: 'https://www.techinnovations.com',
@@ -46,6 +64,7 @@ const Data = [
   {
     id: 2,
     company_name: 'Creative Solutions',
+
     about:
       "Creative Solutions provides innovative design and digital marketing strategies tailored to clients' needs.",
     logo: 'https://www.creativesolutions.com/logo.png',
@@ -55,19 +74,42 @@ const Data = [
     location: 'New York, NY',
     industry: 'Marketing',
     posted_jobs: [
+      // {
+      //   job_title: 'Digital Marketing Specialist',
+      //   job_description:
+      //     'Design and implement comprehensive digital marketing strategies to enhance online presence. Analyze marketing data to derive insights for improvement. Collaborate with the design team to create engaging content across platforms. Conduct market research to identify new trends and target audiences. Manage social media accounts and campaigns to drive brand engagement.',
+      //   experience_required: '2-4 years',
+      //   salary_range: '$60,000 - $80,000',
+      //   required_skills: [
+      //     'SEO',
+      //     'Content Marketing',
+      //     'Social Media Management',
+      //   ],
+      //   positions_available: 5,
+      //   job_type: 'Hybrid',
+      // },
       {
-        job_title: 'Digital Marketing Specialist',
-        job_description:
-          'Design and implement comprehensive digital marketing strategies to enhance online presence. Analyze marketing data to derive insights for improvement. Collaborate with the design team to create engaging content across platforms. Conduct market research to identify new trends and target audiences. Manage social media accounts and campaigns to drive brand engagement.',
-        experience_required: '2-4 years',
-        salary_range: '$60,000 - $80,000',
-        required_skills: [
-          'SEO',
-          'Content Marketing',
-          'Social Media Management',
-        ],
-        positions_available: 5,
-        job_type: 'Hybrid',
+        id: 1,
+        "job_title": "Marketing Specialist",
+        // "company_name": "GreenWorld Corp.",
+        "rating": 4.2,
+        "reviews": 85,
+        "required_experience": "2-4 years",
+        "salary": "$50,000 - $70,000",
+        "work_modes": ["Remote", "Hybrid"],
+        "location": "New York, NY",
+        "posted_date": "2024-10-25",
+        "openings": 1,
+        "applications": 45,
+        "industry_type": "Marketing & Advertising",
+        "department": "Marketing",
+        "employment_types": ["Contract", "Freelance"],
+        "role_category": "Digital Marketing",
+        "education": ["Bachelor's in Marketing", "Master's in Business Administration"],
+        "job_description": "GreenWorld Corp. is looking for a Marketing Specialist to help drive brand engagement and sales through digital channels. The role involves planning and executing marketing campaigns, analyzing performance data, and managing social media accounts. You’ll work with a creative team to develop compelling content and advertising strategies. This role requires a proactive individual with a passion for marketing and strong analytical skills. You’ll collaborate with cross-functional teams to align marketing strategies with business goals. The role also requires effective communication with stakeholders and ongoing optimization of campaigns.",
+        "key_skills": ["SEO", "Content Marketing", "Social Media", "Analytics"],
+        "posted_at": "2024-10-25",
+        "company_type": "Public"
       },
     ],
     website: 'https://www.creativesolutions.com',
@@ -75,6 +117,7 @@ const Data = [
   {
     id: 3,
     company_name: 'HealthTech Solutions',
+
     about:
       'HealthTech Solutions aims to revolutionize the healthcare industry through innovative software applications.',
     logo: 'https://www.healthtechsolutions.com/logo.png',
@@ -84,22 +127,47 @@ const Data = [
     location: 'Chicago, IL',
     industry: 'Healthcare',
     posted_jobs: [
+      // {
+      //   job_title: 'Health Data Analyst',
+      //   job_description:
+      //     'Analyze healthcare data to provide actionable insights for improving patient outcomes. Collaborate with medical professionals to understand data needs and develop analytical solutions. Create reports and visualizations to present findings to stakeholders. Ensure data integrity by implementing quality control measures. Stay informed about industry trends to align analytics strategies.',
+      //   experience_required: '2-3 years',
+      //   salary_range: '$70,000 - $90,000',
+      //   required_skills: ['Data Analysis', 'Excel', 'SQL'],
+      //   positions_available: 2,
+      //   job_type: 'Remote',
+      // },
       {
-        job_title: 'Health Data Analyst',
-        job_description:
-          'Analyze healthcare data to provide actionable insights for improving patient outcomes. Collaborate with medical professionals to understand data needs and develop analytical solutions. Create reports and visualizations to present findings to stakeholders. Ensure data integrity by implementing quality control measures. Stay informed about industry trends to align analytics strategies.',
-        experience_required: '2-3 years',
-        salary_range: '$70,000 - $90,000',
-        required_skills: ['Data Analysis', 'Excel', 'SQL'],
-        positions_available: 2,
-        job_type: 'Remote',
+        // "id": 3,
+        id: 1,
+        "job_title": "Data Analyst",
+        "rating": 4.8,
+        "reviews": 150,
+        "required_experience": "1-3 years",
+        "salary": "$60,000 - $80,000",
+        "work_modes": ["On-site", "Hybrid"],
+        "location": "Chicago, IL",
+        "posted_date": "2024-10-20",
+        "openings": 2,
+        "applications": 60,
+        "industry_type": "Data Science",
+        "department": "Data Analytics",
+        "employment_types": ["Full-time", "Temporary"],
+        "role_category": "Analytics",
+        "education": ["Bachelor's in Statistics", "Master's in Data Science"],
+        "job_description": "As a Data Analyst at Insight Analytics, you’ll be responsible for interpreting complex datasets to generate insights that drive business decisions. You will clean, transform, and analyze data to extract meaningful patterns. The role involves building data visualizations, preparing reports, and providing data-driven recommendations. Collaboration with other teams to identify business challenges and develop solutions is key. You’ll help build predictive models and support other analysts. Attention to detail, accuracy, and proficiency with analytical tools are essential for success in this position.",
+        "key_skills": ["Python", "SQL", "Data Visualization", "Machine Learning"],
+        "posted_at": "2024-10-20",
+        "company_type": "Startup"
       },
+    
     ],
     website: 'https://www.healthtechsolutions.com',
   },
   {
     id: 4,
     company_name: 'EcoFriendly Products',
+
     about:
       'EcoFriendly Products is dedicated to providing sustainable solutions for everyday needs.',
     logo: 'https://www.ecofriendlyproducts.com/logo.png',
@@ -109,19 +177,43 @@ const Data = [
     location: 'Austin, TX',
     industry: 'E-commerce',
     posted_jobs: [
+      // {
+      //   job_title: 'E-commerce Manager',
+      //   job_description:
+      //     "Oversee the online store's operations, ensuring a seamless customer experience. Develop and implement marketing strategies to drive traffic and sales. Analyze website performance metrics to identify areas for improvement. Collaborate with product teams to manage inventory and pricing. Manage customer service interactions to enhance customer satisfaction.",
+      //   experience_required: '4-6 years',
+      //   salary_range: '$80,000 - $100,000',
+      //   required_skills: [
+      //     'E-commerce Platforms',
+      //     'Digital Marketing',
+      //     'Analytics',
+      //   ],
+      //   positions_available: 1,
+      //   job_type: 'Onsite',
+      // },
       {
-        job_title: 'E-commerce Manager',
-        job_description:
-          "Oversee the online store's operations, ensuring a seamless customer experience. Develop and implement marketing strategies to drive traffic and sales. Analyze website performance metrics to identify areas for improvement. Collaborate with product teams to manage inventory and pricing. Manage customer service interactions to enhance customer satisfaction.",
-        experience_required: '4-6 years',
-        salary_range: '$80,000 - $100,000',
-        required_skills: [
-          'E-commerce Platforms',
-          'Digital Marketing',
-          'Analytics',
-        ],
-        positions_available: 1,
-        job_type: 'Onsite',
+        // "id": 4,
+        id: 1,
+        "job_title": "Project Manager",
+        // "company_name": "BuildRight Constructions",
+        "rating": 4.6,
+        "reviews": 200,
+        "required_experience": "5-8 years",
+        "salary": "$90,000 - $120,000",
+        "work_modes": ["On-site", "Hybrid"],
+        "location": "Austin, TX",
+        "posted_date": "2024-11-02",
+        "openings": 1,
+        "applications": 30,
+        "industry_type": "Construction",
+        "department": "Project Management",
+        "employment_types": ["Full-time", "Contract"],
+        "role_category": "Management",
+        "education": ["Bachelor's in Civil Engineering", "PMP Certification"],
+        "job_description": "BuildRight Constructions is seeking an experienced Project Manager to oversee high-profile construction projects. This role involves managing budgets, schedules, and resources to ensure timely completion. The ideal candidate will have extensive experience in construction management, strong leadership skills, and an eye for detail. Responsibilities include coordinating with stakeholders, overseeing site operations, and ensuring compliance with safety regulations. The role demands excellent communication and problem-solving skills to manage unexpected challenges. You will work closely with engineers, architects, and contractors to deliver quality projects.",
+        "key_skills": ["Project Planning", "Risk Management", "Budgeting", "Team Leadership"],
+        "posted_at": "2024-11-02",
+        "company_type": "Private"
       },
     ],
     website: 'https://www.ecofriendlyproducts.com',
@@ -129,6 +221,7 @@ const Data = [
   {
     id: 5,
     company_name: 'Smart Home Solutions',
+
     about:
       'Smart Home Solutions focuses on creating integrated technology for home automation.',
     logo: 'https://www.smarthomesolutions.com/logo.png',
@@ -138,20 +231,52 @@ const Data = [
     location: 'Los Angeles, CA',
     industry: 'Technology',
     posted_jobs: [
+      // {
+      //   job_title: 'IoT Developer',
+      //   job_description:
+      //     'Develop and implement Internet of Things (IoT) applications and solutions. Work on integrating various hardware components with cloud services. Collaborate with cross-functional teams to define project requirements and specifications. Test and debug systems to ensure functionality and reliability. Stay updated on emerging technologies and industry trends.',
+      //   experience_required: '3-5 years',
+      //   salary_range: '$90,000 - $110,000',
+      //   required_skills: ['IoT', 'Embedded Systems', 'Python'],
+      //   positions_available: 4,
+      //   job_type: 'Remote',
+      // },
       {
-        job_title: 'IoT Developer',
-        job_description:
-          'Develop and implement Internet of Things (IoT) applications and solutions. Work on integrating various hardware components with cloud services. Collaborate with cross-functional teams to define project requirements and specifications. Test and debug systems to ensure functionality and reliability. Stay updated on emerging technologies and industry trends.',
-        experience_required: '3-5 years',
-        salary_range: '$90,000 - $110,000',
-        required_skills: ['IoT', 'Embedded Systems', 'Python'],
-        positions_available: 4,
-        job_type: 'Remote',
-      },
+        // "id": 5,
+        id: 1,
+        "job_title": "Human Resources Manager",
+        // "company_name": "PeopleFirst Solutions",
+        "rating": 4.9,
+        "reviews": 175,
+        "required_experience": "4-6 years",
+        "salary": "$80,000 - $100,000",
+        "work_modes": ["Hybrid", "Remote"],
+        "location": "Seattle, WA",
+        "posted_date": "2024-10-29",
+        "openings": 1,
+        "applications": 40,
+        "industry_type": "Human Resources",
+        "department": "Human Resources",
+        "employment_types": ["Full-time", "Freelance"],
+        "role_category": "HR Management",
+        "education": ["Bachelor's in Human Resources", "Master's in Business Administration"],
+        "job_description": "PeopleFirst Solutions is hiring an HR Manager responsible for overseeing recruitment, employee relations, and HR strategy. You will ensure compliance with labor laws, manage HR policies, and contribute to a positive work culture. The role involves developing retention strategies, managing payroll, and handling employee grievances. You will collaborate with department heads to identify hiring needs and lead diversity initiatives. Excellent communication and organizational skills are essential, along with proficiency in HR software. This role offers a chance to make a meaningful impact on company culture and employee satisfaction.",
+        "key_skills": ["Recruitment", "Employee Relations", "Policy Development", "HR Analytics"],
+        "posted_at": "2024-10-29",
+        "company_type": "LLC"
+      }
     ],
     website: 'https://www.smarthomesolutions.com',
   },
 ];
+
+const companyImages = {
+  'Tech Innovations': require('../Assets/companyImges/google_icon.png'),
+  'Creative Solutions': require('../Assets/companyImges/facebook.png'),
+  'HealthTech Solutions': require('../Assets/companyImges/linkedin_icon.png'),
+  'EcoFriendly Products': require('../Assets/companyImges/microsoft.png'),
+  'Smart Home Solutions': require('../Assets/companyImges/TCS_logo.png'),
+};
 
 const SearchJobScreen = ({navigation, route}) => {
   const {isFocused} = useIsFocused();
@@ -315,11 +440,259 @@ const SearchJobScreen = ({navigation, route}) => {
     setIndustriesList(getUniqueIndustries());
   }, []);
 
+  // return (
+  //   <View style={styles.container}>
+  //     <View style={GlobalStyle.headerStyle}>
+  //       <CustomHeader />
+  //       <Text style={{color: 'black', fontSize: 16, fontWeight: 'bold'}}>
+  //         BookMark
+  //       </Text>
+  //       <IconButton
+  //         icon="bookmark-outline"
+  //         iconColor="#000"
+  //         size={30}
+  //         onPress={() => navigation.navigate('bookmark')}
+  //       />
+  //     </View>
+
+  //     <ScrollView>
+  //       <View style={styles.fixedSearchBar}>
+  //         <TextInput
+  //           style={styles.searchInput}
+  //           placeholder="Search...."
+  //           value={searchTerm}
+  //           onChangeText={setSearchTerm}
+  //         />
+  //         <View style={styles.filterContainer}>
+  //           <IconButton
+  //             style={styles.filtericon}
+  //             icon="filter"
+  //             onPress={openFilterModal}
+  //             iconColor="#000"
+  //             size={30}
+  //           />
+  //         </View>
+  //       </View>
+  //       {loading ? (
+  //         <Text style={styles.loadingText}>Loading...</Text>
+  //       ) : results.length > 0 ? (
+  //         results.map(company => (
+  //           <View key={company.id} style={styles.companyContainer}>
+  //             <View style={styles.companyHeader}>
+  //               <View style={styles.companyInfo}>
+  //               <Image
+  //                 source={
+  //                   companyImages[company.company_name] ||
+  //                   require('../Assets/companyImges/facebook.png')
+  //                 }
+  //                 style={styles.companyImage} // Apply the style for the image
+  //               />
+
+  //               <Text style={styles.companyName}>{company.company_name}</Text>
+  //               </View>
+
+  //               {/* Save Job Button */}
+  //               {company.posted_jobs.map(job => (
+  //                 <IconButton
+  //                   key={job.job_title}
+  //                   style={styles.saveicon}
+  //                   icon={
+  //                     savedJobs.some(
+  //                       savedJob => savedJob.job_title === job.job_title,
+  //                     )
+  //                       ? 'bookmark'
+  //                       : 'bookmark-outline'
+  //                   }
+  //                   // iconColor="#004466"
+  //                   iconColor={
+  //                     savedJobs.some(
+  //                       savedJob => savedJob.job_title === job.job_title,
+  //                     )
+  //                       ? '#000' // Color when saved (e.g., tomato red)
+  //                       : 'gray' // Color when unsaved (default)
+  //                   }
+  //                   size={24}
+  //                   onPress={() => toggleSaveJob(job)} // Toggle save/un-save on click
+  //                 />
+  //               ))}
+  //             </View>
+  //             {company.posted_jobs.map(job => (
+  //               // Inside your TouchableOpacity component:
+  //               <TouchableOpacity
+  //                 key={job.job_title}
+  //                 onPress={() => openJobDetail(job)}>
+  //                 <View style={styles.jobContainer}>
+  //                   <Text style={styles.jobTitle}>{job.job_title}</Text>
+  //                   <Text style={styles.jobDetails}>
+  //                     {job.job_type} | {job.experience_required} |{' '}
+  //                     {job.salary_range}
+  //                   </Text>
+  //                   {/* Adding the location icon and date */}
+  //                   <View style={styles.locationContainer}>
+  //                     <View style={styles.location}>
+  //                       <IconButton
+  //                         icon="map-marker"
+  //                         iconColor="#808080"
+  //                         size={14}
+  //                         style={{padding: 0, marginLeft: -10}} // Ensure no padding/margin on the icon
+  //                       />
+  //                       <Text style={styles.jobLocation}>
+  //                         {company.location}
+  //                       </Text>
+  //                     </View>
+
+  //                     <Text style={styles.jobPostedDate}>
+  //                       {/* Check if job.date_posted exists and is valid */}
+  //                       {job.date_posted
+  //                         ? moment(job.date_posted).isValid()
+  //                           ? moment(job.date_posted).format('MMMM D, YYYY')
+  //                           : 'Invalid Date'
+  //                         : 'January 2024'}
+  //                     </Text>
+  //                   </View>
+  //                 </View>
+  //               </TouchableOpacity>
+  //             ))}
+  //           </View>
+  //         ))
+  //       ) : (
+  //         <Text style={styles.noResultsText}>No jobs found</Text>
+  //       )}
+  //     </ScrollView>
+
+  //     <TouchableOpacity
+  //       style={styles.savedJobsButton}
+  //       onPress={() =>
+  //         navigation.navigate('SavedJobsScreen', {savedJobs})
+  //       }></TouchableOpacity>
+
+  //     {/* Filter Modal */}
+  //     <Modal
+  //       transparent={true}
+  //       animationType="slide"
+  //       visible={filterModalVisible}
+  //       onRequestClose={closeFilterModal}>
+  //       <View style={styles.modalOverlay}>
+  //         <View style={styles.modalContent}>
+  //           <Text style={styles.modalTitle}>Filter Jobs</Text>
+
+  //           <Text style={{color: 'black'}}>Job Type</Text>
+  //           <View style={styles.checkboxContainer}>
+  //             {['Onsite', 'Hybrid', 'Remote'].map(type => (
+  //               <View key={type} style={styles.checkboxItem}>
+  //                 <Checkbox
+  //                   status={
+  //                     filterJobType.includes(type) ? 'checked' : 'unchecked'
+  //                   }
+  //                   onPress={() => handleJobTypeChange(type)}
+  //                 />
+  //                 <Text style={styles.checkboxLabel}>{type}</Text>
+  //               </View>
+  //             ))}
+  //           </View>
+
+  //           <Text style={{color: 'black'}}>Salary Range</Text>
+  //           <View style={styles.salaryRangeContainer}>
+  //             <TextInput
+  //               style={styles.salaryInput}
+  //               keyboardType="numeric"
+  //               placeholder="Min Salary"
+  //               value={filterSalaryRange.min.toString()}
+  //               onChangeText={text =>
+  //                 setFilterSalaryRange(prev => ({
+  //                   ...prev,
+  //                   min: Number(text) || 0,
+  //                 }))
+  //               }
+  //             />
+  //             <Text style={{marginHorizontal: 10}}>to</Text>
+  //             <TextInput
+  //               style={styles.salaryInput}
+  //               keyboardType="numeric"
+  //               placeholder="Max Salary"
+  //               value={filterSalaryRange.max.toString()}
+  //               onChangeText={text =>
+  //                 setFilterSalaryRange(prev => ({
+  //                   ...prev,
+  //                   max: Number(text) || 1000000,
+  //                 }))
+  //               }
+  //             />
+  //           </View>
+
+  //           <Text style={{color: 'black'}}>Location</Text>
+  //           <Picker
+  //             selectedValue={filterLocation}
+  //             onValueChange={itemValue => setFilterLocation(itemValue)}
+  //             style={styles.picker}>
+  //             <Picker.Item label="Select Location" value="" />
+  //             {locationsList.map(location => (
+  //               <Picker.Item key={location} label={location} value={location} />
+  //             ))}
+  //           </Picker>
+
+  //           <Text style={{color: 'black'}}>Industry</Text>
+  //           <Picker
+  //             selectedValue={filterIndustry}
+  //             onValueChange={itemValue => setFilterIndustry(itemValue)}
+  //             style={styles.picker}>
+  //             <Picker.Item label="Select Industry" value="" />
+  //             {industriesList.map(industry => (
+  //               <Picker.Item key={industry} label={industry} value={industry} />
+  //             ))}
+  //           </Picker>
+
+  //           <TouchableOpacity style={styles.applyButton} onPress={applyFilters}>
+  //             <Text style={styles.applyButtonText}>Apply Filters</Text>
+  //           </TouchableOpacity>
+
+  //           <TouchableOpacity
+  //             style={styles.closeButton}
+  //             onPress={closeFilterModal}>
+  //             <Text style={styles.closeButtonText}>Close</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     </Modal>
+
+  //     {selectedJob && (
+  //       <Modal
+  //         transparent={true}
+  //         animationType="slide"
+  //         visible={modalVisible}
+  //         onRequestClose={closeModal}>
+  //         <View style={styles.modalOverlay}>
+  //           <View style={styles.modalContent}>
+  //             <Text style={styles.modalJobTitle}>{selectedJob.job_title}</Text>
+  //             <Text style={styles.modalJobDescription}>
+  //               {selectedJob.job_description}
+  //             </Text>
+  //             <Text style={styles.modalJobDetails}>
+  //               Experience Required: {selectedJob.experience_required}
+  //             </Text>
+  //             <Text style={styles.modalJobDetails}>
+  //               Salary Range: {selectedJob.salary_range}
+  //             </Text>
+  //             <Text style={styles.modalJobDetails}>
+  //               Required Skills: {selectedJob.required_skills.join(', ')}
+  //             </Text>
+  //             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+  //               <Text style={styles.closeButtonText}>Close</Text>
+  //             </TouchableOpacity>
+  //           </View>
+  //         </View>
+  //       </Modal>
+  //     )}
+  //   </View>
+  // );
+
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
-        <Text style={{color:'black',fontSize:16,fontWeight:'bold'}}>BookMark</Text>
+        <Text style={{color: 'black', fontSize: 16, fontWeight: 'bold'}}>
+          BookMark
+        </Text>
         <IconButton
           icon="bookmark-outline"
           iconColor="#000"
@@ -327,24 +700,6 @@ const SearchJobScreen = ({navigation, route}) => {
           onPress={() => navigation.navigate('bookmark')}
         />
       </View>
-
-      {/* <View style={styles.fixedSearchBar}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search...."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-        <View style={styles.filterContainer}>
-          <IconButton
-            style={styles.filtericon}
-            icon="filter"
-            onPress={openFilterModal}
-            iconColor="#000"
-            size={30}
-          />
-        </View>
-      </View> */}
 
       <ScrollView>
         <View style={styles.fixedSearchBar}>
@@ -364,69 +719,18 @@ const SearchJobScreen = ({navigation, route}) => {
             />
           </View>
         </View>
+
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : results.length > 0 ? (
           results.map(company => (
-            <View key={company.id} style={styles.companyContainer}>
-              <View style={styles.companyHeader}>
-                <Text style={styles.companyName}>{company.company_name}</Text>
-                {/* Save Job Button */}
-                {company.posted_jobs.map(job => (
-                  <IconButton
-                    key={job.job_title}
-                    style={styles.saveicon}
-                    icon={
-                      savedJobs.some(
-                        savedJob => savedJob.job_title === job.job_title,
-                      )
-                        ? 'bookmark'
-                        : 'bookmark-outline'
-                    }
-                    iconColor="#004466"
-                    size={24}
-                    onPress={() => toggleSaveJob(job)} // Toggle save/un-save on click
-                  />
-                ))}
-              </View>
-              {company.posted_jobs.map(job => (
-                // Inside your TouchableOpacity component:
-                <TouchableOpacity
-                  key={job.job_title}
-                  onPress={() => openJobDetail(job)}>
-                  <View style={styles.jobContainer}>
-                    <Text style={styles.jobTitle}>{job.job_title}</Text>
-                    <Text style={styles.jobDetails}>
-                      {job.job_type} | {job.experience_required} |{' '}
-                      {job.salary_range}
-                    </Text>
-                    {/* Adding the location icon and date */}
-                    <View style={styles.locationContainer}>
-                      <View style={styles.location}>
-                        <IconButton
-                          icon="map-marker"
-                          iconColor="#808080"
-                          size={14}
-                          style={{padding: 0, marginLeft: -10}} // Ensure no padding/margin on the icon
-                        />
-                        <Text style={styles.jobLocation}>
-                          {company.location}
-                        </Text>
-                      </View>
-
-                      <Text style={styles.jobPostedDate}>
-                        {/* Check if job.date_posted exists and is valid */}
-                        {job.date_posted
-                          ? moment(job.date_posted).isValid()
-                            ? moment(job.date_posted).format('MMMM D, YYYY')
-                            : 'Invalid Date'
-                          : 'January 2024'}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <CompanyCard
+              key={company.id}
+              company={company}
+              savedJobs={savedJobs}
+              toggleSaveJob={toggleSaveJob}
+              openJobDetail={openJobDetail}
+            />
           ))
         ) : (
           <Text style={styles.noResultsText}>No jobs found</Text>
@@ -564,7 +868,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
 
-    backgroundColor: '#fbfbfb',
+    backgroundColor: '#f1f1f1',
   },
   searchInput: {
     height: 48,
@@ -600,97 +904,12 @@ const styles = StyleSheet.create({
     width: 48, // Fixed width to match the height of the button
     alignSelf: 'center',
     borderRadius: 4,
-    // shadowColor: '#000',
-   
-    // shadowOffset: {width: 0, height: 2},
-    // shadowOpacity: 0.1,
-    // shadowRadius: 10,
-    // elevation: 2,
+
     justifyContent: 'center',
     alignItems: 'center', // Ensure the filter icon is centered in the button
   },
 
   filtericon: {},
-
-  companyContainer: {
-    paddingLeft: 12,
-    paddingVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    // shadowColor: '#000',
-    // shadowOffset: {width: 0, height: 4},
-    // shadowOpacity: 0.1,
-    // shadowRadius: 10,
-    // elevation: 5,
-    // marginHorizontal: 5,
-    borderColor:'lightgray',
-    borderWidth:0.5,
-    margin: 8,
-  },
-  companyName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-
-  saveicon: {
-    alignSelf: 'center',
-    height: 20,
-    margin: 0,
-    
-  },
-  companyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    margin: 0,
-    padding: 0,
-  },
-
-  jobContainer: {
-    color: '#000',
-    marginLeft: 0, // Remove or modify this margin if it's causing left space
-    // marginBottom: 5,
-    width: '100%',
-  },
-  jobTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
-  },
-  jobDetails: {
-    fontSize: 12,
-    color: '#808080',
-  },
-  jobLocation: {
-    fontSize: 12,
-    color: '#808080',
-    marginLeft: -12,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    height: 32,
-
-    // marginTop: 4,
-  },
-
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // height: 20,
-    marginLeft: 0, // No margin here
-    paddingLeft: 0, // No padding here
-  },
-
-  jobPostedDate: {
-    fontSize: 12,
-    color: '#808080',
-    textAlign: 'right',
-    marginRight: 12,
-  },
   loadingText: {
     fontSize: 18,
     color: 'black',
