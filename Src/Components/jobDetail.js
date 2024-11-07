@@ -13,133 +13,148 @@ import {colors} from '../Global_CSS/theamColors';
 import {IconButton} from 'react-native-paper';
 
 const JobDetailScreen = ({route, navigation}) => {
-  const {job} = route.params;
+  const {company} = route.params;
   const [activeTab, setActiveTab] = useState('About');
+  console.log(company)
 
-  const renderTabs = () => {
-    switch (activeTab) {
-      case 'About':
-        return <Text style={styles.jobDescription}>{job.job_description}</Text>;
-      case 'Company':
-        return <Text style={styles.jobDescription}>{job.job_description}</Text>;
-      case 'Review':
-        return <Text style={styles.jobDescription}>{job.job_description}</Text>;
-      default:
-        return null;
-    }
-  };
+  // const renderTabs = () => {
+  //   switch (activeTab) {
+  //     case 'About':
+  //       return <Text style={styles.jobDescription}>{job.job_description}</Text>;
+  //       case 'Company':
+  //         return (
+  //           <View>
+  //             <Text style={styles.jobDescription}>{job.company_name}</Text>
+  //             <Text style={styles.jobDescription}>{job.about}</Text>
+  //             <Text style={styles.jobDetails}>Industry: {job.industry}</Text>
+  //             <Text style={styles.jobDetails}>Location: {job.location}</Text>
+  //             <Text style={styles.jobDetails}>Contact: {job.contact_email}</Text>
+  //             <Text style={styles.jobDetails}>Phone: {job.phone}</Text>
+  //           </View>
+  //         );
+  //         case 'Review':
+  //           return (
+  //             <View>
+  //               <Text style={styles.jobDescription}>Rating: {job.rating} ({job.reviews} reviews)</Text>
+  //             </View>
+  //           );
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   return (
-    <View style={styles.container}>
-      <View style={GlobalStyle.headerStyle}>
-        <CustomHeader />
-        <Text style={GlobalStyle.headerText}>Job Information</Text>
-        <View />
-      </View>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.companyInfoContainer}>
-          <View style={styles.companyInfo}>
-            <Image
-              source={require('../Assets/Logo/TCS_logo.png')}
-              style={styles.logo}
-            />
-            <Text style={styles.jobTitle}>{job.job_title}</Text>
-            <Text style={styles.jobTitle}>{job.company_name}</Text>
-            <View style={styles.mainfildContainer}>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="cash"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle} // Ensure no padding/margin on the icon
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Salary Range</Text>
-                  <Text style={styles.jobDetails}>{job.salary_range}</Text>
-                </View>
-              </View>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="signal-cellular-3"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle}
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Level</Text>
-                  <Text style={styles.jobDetails}>
-                    {job.experience_required}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="briefcase-variant"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle}
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Job Type</Text>
-                  <Text style={styles.jobDetails}>{job.job_type}</Text>
-                </View>
-              </View>
-              {/* <View style={styles.fildContainer}>
-            <IconButton
-              icon="cash"
-              iconColor="#808080"
-              size={24}
-              style={{padding: 0, marginLeft: -10}} // Ensure no padding/margin on the icon
-            />
-            <View style={styles.fildinerContainer}>
-              <Text style={styles.jobDetails}>Salary Range</Text>
-              <Text style={styles.jobDetails}>{job.salary_range}</Text>
-            </View>
-          </View> */}
-            </View>
+    // <View style={styles.container}>
+    //   <View style={GlobalStyle.headerStyle}>
+    //     <CustomHeader />
+    //     <Text style={GlobalStyle.headerText}>Job Information</Text>
+    //     <View />
+    //   </View>
+    //   <ScrollView style={styles.scrollView}>
+    //     <View style={styles.companyInfoContainer}>
+    //       <View style={styles.companyInfo}>
+    //         <Image
+    //           source={require('../Assets/Logo/TCS_logo.png')}
+    //           style={styles.logo}
+    //         />
+    //         <Text style={styles.jobTitle}>{job.job_title}</Text>
+    //         <Text style={styles.jobTitle}>{job.company_name}</Text>
+    //         <View style={styles.mainfildContainer}>
+    //           <View style={styles.fildContainer}>
+    //             <IconButton
+    //               icon="cash"
+    //               iconColor={colors.primary}
+    //               size={24}
+    //               style={styles.iconstyle} // Ensure no padding/margin on the icon
+    //             />
+    //             <View style={styles.fildinerContainer}>
+    //               <Text style={styles.jobDetails1}>Salary Range</Text>
+    //               <Text style={styles.jobDetails}>{job.salary_range}</Text>
+    //             </View>
+    //           </View>
+    //           <View style={styles.fildContainer}>
+    //             <IconButton
+    //               icon="signal-cellular-3"
+    //               iconColor={colors.primary}
+    //               size={24}
+    //               style={styles.iconstyle}
+    //             />
+    //             <View style={styles.fildinerContainer}>
+    //               <Text style={styles.jobDetails1}>Level</Text>
+    //               <Text style={styles.jobDetails}>
+    //                 {job.experience_required}
+    //               </Text>
+    //             </View>
+    //           </View>
+    //           <View style={styles.fildContainer}>
+    //             <IconButton
+    //               icon="briefcase-variant"
+    //               iconColor={colors.primary}
+    //               size={24}
+    //               style={styles.iconstyle}
+    //             />
+    //             <View style={styles.fildinerContainer}>
+    //               <Text style={styles.jobDetails1}>Job Type</Text>
+    //               <Text style={styles.jobDetails}>{job.job_type}</Text>
+    //             </View>
+    //           </View>
+    //           {/* <View style={styles.fildContainer}>
+    //         <IconButton
+    //           icon="cash"
+    //           iconColor="#808080"
+    //           size={24}
+    //           style={{padding: 0, marginLeft: -10}} // Ensure no padding/margin on the icon
+    //         />
+    //         <View style={styles.fildinerContainer}>
+    //           <Text style={styles.jobDetails}>Salary Range</Text>
+    //           <Text style={styles.jobDetails}>{job.salary_range}</Text>
+    //         </View>
+    //       </View> */}
+    //         </View>
 
-            {/* <Text style={styles.jobDescription}>{job.job_description}</Text>
-            <Text style={styles.jobDetails}>
-              Required Skills: {job.required_skills.join(', ')}
-            </Text> */}
-          </View>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === 'About' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('About')}>
-              <Text style={styles.tabText}>About</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === 'Company' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('Company')}>
-              <Text style={styles.tabText}>Company</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === 'Review' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('Review')}>
-              <Text style={styles.tabText}>Review</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.contentContainer}>{renderTabs()}</View>
-        </View>
-      </ScrollView>
-      <View style={styles.applyButtonContainer}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.goBack()}>
-          <Text style={styles.closeButtonText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    //         {/* <Text style={styles.jobDescription}>{job.job_description}</Text>
+    //         <Text style={styles.jobDetails}>
+    //           Required Skills: {job.required_skills.join(', ')}
+    //         </Text> */}
+    //       </View>
+    //       <View style={styles.tabContainer}>
+    //         <TouchableOpacity
+    //           style={[
+    //             styles.tabButton,
+    //             activeTab === 'About' && styles.activeTab,
+    //           ]}
+    //           onPress={() => setActiveTab('About')}>
+    //           <Text style={styles.tabText}>About</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity
+    //           style={[
+    //             styles.tabButton,
+    //             activeTab === 'Company' && styles.activeTab,
+    //           ]}
+    //           onPress={() => setActiveTab('Company')}>
+    //           <Text style={styles.tabText}>Company</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity
+    //           style={[
+    //             styles.tabButton,
+    //             activeTab === 'Review' && styles.activeTab,
+    //           ]}
+    //           onPress={() => setActiveTab('Review')}>
+    //           <Text style={styles.tabText}>Review</Text>
+    //         </TouchableOpacity>
+    //       </View>
+    //       <View style={styles.contentContainer}>{renderTabs()}</View>
+    //     </View>
+    //   </ScrollView>
+    //   <View style={styles.applyButtonContainer}>
+    //     <TouchableOpacity
+    //       style={styles.closeButton}
+    //       onPress={() => navigation.goBack()}>
+    //       <Text style={styles.closeButtonText}>Go Back</Text>
+    //     </TouchableOpacity>
+    //   </View>
+    // </View>
+    <View></View>
   );
 };
 
