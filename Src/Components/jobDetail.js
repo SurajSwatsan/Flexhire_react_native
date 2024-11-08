@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {useState} from 'react';
 import {
   View,
@@ -405,3 +406,5 @@ const styles = StyleSheet.create({
   },
 });
 export default JobDetailScreen;
+=======
+>>>>>>> 1bd35a027a05d2cd7001d5f7cd4806974f4a4224
