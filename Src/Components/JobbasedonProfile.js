@@ -27,22 +27,21 @@ const JobbasedonProfile = () => {
       style={styles.scrollContainer}
       contentContainerStyle={styles.contentContainer}>
       {company.map((companyItem, index) => (
-        <CompanyCard
-          key={index}
-          company={companyItem}
-          // Uncomment and use these if needed
-          // savedJobs={Array.isArray(savedJobs) ? savedJobs : []}
-          // toggleSaveJob={toggleSaveJob}
-        />
+        <View key={index} style={{minWidth: 300, maxWidth: 300}}>
+          <CompanyCard
+            company={companyItem}
+            // Uncomment and use these if needed
+            // savedJobs={Array.isArray(savedJobs) ? savedJobs : []}
+            // toggleSaveJob={toggleSaveJob}
+          />
+        </View>
       ))}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    paddingHorizontal: 10, // Optional: Adds some padding on sides
-  },
+  scrollContainer: {},
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
