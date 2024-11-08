@@ -93,6 +93,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                 style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
               />
 
+              <View style={{flexDirection:'row',justifyContent:'space-between',margin:8}}>
               <Text style={styles.jobDetails}>{job.salary}</Text>
 
               <Text style={styles.jobPostedDate}>
@@ -102,6 +103,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                     : 'Invalid Date'
                   : 'January 2024'}
               </Text>
+              </View>
               {/* </View> */}
             </View>
           </View>
@@ -215,8 +217,8 @@ const styles = StyleSheet.create({
   },
   jobPostedDate: {
     fontSize: 12,
-    color: '#808080',
-    textAlign: 'right',
+    color: 'gray',
+    // textAlign: 'right',
     marginRight: 12,
     // marginTop: 5,
   },
