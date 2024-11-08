@@ -11,12 +11,10 @@ import CustomHeader from './customHeader';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/theamColors';
 import {IconButton} from 'react-native-paper';
-
 const JobDetailScreen = ({route, navigation}) => {
   const {company} = route.params;
   const [activeTab, setActiveTab] = useState('About');
   console.log(company);
-
   const renderTabs = () => {
     switch (activeTab) {
       case 'About':
@@ -63,7 +61,6 @@ const JobDetailScreen = ({route, navigation}) => {
                     </Text>
                   </View>
                   {/* <Text style={styles.jobDetails1}>Location: {job.location}</Text> */}
-
                   {/* <Text style={styles.jobDetails1}>
                     Required Experience: {job.required_experience}
                   </Text> */}
@@ -76,7 +73,6 @@ const JobDetailScreen = ({route, navigation}) => {
                   <Text style={styles.jobDetails1}>Salary: {job.salary}</Text> */}
                   {/* <Text style={styles.jobDetails1}>Rating: {job.rating}</Text>
                   <Text style={styles.jobDetails1}>Reviews: {job.reviews}</Text> */}
-
                   <View style={styles.jobDepartmentContainer}>
                     <Text style={styles.jobDetailsheader}>Role Category:</Text>
                     <Text style={styles.jobDetails1}>{job.role_category}</Text>
@@ -118,7 +114,6 @@ const JobDetailScreen = ({route, navigation}) => {
         return null;
     }
   };
-
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
@@ -131,7 +126,6 @@ const JobDetailScreen = ({route, navigation}) => {
           <View style={styles.companyInfo}>
             <Image source={company.logo} style={styles.logo} />
             {/* {renderTabs()} */}
-
             <Text style={styles.jobTitle}>
               {company.posted_jobs[0]?.job_title}
             </Text>
@@ -147,7 +141,6 @@ const JobDetailScreen = ({route, navigation}) => {
                 {company.posted_jobs[0]?.location}
               </Text>
             </View>
-
             <View style={styles.mainfildContainer}>
               <View style={styles.fildContainer}>
                 <IconButton
@@ -206,7 +199,6 @@ const JobDetailScreen = ({route, navigation}) => {
                 </View>
               </View>
             </View>
-
             <View style={styles.tabContainer}>
               <TouchableOpacity
                 style={[
@@ -247,7 +239,6 @@ const JobDetailScreen = ({route, navigation}) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -262,7 +253,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 12,
     fontWeight: 'bold',
-
     alignSelf: 'center',
     color: '#000',
   },
@@ -414,5 +404,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 export default JobDetailScreen;
