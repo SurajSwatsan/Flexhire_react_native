@@ -2,11 +2,9 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors} from '../Global_CSS/theamColors';
 import {Button} from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-
+import {useNavigation} from '@react-navigation/native';
 
 const UserApplies = () => {
-
   const navigation = useNavigation();
 
   return (
@@ -18,19 +16,18 @@ const UserApplies = () => {
         />
 
         <Text style={styles.textContainer}>You havn't applied yet!</Text>
-        </View>
-        
+      </View>
+
       <View style={styles.bottomTextContainer}>
         <Text style={styles.bottomText}>
-          Search for jobs and start applying. You can track your applications here!
+          Search for jobs and start applying. You can track your applications
+          here!
         </Text>
       </View>
-    
 
       <TouchableOpacity
         style={styles.buttonContainer}
-        onPress={() => navigation.navigate('searchjob',{ query: '' })} 
-        >
+        onPress={() => navigation.navigate('searchjob', {query: ''})}>
         <Text style={styles.buttonText}>Start my job search</Text>
       </TouchableOpacity>
     </View>
@@ -48,8 +45,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ImageContainer: {
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 25,
     textAlign: 'center',
     padding: 5,
@@ -67,16 +64,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomTextContainer: {
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    margin:5,
-    padding:5
-   
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+    padding: 5,
   },
   bottomText: {
-    fontSize: 14, 
-    color: colors.text, 
-    textAlign: 'center', 
+    fontSize: 14,
+    color: colors.textprimary,
+    textAlign: 'center',
     // paddingHorizontal: 10, // Optional: Add padding for text
   },
 
@@ -89,8 +85,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: colors.primary, 
-    fontSize: 14, 
+    color: colors.primary,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
