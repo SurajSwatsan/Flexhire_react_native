@@ -38,8 +38,8 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
               <Image
                 source={
                   company.logo
-                  ? {uri: company.logo} // Use URI if the logo is a valid URL or path
-                  : require('../Assets/Logo/TCS_logo.png') // Fallback to a default image
+                    ? {uri: company.logo} // Use URI if the logo is a valid URL or path
+                    : require('../Assets/Logo/TCS_logo.png') // Fallback to a default image
                 }
                 style={styles.companyImage}
               />
@@ -63,7 +63,7 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
                   ? '#000'
                   : 'gray'
               }
-              size={24}
+              size={28}
               onPress={() => toggleSaveJob(job)}
             />
           </View>
@@ -97,15 +97,22 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
                 style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
               />
 
-              <Text style={styles.jobDetails}>{job.salary_range}</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  margin: 8,
+                }}>
+                <Text style={styles.jobDetails}>{job.salary_range}</Text>
 
-              <Text style={styles.jobPostedDate}>
-                {job.posted_date
-                  ? moment(job.posted_date).isValid()
-                    ? moment(job.posted_date).format('MMMM D, YYYY')
-                    : 'Invalid Date'
-                  : 'Date Unavailable'}
-              </Text>
+                <Text style={styles.jobPostedDate}>
+                  {job.posted_at
+                    ? moment(job.posted_at).isValid()
+                      ? moment(job.posted_at).format('MMMM D, YYYY')
+                      : 'Invalid Date'
+                    : 'January 2024'}
+                </Text>
+              </View>
             </View>
           </View>
         ))}
@@ -147,7 +154,7 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
-    height: 20,
+    // height: 20,
   },
   jobDetailsContainer: {
     margin: 0,

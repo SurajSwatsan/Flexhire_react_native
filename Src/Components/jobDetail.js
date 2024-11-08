@@ -239,9 +239,10 @@ const JobDetailScreen = ({route, navigation}) => {
       </ScrollView>
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.goBack()}>
-          <Text style={styles.closeButtonText}>Go Back</Text>
+          style={styles.applyButton}
+          // onPress={() => navigation.goBack()}
+          >
+          <Text style={styles.applyButtonText}>Apply</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -332,7 +333,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     resizeMode: 'contain',
   },
-  closeButton: {
+  applyButton: {
     marginTop: 24,
     padding: 12,
     backgroundColor: colors.primary,
@@ -340,14 +341,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 12,
   },
-  applyButtonContainer: {
-    backgroundColor: colors.cardcolor,
-    marginBottom: 12,
-    borderTopColor: 'lightgray',
-    borderTopWidth: 1,
-    borderTopLeftRadius: 5,
-  },
-  closeButtonText: {
+ 
+  applyButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
