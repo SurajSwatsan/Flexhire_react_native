@@ -5,8 +5,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   BackHandler,
-  Alert,
 } from 'react-native';
+import {
+  Dialog,
+  Portal,
+  Button,
+  Provider as PaperProvider,
+} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserProfile from '../Common/UserProfile';
 import UserInvites from '../Common/UserInvites';
@@ -17,29 +22,27 @@ import {colors} from '../Global_CSS/theamColors';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
+  const [exitDialogVisible, setExitDialogVisible] = useState(false);
 
   useEffect(() => {
     const handleBackPress = () => {
       if (selectedTab === 'Home') {
-        // If on the Home tab, show exit alert
-        Alert.alert('Exit App', 'Do you want to exit?', [
-          {text: 'Cancel', onPress: () => null, style: 'cancel'},
-          {text: 'YES', onPress: () => BackHandler.exitApp()},
-        ]);
+        // Show dialog when on Home tab
+        setExitDialogVisible(true);
       } else {
-        // If on any other tab, navigate back to Home tab
+        // Navigate back to Home if on another tab
         setSelectedTab('Home');
       }
       return true;
     };
 
-    // Add back button listener
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
-    // Remove listener on component unmount
     return () =>
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
   }, [selectedTab]);
+
+  const hideDialog = () => setExitDialogVisible(false);
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -59,19 +62,47 @@ const CustomBottomTab = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Render the selected screen */}
-      <View style={styles.content}>{renderContent()}</View>
+    <PaperProvider>
+      <View style={styles.container}>
+        <View style={styles.content}>{renderContent()}</View>
+        <View style={styles.tabContainer}>
+          {renderTab('Home', 'home', 'Home')}
+          {renderTab('Applies', 'send', 'Applies')}
+          {renderTab('Invites', 'mail-sharp', 'Invites')}
+          {renderTab('Bookmark', 'bookmark', 'Bookmark')}
+          {renderTab('Profile', 'person-sharp', 'Profile')}
+        </View>
 
-      {/* Bottom Tab Navigation */}
-      <View style={styles.tabContainer}>
-        {renderTab('Home', 'home', 'Home')}
-        {renderTab('Applies', 'send', 'Applies')}
-        {renderTab('Invites', 'mail-sharp', 'Invites')}
-        {renderTab('Bookmark', 'bookmark', 'Bookmark')}
-        {renderTab('Profile', 'person-sharp', 'Profile')}
+        {/* Exit Confirmation Dialog */}
+        <Portal>
+          <Dialog
+            visible={exitDialogVisible}
+            onDismiss={hideDialog}
+            style={styles.dialogContainer}>
+            <Dialog.Title style={styles.dialogTitle}>Exit App</Dialog.Title>
+            <Dialog.Content>
+              <Text style={styles.dialogContent}>
+                Do you really want to exit the app?
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                onPress={hideDialog}
+                style={styles.dialogButton}
+                labelStyle={styles.dialogButtonLabel}>
+                Cancel
+              </Button>
+              <Button
+                onPress={() => BackHandler.exitApp()}
+                style={styles.dialogButton}
+                labelStyle={styles.dialogButtonLabel}>
+                Yes
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
-    </View>
+    </PaperProvider>
   );
 
   function renderTab(tabName, iconName, label) {
@@ -142,6 +173,29 @@ const styles = StyleSheet.create({
   },
   notselectedTab: {
     backgroundColor: colors.primary,
+  },
+
+  // Dialog styles
+  dialogContainer: {
+    backgroundColor: colors.primary, // background color of the dialog
+    borderRadius: 8, // rounded corners
+    paddingHorizontal: 10,
+  },
+  dialogTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.cardcolor, // color for the title text
+  },
+  dialogContent: {
+    fontSize: 16,
+    color: colors.cardcolor, // text color
+    marginVertical: 10,
+  },
+  dialogButton: {
+    marginRight: 10, // spacing between buttons
+  },
+  dialogButtonLabel: {
+    color: colors.cardcolor, // button label color
   },
 });
 

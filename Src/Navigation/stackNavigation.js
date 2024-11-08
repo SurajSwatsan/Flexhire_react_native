@@ -79,11 +79,11 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="JobDetailScreen"
         component={JobDetailScreen}
         options={{headerShown: false}}
-      />
+      /> */}
 
       <Stack.Screen
         name="bookmark"
