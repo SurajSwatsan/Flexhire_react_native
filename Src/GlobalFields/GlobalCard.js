@@ -56,7 +56,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                   ? '#000'
                   : 'gray'
               }
-              size={28}
+              size={24}
               onPress={() => toggleSaveJob(job)}
             />
           </View>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
-    // height: 30,
+    height: 20,
     margin: 0,
   },
   jobContainer: {

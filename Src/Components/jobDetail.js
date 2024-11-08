@@ -1,4 +1,3 @@
-
 import React, {useState} from 'react';
 import {
   View,
@@ -12,6 +11,7 @@ import CustomHeader from './customHeader';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/theamColors';
 import {IconButton} from 'react-native-paper';
+
 const JobDetailScreen = ({route, navigation}) => {
   const {company} = route.params;
   const [activeTab, setActiveTab] = useState('About');
@@ -125,7 +125,14 @@ const JobDetailScreen = ({route, navigation}) => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.companyInfoContainer}>
           <View style={styles.companyInfo}>
-            <Image source={company.logo} style={styles.logo} />
+            <Image
+              source={
+                company.logo
+                  ? {uri: company.logo} // Use URI if the logo is a valid URL or path
+                  : require('../Assets/Logo/TCS_logo.png') // Fallback to a default image
+              }
+              style={styles.logo}
+            />
             {/* {renderTabs()} */}
             <Text style={styles.jobTitle}>
               {company.posted_jobs[0]?.job_title}
@@ -401,4 +408,3 @@ const styles = StyleSheet.create({
   },
 });
 export default JobDetailScreen;
-

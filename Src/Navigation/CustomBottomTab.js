@@ -1,18 +1,15 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Alert,
   BackHandler,
 } from 'react-native';
-import {
-  Dialog,
-  Portal,
-  Button,
-  Provider as PaperProvider,
-} from 'react-native-paper';
+import {Provider as PaperProvider} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useFocusEffect} from '@react-navigation/native';
 import UserProfile from '../Common/UserProfile';
 import UserInvites from '../Common/UserInvites';
 import UserApplies from '../Common/UserApplies';
@@ -22,27 +19,37 @@ import {colors} from '../Global_CSS/theamColors';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
-  const [exitDialogVisible, setExitDialogVisible] = useState(false);
 
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (selectedTab === 'Home') {
-        // Show dialog when on Home tab
-        setExitDialogVisible(true);
-      } else {
-        // Navigate back to Home if on another tab
-        setSelectedTab('Home');
-      }
-      return true;
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        if (selectedTab === 'Home') {
+          Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+            {
+              text: 'No',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ]);
+          return true; // Prevent default behavior
+        } else {
+          setSelectedTab('Home'); // Navigate back to Home tab
+          return true; // Prevent default back action
+        }
+      };
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
 
-    return () =>
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-  }, [selectedTab]);
-
-  const hideDialog = () => setExitDialogVisible(false);
+      return () => backHandler.remove(); // Cleanup on unmount
+    }, [selectedTab]),
+  );
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -72,35 +79,6 @@ const CustomBottomTab = () => {
           {renderTab('Bookmark', 'bookmark', 'Bookmark')}
           {renderTab('Profile', 'person-sharp', 'Profile')}
         </View>
-
-        {/* Exit Confirmation Dialog */}
-        <Portal>
-          <Dialog
-            visible={exitDialogVisible}
-            onDismiss={hideDialog}
-            style={styles.dialogContainer}>
-            <Dialog.Title style={styles.dialogTitle}>Exit App</Dialog.Title>
-            <Dialog.Content>
-              <Text style={styles.dialogContent}>
-                Do you really want to exit the app?
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                onPress={hideDialog}
-                style={styles.dialogButton}
-                labelStyle={styles.dialogButtonLabel}>
-                Cancel
-              </Button>
-              <Button
-                onPress={() => BackHandler.exitApp()}
-                style={styles.dialogButton}
-                labelStyle={styles.dialogButtonLabel}>
-                Yes
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
       </View>
     </PaperProvider>
   );
@@ -115,7 +93,7 @@ const CustomBottomTab = () => {
         onPress={() => setSelectedTab(tabName)}>
         <Ionicons
           name={iconName}
-          size={24}
+          size={18}
           style={
             selectedTab === tabName ? styles.selectedTabicon : styles.tabicon
           }
@@ -143,8 +121,8 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     height: 60,
-    borderTopWidth: 1,
-    borderColor: colors.primary,
+    // borderTopWidth: 1,
+    // borderColor: colors.primary,
     backgroundColor: colors.primary,
   },
   tab: {
@@ -158,7 +136,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   selectedTabText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: colors.primary,
   },
@@ -173,29 +151,6 @@ const styles = StyleSheet.create({
   },
   notselectedTab: {
     backgroundColor: colors.primary,
-  },
-
-  // Dialog styles
-  dialogContainer: {
-    backgroundColor: colors.primary, // background color of the dialog
-    borderRadius: 8, // rounded corners
-    paddingHorizontal: 10,
-  },
-  dialogTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.cardcolor, // color for the title text
-  },
-  dialogContent: {
-    fontSize: 16,
-    color: colors.cardcolor, // text color
-    marginVertical: 10,
-  },
-  dialogButton: {
-    marginRight: 10, // spacing between buttons
-  },
-  dialogButtonLabel: {
-    color: colors.cardcolor, // button label color
   },
 });
 
