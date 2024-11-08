@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 
   iconContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f1f1f1',
     padding: 8,
 
     borderRadius: 30, // Makes the container circular

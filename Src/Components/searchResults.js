@@ -900,11 +900,11 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fff',
     paddingLeft: 10, // Add left padding for better spacing between text and edge
     flex: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+    // shadowColor: '#000',
+    // shadowOffset: {width: 0, height: 4},
+    // shadowOpacity: 0.1,
+    // shadowRadius: 10,
+    // elevation: 5,
     marginRight: 10, // Adds space between the input and the filter button
   },
 
@@ -919,12 +919,12 @@ const styles = StyleSheet.create({
   },
 
   filterContainer: {
-    // backgroundColor: '#fff',
+    backgroundColor: '#fff',
     height: 48,
     width: 48, // Fixed width to match the height of the button
     alignSelf: 'center',
-    borderRadius: 4,
-
+    borderRadius: 8,
+    
     justifyContent: 'center',
     alignItems: 'center', // Ensure the filter icon is centered in the button
   },
