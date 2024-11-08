@@ -1,10 +1,9 @@
-
 import React from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import moment from 'moment';
 import {colors} from '../Global_CSS/theamColors';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
   const getChipStyle = value => {
@@ -26,88 +25,87 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
   return (
     <View key={company.id} style={styles.companyContainer}>
       {/* Company Header: Image, Name, Job Title, and Save Icon */}
-      <TouchableOpacity onPress={()=>navigation.navigate("JobDetailScreen",{company})}>
-      {company.posted_jobs.map(job => (
-        <View key={job.job_title} style={styles.companyHeader}>
-          <View style={styles.companyInfo}>
-            <Image
-              source={
-                companyImages[company.company_name] ||
-                require('../Assets/companyImges/facebook.png')
-              }
-              style={styles.companyImage}
-            />
-            <View>
-              <Text style={styles.jobTitle}>{job.job_title}</Text>
-              <Text style={styles.companyName}>{company.company_name}</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('JobDetailScreen',{company})}>
+        {company.posted_jobs.map(job => (
+          <View key={job.job_title} style={styles.companyHeader}>
+            <View style={styles.companyInfo}>
+              <Image
+                source={
+                  companyImages[company.company_name] ||
+                  require('../Assets/companyImges/facebook.png')
+                }
+                style={styles.companyImage}
+              />
+              <View>
+                <Text style={styles.jobTitle}>{job.job_title}</Text>
+                <Text style={styles.companyName}>{company.company_name}</Text>
+              </View>
             </View>
-          </View>
 
-          {/* Save Job Button */}
-          <IconButton
-            style={styles.saveIcon}
-            icon={
-              savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-                ? 'bookmark'
-                : 'bookmark-outline'
-            }
-            iconColor={
-              savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-                ? '#000'
-                : 'gray'
-            }
-            size={28}
-            onPress={() => toggleSaveJob(job)}
-          />
-        </View>
-      ))}
-
-      {/* Job Details: Type, Experience, Salary */}
-      {company.posted_jobs.map(job => (
-        <View
-          key={job.job_title}
-        //   onPress={() => openJobDetail(job)}
-          >
-          <View style={styles.location}>
+            {/* Save Job Button */}
             <IconButton
-              icon="map-marker"
-              iconColor={colors.primary}
-              size={18}
-              style={{padding: 0, marginLeft: -10, height: 20}}
+              style={styles.saveIcon}
+              icon={
+                savedJobs.some(savedJob => savedJob.job_title === job.job_title)
+                  ? 'bookmark'
+                  : 'bookmark-outline'
+              }
+              iconColor={
+                savedJobs.some(savedJob => savedJob.job_title === job.job_title)
+                  ? '#000'
+                  : 'gray'
+              }
+              size={24}
+              onPress={() => toggleSaveJob(job)}
             />
-            <Text style={styles.jobLocation}>{company.location}</Text>
           </View>
+        ))}
 
-          <View style={styles.jobDetailsContainer}>
-            {/* Display Job Type as Chips */}
-            <View style={styles.chipContainer}>
-              {Array.isArray(job.employment_types) &&
-                job.employment_types.map((type, index) => (
-                  <Text key={index} style={[styles.chip, getChipStyle(type)]}>
-                    {type}
-                  </Text>
-                ))}
+        {/* Job Details: Type, Experience, Salary */}
+        {company.posted_jobs.map(job => (
+          <View
+            key={job.job_title}
+            //   onPress={() => openJobDetail(job)}
+          >
+            <View style={styles.location}>
+              <IconButton
+                icon="map-marker"
+                iconColor={colors.primary}
+                size={18}
+                style={{padding: 0, marginLeft: -10, height: 20}}
+              />
+              <Text style={styles.jobLocation}>{company.location}</Text>
             </View>
 
-            <View
-              style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
-            />
+            <View style={styles.jobDetailsContainer}>
+              {/* Display Job Type as Chips */}
+              <View style={styles.chipContainer}>
+                {Array.isArray(job.employment_types) &&
+                  job.employment_types.map((type, index) => (
+                    <Text key={index} style={[styles.chip, getChipStyle(type)]}>
+                      {type}
+                    </Text>
+                  ))}
+              </View>
 
-            {/* <Text style={styles.jobDetails}>{job.salary}</Text> */}
-            <View style={{justifyContent:'space-between'}}>
-            <Text style={styles.jobPostedDate}>
-            <Text style={styles.jobDetails}>{job.salary}</Text>
-              {job.posted_at
-                ? moment(job.posted_at).isValid()
-                  ? moment(job.posted_at).format('MMMM D, YYYY')
-                  : 'Invalid Date'
-                : 'January 2024'}
-            </Text>
+              <View
+                style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
+              />
+
+              <Text style={styles.jobDetails}>{job.salary}</Text>
+
+              <Text style={styles.jobPostedDate}>
+                {job.posted_at
+                  ? moment(job.posted_at).isValid()
+                    ? moment(job.posted_at).format('MMMM D, YYYY')
+                    : 'Invalid Date'
+                  : 'January 2024'}
+              </Text>
+              {/* </View> */}
             </View>
-            {/* </View> */}
           </View>
-        </View>
-      ))}
+        ))}
       </TouchableOpacity>
     </View>
   );
@@ -115,7 +113,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
 
 const styles = StyleSheet.create({
   companyContainer: {
-    padding: 12,
+    padding: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
     margin: 5,
@@ -148,7 +146,7 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
-    // height: 20,
+    height: 20,
     margin: 0,
   },
   jobContainer: {
@@ -194,8 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     // alignSelf:'flex-end'
-    
-    fontWeight:'bold'
+    fontWeight: 'bold',
   },
   locationContainer: {
     flexDirection: 'row',
@@ -219,10 +216,8 @@ const styles = StyleSheet.create({
   jobPostedDate: {
     fontSize: 12,
     color: '#808080',
-    // textAlign: 'right',
-    // justifyContent:'space-between',
+    textAlign: 'right',
     marginRight: 12,
-    flexDirection:'row',
     // marginTop: 5,
   },
 });
