@@ -4,7 +4,6 @@ import {IconButton} from 'react-native-paper';
 import moment from 'moment';
 import {colors} from '../Global_CSS/theamColors';
 import {useNavigation} from '@react-navigation/native';
-import JobDetailScreen from '../Components/jobDetail';
 
 const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
   const getChipStyle = value => {
@@ -27,7 +26,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
     <View key={company.id} style={styles.companyContainer}>
       {/* Company Header: Image, Name, Job Title, and Save Icon */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('JobDetailScreen', {company})}>
+        onPress={() => navigation.navigate('JobDetailScreen',{company})}>
         {company.posted_jobs.map(job => (
           <View key={job.job_title} style={styles.companyHeader}>
             <View style={styles.companyInfo}>
