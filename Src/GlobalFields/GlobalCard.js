@@ -1,334 +1,3 @@
-// import React from 'react';
-// import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
-// import {IconButton} from 'react-native-paper';
-// import moment from 'moment';
-// import {colors} from '../Global_CSS/theamColors';
-// <<<<<<< HEAD
-// import { useNavigation } from '@react-navigation/native';
-// =======
-// import {useNavigation} from '@react-navigation/native';
-// import JobDetailScreen from '../Components/jobDetail';
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-
-// const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
-//   const getChipStyle = value => {
-//     switch (value) {
-//       case 'Full-time':
-//         return styles.fullTimeChip;
-//       case 'Part-time':
-//         return styles.partTimeChip;
-//       case 'Contract':
-//         return styles.contractChip;
-//       case 'Internship':
-//         return styles.internshipChip;
-//       default:
-//         return styles.defaultChip;
-//     }
-//   };
-//   const navigation = useNavigation();
-
-//   return (
-//     <View key={company.id} style={styles.companyContainer}>
-//       {/* Company Header: Image, Name, Job Title, and Save Icon */}
-// <<<<<<< HEAD
-//       <TouchableOpacity onPress={()=>navigation.navigate("JobDetailScreen",{company})}>
-//       {company.posted_jobs.map(job => (
-//         <View key={job.job_title} style={styles.companyHeader}>
-//           <View style={styles.companyInfo}>
-//             <Image
-//               source={
-//                 companyImages[company.company_name] ||
-//                 require('../Assets/companyImges/facebook.png')
-//               }
-//               style={styles.companyImage}
-//             />
-//             <View>
-//               <Text style={styles.jobTitle}>{job.job_title}</Text>
-//               <Text style={styles.companyName}>{company.company_name}</Text>
-// =======
-//       <TouchableOpacity
-//         onPress={() => navigation.navigate('JobDetailScreen', {company})}>
-//         {company.posted_jobs.map(job => (
-//           <View key={job.job_title} style={styles.companyHeader}>
-//             <View style={styles.companyInfo}>
-//               <Image
-//                 source={
-//                   companyImages[company.company_name] ||
-//                   require('../Assets/companyImges/facebook.png')
-//                 }
-//                 style={styles.companyImage}
-//               />
-//               <View>
-//                 <Text style={styles.jobTitle}>{job.job_title}</Text>
-//                 <Text style={styles.companyName}>{company.company_name}</Text>
-//               </View>
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//             </View>
-
-// <<<<<<< HEAD
-//           {/* Save Job Button */}
-//           <IconButton
-//             style={styles.saveIcon}
-//             icon={
-//               savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-//                 ? 'bookmark'
-//                 : 'bookmark-outline'
-//             }
-//             iconColor={
-//               savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-//                 ? '#000'
-//                 : 'gray'
-//             }
-//             size={28}
-//             onPress={() => toggleSaveJob(job)}
-//           />
-//         </View>
-//       ))}
-
-//       {/* Job Details: Type, Experience, Salary */}
-//       {company.posted_jobs.map(job => (
-//         <View
-//           key={job.job_title}
-//         //   onPress={() => openJobDetail(job)}
-//           >
-//           <View style={styles.location}>
-// =======
-//             {/* Save Job Button */}
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//             <IconButton
-//               style={styles.saveIcon}
-//               icon={
-//                 savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-//                   ? 'bookmark'
-//                   : 'bookmark-outline'
-//               }
-//               iconColor={
-//                 savedJobs.some(savedJob => savedJob.job_title === job.job_title)
-//                   ? '#000'
-//                   : 'gray'
-//               }
-//               size={24}
-//               onPress={() => toggleSaveJob(job)}
-//             />
-//           </View>
-//         ))}
-
-// <<<<<<< HEAD
-//           <View style={styles.jobDetailsContainer}>
-//             {/* Display Job Type as Chips */}
-//             <View style={styles.chipContainer}>
-//               {Array.isArray(job.employment_types) &&
-//                 job.employment_types.map((type, index) => (
-//                   <Text key={index} style={[styles.chip, getChipStyle(type)]}>
-//                     {type}
-//                   </Text>
-//                 ))}
-//             </View>
-
-//             <View
-//               style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
-//             />
-
-//             {/* <Text style={styles.jobDetails}>{job.salary}</Text> */}
-//             <View style={{justifyContent:'space-between'}}>
-//             <Text style={styles.jobPostedDate}>
-//             <Text style={styles.jobDetails}>{job.salary}</Text>
-//               {job.posted_at
-//                 ? moment(job.posted_at).isValid()
-//                   ? moment(job.posted_at).format('MMMM D, YYYY')
-//                   : 'Invalid Date'
-//                 : 'January 2024'}
-//             </Text>
-//             </View>
-//             {/* </View> */}
-//           </View>
-//         </View>
-//       ))}
-// =======
-//         {/* Job Details: Type, Experience, Salary */}
-//         {company.posted_jobs.map(job => (
-//           <View
-//             key={job.job_title}
-//             //   onPress={() => openJobDetail(job)}
-//           >
-//             <View style={styles.location}>
-//               <IconButton
-//                 icon="map-marker"
-//                 iconColor={colors.primary}
-//                 size={18}
-//                 style={{padding: 0, marginLeft: -10, height: 20}}
-//               />
-//               <Text style={styles.jobLocation}>{company.location}</Text>
-//             </View>
-
-//             <View style={styles.jobDetailsContainer}>
-//               {/* Display Job Type as Chips */}
-//               <View style={styles.chipContainer}>
-//                 {Array.isArray(job.employment_types) &&
-//                   job.employment_types.map((type, index) => (
-//                     <Text key={index} style={[styles.chip, getChipStyle(type)]}>
-//                       {type}
-//                     </Text>
-//                   ))}
-//               </View>
-
-//               <View
-//                 style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
-//               />
-
-//               <Text style={styles.jobDetails}>{job.salary}</Text>
-
-//               <Text style={styles.jobPostedDate}>
-//                 {job.posted_at
-//                   ? moment(job.posted_at).isValid()
-//                     ? moment(job.posted_at).format('MMMM D, YYYY')
-//                     : 'Invalid Date'
-//                   : 'January 2024'}
-//               </Text>
-//               {/* </View> */}
-//             </View>
-//           </View>
-//         ))}
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   companyContainer: {
-// <<<<<<< HEAD
-//     padding: 12,
-// =======
-//     padding: 5,
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//     backgroundColor: '#fff',
-//     borderRadius: 10,
-//     margin: 5,
-//   },
-//   companyHeader: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     margin: 0,
-//     padding: 0,
-//   },
-//   companyInfo: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   companyImage: {
-//     width: 42,
-//     height: 42,
-//     borderRadius: 8,
-//     marginRight: 10,
-//   },
-//   companyName: {
-//     fontSize: 12,
-//     color: 'gray',
-//   },
-//   jobTitle: {
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//     color: '#000',
-//   },
-//   saveIcon: {
-//     alignSelf: 'center',
-//     // height: 20,
-//     margin: 0,
-//   },
-//   jobContainer: {
-//     color: '#000',
-//     marginLeft: 0,
-//     width: '100%',
-//   },
-//   jobDetailsContainer: {
-//     margin: 0,
-//     padding: 0,
-//   },
-//   chipContainer: {
-//     flexDirection: 'row',
-//     flexWrap: 'wrap',
-//     marginTop: 8,
-//     margin: 5,
-//     gap: 8,
-//   },
-//   chip: {
-//     fontSize: 12,
-//     paddingVertical: 6,
-//     paddingHorizontal: 12,
-//     borderRadius: 5,
-//     textAlign: 'center',
-//     color: '#000', // White text for chips
-//   },
-//   fullTimeChip: {
-//     backgroundColor: '#f2f2f2', // Green for Full-time
-//   },
-//   partTimeChip: {
-//     backgroundColor: '#f2f2f2', // Blue for Part-time
-//   },
-//   contractChip: {
-//     backgroundColor: '#f2f2f2', // Orange for Contract
-//   },
-//   internshipChip: {
-//     backgroundColor: '#f2f2f2', // Purple for Internship
-//   },
-//   defaultChip: {
-//     backgroundColor: '#f2f2f2', // Gray for any undefined type
-//   },
-//   jobDetails: {
-//     fontSize: 12,
-//     color: 'gray',
-//     // alignSelf:'flex-end'
-// <<<<<<< HEAD
-    
-//     fontWeight:'bold'
-// =======
-//     fontWeight: 'bold',
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//   },
-//   locationContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     width: '100%',
-//     height: 32,
-//   },
-//   location: {
-//     flexDirection: 'row',
-//     gap: 5,
-//     alignItems: 'center',
-//     marginLeft: 0, // No margin here
-//     paddingLeft: 0, // No padding here
-//   },
-//   jobLocation: {
-//     fontSize: 12,
-//     color: '#808080',
-//     marginLeft: -12,
-//   },
-//   jobPostedDate: {
-//     fontSize: 12,
-//     color: '#808080',
-//     // textAlign: 'right',
-//     // justifyContent:'space-between',
-//     marginRight: 12,
-// <<<<<<< HEAD
-//     flexDirection:'row',
-// =======
-// >>>>>>> eb6e036c1e5ae742fb169821398291c4621ec57a
-//     // marginTop: 5,
-//   },
-// });
-
-// const companyImages = {
-//   'Tech Innovations': require('../Assets/companyImges/google_icon.png'),
-//   'Creative Solutions': require('../Assets/companyImges/facebook.png'),
-//   'HealthTech Solutions': require('../Assets/companyImges/linkedin_icon.png'),
-//   'EcoFriendly Products': require('../Assets/companyImges/microsoft.png'),
-//   'Smart Home Solutions': require('../Assets/companyImges/TCS_logo.png'),
-// };
-
-// export default CompanyCard;
 
 import React from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
@@ -336,8 +5,7 @@ import {IconButton} from 'react-native-paper';
 import moment from 'moment';
 import {colors} from '../Global_CSS/theamColors';
 import { useNavigation } from '@react-navigation/native';
-import JobDetailScreen from '../Components/jobDetail';
- 
+
 const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
   const getChipStyle = value => {
     switch (value) {
@@ -354,11 +22,11 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
     }
   };
   const navigation = useNavigation();
- 
+
   return (
     <View key={company.id} style={styles.companyContainer}>
       {/* Company Header: Image, Name, Job Title, and Save Icon */}
-      <TouchableOpacity onPress={navigation.navigate("JobDetailScreen",{company})}>
+      <TouchableOpacity onPress={()=>navigation.navigate("JobDetailScreen",{company})}>
       {company.posted_jobs.map(job => (
         <View key={job.job_title} style={styles.companyHeader}>
           <View style={styles.companyInfo}>
@@ -374,7 +42,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
               <Text style={styles.companyName}>{company.company_name}</Text>
             </View>
           </View>
- 
+
           {/* Save Job Button */}
           <IconButton
             style={styles.saveIcon}
@@ -388,12 +56,12 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                 ? '#000'
                 : 'gray'
             }
-            size={24}
+            size={28}
             onPress={() => toggleSaveJob(job)}
           />
         </View>
       ))}
- 
+
       {/* Job Details: Type, Experience, Salary */}
       {company.posted_jobs.map(job => (
         <View
@@ -409,7 +77,7 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
             />
             <Text style={styles.jobLocation}>{company.location}</Text>
           </View>
- 
+
           <View style={styles.jobDetailsContainer}>
             {/* Display Job Type as Chips */}
             <View style={styles.chipContainer}>
@@ -420,20 +88,22 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
                   </Text>
                 ))}
             </View>
- 
+
             <View
               style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
             />
- 
-            <Text style={styles.jobDetails}>{job.salary}</Text>
- 
+
+            {/* <Text style={styles.jobDetails}>{job.salary}</Text> */}
+            <View style={{justifyContent:'space-between'}}>
             <Text style={styles.jobPostedDate}>
+            <Text style={styles.jobDetails}>{job.salary}</Text>
               {job.posted_at
                 ? moment(job.posted_at).isValid()
                   ? moment(job.posted_at).format('MMMM D, YYYY')
                   : 'Invalid Date'
                 : 'January 2024'}
             </Text>
+            </View>
             {/* </View> */}
           </View>
         </View>
@@ -442,10 +112,10 @@ const CompanyCard = ({company, savedJobs, toggleSaveJob}) => {
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   companyContainer: {
-    padding: 5,
+    padding: 12,
     backgroundColor: '#fff',
     borderRadius: 10,
     margin: 5,
@@ -478,7 +148,7 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
-    height: 20,
+    // height: 20,
     margin: 0,
   },
   jobContainer: {
@@ -524,6 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     // alignSelf:'flex-end'
+    
     fontWeight:'bold'
   },
   locationContainer: {
@@ -548,12 +219,14 @@ const styles = StyleSheet.create({
   jobPostedDate: {
     fontSize: 12,
     color: '#808080',
-    textAlign: 'right',
+    // textAlign: 'right',
+    // justifyContent:'space-between',
     marginRight: 12,
+    flexDirection:'row',
     // marginTop: 5,
   },
 });
- 
+
 const companyImages = {
   'Tech Innovations': require('../Assets/companyImges/google_icon.png'),
   'Creative Solutions': require('../Assets/companyImges/facebook.png'),
@@ -561,5 +234,5 @@ const companyImages = {
   'EcoFriendly Products': require('../Assets/companyImges/microsoft.png'),
   'Smart Home Solutions': require('../Assets/companyImges/TCS_logo.png'),
 };
- 
+
 export default CompanyCard;
