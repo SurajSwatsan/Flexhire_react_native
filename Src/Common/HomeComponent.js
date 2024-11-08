@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
 import JobbasedonProfile from '../Components/JobbasedonProfile';
 import JobbasedonPreferences from '../Components/JobbasedonPreferences';
@@ -16,29 +16,39 @@ import CompanysList from '../Components/CompanysList';
 import {colors} from '../Global_CSS/theamColors';
 
 const HomeComponent = ({jobsData}) => {
-  // useEffect(() => {
-  //   const backAction = () => {
-  //     Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-  //       {
-  //         text: 'Cancel',
-  //         onPress: () => null,
-  //         style: 'cancel',
-  //       },
-  //       {text: 'YES', onPress: () => BackHandler.exitApp()},
-  //     ]);
-  //     return true; // Prevent default back action
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     backAction,
-  //   );
-
-  //   return () => backHandler.remove(); // Cleanup listener on unmount
-  // }, []);
-
   const navigation = useNavigation();
   const [query, setQuery] = useState('');
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        if (navigation.isFocused()) {
+          Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+            {
+              text: 'No',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ]);
+          return true; // Prevent the default back action
+        } else {
+          // Allow the default goBack() action for other tabs or components
+          return false; // Allow default behavior if not on this component
+        }
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      return () => backHandler.remove(); // Cleanup listener on unmount
+    }, [navigation]),
+  );
 
   const handleSearch = () => {
     navigation.navigate('searchjob', {query});
@@ -88,7 +98,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bacground,
   },
   container: {
-    // paddingTop: 4,
     backgroundColor: colors.primary,
     height: 90,
     borderBottomRightRadius: 20,

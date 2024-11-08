@@ -12,6 +12,7 @@ import CustomHeader from './customHeader';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/theamColors';
 import {IconButton} from 'react-native-paper';
+
 const JobDetailScreen = ({route, navigation}) => {
   const {company} = route.params;
   const [activeTab, setActiveTab] = useState('About');
