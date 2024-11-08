@@ -22,7 +22,6 @@ const Data = [
   {
     id: 1,
     company_name: 'Tech Innovations',
-
     about:
       'Tech Innovations is a leading software development company specializing in creating cutting-edge technology solutions.',
     logo: require('../Assets/companyImges/google_icon.png'),
@@ -35,6 +34,7 @@ const Data = [
       {
         id: 1,
         job_title: 'Software Engineer',
+        // "company_name": "GreenWorld Corp.",
         rating: 4.5,
         reviews: 120,
         required_experience: '3-5 years',
@@ -121,8 +121,7 @@ const Data = [
   {
     id: 3,
     company_name: 'HealthTech Solutions',
-
-    about:
+about:
       'HealthTech Solutions aims to revolutionize the healthcare industry through innovative software applications.',
     logo: require('../Assets/companyImges/linkedin_icon.png'),
     recruiter_name: 'Michael Brown',
@@ -709,7 +708,7 @@ const SearchJobScreen = ({navigation, route}) => {
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
-        <Text style={{color: 'black', fontSize: 16, fontWeight: 'bold'}}>
+        {/* <Text style={{color: 'black', fontSize: 16, fontWeight: 'bold'}}>
           BookMark
         </Text>
         <IconButton
@@ -717,7 +716,7 @@ const SearchJobScreen = ({navigation, route}) => {
           iconColor="#000"
           size={30}
           onPress={() => navigation.navigate('bookmark')}
-        />
+        /> */}
       </View>
 
       <ScrollView>
@@ -815,7 +814,8 @@ const SearchJobScreen = ({navigation, route}) => {
                 }
               />
             </View>
-
+            
+      
             <Text style={{color: 'black'}}>Location</Text>
             <Picker
               selectedValue={filterLocation}
@@ -885,7 +885,8 @@ const SearchJobScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
+    // padding: 12,
+    marginHorizontal:12,
 
     backgroundColor: '#f1f1f1',
   },
