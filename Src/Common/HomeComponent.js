@@ -16,26 +16,26 @@ import CompanysList from '../Components/CompanysList';
 import {colors} from '../Global_CSS/theamColors';
 
 const HomeComponent = ({jobsData}) => {
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {text: 'YES', onPress: () => BackHandler.exitApp()},
-      ]);
-      return true; // Prevent default back action
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+  //       {
+  //         text: 'Cancel',
+  //         onPress: () => null,
+  //         style: 'cancel',
+  //       },
+  //       {text: 'YES', onPress: () => BackHandler.exitApp()},
+  //     ]);
+  //     return true; // Prevent default back action
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction,
+  //   );
 
-    return () => backHandler.remove(); // Cleanup listener on unmount
-  }, []);
+  //   return () => backHandler.remove(); // Cleanup listener on unmount
+  // }, []);
 
   const navigation = useNavigation();
   const [query, setQuery] = useState('');
