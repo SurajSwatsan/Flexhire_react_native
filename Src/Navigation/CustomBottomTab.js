@@ -93,7 +93,7 @@ const CustomBottomTab = () => {
         onPress={() => setSelectedTab(tabName)}>
         <Ionicons
           name={iconName}
-          size={24}
+          size={18}
           style={
             selectedTab === tabName ? styles.selectedTabicon : styles.tabicon
           }
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     height: 60,
-    borderTopWidth: 1,
-    borderColor: colors.primary,
+    // borderTopWidth: 1,
+    // borderColor: colors.primary,
     backgroundColor: colors.primary,
   },
   tab: {
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   selectedTabText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: colors.primary,
   },

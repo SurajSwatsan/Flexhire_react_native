@@ -34,10 +34,9 @@ const HomeComponent = ({jobsData}) => {
               onPress: () => BackHandler.exitApp(),
             },
           ]);
-          return true; // Prevent the default back action
+          return true;
         } else {
-          // Allow the default goBack() action for other tabs or components
-          return false; // Allow default behavior if not on this component
+          return false;
         }
       };
 
