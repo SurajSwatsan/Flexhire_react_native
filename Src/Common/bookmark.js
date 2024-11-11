@@ -1,15 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import CustomHeader from '../Components/customHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CompanyCard from '../GlobalFields/GlobalCard';
 import {colors} from '../Global_CSS/theamColors';
 
-const BookmarkScreen = ({route, navigation}) => {
+const BookmarkScreen = ({navigation}) => {
   const [savedJobs, setSavedJobs] = useState([]);
-  const [unsavedJobs, setUnsavedJobs] = useState([]); // Unsaved jobs
 
-  // Load saved jobs from AsyncStorage when the screen is mounted
   useEffect(() => {
     const loadSavedJobs = async () => {
       try {
@@ -24,15 +22,11 @@ const BookmarkScreen = ({route, navigation}) => {
     loadSavedJobs();
   }, []);
 
-  // Remove job from saved jobs and move it to unsaved jobs
   const removeJobFromSaved = async jobToRemove => {
     const updatedSavedJobs = savedJobs.filter(
       job => job.job_title !== jobToRemove.job_title,
     );
     setSavedJobs(updatedSavedJobs);
-
-    // Move job to unsavedJobs state
-    setUnsavedJobs(prevUnsavedJobs => [...prevUnsavedJobs, jobToRemove]);
 
     try {
       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
@@ -43,27 +37,25 @@ const BookmarkScreen = ({route, navigation}) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.innerContainer}>
-        <ScrollView>
-          {savedJobs.length > 0 ? (
-            savedJobs.map((job, index) => (
-              <CompanyCard
-                key={index}
-                company={{
-                  posted_jobs: [job],
-                  company_name: job.company_name,
-                  logo: job.logo,
-                  location: job.location,
-                }}
-                savedJobs={savedJobs}
-                toggleSaveJob={removeJobFromSaved}
-              />
-            ))
-          ) : (
-            <Text style={styles.noJobsText}>No saved jobs</Text>
-          )}
-        </ScrollView>
-      </View>
+      <ScrollView>
+        {savedJobs.length > 0 ? (
+          savedJobs.map((job, index) => (
+            <CompanyCard
+              key={index}
+              company={{
+                posted_jobs: [job],
+                company_name: job.company_name,
+                logo: job.logo,
+                location: job.location,
+              }}
+              savedJobs={savedJobs}
+              toggleSaveJob={() => removeJobFromSaved(job)}
+            />
+          ))
+        ) : (
+          <Text style={styles.noJobsText}>No saved jobs</Text>
+        )}
+      </ScrollView>
     </View>
   );
 };
@@ -73,9 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bacground,
     width: '100%',
-  },
-  innerContainer: {
-    margin: 12,
+    padding: 12,
   },
   noJobsText: {
     fontSize: 18,
