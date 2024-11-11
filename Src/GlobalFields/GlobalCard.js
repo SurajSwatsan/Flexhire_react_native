@@ -5,15 +5,15 @@ import moment from 'moment';
 import { colors } from '../Global_CSS/theamColors';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+ 
 const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
-
+ 
   useEffect(() => {
     loadSavedJobs();
   }, []);
-
+ 
   const loadSavedJobs = async () => {
     try {
       const storedJobs = await AsyncStorage.getItem('savedJobs');
@@ -24,7 +24,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
       console.error('Failed to load saved jobs', error);
     }
   };
-
+ 
   const handleToggleSaveJob = async job => {
     try {
       const jobWithDetails = {
@@ -33,11 +33,11 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
         location: company.location,
         logo: company.logo,
       };
-
+ 
       const isJobSaved = localSavedJobs.some(
         savedJob => savedJob.job_title === job.job_title
       );
-
+ 
       let updatedJobs;
       if (isJobSaved) {
         updatedJobs = localSavedJobs.filter(
@@ -49,17 +49,17 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
         updatedJobs = [...localSavedJobs, jobWithDetails];
         setLocalSavedJobs(updatedJobs);
       }
-
+ 
       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
     } catch (error) {
       console.error('Failed to save or remove job', error);
     }
   };
-
+ 
   if (!company || !Array.isArray(company.posted_jobs)) {
     return <Text style={styles.errorText}>Invalid company data</Text>;
   }
-
+ 
   const getChipStyle = value => {
     switch (value) {
       case 'Full-time':
@@ -74,17 +74,12 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
         return styles.defaultChip;
     }
   };
-
+ 
   return (
     <View key={company.id} style={styles.companyContainer}>
-<<<<<<< HEAD
-      <TouchableOpacity 
-        onPress={() => navigation.navigate('JobDetailScreen', {company})}>
-=======
       <TouchableOpacity
         style={{ marginHorizontal: 8 }}
         onPress={() => navigation.navigate('JobDetailScreen', { company })}>
->>>>>>> 2a99c4e519a7a10e704e3eac9dfab2b7610e221a
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={jobIndex} style={styles.companyHeader}>
             <View style={styles.companyInfo}>
@@ -101,7 +96,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
                 <Text style={styles.companyName}>{company.company_name}</Text>
               </View>
             </View>
-
+ 
             <IconButton
               style={styles.saveIcon}
               icon={
@@ -125,7 +120,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
             />
           </View>
         ))}
-
+ 
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={`details-${jobIndex}`}>
             <View style={styles.location}>
@@ -137,7 +132,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
               />
               <Text style={styles.jobLocation}>{company.location}</Text>
             </View>
-
+ 
             <View style={styles.jobDetailsContainer}>
               <View style={styles.chipContainer}>
                 {Array.isArray(job.job_type) &&
@@ -149,11 +144,11 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
                     </Text>
                   ))}
               </View>
-
+ 
               <View
                 style={{ height: 0.5, backgroundColor: 'lightgray', margin: 5 }}
               />
-
+ 
               <View
                 style={{
                   flexDirection: 'row',
@@ -161,7 +156,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
                   margin: 8,
                 }}>
                 <Text style={styles.jobDetails}>{job.salary_range}</Text>
-
+ 
                 <Text style={styles.jobPostedDate}>
                   {job.posted_at
                     ? moment(job.posted_at).isValid()
@@ -177,7 +172,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   companyContainer: {
     padding: 5,
@@ -274,5 +269,5 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
-
+ 
 export default CompanyCard;

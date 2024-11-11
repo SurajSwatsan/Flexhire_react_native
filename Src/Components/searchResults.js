@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import CompanyCard from '../GlobalFields/GlobalCard';
 import {jobPost} from '../Redux/Action/JobAction';
 import {Dropdown} from 'react-native-element-dropdown';
-
+ 
 const SearchJobScreen = ({navigation, route}) => {
   const isFocused = useIsFocused();
   const {query} = route.params;
@@ -26,7 +26,7 @@ const SearchJobScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [savedJobs, setSavedJobs] = useState([]);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-
+ 
   // Filter states
   const [filterJobType, setFilterJobType] = useState([]);
   const [filterLocation, setFilterLocation] = useState([]);
@@ -37,17 +37,17 @@ const SearchJobScreen = ({navigation, route}) => {
   });
   const [locationOptions, setLocationOptions] = useState([]);
   const [industryOptions, setIndustryOptions] = useState([]);
-
+ 
   const dispatch = useDispatch();
-
+ 
   // Load company data into the Redux store when the component mounts
   useEffect(() => {
     dispatch(jobPost());
   }, [dispatch]);
-
+ 
   // Access jobs data from the Redux store
   const company = useSelector(state => state.Jobs.jobsData);
-
+ 
   useEffect(() => {
     setResults(company);
     setLocationOptions(
@@ -61,14 +61,14 @@ const SearchJobScreen = ({navigation, route}) => {
         : [],
     );
   }, [company]);
-
+ 
   useEffect(() => {
     filterJobs(searchTerm);
   }, [searchTerm, filterJobType, filterLocation, filterIndustry, company]);
-
+ 
   const filterJobs = term => {
     if (!company || company.length === 0) return;
-
+ 
     setLoading(true);
     const filteredJobs = company.filter(comp => {
       const jobMatches =
@@ -76,33 +76,33 @@ const SearchJobScreen = ({navigation, route}) => {
         comp.posted_jobs.some(job =>
           job.job_title.toLowerCase().includes(term.toLowerCase()),
         );
-
+ 
       const jobTypeMatches =
         filterJobType.length > 0
           ? comp.posted_jobs.some(job => filterJobType.includes(job.job_type))
           : true;
-
+ 
       const locationMatches =
         filterLocation.length > 0
           ? filterLocation.includes(comp.location)
           : true;
-
+ 
       const industryMatches =
         filterIndustry.length > 0
           ? filterIndustry.includes(comp.industry)
           : true;
-
+ 
       const salaryMatches = comp.posted_jobs.some(job => {
         const jobSalary = job.salary_range
           ? job.salary_range.replace(/[^0-9.-]+/g, '') // Remove non-numeric characters
           : 0;
         const salary = parseInt(jobSalary, 10);
-
+ 
         return (
           salary >= filterSalaryRange.min && salary <= filterSalaryRange.max
         );
       });
-
+ 
       return (
         jobMatches &&
         jobTypeMatches &&
@@ -111,48 +111,25 @@ const SearchJobScreen = ({navigation, route}) => {
         salaryMatches
       );
     });
-
+ 
     setResults(filteredJobs);
     setLoading(false);
   };
-
+ 
   const handleFilterChange = (value, filterSetter, currentFilter) => {
     if (currentFilter.includes(value)) {
       filterSetter(currentFilter.filter(item => item !== value));
     } else {
       filterSetter([...currentFilter, value]);
     }
-<<<<<<< HEAD
-
-    setSavedJobs(updatedSavedJobs);
-    saveJobsToStorage(updatedSavedJobs);
   };
-
-  const saveJobsToStorage = async (jobs) => {
-    try {
-      await AsyncStorage.setItem('savedJobs', JSON.stringify(jobs));
-    } catch (error) {
-      console.error('Failed to save jobs to AsyncStorage', error);
-    }
-  };
-
-  // const getUniqueLocations = () => {
-  //   return company ? [...new Set(company.map((comp) => comp.location))] : [];
-  // };
-
-  // const getUniqueIndustries = () => {
-  //   return company ? [...new Set(company.map((comp) => comp.industry))] : [];
-  // };
-=======
-  };
->>>>>>> 2a99c4e519a7a10e704e3eac9dfab2b7610e221a
-
+ 
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
       </View>
-
+ 
       <ScrollView>
         <View style={styles.fixedSearchBar}>
           <TextInput
@@ -171,7 +148,7 @@ const SearchJobScreen = ({navigation, route}) => {
             />
           </View>
         </View>
-
+ 
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : results.length > 0 ? (
@@ -192,7 +169,7 @@ const SearchJobScreen = ({navigation, route}) => {
           </View>
         )}
       </ScrollView>
-
+ 
       <Modal
         transparent={true}
         animationType="slide"
@@ -201,7 +178,7 @@ const SearchJobScreen = ({navigation, route}) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Filter Jobs</Text>
-
+ 
             <Text style={{color: 'black'}}>Job Type</Text>
             <View style={styles.checkboxContainer}>
               {['Onsite', 'Remote', 'Hybrid'].map(type => (
@@ -248,7 +225,7 @@ const SearchJobScreen = ({navigation, route}) => {
               onChange={item => setFilterIndustry(item.value)}
               multiple={true}
             />
-
+ 
             <TouchableOpacity
               style={styles.applyButton}
               onPress={() => {
@@ -268,7 +245,7 @@ const SearchJobScreen = ({navigation, route}) => {
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -376,5 +353,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-
+ 
 export default SearchJobScreen;
