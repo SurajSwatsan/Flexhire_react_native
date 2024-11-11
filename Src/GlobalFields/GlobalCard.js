@@ -1,13 +1,60 @@
-import React from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
-import {IconButton} from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { IconButton } from 'react-native-paper';
 import moment from 'moment';
-import {colors} from '../Global_CSS/theamColors';
-import {useNavigation} from '@react-navigation/native';
+import { colors } from '../Global_CSS/theamColors';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
+const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
   const navigation = useNavigation();
-  console.log(company);
+  const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
+
+  useEffect(() => {
+    loadSavedJobs();
+  }, []);
+
+  const loadSavedJobs = async () => {
+    try {
+      const storedJobs = await AsyncStorage.getItem('savedJobs');
+      if (storedJobs !== null) {
+        setLocalSavedJobs(JSON.parse(storedJobs));
+      }
+    } catch (error) {
+      console.error('Failed to load saved jobs', error);
+    }
+  };
+
+  const handleToggleSaveJob = async job => {
+    try {
+      const jobWithDetails = {
+        ...job,
+        company_name: company.company_name,
+        location: company.location,
+        logo: company.logo,
+      };
+
+      const isJobSaved = localSavedJobs.some(
+        savedJob => savedJob.job_title === job.job_title
+      );
+
+      let updatedJobs;
+      if (isJobSaved) {
+        updatedJobs = localSavedJobs.filter(
+          savedJob => savedJob.job_title !== job.job_title
+        );
+        setLocalSavedJobs(updatedJobs);
+        if (toggleSaveJob) toggleSaveJob(job);
+      } else {
+        updatedJobs = [...localSavedJobs, jobWithDetails];
+        setLocalSavedJobs(updatedJobs);
+      }
+
+      await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
+    } catch (error) {
+      console.error('Failed to save or remove job', error);
+    }
+  };
 
   if (!company || !Array.isArray(company.posted_jobs)) {
     return <Text style={styles.errorText}>Invalid company data</Text>;
@@ -30,16 +77,22 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
 
   return (
     <View key={company.id} style={styles.companyContainer}>
+<<<<<<< HEAD
       <TouchableOpacity 
         onPress={() => navigation.navigate('JobDetailScreen', {company})}>
+=======
+      <TouchableOpacity
+        style={{ marginHorizontal: 8 }}
+        onPress={() => navigation.navigate('JobDetailScreen', { company })}>
+>>>>>>> 2a99c4e519a7a10e704e3eac9dfab2b7610e221a
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={jobIndex} style={styles.companyHeader}>
             <View style={styles.companyInfo}>
               <Image
                 source={
                   company.logo
-                    ? {uri: company.logo} // Use URI if the logo is a valid URL or path
-                    : require('../Assets/Logo/TCS_logo.png') // Fallback to a default image
+                    ? { uri: company.logo }
+                    : require('../Assets/Logo/TCS_logo.png')
                 }
                 style={styles.companyImage}
               />
@@ -52,19 +105,23 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
             <IconButton
               style={styles.saveIcon}
               icon={
-                Array.isArray(savedJobs) &&
-                savedJobs.some(savedJob => savedJob.job_title === job.job_title)
+                Array.isArray(localSavedJobs) &&
+                localSavedJobs.some(
+                  savedJob => savedJob.job_title === job.job_title
+                )
                   ? 'bookmark'
                   : 'bookmark-outline'
               }
               iconColor={
-                Array.isArray(savedJobs) &&
-                savedJobs.some(savedJob => savedJob.job_title === job.job_title)
+                Array.isArray(localSavedJobs) &&
+                localSavedJobs.some(
+                  savedJob => savedJob.job_title === job.job_title
+                )
                   ? '#000'
                   : 'gray'
               }
               size={28}
-              onPress={() => toggleSaveJob(job)}
+              onPress={() => handleToggleSaveJob(job)}
             />
           </View>
         ))}
@@ -76,7 +133,7 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
                 icon="map-marker"
                 iconColor={colors.primary}
                 size={18}
-                style={{padding: 0, marginLeft: -10, height: 20}}
+                style={{ padding: 0, marginLeft: -10, height: 20 }}
               />
               <Text style={styles.jobLocation}>{company.location}</Text>
             </View>
@@ -94,7 +151,7 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
               </View>
 
               <View
-                style={{height: 0.5, backgroundColor: 'lightgray', margin: 5}}
+                style={{ height: 0.5, backgroundColor: 'lightgray', margin: 5 }}
               />
 
               <View

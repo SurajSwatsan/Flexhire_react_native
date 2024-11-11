@@ -833,9 +833,13 @@ const JobDetailScreen = ({route, navigation}) => {
         <TouchableOpacity
           style={styles.applyButton}
           // onPress={() => navigation.goBack()}
+<<<<<<< HEAD
           onPress={handleApplyPress} 
           
           >
+=======
+        >
+>>>>>>> 2a99c4e519a7a10e704e3eac9dfab2b7610e221a
           <Text style={styles.applyButtonText}>Apply</Text>
         </TouchableOpacity>
       </View>
@@ -935,7 +939,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 12,
   },
- 
+
   applyButtonText: {
     color: 'white',
     fontWeight: 'bold',

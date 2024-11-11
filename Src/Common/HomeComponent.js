@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
-import JobbasedonProfile from '../Components/JobbasedonProfile';
 import JobbasedonPreferences from '../Components/JobbasedonPreferences';
 import CompanysList from '../Components/CompanysList';
 import {colors} from '../Global_CSS/theamColors';
+import RecommendedJobs from '../Components/RecommendedJobs';
 
 const HomeComponent = ({jobsData}) => {
   const navigation = useNavigation();
@@ -74,13 +74,9 @@ const HomeComponent = ({jobsData}) => {
         </View>
       </View>
       <ScrollView style={{flex: 1}}>
-        <View style={styles.headingContainer}>
-          <Text style={styles.heading}>Let's Find a Job</Text>
-          <Text style={styles.heading}>With Flexhire</Text>
-        </View>
         <View style={styles.JobsContainer}>
           <View style={{marginVertical: 18, marginLeft: 18}}>
-            <JobbasedonProfile />
+            <RecommendedJobs />
             <JobbasedonPreferences />
           </View>
         </View>
@@ -101,17 +97,6 @@ const styles = StyleSheet.create({
     height: 90,
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
-  },
-  headingContainer: {
-    flex: 1,
-    marginVertical: 12,
-  },
-  heading: {
-    fontFamily: 'futura lt',
-    fontSize: 32,
-    marginHorizontal: 18,
-    color: '#004466',
-    fontWeight: 'bold',
   },
   searchbarContainer: {
     marginHorizontal: 12,
