@@ -30,7 +30,7 @@ const CompanyCard = ({company, savedJobs = [], toggleSaveJob}) => {
 
   return (
     <View key={company.id} style={styles.companyContainer}>
-      <TouchableOpacity
+      <TouchableOpacity 
         onPress={() => navigation.navigate('JobDetailScreen', {company})}>
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={jobIndex} style={styles.companyHeader}>

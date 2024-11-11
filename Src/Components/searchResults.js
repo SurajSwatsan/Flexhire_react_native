@@ -140,13 +140,13 @@ const SearchJobScreen = ({ navigation, route }) => {
     }
   };
 
-  const getUniqueLocations = () => {
-    return company ? [...new Set(company.map((comp) => comp.location))] : [];
-  };
+  // const getUniqueLocations = () => {
+  //   return company ? [...new Set(company.map((comp) => comp.location))] : [];
+  // };
 
-  const getUniqueIndustries = () => {
-    return company ? [...new Set(company.map((comp) => comp.industry))] : [];
-  };
+  // const getUniqueIndustries = () => {
+  //   return company ? [...new Set(company.map((comp) => comp.industry))] : [];
+  // };
 
   return (
     <View style={styles.container}>
