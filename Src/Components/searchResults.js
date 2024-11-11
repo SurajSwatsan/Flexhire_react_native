@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,31 +11,32 @@ import {
 } from 'react-native';
 import CustomHeader from './customHeader';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
-import { Checkbox, IconButton } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {Checkbox, IconButton} from 'react-native-paper';
+import {useIsFocused} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import CompanyCard from '../GlobalFields/GlobalCard';
-import { jobPost } from '../Redux/Action/JobAction';
+import {jobPost} from '../Redux/Action/JobAction';
+import {Dropdown} from 'react-native-element-dropdown';
 
-const SearchJobScreen = ({ navigation, route }) => {
+const SearchJobScreen = ({navigation, route}) => {
   const isFocused = useIsFocused();
-  const { query } = route.params;
+  const {query} = route.params;
   const [searchTerm, setSearchTerm] = useState(query || '');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [savedJobs, setSavedJobs] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [filterJobType, setFilterJobType] = useState('');
-  const [filterLocation, setFilterLocation] = useState('');
-  const [filterIndustry, setFilterIndustry] = useState('');
+
+  // Filter states
+  const [filterJobType, setFilterJobType] = useState([]);
+  const [filterLocation, setFilterLocation] = useState([]);
+  const [filterIndustry, setFilterIndustry] = useState([]);
   const [filterSalaryRange, setFilterSalaryRange] = useState({
     min: 0,
     max: 1000000,
   });
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [industryOptions, setIndustryOptions] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -45,68 +46,69 @@ const SearchJobScreen = ({ navigation, route }) => {
   }, [dispatch]);
 
   // Access jobs data from the Redux store
-  const company = useSelector((state) => state.Jobs.jobsData);
+  const company = useSelector(state => state.Jobs.jobsData);
 
   useEffect(() => {
     setResults(company);
+    setLocationOptions(
+      company
+        ? company.map(comp => ({label: comp.location, value: comp.location}))
+        : [],
+    );
+    setIndustryOptions(
+      company
+        ? company.map(comp => ({label: comp.industry, value: comp.industry}))
+        : [],
+    );
   }, [company]);
 
   useEffect(() => {
     filterJobs(searchTerm);
   }, [searchTerm, filterJobType, filterLocation, filterIndustry, company]);
 
-  useEffect(() => {
-    const loadSavedJobs = async () => {
-      try {
-        const savedJobsData = await AsyncStorage.getItem('savedJobs');
-        if (savedJobsData) {
-          setSavedJobs(JSON.parse(savedJobsData));
-        }
-      } catch (error) {
-        console.error('Failed to load saved jobs', error);
-      }
-    };
-
-    loadSavedJobs();
-  }, [isFocused]);
-
-  const filterJobs = (term) => {
+  const filterJobs = term => {
     if (!company || company.length === 0) return;
 
     setLoading(true);
-    const filteredJobs = company.filter((comp) => {
+    const filteredJobs = company.filter(comp => {
       const jobMatches =
         comp.company_name.toLowerCase().includes(term.toLowerCase()) ||
-        comp.posted_jobs.some((job) =>
-          job.job_title.toLowerCase().includes(term.toLowerCase())
+        comp.posted_jobs.some(job =>
+          job.job_title.toLowerCase().includes(term.toLowerCase()),
         );
 
       const jobTypeMatches =
         filterJobType.length > 0
-          ? comp.posted_jobs.some((job) =>
-              filterJobType.includes(job.job_type)
-            )
+          ? comp.posted_jobs.some(job => filterJobType.includes(job.job_type))
           : true;
 
-      const locationMatches = filterLocation
-        ? comp.location.toLowerCase().includes(filterLocation.toLowerCase())
-        : true;
+      const locationMatches =
+        filterLocation.length > 0
+          ? filterLocation.includes(comp.location)
+          : true;
 
-      const industryMatches = filterIndustry
-        ? comp.industry.toLowerCase().includes(filterIndustry.toLowerCase())
-        : true;
+      const industryMatches =
+        filterIndustry.length > 0
+          ? filterIndustry.includes(comp.industry)
+          : true;
 
-      const salaryMatches = comp.posted_jobs.some((job) => {
+      const salaryMatches = comp.posted_jobs.some(job => {
         const jobSalary = job.salary_range
           ? job.salary_range.replace(/[^0-9.-]+/g, '') // Remove non-numeric characters
           : 0;
         const salary = parseInt(jobSalary, 10);
 
-        return salary >= filterSalaryRange.min && salary <= filterSalaryRange.max;
+        return (
+          salary >= filterSalaryRange.min && salary <= filterSalaryRange.max
+        );
       });
 
       return (
-        jobMatches && jobTypeMatches && locationMatches && industryMatches && salaryMatches
+        jobMatches &&
+        jobTypeMatches &&
+        locationMatches &&
+        industryMatches &&
+        salaryMatches
       );
     });
 
@@ -114,38 +116,12 @@ const SearchJobScreen = ({ navigation, route }) => {
     setLoading(false);
   };
 
-  const toggleSaveJob = (job) => {
-    const isJobSaved = savedJobs.some(
-      (savedJob) => savedJob.job_title === job.job_title
-    );
-
-    let updatedSavedJobs;
-    if (isJobSaved) {
-      updatedSavedJobs = savedJobs.filter(
-        (savedJob) => savedJob.job_title !== job.job_title
-      );
+  const handleFilterChange = (value, filterSetter, currentFilter) => {
+    if (currentFilter.includes(value)) {
+      filterSetter(currentFilter.filter(item => item !== value));
     } else {
-      updatedSavedJobs = [...savedJobs, job];
+      filterSetter([...currentFilter, value]);
     }
-
-    setSavedJobs(updatedSavedJobs);
-    saveJobsToStorage(updatedSavedJobs);
-  };
-
-  const saveJobsToStorage = async (jobs) => {
-    try {
-      await AsyncStorage.setItem('savedJobs', JSON.stringify(jobs));
-    } catch (error) {
-      console.error('Failed to save jobs to AsyncStorage', error);
-    }
-  };
-
-  const getUniqueLocations = () => {
-    return company ? [...new Set(company.map((comp) => comp.location))] : [];
-  };
-
-  const getUniqueIndustries = () => {
-    return company ? [...new Set(company.map((comp) => comp.industry))] : [];
   };
 
   return (
@@ -176,48 +152,91 @@ const SearchJobScreen = ({ navigation, route }) => {
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : results.length > 0 ? (
-          results.map((comp) => (
+          results.map(comp => (
             <CompanyCard
               key={comp.id}
               company={comp}
               savedJobs={savedJobs}
-              toggleSaveJob={toggleSaveJob}
+              toggleSaveJob={() => {}}
             />
           ))
         ) : (
-          <Text style={styles.noResultsText}>No jobs found</Text>
+          <View>
+            <Image
+              style={styles.noDataimage}
+              source={require('../Assets/ApplyImages/No-data.png')}
+            />
+          </View>
         )}
       </ScrollView>
 
-      <TouchableOpacity
-        style={styles.savedJobsButton}
-        onPress={() => navigation.navigate('SavedJobsScreen', { savedJobs })}
-      ></TouchableOpacity>
-
-      {/* Filter Modal */}
       <Modal
         transparent={true}
         animationType="slide"
         visible={filterModalVisible}
-        onRequestClose={() => setFilterModalVisible(false)}
-      >
+        onRequestClose={() => setFilterModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Filter Jobs</Text>
-            {/* Add your filter logic here */}
+
+            <Text style={{color: 'black'}}>Job Type</Text>
+            <View style={styles.checkboxContainer}>
+              {['Onsite', 'Remote', 'Hybrid'].map(type => (
+                <View key={type} style={styles.checkboxItem}>
+                  <Checkbox
+                    status={
+                      filterJobType.includes(type) ? 'checked' : 'unchecked'
+                    }
+                    onPress={() =>
+                      handleFilterChange(type, setFilterJobType, filterJobType)
+                    }
+                  />
+                  <Text style={styles.checkboxLabel}>{type}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={{marginVertical: 8}}>
+              <Text style={{color: 'black'}}>Location</Text>
+              <Dropdown
+                style={styles.dropdown}
+                placeholder="Select Location"
+                data={locationOptions}
+                labelField="label"
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                itemTextStyle={{color: '#000'}}
+                valueField="value"
+                value={filterLocation}
+                onChange={item => setFilterLocation(item.value)}
+                multiple={true}
+              />
+            </View>
+            <Text style={{color: 'black'}}>Industry</Text>
+            <Dropdown
+              style={styles.dropdown}
+              placeholder="Select Industry"
+              data={industryOptions}
+              labelField="label"
+              valueField="value"
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              itemTextStyle={{color: '#000'}}
+              value={filterIndustry}
+              onChange={item => setFilterIndustry(item.value)}
+              multiple={true}
+            />
+
             <TouchableOpacity
               style={styles.applyButton}
               onPress={() => {
                 setFilterModalVisible(false);
                 filterJobs(searchTerm);
-              }}
-            >
+              }}>
               <Text style={styles.applyButtonText}>Apply Filters</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setFilterModalVisible(false)}
-            >
+              onPress={() => setFilterModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -278,29 +297,60 @@ const styles = StyleSheet.create({
     padding: 20,
     elevation: 5,
   },
+  checkboxContainer: {
+    flexDirection: 'column',
+    marginBottom: 10,
+  },
+  checkboxItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  checkboxLabel: {
+    color: '#000',
+  },
   applyButton: {
-    backgroundColor: '#004466',
-    padding: 10,
-    margin: 5,
-    borderRadius: 5,
+    backgroundColor: '#000',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
   },
   applyButtonText: {
     color: '#fff',
-    alignSelf: 'center',
+    fontSize: 16,
   },
   closeButton: {
-    backgroundColor: '#004466',
-    padding: 10,
-    margin: 5,
-    borderRadius: 5,
+    backgroundColor: '#666',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
   },
   closeButtonText: {
     color: '#fff',
-    alignSelf: 'center',
-  },
-  modalTitle: {
-    color: '#000',
     fontSize: 16,
+  },
+  dropdown: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+  },
+  noDataimage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  placeholderStyle: {
+    fontSize: 14,
+    color: '#888',
+  },
+  selectedTextStyle: {
+    fontSize: 14,
+    color: '#000',
   },
 });
 
