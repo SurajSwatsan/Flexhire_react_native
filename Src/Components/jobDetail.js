@@ -27,7 +27,7 @@ const JobDetailScreen = ({route, navigation}) => {
         if (appliedJobs) {
           const parsedAppliedJobs = JSON.parse(appliedJobs);
           const isAlreadyApplied = parsedAppliedJobs.some(
-            (job) => job.job_title === company.posted_jobs[0]?.job_title
+            job => job.job_title === company.posted_jobs[0]?.job_title,
           );
           setIsApplied(isAlreadyApplied);
         }
@@ -38,8 +38,6 @@ const JobDetailScreen = ({route, navigation}) => {
 
     checkIfApplied();
   }, [company]);
-
-  
 
   const saveCompanyData = async () => {
     try {
@@ -52,12 +50,15 @@ const JobDetailScreen = ({route, navigation}) => {
       const parsedAppliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
 
       const isAlreadyApplied = parsedAppliedJobs.some(
-        (job) => job.job_title === company.posted_jobs[0]?.job_title
+        job => job.job_title === company.posted_jobs[0]?.job_title,
       );
 
       if (!isAlreadyApplied) {
         parsedAppliedJobs.push(companyJobData);
-        await AsyncStorage.setItem('appliedJobs', JSON.stringify(parsedAppliedJobs));
+        await AsyncStorage.setItem(
+          'appliedJobs',
+          JSON.stringify(parsedAppliedJobs),
+        );
         setIsApplied(true);
       }
 
@@ -67,7 +68,6 @@ const JobDetailScreen = ({route, navigation}) => {
     }
   };
 
-  
   const renderTabs = () => {
     switch (activeTab) {
       case 'About':
@@ -177,7 +177,7 @@ const JobDetailScreen = ({route, navigation}) => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.companyInfoContainer}>
           <View style={styles.companyInfo}>
-          <View style={styles.logoContainer}>
+            <View style={styles.logoContainer}>
               <Image
                 source={
                   company.logo
@@ -203,65 +203,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 {company.posted_jobs[0]?.location}
               </Text>
             </View>
-            {/* <View style={styles.mainfildContainer}>
-            
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="cash"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle} // Ensure no padding/margin on the icon
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Salary Range</Text>
-                  <Text style={styles.jobDetails}>
-                    {company.posted_jobs[0]?.salary}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="signal-cellular-3"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle}
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Level</Text>
-                  <Text style={styles.jobDetails}>
-                    {company.posted_jobs[0]?.required_experience}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="account"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle}
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails1}>Openings</Text>
-                  <Text style={styles.jobDetails}>
-                    {company.posted_jobs[0]?.openings}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.fildContainer}>
-                <IconButton
-                  icon="account-group"
-                  iconColor={colors.primary}
-                  size={24}
-                  style={styles.iconstyle} // Ensure no padding/margin on the icon
-                />
-                <View style={styles.fildinerContainer}>
-                  <Text style={styles.jobDetails}>Applications</Text>
-                  <Text style={styles.jobDetails}>
-                    {company.posted_jobs[0]?.applications}
-                  </Text>
-                </View>
-              </View>
-            </View> */}
+
             <View style={styles.mainfildContainer}>
               {[
                 {
@@ -300,7 +242,7 @@ const JobDetailScreen = ({route, navigation}) => {
               ))}
             </View>
 
-           <View style={styles.tabContainer}>
+            <View style={styles.tabContainer}>
               <TouchableOpacity
                 style={[
                   styles.tabButton,
@@ -332,19 +274,19 @@ const JobDetailScreen = ({route, navigation}) => {
       </ScrollView>
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
-       style={[styles.applyButton, isApplied ? styles.appliedButton : null]}
-        
-           onPress={saveCompanyData}
+          style={[styles.applyButton, isApplied ? styles.appliedButton : null]}
+          onPress={saveCompanyData}
           // onPress={handleApplyPress}
-          >
+        >
           <Text style={styles.applyButtonText}>
-          {isApplied ? 'Applied' : 'Apply'}
-            </Text>
+            {isApplied ? 'Applied' : 'Apply'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -371,7 +313,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
-    marginBottom:18
+    marginBottom: 18,
   },
   location: {
     fontSize: 12,
@@ -442,7 +384,7 @@ const styles = StyleSheet.create({
   },
   applyButton: {
     // marginTop: 24,
-    margin:16,
+    margin: 16,
     padding: 12,
     backgroundColor: colors.primary,
     borderRadius: 8,
@@ -452,7 +394,7 @@ const styles = StyleSheet.create({
   appliedButton: {
     backgroundColor: 'green', // Disabled color to indicate the button is applied
   },
- 
+
   applyButtonText: {
     color: 'white',
     fontWeight: 'bold',

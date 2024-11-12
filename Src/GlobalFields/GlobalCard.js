@@ -26,6 +26,8 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
   };
  
   const handleToggleSaveJob = async job => {
+    console.log("handleToggleSaveJob",job);
+    
     try {
       const jobWithDetails = {
         ...job,
@@ -96,7 +98,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
                 <Text style={styles.companyName}>{company.company_name}</Text>
               </View>
             </View>
-           {/* {showBookmarkIcon &&(
+           {showBookmarkIcon &&(
             <IconButton
               style={styles.saveIcon}
               icon={
@@ -120,8 +122,8 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
             />
 
             
-           )} */}
-            {showBookmarkIcon && (
+           )}
+            {/* {showBookmarkIcon && (
               <IconButton
                 style={styles.saveIcon}
                 icon={isJobApplied ? 'check-circle' : 'bookmark-outline'} // Checkmark if applied, bookmark if not
@@ -129,7 +131,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
                 size={28}
                 onPress={() => handleToggleSaveJob(job)} // Handle save or remove
               />
-            )}
+            )} */}
           </View>
         ))}
  
