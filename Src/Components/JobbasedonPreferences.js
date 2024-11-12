@@ -12,7 +12,7 @@ import {
 import {colors} from '../Global_CSS/theamColors';
 import {useDispatch, useSelector} from 'react-redux';
 import {jobPost} from '../Redux/Action/JobAction';
-import CompanyCard from '../GlobalFields/GlobalCard';
+import CompanyCard from '../ReusableComponents/ReusableJobCard';
 
 const JobbasedonPreferences = () => {
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   companyLocation: {
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontSize: 12,
   },
 
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   viewAll: {
     fontSize: 15,
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontWeight: 'bold',
   },
   itemText: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   companyName: {
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -130,15 +130,15 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     maxHeight: 250,
     borderRadius: 8,
-    backgroundColor: colors.cardcolor,
+    backgroundColor: colors.cardBgcolor,
   },
 
   jobTitleText: {
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontSize: 15,
   },
   experienceText: {
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontSize: 12,
   },
 });

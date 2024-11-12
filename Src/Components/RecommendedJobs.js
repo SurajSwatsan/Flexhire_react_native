@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {StyleSheet, ScrollView, View, Text} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import CompanyCard from '../GlobalFields/GlobalCard';
+import CompanyCard from '../ReusableComponents/ReusableJobCard';
 import {jobPost} from '../Redux/Action/JobAction';
 import {colors} from '../Global_CSS/theamColors';
 
@@ -71,12 +71,12 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 16,
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontWeight: 'bold',
   },
   sectionTitle: {
     fontSize: 14,
-    color: colors.textprimary,
+    color: colors.textPrimary,
   },
   scrollContainer: {},
   contentContainer: {

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Button, StyleSheet, Text} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import ReusableTextInput from '../GlobalFields/ReusableTextInput';
+import ReusableTextInput from '../ReusableComponents/ReusableTextInput';
 import BasicDetails from '../UserProfile/Basicdetails';
 
 const validationSchema = Yup.object().shape({

@@ -14,7 +14,7 @@ import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {Checkbox, IconButton} from 'react-native-paper';
 import {useIsFocused} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import CompanyCard from '../GlobalFields/GlobalCard';
+import CompanyCard from '../ReusableComponents/ReusableJobCard';
 import {jobPost} from '../Redux/Action/JobAction';
 import {Dropdown} from 'react-native-element-dropdown';
  

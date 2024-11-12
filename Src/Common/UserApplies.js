@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 
   textContainer: {
     fontSize: 20,
-    color: colors.textprimary,
+    color: colors.textPrimary,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -71,13 +71,13 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     fontSize: 14,
-    color: colors.textprimary,
+    color: colors.textPrimary,
     textAlign: 'center',
     // paddingHorizontal: 10, // Optional: Add padding for text
   },
 
   buttonContainer: {
-    backgroundColor: colors.textsecondary,
+    backgroundColor: colors.textSecondary,
     borderRadius: 10,
     padding: 10,
     margin: 5,

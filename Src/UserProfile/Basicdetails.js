@@ -11,8 +11,8 @@ import React, {useState} from 'react';
 import {Button, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import ReusableTextInput from '../GlobalFields/ReusableTextInput';
-import ModalFooter from '../GlobalFields/ProfileModalFooter';
+import ReusableTextInput from '../ReusableComponents/ReusableTextInput';
+import ModalFooter from '../ReusableComponents/ProfileModalFooter';
 
 const screenWidth = Dimensions.get('window').width;
 const horizontalMargin = 12 * 2; // Total margin (left + right)
