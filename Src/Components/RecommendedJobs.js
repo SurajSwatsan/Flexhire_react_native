@@ -35,10 +35,20 @@ const RecommendedJobs = () => {
         {company.map((companyItem, index) => (
           <View key={index} style={{minWidth: 300, maxWidth: 300}}>
             <CompanyCard
-              company={companyItem}
-              // Uncomment and use these if needed
-              // savedJobs={Array.isArray(savedJobs) ? savedJobs : []}
-              // toggleSaveJob={toggleSaveJob}
+              company={{
+                ...companyItem,
+                company_name:
+                  companyItem.company_name.length > 15
+                    ? `${companyItem.company_name.substring(0, 15)}...`
+                    : companyItem.company_name,
+                posted_jobs: companyItem.posted_jobs.map(job => ({
+                  ...job,
+                  job_title:
+                    job.job_title.length > 20
+                      ? `${job.job_title.substring(0, 20)}...`
+                      : job.job_title,
+                })),
+              }}
             />
           </View>
         ))}
