@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     marginBottom: 10, // Space between rows
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.cardcolor,
+    backgroundColor: colors.cardBgcolor,
     borderRadius: 8,
     elevation: 2,
   },
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
   companyInfoContainer: {
     marginTop: 100,
-    backgroundColor: colors.cardcolor,
+    backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
@@ -424,8 +424,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     borderWidth: 0.5,
-    borderColor: colors.textsecondary,
-    backgroundColor: colors.cardcolor,
+    borderColor: colors.textSecondary,
+    backgroundColor: colors.cardBgcolor,
     borderRadius: 100, // Ensures circular shape
     // top: -60,
     width: 120,

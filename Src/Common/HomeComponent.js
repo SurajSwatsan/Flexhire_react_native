@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     flexDirection: 'row',
     marginVertical: 18,
-    backgroundColor: colors.cardcolor,
+    backgroundColor: colors.cardBgcolor,
     borderRadius: 8,
     height: 56,
   },

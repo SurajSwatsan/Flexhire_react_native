@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import CustomHeader from '../Components/customHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CompanyCard from '../GlobalFields/GlobalCard';
+import CompanyCard from '../ReusableComponents/ReusableJobCard';
 import {colors} from '../Global_CSS/theamColors';
 
 const BookmarkScreen = ({navigation}) => {
