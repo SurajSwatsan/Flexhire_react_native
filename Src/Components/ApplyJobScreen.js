@@ -1,114 +1,180 @@
-// // // // // import React from "react";
-// // // // // import { Text, View } from "react-native";
+// // import React, {useEffect, useState} from 'react';
+// // import {View, Text, ScrollView, StyleSheet} from 'react-native';
+// // import AsyncStorage from '@react-native-async-storage/async-storage';
+// // import CompanyCard from '../GlobalFields/GlobalCard';
+// // import {colors} from '../Global_CSS/theamColors';
+// // import { useNavigation } from '@react-navigation/native';
 
-// // // // // const ApplyJobScreen= () =>{
-// // // // //     return(
-// // // // // <View>
-// // // // //     <Text>
-// // // // //     Hello</Text></View>
-// // // // //     );
-// // // // // };
-// // // // // // export default ApplyJobScreen;
+// // const AppliedJobScreen = () => {
+// //  const navigation = useNavigation();
+// //   const [companyData, setCompanyData] = useState(null);
 
-// // // // import React, { useEffect, useState } from 'react';
-// // // // import { View, Text } from 'react-native';
-// // // // import AsyncStorage from '@react-native-async-storage/async-storage';
+// //   // If the applied job is a single object, make it an array for uniform handling
 
-// // // // const AppliedJobScreen = () => {
-// // // //   const [appliedJob, setAppliedJob] = useState(null);
+// //   useEffect(() => {
+// //     // Fetch data from AsyncStorage when the component is mounted
+// //     const fetchCompanyData = async () => {
+// //       try {
+// //         const data = await AsyncStorage.getItem('companyJobData');
+// //         if (data !== null) {
+// //           // Parse the string back into an object
+// //           setCompanyData(JSON.parse(data));
+// //         }
+// //       } catch (error) {
+// //         console.error(
+// //           'Error retrieving company and job data from AsyncStorage:',
+// //           error,
+// //         );
+// //       }
+// //     };
 
-// // // //   useEffect(() => {
-// // // //     const fetchAppliedJob = async () => {
-// // // //       try {
-// // // //         const jobData = await AsyncStorage.getItem('appliedJob');
-// // // //         if (jobData !== null) {
-// // // //           setAppliedJob(JSON.parse(jobData));
-// // // //         }
-// // // //       } catch (error) {
-// // // //         console.error("Error fetching data from AsyncStorage", error);
-// // // //       }
-// // // //     };
+// //     fetchCompanyData();
+// //   }, []);
 
-// // // //     fetchAppliedJob();
-// // // //   }, []);
+// //   // Show a loading screen if data is still being retrieved
+// //   if (!companyData) {
+// //     return <Text>Loading...</Text>;
+// //   }
 
-// // // //   if (!appliedJob) {
-// // // //     return (
-// // // //       <View>
-// // // //         <Text>Loading...</Text>
-// // // //       </View>
-// // // //     );
-// // // //   }
+// //   // Destructure company and job data from the stored object
+// //   const {company, job} = companyData;
 
-// // // //   return (
-// // // //     <View>
-// // // //       <Text>Job Title: {appliedJob.jobTitle}</Text>
-// // // //       <Text>Company: {appliedJob.companyName}</Text>
-// // // //       <Text>Location: {appliedJob.location}</Text>
-// // // //       <Text>Salary: {appliedJob.salary}</Text>
-// // // //       <Text>Description: {appliedJob.jobDescription}</Text>
-// // // //     </View>
-// // // //   );
-// // // // };
+// //   const handleCardPress = () => {
+// //     // Navigate to the JobDetailScreen and pass the job and company data as params
+// //     navigation.navigate('JobDetailScreen', { company });
+// //   };
 
-// // // // export default AppliedJobScreen;
+// //  console.log(companyData);
+
+// //   return (
+// //     <View style={styles.container}>
+// //       <ScrollView contentContainerStyle={styles.innerContainer}>
+// //         {company && job ? (
+// //           <CompanyCard
+// //             company={{
+// //               posted_jobs: [job], // Wrap job in an array as `posted_jobs`
+// //               company_name: company.company_name,
+// //               logo: company.logo || require('../Assets/Logo/TCS_logo.png'),
+// //               location: company.location,
+
+// //             }}
+// //             onPress={handleCardPress}
+// //             showBookmarkIcon= {false}
+// //             isa
+
+// //           />
+// //         ) : (
+// //           <Text style={styles.noJobsText}>No applied jobs available</Text>
+// //         )}
+// //       </ScrollView>
+// //     </View>
+// //   );
+// // };
+
+// // const styles = StyleSheet.create({
+// //   container: {
+// //     flex: 1,
+// //     padding: 15,
+// //     backgroundColor: colors.bacground, // Use correct background color from theme
+// //   },
+// //   loadingText: {
+// //     fontSize: 18,
+// //     color: colors.primary, // Use primary color for loading text
+// //     textAlign: 'center',
+// //     marginTop: 20,
+// //   },
+// //   innerContainer: {
+// //     flexGrow: 1,
+// //     paddingBottom: 20, // Ensure padding at the bottom of the ScrollView
+// //   },
+// //   noJobsText: {
+// //     fontSize: 16,
+// //     color: '#808080',
+// //     textAlign: 'center',
+// //     marginTop: 20,
+// //   },
+// //   companyName: {
+// //     fontSize: 18,
+// //     fontWeight: 'bold',
+// //     color: colors.primary, // Ensure good visibility
+// //   },
+// // });
 
 // import React, { useEffect, useState } from 'react';
 // import { View, Text, ScrollView, StyleSheet } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import CompanyCard from '../GlobalFields/GlobalCard';
 // import { colors } from '../Global_CSS/theamColors';
+// import { useNavigation } from '@react-navigation/native';
 
 // const AppliedJobScreen = () => {
-//   const [appliedJob, setAppliedJob] = useState(null);
+//   const navigation = useNavigation();
+//   const [companyData, setCompanyData] = useState(null);
+//   const [appliedJobs, setAppliedJobs] = useState([]); // State to store applied jobs
 
+//   // Fetch company and job data from AsyncStorage
 //   useEffect(() => {
-//     const fetchAppliedJob = async () => {
+//     const fetchCompanyData = async () => {
 //       try {
-//         // Fetching the applied job data from AsyncStorage
-//         const jobDetails = await AsyncStorage.getItem('appliedJob');
-//         if (jobDetails !== null) {
-//           setAppliedJob(JSON.parse(jobDetails)); // Parse and set the applied job data
+//         const data = await AsyncStorage.getItem('companyJobData');
+//         if (data !== null) {
+//           setCompanyData(JSON.parse(data)); // Set company data from AsyncStorage
 //         }
 //       } catch (error) {
-//         console.error('Error fetching data from AsyncStorage:', error);
+//         console.error('Error retrieving company data:', error);
 //       }
 //     };
 
-//     fetchAppliedJob();
+//     // Fetch applied jobs from AsyncStorage
+//     const fetchAppliedJobs = async () => {
+//       try {
+//         const appliedData = await AsyncStorage.getItem('appliedJobs');
+//         if (appliedData !== null) {
+//           setAppliedJobs(JSON.parse(appliedData)); // Set applied jobs from AsyncStorage
+//         }
+//       } catch (error) {
+//         console.error('Error retrieving applied jobs:', error);
+//       }
+//     };
+
+//     fetchCompanyData();
+//     fetchAppliedJobs();
 //   }, []);
 
-//   if (!appliedJob) {
-//     // Loading state
-//     return (
-//       <View style={styles.container}>
-//         <Text style={styles.loadingText}>Loading...</Text>
-//       </View>
-//     );
+//   // Show a loading screen while fetching data
+//   if (!companyData || appliedJobs.length === 0) {
+//     return <Text>Loading...</Text>;
 //   }
 
-//   // If the applied job is a single object, make it an array for uniform handling
-//   const appliedJobsArray = Array.isArray(appliedJob) ? appliedJob : [appliedJob];
+//   // Destructure company and job data from the companyData object
+//   const { company, job } = companyData;
+
+//   // Function to handle navigation when a card is clicked
+//   const handleCardPress = () => {
+//     navigation.navigate('JobDetailScreen', { company });
+//   };
+
+//   // Check if the current job is in the applied jobs list
+//   const isJobApplied = appliedJobs.some(appliedJob => appliedJob.job_title === job.job_title);
 
 //   return (
 //     <View style={styles.container}>
 //       <ScrollView contentContainerStyle={styles.innerContainer}>
-//         {appliedJobsArray.length > 0 ? (
-//           appliedJobsArray.map((job, index) => (
-//             <CompanyCard
-//               key={index}
-//               company={{
-//                 posted_jobs: [job], // Wrap job in an array as `posted_jobs`
-//                 company_name: job.company_name,
-//                 jobTitle: job.job_title,
-//                 logo: job.logo, // Ensure fallback logo
-//                 location: job.location,
-//               }}
-             
-//             />
-//           ))
+
+//         {company && job ? (
+//           <CompanyCard
+//             company={{
+//               posted_jobs: [job], // Wrap job in an array for uniform handling in CompanyCard
+//               company_name: company.company_name,
+//               logo: company.logo || require('../Assets/Logo/TCS_logo.png'),
+//               location: company.location,
+//             }}
+//             onPress={handleCardPress}
+//             showBookmarkIcon={false} // This is set to false because we are using isJobApplied to decide the icon
+//             isJobApplied={isJobApplied} // Pass the applied status to the CompanyCard
+//           />
 //         ) : (
-//           <Text style={styles.noJobsText}>No applied jobs</Text>
+//           <Text style={styles.noJobsText}>No applied jobs available</Text>
 //         )}
 //       </ScrollView>
 //     </View>
@@ -119,7 +185,7 @@
 //   container: {
 //     flex: 1,
 //     padding: 15,
-//     backgroundColor: colors.background, // Use the correct background color from theme
+//     backgroundColor: colors.background, // Ensure background color from theme
 //   },
 //   loadingText: {
 //     fontSize: 18,
@@ -129,7 +195,7 @@
 //   },
 //   innerContainer: {
 //     flexGrow: 1,
-//     paddingBottom: 20, // Ensure there is padding at the bottom of the ScrollView
+//     paddingBottom: 20, // Ensure padding at the bottom of the ScrollView
 //   },
 //   noJobsText: {
 //     fontSize: 16,
@@ -137,67 +203,97 @@
 //     textAlign: 'center',
 //     marginTop: 20,
 //   },
+//   companyName: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     color: colors.primary, // Ensure good visibility
+//   },
 // });
 
 // export default AppliedJobScreen;
 
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CompanyCard from '../GlobalFields/GlobalCard';
-import { colors } from '../Global_CSS/theamColors';
+import {colors} from '../Global_CSS/theamColors';
+import {useNavigation} from '@react-navigation/native';
 
 const AppliedJobScreen = () => {
-  const [appliedJob, setAppliedJob] = useState(null);
+  const navigation = useNavigation();
+  const [companyData, setCompanyData] = useState(null);
+  const [appliedJobs, setAppliedJobs] = useState([]); // State to store applied jobs
 
+  // Fetch company and job data from AsyncStorage
   useEffect(() => {
-    const fetchAppliedJob = async () => {
+    const fetchCompanyData = async () => {
       try {
-        // Fetching the applied job data from AsyncStorage
-        const jobDetails = await AsyncStorage.getItem('appliedJob');
-        if (jobDetails !== null) {
-          const jobData = JSON.parse(jobDetails);
-          console.log('Fetched Job Data:', jobData); // Log to check if company_name exists
-          setAppliedJob(jobData); // Parse and set the applied job data
+        const data = await AsyncStorage.getItem('companyJobData');
+        if (data !== null) {
+          setCompanyData(JSON.parse(data)); // Set company data from AsyncStorage
         }
       } catch (error) {
-        console.error('Error fetching data from AsyncStorage:', error);
+        console.error('Error retrieving company data:', error);
       }
     };
 
-    fetchAppliedJob();
+    // Fetch applied jobs from AsyncStorage
+    const fetchAppliedJobs = async () => {
+      try {
+        const appliedData = await AsyncStorage.getItem('appliedJobs');
+        if (appliedData !== null) {
+          setAppliedJobs(JSON.parse(appliedData)); // Set applied jobs from AsyncStorage
+        }
+      } catch (error) {
+        console.error('Error retrieving applied jobs:', error);
+      }
+    };
+
+    fetchCompanyData();
+    fetchAppliedJobs();
   }, []);
 
-  if (!appliedJob) {
-    // Loading state
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
+  // Show a loading screen while fetching data
+  if (!companyData || appliedJobs.length === 0) {
+    return <Text>Loading...</Text>;
   }
 
-  // If the applied job is a single object, make it an array for uniform handling
-  const appliedJobsArray = Array.isArray(appliedJob) ? appliedJob : [appliedJob];
+  // Function to handle navigation when a card is clicked
+  const handleCardPress = (companyData, appliedJob) => {
+    // Pass the entire companyData and the appliedJob to the JobDetailScreen
+    navigation.navigate('JobDetailScreen', {
+      company: companyData,
+      job: appliedJob,
+    });
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.innerContainer}>
-        {appliedJobsArray.length > 0 ? (
-          appliedJobsArray.map((job, index) => (
-            <CompanyCard
-              key={index}
-              company={{
-                posted_jobs: [job], // Wrap job in an array as `posted_jobs`
-                company_name: job.company_name, // Ensure `company_name` is passed correctly
-                jobTitle: job.job_title,
-                logo: job.logo || '',  // Fallback logo
-                location: job.location,
-              }}
-            />
-          ))
+        {appliedJobs.length > 0 ? (
+          appliedJobs.map((appliedJob, index) => {
+            const {company_name, logo, location} = companyData.company; // Destructure company data
+
+            // Check if job has been applied
+            const isJobApplied = appliedJob.job_title === appliedJob.job_title;
+
+            return (
+              <CompanyCard
+                key={index}
+                company={{
+                  posted_jobs: [appliedJob], // Wrap each applied job in an array for uniform handling
+                  company_name,
+                  logo: logo || require('../Assets/Logo/TCS_logo.png'),
+                  location,
+                }}
+                onPress={() => handleCardPress(companyData.company)} // Pass company data to navigate to details
+                showBookmarkIcon={false}
+                isJobApplied={isJobApplied} // Pass the applied status to CompanyCard
+              />
+            );
+          })
         ) : (
-          <Text style={styles.noJobsText}>No applied jobs</Text>
+          <Text style={styles.noJobsText}>No applied jobs available</Text>
         )}
       </ScrollView>
     </View>
@@ -208,7 +304,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: colors.background, // Use correct background color from theme
+    backgroundColor: colors.background, // Ensure background color from theme
   },
   loadingText: {
     fontSize: 18,
@@ -234,6 +330,3 @@ const styles = StyleSheet.create({
 });
 
 export default AppliedJobScreen;
-
-
-

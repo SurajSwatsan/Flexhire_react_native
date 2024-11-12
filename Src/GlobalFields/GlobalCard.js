@@ -6,7 +6,7 @@ import { colors } from '../Global_CSS/theamColors';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
  
-const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
+const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon = true, isJobApplied= false}) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
  
@@ -96,7 +96,7 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
                 <Text style={styles.companyName}>{company.company_name}</Text>
               </View>
             </View>
- 
+           {/* {showBookmarkIcon &&(
             <IconButton
               style={styles.saveIcon}
               icon={
@@ -118,6 +118,18 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob }) => {
               size={28}
               onPress={() => handleToggleSaveJob(job)}
             />
+
+            
+           )} */}
+            {showBookmarkIcon && (
+              <IconButton
+                style={styles.saveIcon}
+                icon={isJobApplied ? 'check-circle' : 'bookmark-outline'} // Checkmark if applied, bookmark if not
+                iconColor={isJobApplied ? colors.primary : 'gray'} // Use primary color if applied, gray if not
+                size={28}
+                onPress={() => handleToggleSaveJob(job)} // Handle save or remove
+              />
+            )}
           </View>
         ))}
  
