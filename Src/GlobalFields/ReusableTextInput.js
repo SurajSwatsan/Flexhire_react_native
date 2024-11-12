@@ -35,9 +35,10 @@ const ReusableTextInput = ({name, label, ...props}) => {
 };
 
 const styles = StyleSheet.create({
-  inputfieldContainer: {},
-  textarea: {
+  inputfieldContainer: {
     marginVertical: 12,
+  },
+  textarea: {
     backgroundColor: 'white',
     width: effectiveWidth,
     height: 48,
@@ -45,6 +46,8 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    // marginTop: 4,
+    fontSize: 12,
   },
 });
 export default ReusableTextInput;

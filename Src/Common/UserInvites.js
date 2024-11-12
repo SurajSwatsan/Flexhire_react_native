@@ -3,22 +3,23 @@ import {View, Button, StyleSheet, Text} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import ReusableTextInput from '../GlobalFields/ReusableTextInput';
-import Basicdetails from '../UserProfile/Basicdetails';
+import BasicDetails from '../UserProfile/Basicdetails';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
+  // No validation for address, so it's omitted here
 });
 
 const UserInvites = () => {
   const [submittedValues, setSubmittedValues] = useState(null);
 
   return (
-    <View style={{flex: 1, marginTop: 12}}>
-      <Basicdetails />
+    <View style={{flex: 1, padding: 16}}>
+      <BasicDetails />
     </View>
     // <Formik
-    //   initialValues={{name: '', email: ''}}
+    //   initialValues={{name: '', email: '', address: ''}} // Include address here
     //   validationSchema={validationSchema}
     //   onSubmit={values => {
     //     console.log('Form values:', values);
@@ -28,10 +29,8 @@ const UserInvites = () => {
     //     <View style={{flex: 1, padding: 16}}>
     //       <ReusableTextInput name="name" label="Name" />
     //       <ReusableTextInput name="email" label="Email" />
-
+    //       <ReusableTextInput name="address" label="Address" />
     //       <Button title="Submit" onPress={handleSubmit} />
-
-    //       {/* Display submitted data below the form */}
     //       {submittedValues && (
     //         <View style={styles.resultContainer}>
     //           <Text style={styles.resultTitle}>Submitted Data:</Text>
@@ -40,6 +39,9 @@ const UserInvites = () => {
     //           </Text>
     //           <Text style={styles.resultText}>
     //             Email: {submittedValues.email}
+    //           </Text>
+    //           <Text style={styles.resultText}>
+    //             Address: {submittedValues.address}
     //           </Text>
     //         </View>
     //       )}
