@@ -37,7 +37,7 @@ const OtpVerificationScreen = () => {
           <View style={styles.FormContainer}>
             <Image
               style={styles.imageContainer}
-              source={require('../../Assets/CompanyLogo/flexhire_logo.png')}
+              source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
             />
             <Text style={styles.title}>Enter OTP</Text>
             <TextInput

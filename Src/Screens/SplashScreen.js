@@ -35,7 +35,7 @@ const SplashScreen = () => {
       <View></View>
       <Image
         style={styles.imagestyle}
-        source={require('../Assets/CompanyLogo/flexhire_logo.png')}
+        source={require('../Assets/CompanyLogo/flexhire-logo.png')}
       />
       <View style={styles.textContainer}>
         <Text style={styles.textcintainer1}>Powered by</Text>
