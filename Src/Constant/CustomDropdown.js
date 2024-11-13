@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   dropdown: {
     width: effectiveWidth,
     height: 51,
-    borderColor: colors.textSecondary,
+    borderColor: colors.lightgaryText,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   inputSearchStyle: {
-    color: colors.textPrimary,
+    color: colors.blackText,
   },
 });
 

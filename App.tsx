@@ -3,9 +3,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import StackNavigation from './src/Navigation/stackNavigation';
 import {PaperProvider} from 'react-native-paper';
 import {StatusBar} from 'react-native';
-import {colors} from './src/Global_CSS/TheamColors';
 import {Provider} from 'react-redux';
 import store from './src/Redux/store';
+import { colors } from './src/Global_CSS/TheamColors';
 
 const App = () => {
   return (
@@ -13,7 +13,7 @@ const App = () => {
       <PaperProvider>
         <StatusBar
           barStyle="light-content"
-          // backgroundColor="#00334d"
+          // backgroundColor="#004466"
           backgroundColor={colors.primary}
           // backgroundColor="#4f84c4"
           translucent={false}

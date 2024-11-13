@@ -39,7 +39,7 @@
 // const styles = StyleSheet.create({
 //   applyContainer: {
 //     flex: 1,
-//     backgroundColor: colors.bacground,
+//     backgroundColor: colors.background,
 //     justifyContent: 'center',
 //     width: '100%',
 //     alignItems: 'center',
@@ -59,7 +59,7 @@
 
 //   textContainer: {
 //     fontSize: 20,
-//     color: colors.textPrimary,
+//     color: colors.blackText,
 //     fontWeight: 'bold',
 //     textAlign: 'center',
 //   },
@@ -71,13 +71,13 @@
 //   },
 //   bottomText: {
 //     fontSize: 14,
-//     color: colors.textPrimary,
+//     color: colors.blackText,
 //     textAlign: 'center',
 //     // paddingHorizontal: 10, // Optional: Add padding for text
 //   },
 
 //   buttonContainer: {
-//     backgroundColor: colors.textSecondary,
+//     backgroundColor: colors.lightgaryText,
 //     borderRadius: 10,
 //     padding: 10,
 //     margin: 5,
@@ -166,7 +166,7 @@
 // // const styles = StyleSheet.create({
 // //   applyContainer: {
 // //     flex: 1,
-// //     backgroundColor: colors.bacground,
+// //     backgroundColor: colors.background,
 // //     justifyContent: 'center',
 // //     width: '100%',
 // //     alignItems: 'center',
@@ -189,7 +189,7 @@
 // //   },
 // //   textContainer: {
 // //     fontSize: 20,
-// //     color: colors.textPrimary,
+// //     color: colors.blackText,
 // //     fontWeight: 'bold',
 // //     textAlign: 'center',
 // //   },
@@ -201,7 +201,7 @@
 // //   },
 // //   bottomText: {
 // //     fontSize: 14,
-// //     color: colors.textPrimary,
+// //     color: colors.blackText,
 // //     textAlign: 'center',
 // //   },
 // // });
@@ -211,8 +211,8 @@
 
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import { colors } from '../../Global_CSS/TheamColors';
 import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../Global_CSS/TheamColors';
 
 const UserApplies = () => {
   const navigation = useNavigation();
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     fontSize: 20,
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -276,11 +276,11 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     fontSize: 14,
-    color: colors.textPrimary,
+    color: colors.blackText,
     textAlign: 'center',
   },
   buttonContainer: {
-    backgroundColor: colors.textSecondary,
+    backgroundColor: colors.lightgaryText,
     borderRadius: 10,
     padding: 10,
     margin: 5,

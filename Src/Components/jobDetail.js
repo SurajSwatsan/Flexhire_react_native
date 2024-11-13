@@ -415,11 +415,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconstyle: {
-    backgroundColor: colors.bacground,
+    backgroundColor: colors.background,
   },
   logoContainer: {
     borderWidth: 0.5,
-    borderColor: colors.textSecondary,
+    borderColor: colors.lightgaryText,
     backgroundColor: colors.cardBgcolor,
     borderRadius: 100, // Ensures circular shape
     // top: -60,

@@ -46,7 +46,7 @@ const ResetPasswordScreen = () => {
           <View style={styles.formContainer}>
             <Image
               style={styles.imageContainer}
-              source={require('../../Assets/CompanyLogo/flexhire_logo.png')}
+              source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
             />
             <Text style={styles.headingText}>Set New Password</Text>
             <View style={styles.passwordContainer}>

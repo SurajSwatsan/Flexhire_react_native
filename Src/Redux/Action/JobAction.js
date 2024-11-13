@@ -5,7 +5,7 @@ export const SELECT_JOB = 'SELECT_JOB';
 export const jobPost = () => {
   return {
     type: JOB_POST,
-    payload: CompanysData.posted_jobs, // Access the 'Company' array in the JSON
+    payload: CompanysData.jobs, // Access the 'Company' array in the JSON
   };
 };
 export const selectJob = job => {

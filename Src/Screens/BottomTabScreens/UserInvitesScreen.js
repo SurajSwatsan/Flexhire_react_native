@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     padding: 16,
-    backgroundColor: colors.bacground,
+    backgroundColor: colors.background,
   },
   resultContainer: {
     marginTop: 20,
