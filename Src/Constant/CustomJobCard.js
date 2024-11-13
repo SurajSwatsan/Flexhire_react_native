@@ -5,6 +5,7 @@ import moment from 'moment';
 import { colors } from '../Global_CSS/TheamColors';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LibraryDirectoryPath } from 'react-native-fs';
  
 // const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon = true, }) => {
 //   const navigation = useNavigation();
@@ -189,8 +190,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //   );
 // };
  
-const CompanyCard = ({
-  company,
+const JobCard = ({
+  jobs,
   savedJobs = [],
   toggleSaveJob,
   showBookmarkIcon = true,
@@ -199,6 +200,8 @@ const CompanyCard = ({
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
   const [appliedJobs, setAppliedJobs] = useState([]);
+ 
+   console.log(jobs);
 
   useEffect(() => {
     loadSavedJobs();
@@ -234,9 +237,9 @@ const CompanyCard = ({
     try {
       const jobWithDetails = {
         ...job,
-        company_name: company.company_name,
-        location: company.location,
-        logo: company.logo,
+        company_name: jobs.company_name,
+        location: jobs.location,
+        logo: jobs.logo,
       };
 
       const isJobSaved = localSavedJobs.some(
@@ -275,9 +278,9 @@ const CompanyCard = ({
       } else {
         const jobWithDetails = {
           ...job,
-          company_name: company.company_name,
-          location: company.location,
-          logo: company.logo,
+          company_name: jobs.company_name,
+          location: jobs.location,
+          logo: jobs.logo,
         };
         updatedAppliedJobs = [...appliedJobs, jobWithDetails];
         setAppliedJobs(updatedAppliedJobs);
@@ -289,7 +292,7 @@ const CompanyCard = ({
     }
   };
 
-  if (!company || !Array.isArray(company.posted_jobs)) {
+  if (!jobs || !Array.isArray(jobs.posted_jobs)) {
     return <Text style={styles.errorText}>Invalid company data</Text>;
   }
 
@@ -309,25 +312,25 @@ const CompanyCard = ({
   };
 
   return (
-    <View key={company.id} style={styles.companyContainer}>
+    <View key={  jobs.id} style={styles.companyContainer}>
       <TouchableOpacity
         style={{ marginHorizontal: 8 }}
-        onPress={() => navigation.navigate('JobDetailScreen', { company })}
+        onPress={() => navigation.navigate('JobDetailScreen', { job })}
       >
-        {company.posted_jobs.map((job, jobIndex) => (
+        {jobs.posted_jobs.map((jobs, jobIndex) => (
           <View key={jobIndex} style={styles.companyHeader}>
             <View style={styles.companyInfo}>
               <Image
                 source={
-                  company.logo
-                    ? { uri: company.logo }
+                  jobs.logo
+                    ? { uri: job.logo }
                     : require('../Assets/CompanyLogo/TCS_logo.png')
                 }
                 style={styles.companyImage}
               />
               <View>
-                <Text style={styles.jobTitle}>{job.job_title}</Text>
-                <Text style={styles.companyName}>{company.company_name}</Text>
+                <Text style={styles.jobTitle}>{jobs.job_title}</Text>
+                <Text style={styles.companyName}>{jobs.company_name}</Text>
               </View>
             </View>
 
@@ -360,14 +363,14 @@ const CompanyCard = ({
               style={styles.applyButton}
               icon={
                 appliedJobs.some(
-                  (appliedJob) => appliedJob.job_title === job.job_title
+                  (appliedJob) => appliedJob.job_title === jobs.job_title
                 )
                   ? 'check-circle'
                   : 'application'
               }
               iconColor={
                 appliedJobs.some(
-                  (appliedJob) => appliedJob.job_title === job.job_title
+                  (appliedJob) => appliedJob.job_title === jobs.job_title
                 )
                   ? colors.primary
                   : 'gray'
@@ -380,7 +383,7 @@ const CompanyCard = ({
         ))}
         
 
-        {company.posted_jobs.map((job, jobIndex) => (
+        {jobs.posted_jobs.map((jobs, jobIndex) => (
           <View key={`details-${jobIndex}`}>
             <View style={styles.location}>
               <IconButton
@@ -389,13 +392,13 @@ const CompanyCard = ({
                 size={18}
                 style={{ padding: 0, marginLeft: -10, height: 20 }}
               />
-              <Text style={styles.jobLocation}>{company.location}</Text>
+              <Text style={styles.jobLocation}>{jobs.location}</Text>
             </View>
 
             <View style={styles.jobDetailsContainer}>
               <View style={styles.chipContainer}>
-                {Array.isArray(job.job_type) &&
-                  job.job_type.map((type, typeIndex) => (
+                {Array.isArray(jobs.job_type) &&
+                  jobs.job_type.map((type, typeIndex) => (
                     <Text
                       key={typeIndex}
                       style={[styles.chip, getChipStyle(type)]}
@@ -416,12 +419,12 @@ const CompanyCard = ({
                   margin: 8,
                 }}
               >
-                <Text style={styles.jobDetails}>{job.salary_range}</Text>
+                <Text style={styles.jobDetails}>{jobs.salary_range}</Text>
 
                 <Text style={styles.jobPostedDate}>
-                  {job.posted_at
-                    ? moment(job.posted_at).isValid()
-                      ? moment(job.posted_at).format('MMMM D, YYYY')
+                  {jobs.posted_at
+                    ? moment(jobs.posted_at).isValid()
+                      ? moment(jobs.posted_at).format('MMMM D, YYYY')
                       : 'Invalid Date'
                     : 'January 2024'}
                 </Text>
@@ -530,4 +533,4 @@ const styles = StyleSheet.create({
   },
 });
  
-export default CompanyCard;
+export default JobCard ;

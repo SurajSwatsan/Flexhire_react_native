@@ -14,6 +14,7 @@ import JobbasedonPreferences from '../../Components/JobbasedonPreferences';
 // import {colors} from '../../Global_CSS/TheamColors';
 import RecommendedJobs from '../../Components/RecommendedJobs';
 import { colors } from '../../Global_CSS/TheamColors';
+import JobCard from '../../Constant/CustomJobCard';
 
 const HomeComponent = ({jobsData}) => {
   const navigation = useNavigation();
@@ -74,12 +75,9 @@ const HomeComponent = ({jobsData}) => {
         </View>
       </View>
       <ScrollView style={{flex: 1}}>
-        <View style={styles.JobsContainer}>
-          <View style={{marginVertical: 18, marginLeft: 18}}>
-            <RecommendedJobs />
-            <JobbasedonPreferences />
-          </View>
-        </View>
+     <View>
+      <JobCard/>
+     </View>
        
       </ScrollView>
     </View>
@@ -89,6 +87,8 @@ const HomeComponent = ({jobsData}) => {
 const styles = StyleSheet.create({
   bodycontainer: {
     backgroundColor: colors.bacground,
+    flex:1,
+    width:'100%',
   },
   container: {
     backgroundColor: colors.primary,
