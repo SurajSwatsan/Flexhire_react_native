@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../Global_CSS/theamColors';
+import {colors} from '../Global_CSS/TheamColors';
 
 const CustomDrawer = ({children}) => {
   const [drawerVisible, setDrawerVisible] = useState(false);

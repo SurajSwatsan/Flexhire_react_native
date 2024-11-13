@@ -9,124 +9,124 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import CustomHeader from './customHeader';
+import CustomHeader from '../Constant/CustomBackIcon';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {Checkbox, IconButton} from 'react-native-paper';
 import {useIsFocused} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import CompanyCard from '../ReusableComponents/ReusableJobCard';
+import CompanyCard from '../Constant/CustomJobCard';
 import {jobPost} from '../Redux/Action/JobAction';
 import {Dropdown} from 'react-native-element-dropdown';
  
 const SearchJobScreen = ({navigation, route}) => {
-  const isFocused = useIsFocused();
-  const {query} = route.params;
-  const [searchTerm, setSearchTerm] = useState(query || '');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [savedJobs, setSavedJobs] = useState([]);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  // const isFocused = useIsFocused();
+  // const {query} = route.params;
+  // const [searchTerm, setSearchTerm] = useState(query || '');
+  // const [results, setResults] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [savedJobs, setSavedJobs] = useState([]);
+  // const [filterModalVisible, setFilterModalVisible] = useState(false);
  
-  // Filter states
-  const [filterJobType, setFilterJobType] = useState([]);
-  const [filterLocation, setFilterLocation] = useState([]);
-  const [filterIndustry, setFilterIndustry] = useState([]);
-  const [filterSalaryRange, setFilterSalaryRange] = useState({
-    min: 0,
-    max: 1000000,
-  });
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [industryOptions, setIndustryOptions] = useState([]);
+  // // Filter states
+  // const [filterJobType, setFilterJobType] = useState([]);
+  // const [filterLocation, setFilterLocation] = useState([]);
+  // const [filterIndustry, setFilterIndustry] = useState([]);
+  // const [filterSalaryRange, setFilterSalaryRange] = useState({
+  //   min: 0,
+  //   max: 1000000,
+  // });
+  // const [locationOptions, setLocationOptions] = useState([]);
+  // const [industryOptions, setIndustryOptions] = useState([]);
  
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
  
-  // Load company data into the Redux store when the component mounts
-  useEffect(() => {
-    dispatch(jobPost());
-  }, [dispatch]);
+  // // Load company data into the Redux store when the component mounts
+  // useEffect(() => {
+  //   dispatch(jobPost());
+  // }, [dispatch]);
  
-  // Access jobs data from the Redux store
-  const company = useSelector(state => state.Jobs.jobsData);
+  // // Access jobs data from the Redux store
+  // const company = useSelector(state => state.Jobs.jobsData);
  
-  useEffect(() => {
-    setResults(company);
-    setLocationOptions(
-      company
-        ? company.map(comp => ({label: comp.location, value: comp.location}))
-        : [],
-    );
-    setIndustryOptions(
-      company
-        ? company.map(comp => ({label: comp.industry, value: comp.industry}))
-        : [],
-    );
-  }, [company]);
+  // useEffect(() => {
+  //   setResults(company);
+  //   setLocationOptions(
+  //     company
+  //       ? company.map(comp => ({label: comp.location, value: comp.location}))
+  //       : [],
+  //   );
+  //   setIndustryOptions(
+  //     company
+  //       ? company.map(comp => ({label: comp.industry, value: comp.industry}))
+  //       : [],
+  //   );
+  // }, [company]);
  
-  useEffect(() => {
-    filterJobs(searchTerm);
-  }, [searchTerm, filterJobType, filterLocation, filterIndustry, company]);
+  // useEffect(() => {
+  //   filterJobs(searchTerm);
+  // }, [searchTerm, filterJobType, filterLocation, filterIndustry, company]);
  
-  const filterJobs = term => {
-    if (!company || company.length === 0) return;
+  // const filterJobs = term => {
+  //   if (!company || company.length === 0) return;
  
-    setLoading(true);
-    const filteredJobs = company.filter(comp => {
-      const jobMatches =
-        comp.company_name.toLowerCase().includes(term.toLowerCase()) ||
-        comp.posted_jobs.some(job =>
-          job.job_title.toLowerCase().includes(term.toLowerCase()),
-        );
+  //   setLoading(true);
+  //   const filteredJobs = company.filter(comp => {
+  //     const jobMatches =
+  //       comp.company_name.toLowerCase().includes(term.toLowerCase()) ||
+  //       comp.posted_jobs.some(job =>
+  //         job.job_title.toLowerCase().includes(term.toLowerCase()),
+  //       );
  
-      const jobTypeMatches =
-        filterJobType.length > 0
-          ? comp.posted_jobs.some(job => filterJobType.includes(job.job_type))
-          : true;
+  //     const jobTypeMatches =
+  //       filterJobType.length > 0
+  //         ? comp.posted_jobs.some(job => filterJobType.includes(job.job_type))
+  //         : true;
  
-      const locationMatches =
-        filterLocation.length > 0
-          ? filterLocation.includes(comp.location)
-          : true;
+  //     const locationMatches =
+  //       filterLocation.length > 0
+  //         ? filterLocation.includes(comp.location)
+  //         : true;
  
-      const industryMatches =
-        filterIndustry.length > 0
-          ? filterIndustry.includes(comp.industry)
-          : true;
+  //     const industryMatches =
+  //       filterIndustry.length > 0
+  //         ? filterIndustry.includes(comp.industry)
+  //         : true;
  
-      const salaryMatches = comp.posted_jobs.some(job => {
-        const jobSalary = job.salary_range
-          ? job.salary_range.replace(/[^0-9.-]+/g, '') // Remove non-numeric characters
-          : 0;
-        const salary = parseInt(jobSalary, 10);
+  //     const salaryMatches = comp.posted_jobs.some(job => {
+  //       const jobSalary = job.salary_range
+  //         ? job.salary_range.replace(/[^0-9.-]+/g, '') // Remove non-numeric characters
+  //         : 0;
+  //       const salary = parseInt(jobSalary, 10);
  
-        return (
-          salary >= filterSalaryRange.min && salary <= filterSalaryRange.max
-        );
-      });
+  //       return (
+  //         salary >= filterSalaryRange.min && salary <= filterSalaryRange.max
+  //       );
+  //     });
  
-      return (
-        jobMatches &&
-        jobTypeMatches &&
-        locationMatches &&
-        industryMatches &&
-        salaryMatches
-      );
-    });
+  //     return (
+  //       jobMatches &&
+  //       jobTypeMatches &&
+  //       locationMatches &&
+  //       industryMatches &&
+  //       salaryMatches
+  //     );
+  //   });
  
-    setResults(filteredJobs);
-    setLoading(false);
-  };
+  //   setResults(filteredJobs);
+  //   setLoading(false);
+  // };
  
-  const handleFilterChange = (value, filterSetter, currentFilter) => {
-    if (currentFilter.includes(value)) {
-      filterSetter(currentFilter.filter(item => item !== value));
-    } else {
-      filterSetter([...currentFilter, value]);
-    }
-  };
+  // const handleFilterChange = (value, filterSetter, currentFilter) => {
+  //   if (currentFilter.includes(value)) {
+  //     filterSetter(currentFilter.filter(item => item !== value));
+  //   } else {
+  //     filterSetter([...currentFilter, value]);
+  //   }
+  // };
  
   return (
     <View style={styles.container}>
-      <View style={GlobalStyle.headerStyle}>
+      {/* <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
       </View>
  
@@ -241,7 +241,7 @@ const SearchJobScreen = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };

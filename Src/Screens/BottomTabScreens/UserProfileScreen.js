@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import Index from '../Screens/Profile Screen';
+import Index from '../Profile Screen';
 
 const UserProfile = () => {
   return (

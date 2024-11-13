@@ -19,7 +19,7 @@ import EducationComponent from './Education';
 const Index = () => {
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={{marginVertical: 12}}>
+      {/* <View style={{marginVertical: 12}}>
         <ProfileImage />
       </View>
       <View style={{}}>
@@ -56,7 +56,7 @@ const Index = () => {
         <Projects />
       </View>
       <EmploymentFormModal/>
-      <EducationComponent />
+      <EducationComponent /> */}
     </ScrollView>
   );
 };

@@ -10,12 +10,12 @@ import {
 import {Provider as PaperProvider} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
-import UserProfile from '../Common/UserProfile';
-import UserInvites from '../Common/UserInvites';
-import UserApplies from '../Common/UserApplies';
-import HomeComponent from '../Common/HomeComponent';
-import BookmarkScreen from '../Common/bookmark';
-import {colors} from '../Global_CSS/theamColors';
+import UserProfile from '../Screens/BottomTabScreens/UserProfileScreen';
+import UserInvites from '../Screens/BottomTabScreens/UserInvitesScreen';
+import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen';
+import HomeComponent from '../Screens/BottomTabScreens/HomeScreen';
+import BookmarkScreen from '../Screens/BottomTabScreens/SavedJobList';
+import {colors} from '../Global_CSS/TheamColors';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');

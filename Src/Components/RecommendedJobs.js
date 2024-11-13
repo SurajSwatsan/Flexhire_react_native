@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import {StyleSheet, ScrollView, View, Text} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import CompanyCard from '../ReusableComponents/ReusableJobCard';
+import CompanyCard from '../Constant/CustomJobCard';
 import {jobPost} from '../Redux/Action/JobAction';
-import {colors} from '../Global_CSS/theamColors';
+import {colors} from '../Global_CSS/TheamColors';
 
 const RecommendedJobs = () => {
   const dispatch = useDispatch();
@@ -22,38 +22,39 @@ const RecommendedJobs = () => {
   // console.log(company);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.subTitle}>Recommended jobs</Text>
-        <Text style={styles.sectionTitle}>view all</Text>
-      </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.contentContainer}>
-        {company.map((companyItem, index) => (
-          <View key={index} style={{minWidth: 300, maxWidth: 300}}>
-            <CompanyCard
-              company={{
-                ...companyItem,
-                company_name:
-                  companyItem.company_name.length > 15
-                    ? `${companyItem.company_name.substring(0, 15)}...`
-                    : companyItem.company_name,
-                posted_jobs: companyItem.posted_jobs.map(job => ({
-                  ...job,
-                  job_title:
-                    job.job_title.length > 20
-                      ? `${job.job_title.substring(0, 20)}...`
-                      : job.job_title,
-                })),
-              }}
-            />
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+    <View></View>
+    // <View style={styles.container}>
+    //   <View style={styles.sectionHeader}>
+    //     <Text style={styles.subTitle}>Recommended jobs</Text>
+    //     <Text style={styles.sectionTitle}>view all</Text>
+    //   </View>
+    //   <ScrollView
+    //     horizontal
+    //     showsHorizontalScrollIndicator={false}
+    //     style={styles.scrollContainer}
+    //     contentContainerStyle={styles.contentContainer}>
+    //     {company.map((companyItem, index) => (
+    //       <View key={index} style={{minWidth: 300, maxWidth: 300}}>
+    //         <CompanyCard
+    //           company={{
+    //             ...companyItem,
+    //             company_name:
+    //               companyItem.company_name.length > 15
+    //                 ? `${companyItem.company_name.substring(0, 15)}...`
+    //                 : companyItem.company_name,
+    //             posted_jobs: companyItem.posted_jobs.map(job => ({
+    //               ...job,
+    //               job_title:
+    //                 job.job_title.length > 20
+    //                   ? `${job.job_title.substring(0, 20)}...`
+    //                   : job.job_title,
+    //             })),
+    //           }}
+    //         />
+    //       </View>
+    //     ))}
+    //   </ScrollView>
+    // </View>
   );
 };
 

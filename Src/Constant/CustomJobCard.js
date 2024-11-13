@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import moment from 'moment';
-import { colors } from '../Global_CSS/theamColors';
+import { colors } from '../Global_CSS/TheamColors';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
  
@@ -321,7 +321,7 @@ const CompanyCard = ({
                 source={
                   company.logo
                     ? { uri: company.logo }
-                    : require('../Assets/Logo/TCS_logo.png')
+                    : require('../Assets/CompanyLogo/TCS_logo.png')
                 }
                 style={styles.companyImage}
               />

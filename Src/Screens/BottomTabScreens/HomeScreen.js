@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
-import JobbasedonPreferences from '../Components/JobbasedonPreferences';
-import CompanysList from '../Components/CompanysList';
-import {colors} from '../Global_CSS/theamColors';
-import RecommendedJobs from '../Components/RecommendedJobs';
+import JobbasedonPreferences from '../../Components/JobbasedonPreferences';
+// import {colors} from '../../Global_CSS/TheamColors';
+import RecommendedJobs from '../../Components/RecommendedJobs';
+import { colors } from '../../Global_CSS/TheamColors';
 
 const HomeComponent = ({jobsData}) => {
   const navigation = useNavigation();
@@ -80,9 +80,7 @@ const HomeComponent = ({jobsData}) => {
             <JobbasedonPreferences />
           </View>
         </View>
-        <View style={styles.companylistContainer}>
-          <CompanysList />
-        </View>
+       
       </ScrollView>
     </View>
   );

@@ -1,22 +1,20 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import homeComponent from '../Components/homeComponent.js';
-import detailsComponent from '../Components/detailsComponent.js';
-import SplashScreen from '../Screens/SplashScreen.js';
+import SearchJobScreen from '../Components/searchResults.js';
+import JobDetailScreen from '../Components/JobDetail.js';
+import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen.js';
+import ApplyJobScreen from '../Components/ApplyJobScreen.js';
+import SavedJobScreen from '../Screens/BottomTabScreens/SavedJobList.js';
+import DetailsComponent from '../Trialpages/detailsComponent.js';
 import LoginScreen from '../Screens/UserScreens/LoginScreen.js';
+import SplashScreen from '../Screens/SplashScreen.js';
 import SignupScreen from '../Screens/UserScreens/SignupScreen.js';
 import ForgotpasswordScreen from '../Screens/UserScreens/ForgotpasswordScreen.js';
 import LogoutComponent from '../Screens/UserScreens/LogoutScreen.js';
 import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.js';
 import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
-import SearchResults from '../Components/searchResults.js';
-import SearchJobScreen from '../Components/searchResults.js';
-import JobDetailsScreen from '../Components/jobDetail.js';
-import JobDetailScreen from '../Components/jobDetail.js';
-import BookmarkScreen from '../Common/bookmark.js';
-import UserApplies from '../Common/UserApplies.js';
-import ApplyJobScreen from '../Components/ApplyJobScreen.js';
+import HomeComponent from '../Screens/BottomTabScreens/HomeScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -34,7 +32,7 @@ const StackNavigation = () => {
       />
       <Stack.Screen
         name="Home"
-        component={homeComponent}
+        component={HomeComponent}
         options={{headerShown: false}}
       />
 
@@ -71,7 +69,7 @@ const StackNavigation = () => {
 
       <Stack.Screen
         name="Details"
-        component={detailsComponent}
+        component={DetailsComponent}
         options={{headerShown: false}}
       />
 
@@ -89,7 +87,7 @@ const StackNavigation = () => {
 
       <Stack.Screen
         name="bookmark"
-        component={BookmarkScreen}
+        component={SavedJobScreen}
         options={{headerShown: false}}
       />
 

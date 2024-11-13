@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, ScrollView, StyleSheet} from 'react-native';
-import CustomHeader from '../Components/customHeader';
+import CustomHeader from '../../Constant/CustomBackIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CompanyCard from '../ReusableComponents/ReusableJobCard';
-import {colors} from '../Global_CSS/theamColors';
+import CompanyCard from '../../Constant/CustomJobCard';
+import {colors} from '../../Global_CSS/TheamColors';
 
-const BookmarkScreen = ({navigation}) => {
+const SavedJobScreen = ({navigation}) => {
   const [savedJobs, setSavedJobs] = useState([]);
 
   useEffect(() => {
@@ -76,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookmarkScreen;
+export default SavedJobScreen;

@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import StackNavigation from './src/Navigation/stackNavigation';
 import {PaperProvider} from 'react-native-paper';
 import {StatusBar} from 'react-native';
-import {colors} from './src/Global_CSS/theamColors';
+import {colors} from './src/Global_CSS/TheamColors';
 import {Provider} from 'react-redux';
 import store from './src/Redux/store';
 

@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {colors} from '../Global_CSS/theamColors';
+import {colors} from '../Global_CSS/TheamColors';
 import {useDispatch, useSelector} from 'react-redux';
 import {jobPost} from '../Redux/Action/JobAction';
-import CompanyCard from '../ReusableComponents/ReusableJobCard';
+import CompanyCard from '../Constant/CustomJobCard';
 
 const JobbasedonPreferences = () => {
   const dispatch = useDispatch();
@@ -31,16 +31,16 @@ const JobbasedonPreferences = () => {
 
   return (
     <View style={styles.MainContainer}>
-      <View style={styles.titleContainer}>
+      {/* <View style={styles.titleContainer}>
         <Text style={styles.title}>
           Job based on your Preferences ({company.length})
         </Text>
         <Text style={styles.viewAll}>View All</Text>
-      </View>
+      </View> */}
       {/* {isLoading ? ( // Optional loading indicator
         <ActivityIndicator size="large" color="#0000ff" />
       ) : ( */}
-      <ScrollView
+      {/* <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}
@@ -65,7 +65,7 @@ const JobbasedonPreferences = () => {
             />
           </View>
         ))}
-      </ScrollView>
+      </ScrollView> */}
       {/* )}  */}
     </View>
   );

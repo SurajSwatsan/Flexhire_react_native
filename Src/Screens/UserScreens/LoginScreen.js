@@ -103,7 +103,7 @@ const LoginScreen = () => {
         <View style={styles.FormContainer}>
           <Image
             style={styles.loginpng}
-            source={require('../../Assets/Logo/flexhire-logo.png')}
+            source={require('../../Assets/CompanyLogo/flexhire_logo.png')}
           />
           <Text style={styles.heading}>Login</Text>
           <Formik

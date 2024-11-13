@@ -211,7 +211,7 @@
 
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import { colors } from '../Global_CSS/theamColors';
+import { colors } from '../../Global_CSS/TheamColors';
 import { useNavigation } from '@react-navigation/native';
 
 const UserApplies = () => {
@@ -221,7 +221,7 @@ const UserApplies = () => {
     <View style={styles.applyContainer}>
       <View style={styles.ImageContainer}>
         <Image
-          source={require('../Assets/ApplyImages/apply.png')}
+          source={require('../../Assets/ApplyImages/apply.png')}
           style={styles.Image}
         />
         <Text style={styles.textContainer}>You haven't applied yet!</Text>

@@ -67,7 +67,7 @@ const SignupScreen = () => {
             <View style={styles.formContainer}>
               <Image
                 style={styles.loginpng}
-                source={require('../../Assets/Logo/flexhire-logo.png')}
+                source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
               />
               <Text style={styles.heading}>Signup</Text>
 

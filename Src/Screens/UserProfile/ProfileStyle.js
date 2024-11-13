@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {colors} from '../Global_CSS/theamColors';
+import {colors} from '../../Global_CSS/TheamColors';
 const screenWidth = Dimensions.get('window').width;
 const horizontalMargin = 12 * 2; // Total margin (left + right)
 

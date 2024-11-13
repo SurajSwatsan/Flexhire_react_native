@@ -556,9 +556,9 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CompanyCard from '../ReusableComponents/ReusableJobCard';
-import {colors} from '../Global_CSS/theamColors';
-import UserApplies from '../Common/UserApplies';
+import CompanyCard from '../Constant/CustomJobCard';
+import {colors} from '../Global_CSS/TheamColors';
+import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen';
 // import CompanyCard from '../components/CompanyCard'; // Make sure this component is properly imported
 // import UserApplies from './UserApplies'; // Import the UserApplies component
 // import { colors } from '../Global_CSS/theamColors'; // Assuming the colors are from your theme

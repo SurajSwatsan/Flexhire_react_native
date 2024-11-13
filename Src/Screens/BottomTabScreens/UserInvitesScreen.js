@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import ReusableTextInput from '../ReusableComponents/ReusableTextInput';
-import ReusableDropdown from '../ReusableComponents/ReusableDropdown';
-import ReusableDatePicker from '../ReusableComponents/ReusableDatePicker';
+import ReusableTextInput from '../../Constant/CustomTextInput';
+import ReusableDropdown from '../../Constant/CustomDropdown';
+import ReusableDatePicker from '../../Constant/CustomDatePicker';
 import {Button} from 'react-native-paper';
-import {colors} from '../Global_CSS/theamColors';
-import GlobalStyle from '../Global_CSS/GlobalStyle';
+import {colors} from '../../Global_CSS/TheamColors';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
 import BasicDetails from '../UserProfile/Basicdetails';
 
 const validationSchema = Yup.object().shape({

@@ -7,9 +7,9 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import CustomHeader from './customHeader';
+import CustomHeader from '../Constant/CustomBackIcon';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
-import {colors} from '../Global_CSS/theamColors';
+import {colors} from '../Global_CSS/TheamColors';
 import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -232,7 +232,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 source={
                   company.logo
                     ? {uri: company.logo} // Use URI if the logo is a valid URL or path
-                    : require('../Assets/Logo/TCS_logo.png') // Fallback to a default image
+                    : require('../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
                 }
                 style={styles.logo}
               />

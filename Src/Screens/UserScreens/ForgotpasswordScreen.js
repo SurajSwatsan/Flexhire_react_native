@@ -33,7 +33,7 @@ const ForgotpasswordScreen = () => {
           <View style={styles.Formcontainer}>
             <Image
               style={styles.imageContainer}
-              source={require('../../Assets/Logo/flexhire-logo.png')}
+              source={require('../../Assets/CompanyLogo/flexhire_logo.png')}
             />
             <Text style={styles.headingText}>Forgot password</Text>
             <TextInput
