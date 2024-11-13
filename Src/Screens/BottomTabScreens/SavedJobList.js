@@ -64,7 +64,7 @@ console.log(savedJobs);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bacground,
+    backgroundColor: colors.background,
     width: '100%',
     padding: 12,
   },

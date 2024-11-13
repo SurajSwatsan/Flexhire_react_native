@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   companyLocation: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontSize: 12,
   },
 
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   viewAll: {
     fontSize: 15,
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontWeight: 'bold',
   },
   itemText: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   companyName: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -134,11 +134,11 @@ const styles = StyleSheet.create({
   },
 
   jobTitleText: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontSize: 15,
   },
   experienceText: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontSize: 12,
   },
 });

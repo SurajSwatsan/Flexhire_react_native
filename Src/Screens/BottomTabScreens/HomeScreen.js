@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
+<<<<<<< HEAD
 import JobbasedonPreferences from '../../Components/JobbasedonPreferences';
 // import {colors} from '../../Global_CSS/TheamColors';
 import RecommendedJobs from '../../Components/RecommendedJobs';
@@ -387,25 +388,31 @@ const JobBasedProfile = [
     },
   },
 ];
+=======
+import {useDispatch, useSelector} from 'react-redux';
+import {jobPost} from '../../Redux/Action/JobAction';
+import CustomJobCard from '../../Constant/CustomJobCard';
+import {colors} from '../../Global_CSS/TheamColors';
+import CustomCompanyCard from '../../Constant/CustomCompanyCard';
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
 
-const HomeComponent = ({jobsData}) => {
+const HomeComponent = () => {
   const navigation = useNavigation();
   const [query, setQuery] = useState('');
+  const dispatch = useDispatch();
+
+  // Load jobs data into the Redux store when the component mounts
+  useEffect(() => {
+    dispatch(jobPost());
+  }, [dispatch]);
 
   useFocusEffect(
     React.useCallback(() => {
       const backAction = () => {
         if (navigation.isFocused()) {
           Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
-            {
-              text: 'No',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
+            {text: 'No', onPress: () => null, style: 'cancel'},
+            {text: 'YES', onPress: () => BackHandler.exitApp()},
           ]);
           return true;
         } else {
@@ -425,6 +432,13 @@ const HomeComponent = ({jobsData}) => {
   const handleSearch = () => {
     navigation.navigate('searchjob', {query});
   };
+
+  // Access jobs data from the Redux store
+  const jobs = useSelector(state => state.Jobs.jobsData);
+
+  if (!jobs || jobs.length === 0) {
+    return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
+  }
 
   return (
     <View style={styles.bodycontainer}>
@@ -446,6 +460,7 @@ const HomeComponent = ({jobsData}) => {
           />
         </View>
       </View>
+<<<<<<< HEAD
       <View style={{marginHorizontal: 10, marginVertical: 10}}>
         <View style={styles.TextContainer}>
           <Text style={{fontSize: 14, color: '#000', fontWeight: 'bold'}}>
@@ -500,12 +515,77 @@ const HomeComponent = ({jobsData}) => {
           ))}
         </ScrollView>
       </View>
+=======
+
+      <ScrollView style={{flex: 1}}>
+        <View style={styles.JobsContainer}>
+          <View style={{marginVertical: 12, marginLeft: 12}}>
+            <View style={styles.displayContainer}>
+              <Text style={styles.contHead}>Recommended Jobs</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.contentContainer}>
+              {jobs.map((jobdata, index) => (
+                <View
+                  key={jobdata.id || index}
+                  style={{minWidth: 300, maxWidth: 300}}>
+                  <CustomJobCard jobData={jobdata} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={{marginVertical: 12, marginLeft: 12}}>
+            <View style={styles.displayContainer}>
+              <Text style={styles.contHead}>Based on profile</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.contentContainer}>
+              {jobs.map((jobdata, index) => (
+                <View
+                  key={jobdata.id || index}
+                  style={{minWidth: 300, maxWidth: 300}}>
+                  <CustomJobCard jobData={jobdata} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={{marginVertical: 12, marginLeft: 12}}>
+            <View style={styles.displayContainer}>
+              <Text style={styles.contHead}>Top Companys</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.contentContainer}>
+              {jobs.map((jobdata, index) => (
+                <View
+                  key={jobdata.id || index}
+                  style={{minWidth: 300, maxWidth: 300}}>
+                  <CustomCompanyCard jobData={jobdata} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </ScrollView>
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   bodycontainer: {
+<<<<<<< HEAD
     backgroundColor: colors.bacground,
     flex: 1,
     width: '100%',
@@ -515,25 +595,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal:10,
     marginVertical:4
+=======
+    backgroundColor: colors.background,
+    flex: 1,
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   },
   container: {
     backgroundColor: colors.primary,
     height: 90,
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
   },
   searchbarContainer: {
-    marginHorizontal: 12,
     flexDirection: 'row',
-    marginVertical: 18,
     backgroundColor: colors.cardBgcolor,
     borderRadius: 8,
     height: 48,
+<<<<<<< HEAD
+=======
+    alignItems: 'center',
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   },
   searchbar: {
     flex: 1,
     paddingHorizontal: 10,
-    padding: 12,
     fontSize: 16,
     color: '#000',
   },
@@ -541,8 +628,36 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: '#fff',
   },
+<<<<<<< HEAD
   contentContainer: {},
   JobsContainer: {},
+=======
+  JobsContainer: {
+    marginTop: 12,
+  },
+  displayContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  contHead: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.blackText,
+  },
+  seeAll: {
+    fontSize: 14,
+    color: colors.blackText,
+    marginRight: 8,
+  },
+  noCompanyText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#999',
+    marginTop: 20,
+  },
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
 });
 
 export default HomeComponent;

@@ -17,7 +17,7 @@ const profileStyle = StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -26,7 +26,7 @@ const profileStyle = StyleSheet.create({
     marginBottom: 12,
   },
   optionalData: {
-    color: colors.textPrimary,
+    color: colors.blackText,
   },
   modalContainer: {
     height: '100%',
@@ -43,16 +43,16 @@ const profileStyle = StyleSheet.create({
   },
   formHeading: {
     fontSize: 18,
-    color: colors.textPrimary,
+    color: colors.blackText,
     marginVertical: 12,
     fontWeight: 'bold',
   },
   formSubHeading: {
     fontSize: 14,
-    color: colors.textPrimary,
+    color: colors.blackText,
   },
   label: {
-    color: colors.textPrimary,
+    color: colors.blackText,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -67,7 +67,7 @@ const profileStyle = StyleSheet.create({
     color: '#fff',
   },
   unselectedTabText: {
-    color: colors.textPrimary,
+    color: colors.blackText,
   },
   TabContainer: {
     flexDirection: 'row',

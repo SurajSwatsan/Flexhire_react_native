@@ -84,7 +84,7 @@ const BasicDetails = () => {
         <Text style={profileStyle.heading}>Basic details</Text>
         <IconButton
           icon="lead-pencil"
-          iconColor={colors.textPrimary}
+          iconColor={colors.blackText}
           size={18}
           onPress={openModal}
           style={profileStyle.editButton}
@@ -253,7 +253,7 @@ const BasicDetails = () => {
 
 const Style = StyleSheet.create({
   Text: {
-    color: colors.textPrimary,
+    color: colors.blackText,
   },
 });
 

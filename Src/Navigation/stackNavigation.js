@@ -1,7 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SearchJobScreen from '../Components/searchResults.js';
-import JobDetailScreen from '../Components/JobDetail.js';
 import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen.js';
 import ApplyJobScreen from '../Components/ApplyJobScreen.js';
 import SavedJobScreen from '../Screens/BottomTabScreens/SavedJobList.js';
@@ -15,6 +14,7 @@ import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.
 import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
 import HomeComponent from '../Screens/BottomTabScreens/HomeScreen.js';
+import JobDetailScreen from '../Components/JobDetail.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();

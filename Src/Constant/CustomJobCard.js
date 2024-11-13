@@ -5,7 +5,11 @@ import moment from 'moment';
 import {colors} from '../Global_CSS/TheamColors';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
 const CustomJobCard = ({
   jobData,
   savedJobs = [],
@@ -21,7 +25,11 @@ const CustomJobCard = ({
     loadSavedJobs();
     loadAppliedJobs();
   }, []);
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   const loadSavedJobs = async () => {
     try {
       const storedJobs = await AsyncStorage.getItem('savedJobs');
@@ -30,7 +38,11 @@ const CustomJobCard = ({
       console.error('Failed to load saved jobs', error);
     }
   };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   const loadAppliedJobs = async () => {
     try {
       const storedAppliedJobs = await AsyncStorage.getItem('appliedJobs');
@@ -39,19 +51,31 @@ const CustomJobCard = ({
       console.error('Failed to load applied jobs', error);
     }
   };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   const handleToggleSaveJob = async job => {
     try {
       const isJobSaved = localSavedJobs.some(
         savedJob => savedJob.job_title === job.job_title,
       );
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
       const updatedJobs = isJobSaved
         ? localSavedJobs.filter(
             savedJob => savedJob.job_title !== job.job_title,
           )
         : [...localSavedJobs, jobData];
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
       setLocalSavedJobs(updatedJobs);
       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
       if (!isJobSaved && toggleSaveJob) toggleSaveJob(jobData);
@@ -59,11 +83,16 @@ const CustomJobCard = ({
       console.error('Failed to save or remove job', error);
     }
   };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   const handleApplyJob = async job => {
     try {
       const isJobApplied = appliedJobs.some(
         appliedJob => appliedJob.job_title === job.job_title,
+<<<<<<< HEAD
       );
  
       if (isJobApplied) return;
@@ -75,15 +104,36 @@ const CustomJobCard = ({
         'appliedJobs',
         JSON.stringify(updatedAppliedJobs),
       );
+=======
+      );
+
+      if (isJobApplied) return;
+
+      const updatedAppliedJobs = [...appliedJobs, jobData];
+      setAppliedJobs(updatedAppliedJobs);
+
+      await AsyncStorage.setItem(
+        'appliedJobs',
+        JSON.stringify(updatedAppliedJobs),
+      );
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
     } catch (error) {
       console.error('Failed to apply for job', error);
     }
   };
+<<<<<<< HEAD
  
   if (!jobData || typeof jobData !== 'object') {
     return <Text style={styles.errorText}>Invalid job data</Text>;
   }
  
+=======
+
+  if (!jobData || typeof jobData !== 'object') {
+    return <Text style={styles.errorText}>Invalid job data</Text>;
+  }
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   return (
     <View style={styles.companyContainer}>
       <TouchableOpacity
@@ -106,7 +156,11 @@ const CustomJobCard = ({
               </Text>
             </View>
           </View>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
           {showBookmarkIcon && (
             <IconButton
               style={styles.saveIcon}
@@ -128,7 +182,11 @@ const CustomJobCard = ({
               onPress={() => handleToggleSaveJob(jobData)}
             />
           )}
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
           {showCheckmarkIcon && (
             <IconButton
               style={styles.applyButton}
@@ -151,7 +209,11 @@ const CustomJobCard = ({
             />
           )}
         </View>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
         <View style={styles.location}>
           <IconButton
             icon="map-marker"
@@ -170,8 +232,12 @@ const CustomJobCard = ({
             ))}
           </View>
           <View style={{height: 0.5, backgroundColor: 'lightgray'}} />
+<<<<<<< HEAD
  
           {/* <Text style={styles.experience}>{jobData.experience}</Text> */}
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
           {/* <Text style={styles.education}>
             Education: {jobData.education.join(', ')}
           </Text> */}
@@ -188,7 +254,11 @@ const CustomJobCard = ({
               {jobData.salary_min} - {jobData.salary_max}
             </Text>
             <Text style={styles.jobPostedDate}>
+<<<<<<< HEAD
               {moment(jobData.posted_date).format('D MMM YY')}
+=======
+              {moment(jobData.posted_date).format('MMMM D, YYYY')}
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
             </Text>
           </View>
         </View>
@@ -196,14 +266,23 @@ const CustomJobCard = ({
     </View>
   );
 };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
 const styles = StyleSheet.create({
   companyContainer: {
     padding: 5,
     backgroundColor: '#fff',
+<<<<<<< HEAD
     borderRadius: 10,
     margin: 8,
     // marginLeft:12,
+=======
+    borderRadius: 8,
+    marginRight: 8,
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   },
   companyHeader: {
     flexDirection: 'row',
@@ -244,7 +323,11 @@ const styles = StyleSheet.create({
     margin: 5,
     gap: 8,
   },
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
   chip: {
     fontSize: 12,
     paddingVertical: 6,
@@ -297,5 +380,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
+<<<<<<< HEAD
  
 export default CustomJobCard;
+=======
+
+export default CustomJobCard;
+>>>>>>> 310650a86f048a257dc3a07ddae3130b85008ce1
