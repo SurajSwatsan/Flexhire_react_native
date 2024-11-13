@@ -6,14 +6,206 @@ import { colors } from '../Global_CSS/theamColors';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
  
-const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon = true, isJobApplied= false}) => {
+// const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon = true, }) => {
+//   const navigation = useNavigation();
+//   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
+ 
+//   useEffect(() => {
+//     loadSavedJobs();
+//   }, []);
+ 
+//   const loadSavedJobs = async () => {
+//     try {
+//       const storedJobs = await AsyncStorage.getItem('savedJobs');
+//       if (storedJobs !== null) {
+//         setLocalSavedJobs(JSON.parse(storedJobs));
+//       }
+//     } catch (error) {
+//       console.error('Failed to load saved jobs', error);
+//     }
+//   };
+ 
+//   const handleToggleSaveJob = async job => {
+//     console.log("handleToggleSaveJob",job);
+    
+//     try {
+//       const jobWithDetails = {
+//         ...job,
+//         company_name: company.company_name,
+//         location: company.location,
+//         logo: company.logo,
+//       };
+ 
+//       const isJobSaved = localSavedJobs.some(
+//         savedJob => savedJob.job_title === job.job_title
+//       );
+ 
+//       let updatedJobs;
+//       if (isJobSaved) {
+//         updatedJobs = localSavedJobs.filter(
+//           savedJob => savedJob.job_title !== job.job_title
+//         );
+//         setLocalSavedJobs(updatedJobs);
+//         if (toggleSaveJob) toggleSaveJob(job);
+//       } else {
+//         updatedJobs = [...localSavedJobs, jobWithDetails];
+//         setLocalSavedJobs(updatedJobs);
+//       }
+ 
+//       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
+//     } catch (error) {
+//       console.error('Failed to save or remove job', error);
+//     }
+//   };
+ 
+//   if (!company || !Array.isArray(company.posted_jobs)) {
+//     return <Text style={styles.errorText}>Invalid company data</Text>;
+//   }
+ 
+//   const getChipStyle = value => {
+//     switch (value) {
+//       case 'Full-time':
+//         return styles.fullTimeChip;
+//       case 'Part-time':
+//         return styles.partTimeChip;
+//       case 'Contract':
+//         return styles.contractChip;
+//       case 'Internship':
+//         return styles.internshipChip;
+//       default:
+//         return styles.defaultChip;
+//     }
+//   };
+ 
+//   return (
+//     <View key={company.id} style={styles.companyContainer}>
+//       <TouchableOpacity
+//         style={{ marginHorizontal: 8 }}
+//         onPress={() => navigation.navigate('JobDetailScreen', { company })}>
+//         {company.posted_jobs.map((job, jobIndex) => (
+//           <View key={jobIndex} style={styles.companyHeader}>
+//             <View style={styles.companyInfo}>
+//               <Image
+//                 source={
+//                   company.logo
+//                     ? { uri: company.logo }
+//                     : require('../Assets/Logo/TCS_logo.png')
+//                 }
+//                 style={styles.companyImage}
+//               />
+//               <View>
+//                 <Text style={styles.jobTitle}>{job.job_title}</Text>
+//                 <Text style={styles.companyName}>{company.company_name}</Text>
+//               </View>
+//             </View>
+
+            
+//            {showBookmarkIcon &&(
+//             <IconButton
+//               style={styles.saveIcon}
+//               icon={
+//                 Array.isArray(localSavedJobs) &&
+//                 localSavedJobs.some(
+//                   savedJob => savedJob.job_title === job.job_title
+//                 )
+//                   ? 'bookmark'
+//                   : 'bookmark-outline'
+//               }
+//               iconColor={
+//                 Array.isArray(localSavedJobs) &&
+//                 localSavedJobs.some(
+//                   savedJob => savedJob.job_title === job.job_title
+//                 )
+//                   ? '#000'
+//                   : 'gray'
+//               }
+//               size={28}
+//               onPress={() => handleToggleSaveJob(job)}
+//             />
+            
+            
+//            )}
+//             {/* {showBookmarkIcon && (
+//               <IconButton
+//                 style={styles.saveIcon}
+//                 icon={isJobApplied ? 'check-circle' : 'bookmark-outline'} // Checkmark if applied, bookmark if not
+//                 iconColor={isJobApplied ? colors.primary : 'gray'} // Use primary color if applied, gray if not
+//                 size={28}
+//                 onPress={() => handleToggleSaveJob(job)} // Handle save or remove
+//               />
+//             )} */}
+//           </View>
+//         ))}
+ 
+//         {company.posted_jobs.map((job, jobIndex) => (
+//           <View key={`details-${jobIndex}`}>
+//             <View style={styles.location}>
+//               <IconButton
+//                 icon="map-marker"
+//                 iconColor={colors.primary}
+//                 size={18}
+//                 style={{ padding: 0, marginLeft: -10, height: 20 }}
+//               />
+//               <Text style={styles.jobLocation}>{company.location}</Text>
+//             </View>
+ 
+//             <View style={styles.jobDetailsContainer}>
+//               <View style={styles.chipContainer}>
+//                 {Array.isArray(job.job_type) &&
+//                   job.job_type.map((type, typeIndex) => (
+//                     <Text
+//                       key={typeIndex}
+//                       style={[styles.chip, getChipStyle(type)]}>
+//                       {type}
+//                     </Text>
+//                   ))}
+//               </View>
+ 
+//               <View
+//                 style={{ height: 0.5, backgroundColor: 'lightgray', margin: 5 }}
+//               />
+ 
+//               <View
+//                 style={{
+//                   flexDirection: 'row',
+//                   justifyContent: 'space-between',
+//                   margin: 8,
+//                 }}>
+//                 <Text style={styles.jobDetails}>{job.salary_range}</Text>
+ 
+//                 <Text style={styles.jobPostedDate}>
+//                   {job.posted_at
+//                     ? moment(job.posted_at).isValid()
+//                       ? moment(job.posted_at).format('MMMM D, YYYY')
+//                       : 'Invalid Date'
+//                     : 'January 2024'}
+//                 </Text>
+//               </View>
+//             </View>
+//           </View>
+//         ))}
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+ 
+const CompanyCard = ({
+  company,
+  savedJobs = [],
+  toggleSaveJob,
+  showBookmarkIcon = true,
+  showCheckmarkIcon = false,
+}) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
- 
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
   useEffect(() => {
     loadSavedJobs();
+    loadAppliedJobs();
   }, []);
- 
+
+  // Load saved jobs from AsyncStorage
   const loadSavedJobs = async () => {
     try {
       const storedJobs = await AsyncStorage.getItem('savedJobs');
@@ -24,10 +216,21 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
       console.error('Failed to load saved jobs', error);
     }
   };
- 
-  const handleToggleSaveJob = async job => {
-    console.log("handleToggleSaveJob",job);
-    
+
+  // Load applied jobs from AsyncStorage
+  const loadAppliedJobs = async () => {
+    try {
+      const storedAppliedJobs = await AsyncStorage.getItem('appliedJobs');
+      if (storedAppliedJobs !== null) {
+        setAppliedJobs(JSON.parse(storedAppliedJobs));
+      }
+    } catch (error) {
+      console.error('Failed to load applied jobs', error);
+    }
+  };
+
+  // Handle toggling save job
+  const handleToggleSaveJob = async (job) => {
     try {
       const jobWithDetails = {
         ...job,
@@ -35,15 +238,15 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
         location: company.location,
         logo: company.logo,
       };
- 
+
       const isJobSaved = localSavedJobs.some(
-        savedJob => savedJob.job_title === job.job_title
+        (savedJob) => savedJob.job_title === job.job_title
       );
- 
+
       let updatedJobs;
       if (isJobSaved) {
         updatedJobs = localSavedJobs.filter(
-          savedJob => savedJob.job_title !== job.job_title
+          (savedJob) => savedJob.job_title !== job.job_title
         );
         setLocalSavedJobs(updatedJobs);
         if (toggleSaveJob) toggleSaveJob(job);
@@ -51,18 +254,46 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
         updatedJobs = [...localSavedJobs, jobWithDetails];
         setLocalSavedJobs(updatedJobs);
       }
- 
+
       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
     } catch (error) {
       console.error('Failed to save or remove job', error);
     }
   };
- 
+
+  // Handle job application
+  const handleApplyJob = async (job) => {
+    try {
+      const isJobApplied = appliedJobs.some(
+        (appliedJob) => appliedJob.job_title === job.job_title
+      );
+
+      let updatedAppliedJobs;
+      if (isJobApplied) {
+        // If the job was already applied, do nothing
+        return;
+      } else {
+        const jobWithDetails = {
+          ...job,
+          company_name: company.company_name,
+          location: company.location,
+          logo: company.logo,
+        };
+        updatedAppliedJobs = [...appliedJobs, jobWithDetails];
+        setAppliedJobs(updatedAppliedJobs);
+
+        await AsyncStorage.setItem('appliedJobs', JSON.stringify(updatedAppliedJobs));
+      }
+    } catch (error) {
+      console.error('Failed to apply for job', error);
+    }
+  };
+
   if (!company || !Array.isArray(company.posted_jobs)) {
     return <Text style={styles.errorText}>Invalid company data</Text>;
   }
- 
-  const getChipStyle = value => {
+
+  const getChipStyle = (value) => {
     switch (value) {
       case 'Full-time':
         return styles.fullTimeChip;
@@ -76,12 +307,13 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
         return styles.defaultChip;
     }
   };
- 
+
   return (
     <View key={company.id} style={styles.companyContainer}>
       <TouchableOpacity
         style={{ marginHorizontal: 8 }}
-        onPress={() => navigation.navigate('JobDetailScreen', { company })}>
+        onPress={() => navigation.navigate('JobDetailScreen', { company })}
+      >
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={jobIndex} style={styles.companyHeader}>
             <View style={styles.companyInfo}>
@@ -98,43 +330,56 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
                 <Text style={styles.companyName}>{company.company_name}</Text>
               </View>
             </View>
-           {showBookmarkIcon &&(
+
+            {showBookmarkIcon && (
+              <IconButton
+                style={styles.saveIcon}
+                icon={
+                  Array.isArray(localSavedJobs) &&
+                  localSavedJobs.some(
+                    (savedJob) => savedJob.job_title === job.job_title
+                  )
+                    ? 'bookmark'
+                    : 'bookmark-outline'
+                }
+                iconColor={
+                  Array.isArray(localSavedJobs) &&
+                  localSavedJobs.some(
+                    (savedJob) => savedJob.job_title === job.job_title
+                  )
+                    ? '#000'
+                    : 'gray'
+                }
+                size={28}
+                onPress={() => handleToggleSaveJob(job)}
+              />
+            )}
+
+            {showCheckmarkIcon &&
             <IconButton
-              style={styles.saveIcon}
+              style={styles.applyButton}
               icon={
-                Array.isArray(localSavedJobs) &&
-                localSavedJobs.some(
-                  savedJob => savedJob.job_title === job.job_title
+                appliedJobs.some(
+                  (appliedJob) => appliedJob.job_title === job.job_title
                 )
-                  ? 'bookmark'
-                  : 'bookmark-outline'
+                  ? 'check-circle'
+                  : 'application'
               }
               iconColor={
-                Array.isArray(localSavedJobs) &&
-                localSavedJobs.some(
-                  savedJob => savedJob.job_title === job.job_title
+                appliedJobs.some(
+                  (appliedJob) => appliedJob.job_title === job.job_title
                 )
-                  ? '#000'
+                  ? colors.primary
                   : 'gray'
               }
               size={28}
-              onPress={() => handleToggleSaveJob(job)}
+              onPress={() => handleApplyJob(job)} // Handle apply job
             />
-
-            
-           )}
-            {/* {showBookmarkIcon && (
-              <IconButton
-                style={styles.saveIcon}
-                icon={isJobApplied ? 'check-circle' : 'bookmark-outline'} // Checkmark if applied, bookmark if not
-                iconColor={isJobApplied ? colors.primary : 'gray'} // Use primary color if applied, gray if not
-                size={28}
-                onPress={() => handleToggleSaveJob(job)} // Handle save or remove
-              />
-            )} */}
+   }
           </View>
         ))}
- 
+        
+
         {company.posted_jobs.map((job, jobIndex) => (
           <View key={`details-${jobIndex}`}>
             <View style={styles.location}>
@@ -146,31 +391,33 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
               />
               <Text style={styles.jobLocation}>{company.location}</Text>
             </View>
- 
+
             <View style={styles.jobDetailsContainer}>
               <View style={styles.chipContainer}>
                 {Array.isArray(job.job_type) &&
                   job.job_type.map((type, typeIndex) => (
                     <Text
                       key={typeIndex}
-                      style={[styles.chip, getChipStyle(type)]}>
+                      style={[styles.chip, getChipStyle(type)]}
+                    >
                       {type}
                     </Text>
                   ))}
               </View>
- 
+
               <View
                 style={{ height: 0.5, backgroundColor: 'lightgray', margin: 5 }}
               />
- 
+
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   margin: 8,
-                }}>
+                }}
+              >
                 <Text style={styles.jobDetails}>{job.salary_range}</Text>
- 
+
                 <Text style={styles.jobPostedDate}>
                   {job.posted_at
                     ? moment(job.posted_at).isValid()
@@ -186,7 +433,6 @@ const CompanyCard = ({ company, savedJobs = [], toggleSaveJob,showBookmarkIcon =
     </View>
   );
 };
- 
 const styles = StyleSheet.create({
   companyContainer: {
     padding: 5,

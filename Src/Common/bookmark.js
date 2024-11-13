@@ -34,6 +34,7 @@ const BookmarkScreen = ({navigation}) => {
       console.error('Failed to remove job from AsyncStorage', error);
     }
   };
+console.log(savedJobs);
 
   return (
     <View style={styles.container}>

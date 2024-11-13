@@ -30,7 +30,18 @@
           "applications": 60,
           "education": ["Bachelor's in Statistics", "Master's in Data Science"],
           "department": "Data Analytics",
-          "role_category": "Analytics"
+          "role_category": "Analytics",
+          "company": {
+            "id": 1,
+            "company_name": "Insight Analytics",
+            "about": "Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.",
+            "logo": "https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192",
+            "recruiter_name": "Alex Johnson",
+            "contact_email": "alex.johnson@insightanalytics.com",
+            "phone": "+1234567899",
+            "location": "Chicago, IL",
+            "industry": "Data Science"
+          }
         }
       ],
       "website": "https://www.insightanalytics.com"

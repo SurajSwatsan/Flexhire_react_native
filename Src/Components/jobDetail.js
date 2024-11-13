@@ -14,59 +14,11 @@ import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const JobDetailScreen = ({route, navigation}) => {
-  const {company} = route.params;
+  const {company} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
-  const [isApplied, setIsApplied] = useState(false);
+  const [isApplied, setIsApplied] = useState(false); // Track if the job has been applied to
 
-  console.log('Company Data:', company);
-
-  useEffect(() => {
-    const checkIfApplied = async () => {
-      try {
-        const appliedJobs = await AsyncStorage.getItem('appliedJobs');
-        if (appliedJobs) {
-          const parsedAppliedJobs = JSON.parse(appliedJobs);
-          const isAlreadyApplied = parsedAppliedJobs.some(
-            job => job.job_title === company.posted_jobs[0]?.job_title,
-          );
-          setIsApplied(isAlreadyApplied);
-        }
-      } catch (error) {
-        console.error('Error checking applied jobs:', error);
-      }
-    };
-
-    checkIfApplied();
-  }, [company]);
-
-  const saveCompanyData = async () => {
-    try {
-      const companyJobData = {
-        company: company,
-        job: company.posted_jobs[0],
-      };
-
-      const appliedJobs = await AsyncStorage.getItem('appliedJobs');
-      const parsedAppliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
-
-      const isAlreadyApplied = parsedAppliedJobs.some(
-        job => job.job_title === company.posted_jobs[0]?.job_title,
-      );
-
-      if (!isAlreadyApplied) {
-        parsedAppliedJobs.push(companyJobData);
-        await AsyncStorage.setItem(
-          'appliedJobs',
-          JSON.stringify(parsedAppliedJobs),
-        );
-        setIsApplied(true);
-      }
-
-      navigation.navigate('AppliedJobs'); // Navigate to the Applied Jobs screen
-    } catch (error) {
-      console.error('Error saving company data to AsyncStorage:', error);
-    }
-  };
+  // console.log('Company Data:', company);
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -84,9 +36,6 @@ const JobDetailScreen = ({route, navigation}) => {
                       {job.job_description}
                     </Text>
                   </View>
-                  {/* <Text style={styles.jobDetails}>
-                  Job Title: {job.job_title}
-                </Text> */}
                   <View style={styles.jobDepartmentContainer}>
                     <Text style={styles.jobDetailsheader}>Department:</Text>
                     <Text style={styles.jobDetails1}>{job.department}</Text>
@@ -113,19 +62,6 @@ const JobDetailScreen = ({route, navigation}) => {
                       {job.work_modes?.join(', ')}
                     </Text>
                   </View>
-                  {/* <Text style={styles.jobDetails1}>Location: {job.location}</Text> */}
-                  {/* <Text style={styles.jobDetails1}>
-                    Required Experience: {job.required_experience}
-                  </Text> */}
-                  {/* <Text style={styles.jobDetails1}>
-                    Applications: {job.applications}
-                  </Text>
-                  <Text style={styles.jobDetails1}>
-                    Openings: {job.openings}
-                  </Text>
-                  <Text style={styles.jobDetails1}>Salary: {job.salary}</Text> */}
-                  {/* <Text style={styles.jobDetails1}>Rating: {job.rating}</Text>
-                  <Text style={styles.jobDetails1}>Reviews: {job.reviews}</Text> */}
                   <View style={styles.jobDepartmentContainer}>
                     <Text style={styles.jobDetailsheader}>Role Category:</Text>
                     <Text style={styles.jobDetails1}>{job.role_category}</Text>
@@ -167,6 +103,120 @@ const JobDetailScreen = ({route, navigation}) => {
         return null;
     }
   };
+
+  useEffect(() => {
+
+    const loadAppliedStatus = async () => {
+      try {
+        // Check if the job has been applied to (using job title as the unique key)
+        const jobKey = `isApplied_${company.posted_jobs[0]?.job_title}`;
+        const storedStatus = await AsyncStorage.getItem(jobKey);
+
+        if (storedStatus !== null) {
+          setIsApplied(JSON.parse(storedStatus)); // Load the stored applied status
+        }
+      } catch (error) {
+        console.error('Error loading applied status', error);
+      }
+    };
+
+    loadAppliedStatus();
+  }, [company]);
+
+  const handleApplyPress = async () => {
+    setIsApplied(true); // Change the apply status to 'Applied'
+
+    try {
+      // Get the current list of applied jobs from AsyncStorage
+      let appliedJobs = await AsyncStorage.getItem('appliedJobs');
+      appliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
+      // console.log('appliedJobs',appliedJobs);
+
+      const job = company.posted_jobs[0]; // Assuming we're dealing with the first job
+      const jobId = job.job_id;
+
+      // Check if the current job is already in the applied list
+      const isJobAlreadyApplied = appliedJobs.some(
+        appliedJob => appliedJob.job_id === jobId,
+      );
+      appliedJobs.push({
+        job_id: jobId,
+        company: company.company_name,
+        job_title: job.job_title,
+        job_description: job.job_description,
+        application_date: new Date().toISOString(),
+        location: job.location,
+        salary_range: job.salary_range,
+        // Add any other relevant data about the applied job
+      });
+
+      // Save the updated list of applied jobs in AsyncStorage
+      await AsyncStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+      // if (!isJobAlreadyApplied) {
+      //   // If it's not already applied, add it to the list
+      //   appliedJobs.push({
+      //     job_id: jobId,
+      //     company: company.company_name,
+      //     job_title: job.job_title,
+      //     job_description: job.job_description,
+      //     application_date: new Date().toISOString(),
+      //     location: job.location,
+      //     salary_range: job.salary_range,
+      //     // Add any other relevant data about the applied job
+      //   });
+
+      //   // Save the updated list of applied jobs in AsyncStorage
+      //   await AsyncStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+      // }
+    } catch (error) {
+      console.error('Failed to save apply status or applied jobs', error);
+    }
+
+    // Navigate to the AppliedJobs screen, passing complete company data and applied jobs
+    // navigation.navigate('AppliedJobs',
+    //    {
+    //     appliedJob: company.posted_jobs[0],  // Pass applied job data
+    //   companyData: company, // Pass all company data
+    // });
+  };
+  const addJobIfNotExist = async job => {
+    console.log('job ++++++++++++++', job);
+
+    try {
+      // Retrieve the current saved jobs list from AsyncStorage
+      const savedJobs = await AsyncStorage.getItem('newJobs');
+      const jobsArray = savedJobs ? JSON.parse(savedJobs) : [];
+      console.log('savedJobs ++++++++++++++', jobsArray);
+
+      // Check if the job already exists in the list using job.id
+      const isJobAlreadySaved = jobsArray.some(
+        savedJob => savedJob.id === job.id,
+      );
+
+      if (!isJobAlreadySaved) {
+        // If the job doesn't exist, add it to the array
+        jobsArray.push({
+          job_id: jobId,
+          company: company.company_name,
+          job_title: job.job_title,
+          job_description: job.job_description,
+          application_date: new Date().toISOString(),
+          location: job.location,
+          salary_range: job.salary_range,
+          // Add any other relevant data about the applied job
+        });
+
+        // Save the updated list back to AsyncStorage
+        await AsyncStorage.setItem('newJobs', JSON.stringify(jobsArray));
+        console.log('Job added successfully!');
+      } else {
+        console.log('Job is already in the saved list.');
+      }
+    } catch (error) {
+      console.error('Error adding job to saved list:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
@@ -187,7 +237,6 @@ const JobDetailScreen = ({route, navigation}) => {
                 style={styles.logo}
               />
             </View>
-            {/* {renderTabs()} */}
             <Text style={styles.jobTitle}>
               {company.posted_jobs[0]?.job_title}
             </Text>
@@ -272,11 +321,13 @@ const JobDetailScreen = ({route, navigation}) => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
-          style={[styles.applyButton, isApplied ? styles.appliedButton : null]}
-          onPress={saveCompanyData}
-          // onPress={handleApplyPress}
+          style={styles.applyButton}
+          onPress={() => addJobIfNotExist(company)} // On apply button press
+          // disabled={isApplied} // Disable if already applied
         >
           <Text style={styles.applyButtonText}>
             {isApplied ? 'Applied' : 'Apply'}
@@ -340,15 +391,16 @@ const styles = StyleSheet.create({
   jobDescription: {
     fontSize: 13,
     color: '#000',
+    textAlign: 'justify',
   },
   companyInfoContainer: {
-    marginTop: 100,
+    marginTop: 70,
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   companyInfo: {
-    top: -60,
+    top: -40,
     marginHorizontal: 12,
   },
   jobDetails: {
@@ -360,6 +412,7 @@ const styles = StyleSheet.create({
   jobDetails1: {
     fontSize: 12,
     color: '#000',
+    alignItems: 'center',
   },
   iconstyle: {
     backgroundColor: colors.bacground,
@@ -370,16 +423,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBgcolor,
     borderRadius: 100, // Ensures circular shape
     // top: -60,
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     overflow: 'hidden', // Ensures the image does not exceed the container bounds
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     resizeMode: 'contain', // Adjusts the image to cover the container uniformly
   },
   applyButton: {
@@ -426,6 +479,7 @@ const styles = StyleSheet.create({
   },
   jobDetailsContainer: {
     marginBottom: 12,
+    alignItems: 'center',
   },
   jobDescriptionheader: {
     fontSize: 16,
