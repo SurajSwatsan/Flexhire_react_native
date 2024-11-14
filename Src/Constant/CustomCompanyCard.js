@@ -49,9 +49,10 @@ const CustomCompanyCard = ({jobData}) => {
         <View style={styles.ratingContainer}>
           {renderStars(Math.round(jobData.company.rating))}
         </View>
-
-        <Text>Foreign MNC</Text>
-        <Text>View jobs</Text>
+          {/* <View> */}
+        <Text style={styles.mnctext}>Foreign MNC</Text>
+        {/* </View> */}
+        <Text style={{color:'blue',textAlign:'center'}}>View jobs</Text>
       </TouchableOpacity>
     </View>
   );
@@ -59,20 +60,32 @@ const CustomCompanyCard = ({jobData}) => {
 
 const styles = StyleSheet.create({
   companyContainer: {
-    padding: 5,
+    padding: 10,
     backgroundColor: '#fff',
     borderRadius: 8,
     marginRight: 8,
+  //  alignContent:'center',
+  justifyContent:'center',
+  // alignSelf:'center',
+    // borderWidth: 1,            // Set border width
+    // borderColor: '#ccc',   
+
+
   },
   companyImage: {
     width: 42,
     height: 42,
     borderRadius: 8,
     marginRight: 10,
+    // marginLeft:20,
+    margin:10,
+    alignSelf:'center'
+    
   },
   companyName: {
     fontSize: 12,
     color: 'gray',
+    alignSelf:'center'
   },
   location: {
     flexDirection: 'row',
@@ -87,11 +100,22 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     marginVertical: 4,
+    alignSelf:'center'
   },
   errorText: {
     color: 'red',
     textAlign: 'center',
     marginVertical: 10,
+  },
+  mnctext: {
+    backgroundColor: colors.background,
+    color: colors.blackText,
+    fontSize: 12,
+    margin: 5,
+    padding: 5,
+    textAlign: 'center',
+    alignSelf: 'center',
+    borderRadius: 5,
   },
 });
 

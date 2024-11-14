@@ -14,11 +14,11 @@ import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const JobDetailScreen = ({route, navigation}) => {
-  const {company} = route.params; // Get company data from params
+  const {jobData} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
   const [isApplied, setIsApplied] = useState(false); // Track if the job has been applied to
 
-  // console.log('Company Data:', company);
+  console.log('Company Data:', jobData);
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -26,197 +26,78 @@ const JobDetailScreen = ({route, navigation}) => {
         return (
           <View>
             <View>
-              {company.posted_jobs.map((job, index) => (
-                <View key={index} style={{marginBottom: 20}}>
-                  <View style={styles.jobDetailsContainer}>
-                    <Text style={styles.jobDescriptionheader}>
-                      Job Description:
-                    </Text>
-                    <Text style={styles.jobDescription}>
-                      {job.job_description}
-                    </Text>
-                  </View>
-                  <View style={styles.jobDepartmentContainer}>
-                    <Text style={styles.jobDetailsheader}>Department:</Text>
-                    <Text style={styles.jobDetails1}>{job.department}</Text>
-                  </View>
-                  <View style={styles.jobDepartmentContainer}>
-                    <Text style={styles.jobDetailsheader}>
-                      Employment types:
-                    </Text>
-                    <Text style={styles.jobDetails1}>
-                      {job.employment_types?.join(', ')}
-                    </Text>
-                  </View>
-                  <View style={styles.educationContainer}>
-                    <Text style={styles.educationHeader}>Education:</Text>
-                    {job.education?.map((edu, index) => (
-                      <View key={index} style={styles.educationTab}>
-                        <Text style={styles.educationText}>{edu}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={styles.jobDepartmentContainer}>
-                    <Text style={styles.jobDetailsheader}>Working Modes:</Text>
-                    <Text style={styles.jobDetails1}>
-                      {job.work_modes?.join(', ')}
-                    </Text>
-                  </View>
-                  <View style={styles.jobDepartmentContainer}>
-                    <Text style={styles.jobDetailsheader}>Role Category:</Text>
-                    <Text style={styles.jobDetails1}>{job.role_category}</Text>
-                  </View>
+              {/* Directly accessing the properties of jobData */}
+              <View style={{marginBottom: 20}}>
+                <View style={styles.jobDetailsContainer}>
+                  <Text style={styles.jobDescriptionheader}>Job Description:</Text>
+                  <Text style={styles.jobDescription}>
+                    {jobData.job_description}
+                  </Text>
                 </View>
-              ))}
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Department:</Text>
+                  <Text style={styles.jobDetails1}>{jobData.department}</Text>
+                </View>
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Employment types:</Text>
+                  <Text style={styles.jobDetails1}>
+                    {jobData.employment_types?.join(', ')}
+                  </Text>
+                </View>
+                <View style={styles.educationContainer}>
+                  <Text style={styles.educationHeader}>Education:</Text>
+                  {jobData.education?.map((edu, index) => (
+                    <View key={index} style={styles.educationTab}>
+                      <Text style={styles.educationText}>{edu}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Working Modes:</Text>
+                  <Text style={styles.jobDetails1}>
+                    {jobData.work_modes?.join(', ')}
+                  </Text>
+                </View>
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Role Category:</Text>
+                  <Text style={styles.jobDetails1}>{jobData.role_category}</Text>
+                </View>
+              </View>
             </View>
             <Text style={styles.jobDetails1}>
-              Recruiter Name: {company.recruiter_name}
+              Recruiter Name: {jobData.recruiter_name}
             </Text>
             <Text style={styles.jobDetails1}>
-              Contact Email: {company.contact_email}
+              Contact Email: {jobData.company.contact_email}
             </Text>
-            <Text style={styles.jobDetails1}>Phone: {company.phone}</Text>
+            <Text style={styles.jobDetails1}>Phone: {jobData.company.phone}</Text>
           </View>
         );
       case 'Company':
         return (
           <View>
-            <Text style={styles.jobTitle}>{company.company_name}</Text>
-            <Text style={styles.jobDetails1}>About: {company.about}</Text>
-            <Text style={styles.jobDetails1}>Industry: {company.industry}</Text>
-            <Text style={styles.jobDetails1}>Location: {company.location}</Text>
+            <Text style={styles.jobTitle}>{jobData.company.company_name}</Text>
+            <Text style={styles.jobDetails1}>About: {jobData.company.about}</Text>
+            <Text style={styles.jobDetails1}>Industry: {jobData.company.industry}</Text>
+            <Text style={styles.jobDetails1}>Location: {jobData.company.location}</Text>
             <Text style={styles.jobDetails1}>
-              Contact Email: {company.contact_email}
+              Contact Email: {jobData.company.contact_email}
             </Text>
-            <Text style={styles.jobDetails1}>Phone: {company.phone}</Text>
+            <Text style={styles.jobDetails1}>Phone: {jobData.company.phone}</Text>
             <Text style={styles.jobDetails1}>
-              Recruiter Name: {company.recruiter_name}
+              Recruiter Name: {jobData.company.recruiter_name}
             </Text>
-            <Text style={styles.jobDetails1}>Website: {company.website}</Text>
+            <Text style={styles.jobDetails1}>Website: {jobData.company.website}</Text>
           </View>
         );
       case 'Review':
         return (
-          <Text style={styles.jobDescription}>{company.job_description}</Text>
+         <View></View>
         );
       default:
         return null;
     }
   };
-
-  useEffect(() => {
-
-    const loadAppliedStatus = async () => {
-      try {
-        // Check if the job has been applied to (using job title as the unique key)
-        const jobKey = `isApplied_${company.posted_jobs[0]?.job_title}`;
-        const storedStatus = await AsyncStorage.getItem(jobKey);
-
-        if (storedStatus !== null) {
-          setIsApplied(JSON.parse(storedStatus)); // Load the stored applied status
-        }
-      } catch (error) {
-        console.error('Error loading applied status', error);
-      }
-    };
-
-    loadAppliedStatus();
-  }, [company]);
-
-  const handleApplyPress = async () => {
-    setIsApplied(true); // Change the apply status to 'Applied'
-
-    try {
-      // Get the current list of applied jobs from AsyncStorage
-      let appliedJobs = await AsyncStorage.getItem('appliedJobs');
-      appliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
-      // console.log('appliedJobs',appliedJobs);
-
-      const job = company.posted_jobs[0]; // Assuming we're dealing with the first job
-      const jobId = job.job_id;
-
-      // Check if the current job is already in the applied list
-      const isJobAlreadyApplied = appliedJobs.some(
-        appliedJob => appliedJob.job_id === jobId,
-      );
-      appliedJobs.push({
-        job_id: jobId,
-        company: company.company_name,
-        job_title: job.job_title,
-        job_description: job.job_description,
-        application_date: new Date().toISOString(),
-        location: job.location,
-        salary_range: job.salary_range,
-        // Add any other relevant data about the applied job
-      });
-
-      // Save the updated list of applied jobs in AsyncStorage
-      await AsyncStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
-      // if (!isJobAlreadyApplied) {
-      //   // If it's not already applied, add it to the list
-      //   appliedJobs.push({
-      //     job_id: jobId,
-      //     company: company.company_name,
-      //     job_title: job.job_title,
-      //     job_description: job.job_description,
-      //     application_date: new Date().toISOString(),
-      //     location: job.location,
-      //     salary_range: job.salary_range,
-      //     // Add any other relevant data about the applied job
-      //   });
-
-      //   // Save the updated list of applied jobs in AsyncStorage
-      //   await AsyncStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
-      // }
-    } catch (error) {
-      console.error('Failed to save apply status or applied jobs', error);
-    }
-
-    // Navigate to the AppliedJobs screen, passing complete company data and applied jobs
-    // navigation.navigate('AppliedJobs',
-    //    {
-    //     appliedJob: company.posted_jobs[0],  // Pass applied job data
-    //   companyData: company, // Pass all company data
-    // });
-  };
-  const addJobIfNotExist = async job => {
-    console.log('job ++++++++++++++', job);
-
-    try {
-      // Retrieve the current saved jobs list from AsyncStorage
-      const savedJobs = await AsyncStorage.getItem('newJobs');
-      const jobsArray = savedJobs ? JSON.parse(savedJobs) : [];
-      console.log('savedJobs ++++++++++++++', jobsArray);
-
-      // Check if the job already exists in the list using job.id
-      const isJobAlreadySaved = jobsArray.some(
-        savedJob => savedJob.id === job.id,
-      );
-
-      if (!isJobAlreadySaved) {
-        // If the job doesn't exist, add it to the array
-        jobsArray.push({
-          job_id: jobId,
-          company: company.company_name,
-          job_title: job.job_title,
-          job_description: job.job_description,
-          application_date: new Date().toISOString(),
-          location: job.location,
-          salary_range: job.salary_range,
-          // Add any other relevant data about the applied job
-        });
-
-        // Save the updated list back to AsyncStorage
-        await AsyncStorage.setItem('newJobs', JSON.stringify(jobsArray));
-        console.log('Job added successfully!');
-      } else {
-        console.log('Job is already in the saved list.');
-      }
-    } catch (error) {
-      console.error('Error adding job to saved list:', error);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
@@ -230,17 +111,17 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.logoContainer}>
               <Image
                 source={
-                  company.logo
-                    ? {uri: company.logo} // Use URI if the logo is a valid URL or path
+                  jobData.company.logo
+                    ? {uri: jobData.company.logo} // Use URI if the logo is a valid URL or path
                     : require('../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
                 }
                 style={styles.logo}
               />
             </View>
             <Text style={styles.jobTitle}>
-              {company.posted_jobs[0]?.job_title}
+              {jobData.job_title}
             </Text>
-            <Text style={styles.companyName}>{company.company_name}</Text>
+            <Text style={styles.companyName}>{jobData.company_name}</Text>
             <View style={styles.locationContainer}>
               <IconButton
                 icon="map-marker"
@@ -249,7 +130,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 style={{padding: 0, marginLeft: -10, height: 20}}
               />
               <Text style={styles.location}>
-                {company.posted_jobs[0]?.location}
+                {jobData.job_location}
               </Text>
             </View>
 
@@ -258,22 +139,22 @@ const JobDetailScreen = ({route, navigation}) => {
                 {
                   icon: 'cash',
                   label: 'Salary Range',
-                  value: company.posted_jobs[0]?.salary_range,
+                  value: `${jobData.salary_min} - ${jobData.salary_max}`,
                 },
                 {
                   icon: 'signal-cellular-3',
                   label: 'Level',
-                  value: company.posted_jobs[0]?.experience_required,
+                  value: jobData.experience,
                 },
                 {
                   icon: 'account',
                   label: 'Openings',
-                  value: company.posted_jobs[0]?.positions_available,
+                  value: jobData.openings,
                 },
                 {
                   icon: 'account-group',
                   label: 'Applications',
-                  value: company.posted_jobs[0]?.applications,
+                  value: jobData.applications,
                 },
               ].map((item, index) => (
                 <View key={index} style={styles.fildContainer}>
@@ -321,12 +202,13 @@ const JobDetailScreen = ({route, navigation}) => {
           </View>
         </View>
       </ScrollView>
+      
 
       {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
           style={styles.applyButton}
-          onPress={() => addJobIfNotExist(company)} // On apply button press
+          // onPress={() => addJobIfNotExist(company)} // On apply button press
           // disabled={isApplied} // Disable if already applied
         >
           <Text style={styles.applyButtonText}>
@@ -352,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 12,
     fontWeight: 'bold',
-    alignSelf: 'center',
+    // alignSelf: 'center',
     color: '#000',
   },
   companyName: {
@@ -479,13 +361,13 @@ const styles = StyleSheet.create({
   },
   jobDetailsContainer: {
     marginBottom: 12,
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   jobDescriptionheader: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
-    color: 'gray',
+    color: colors.blackText,
   },
   jobDepartmentContainer: {
     marginBottom: 4,
@@ -496,7 +378,7 @@ const styles = StyleSheet.create({
   jobDetailsheader: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: 'gray',
+    color: 'black',
   },
   educationContainer: {
     flexDirection: 'column',
