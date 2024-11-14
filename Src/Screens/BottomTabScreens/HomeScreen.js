@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,8 +16,9 @@ import {jobPost} from '../../Redux/Action/JobAction';
 import CustomJobCard from '../../Constant/CustomJobCard';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomCompanyCard from '../../Constant/CustomCompanyCard';
+const screenWidth = Dimensions.get('window').width;
 
-const HomeComponent = () => {
+const HomeScreen = () => {
   const navigation = useNavigation();
   const [query, setQuery] = useState('');
   const dispatch = useDispatch();
@@ -83,7 +85,7 @@ const HomeComponent = () => {
 
       <ScrollView style={{flex: 1}}>
         <View style={styles.JobsContainer}>
-          <View style={{marginVertical: 12, marginLeft: 12}}>
+          <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Recommended Jobs</Text>
               <Text style={styles.seeAll}>See All</Text>
@@ -96,13 +98,13 @@ const HomeComponent = () => {
               {jobs.map((jobdata, index) => (
                 <View
                   key={jobdata.id || index}
-                  style={{minWidth: 300, maxWidth: 300}}>
+                  style={{marginRight: 12}}>
                   <CustomJobCard jobData={jobdata} />
                 </View>
               ))}
             </ScrollView>
           </View>
-          <View style={{marginVertical: 12, marginLeft: 12}}>
+          <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Based on profile</Text>
               <Text style={styles.seeAll}>See All</Text>
@@ -115,13 +117,13 @@ const HomeComponent = () => {
               {jobs.map((jobdata, index) => (
                 <View
                   key={jobdata.id || index}
-                  style={{minWidth: 300, maxWidth: 300}}>
+                  style={{marginRight: 12}}>
                   <CustomJobCard jobData={jobdata} />
                 </View>
               ))}
             </ScrollView>
           </View>
-          <View style={{marginVertical: 12, marginLeft: 12}}>
+          <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Top Companys</Text>
               <Text style={styles.seeAll}>See All</Text>
@@ -132,9 +134,7 @@ const HomeComponent = () => {
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
               {jobs.map((jobdata, index) => (
-                <View
-                  key={jobdata.id || index}
-                  style={{minWidth: 300, maxWidth: 300}}>
+                <View key={jobdata.id || index} style={{marginRight: 12}}>
                   <CustomCompanyCard jobData={jobdata} />
                 </View>
               ))}
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeComponent;
+export default HomeScreen;

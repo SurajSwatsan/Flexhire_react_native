@@ -2,8 +2,8 @@ import React from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Material Icons for stars
-import {colors} from '../Global_CSS/TheamColors';
 import {useNavigation} from '@react-navigation/native';
+import {colors} from '../Global_CSS/TheamColors';
 
 const CustomCompanyCard = ({jobData}) => {
   const navigation = useNavigation();
@@ -50,8 +50,9 @@ const CustomCompanyCard = ({jobData}) => {
           {renderStars(Math.round(jobData.company.rating))}
         </View>
 
-        <Text>Foreign MNC</Text>
-        <Text>View jobs</Text>
+        <Text style={styles.mnctext}>Foreign MNC</Text>
+
+        <Text style={{color: 'blue', textAlign: 'center'}}>View jobs</Text>
       </TouchableOpacity>
     </View>
   );
@@ -59,20 +60,32 @@ const CustomCompanyCard = ({jobData}) => {
 
 const styles = StyleSheet.create({
   companyContainer: {
-    padding: 5,
+    width:'100%',
+    // maxWidth:
+    padding: 10,
     backgroundColor: '#fff',
     borderRadius: 8,
-    marginRight: 8,
+    // marginRight: ,
+    //  alignContent:'center',
+    justifyContent: 'center',
+    // alignSelf:'center',
+    // borderWidth: 1, 
+    // borderColor: '#ccc',
   },
   companyImage: {
     width: 42,
     height: 42,
     borderRadius: 8,
     marginRight: 10,
+    // marginLeft:20,
+    margin: 10,
+    alignSelf: 'center',
   },
   companyName: {
+    textAlign: 'center',
     fontSize: 12,
     color: 'gray',
+    alignSelf: 'center',
   },
   location: {
     flexDirection: 'row',
@@ -87,11 +100,18 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     marginVertical: 4,
+    alignSelf: 'center',
   },
-  errorText: {
-    color: 'red',
+
+  mnctext: {
+    backgroundColor: colors.background,
+    color: colors.blackText,
+    fontSize: 12,
+    margin: 5,
+    padding: 5,
     textAlign: 'center',
-    marginVertical: 10,
+    alignSelf: 'center',
+    borderRadius: 5,
   },
 });
 

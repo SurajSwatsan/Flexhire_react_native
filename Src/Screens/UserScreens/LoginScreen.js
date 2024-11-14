@@ -18,6 +18,7 @@ import {Button, Checkbox, TextInput, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
+import {colors} from '../../Global_CSS/TheamColors';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -130,11 +131,11 @@ const LoginScreen = () => {
                       value={values.emailOrPhone}
                       onChangeText={handleChange('emailOrPhone')}
                       onBlur={handleBlur('emailOrPhone')}
-                      activeOutlineColor="#333"
+                      activeOutlineColor="lightgrey"
                       error={!!errors.emailOrPhone}
                     />
                     {errors.emailOrPhone && touched.emailOrPhone ? (
-                      <Text style={styles.errorText}>
+                      <Text style={GlobalStyle.errorText}>
                         {errors.emailOrPhone}
                       </Text>
                     ) : null}
@@ -146,7 +147,7 @@ const LoginScreen = () => {
                         outlineColor="lightgrey"
                         label="Password"
                         textColor="black"
-                        activeOutlineColor="#333"
+                        activeOutlineColor="lightgrey"
                         value={values.password}
                         onChangeText={handleChange('password')}
                         onBlur={handleBlur('password')}
@@ -156,7 +157,7 @@ const LoginScreen = () => {
                       />
                       <IconButton
                         icon={ispasswordVisible ? 'eye-off' : 'eye'}
-                        color="grey"
+                        color={colors.primary}
                         size={26}
                         onPress={() =>
                           setpasswordVisibility(!ispasswordVisible)
@@ -165,7 +166,9 @@ const LoginScreen = () => {
                       />
                     </View>
                     {errors.password && touched.password ? (
-                      <Text style={styles.errorText}>{errors.password}</Text>
+                      <Text style={GlobalStyle.errorText}>
+                        {errors.password}
+                      </Text>
                     ) : null}
 
                     <View style={styles.checkboxContainer}>
@@ -173,6 +176,7 @@ const LoginScreen = () => {
                         <Checkbox
                           status={checked ? 'checked' : 'unchecked'}
                           onPress={() => setChecked(!checked)}
+                          color={colors.primary}
                         />
                         <Text style={styles.checkboxtext1}>Remember me</Text>
                       </View>
@@ -253,25 +257,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textarea: {
-    marginVertical: 12,
+    flex: 1,
+    marginTop: 12,
+    marginBottom: 8,
     backgroundColor: 'white',
     width: '100%',
     alignSelf: 'center',
     height: 48,
     borderColor: 'lightgrey',
   },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-  },
+
   passwordContainer: {
     flexDirection: 'row',
   },
 
   eyeIcon: {
+    color: colors.primary,
+    top: 16,
+    position: 'absolute',
+    right: 10,
     alignSelf: 'center',
-    marginLeft: -46,
-    paddingRight: 14,
+    // marginLeft: -46,
+    // paddingRight: 14,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -289,17 +296,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: 12,
   },
-  labelStyle: {
-    color: '#ffffff',
-    backgroundColor: '#407093',
-    // backgroundColor: '#1A6F4A',
-    padding: 14,
-    borderRadius: 8,
-    fontSize: 16,
-    fontWeight: 'bold',
-    height: 48,
-    width: '100%',
-  },
+
   socialContainer_Heading: {
     alignItems: 'center',
     flexDirection: 'row',

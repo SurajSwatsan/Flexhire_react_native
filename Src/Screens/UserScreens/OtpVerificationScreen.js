@@ -4,6 +4,7 @@ import {TextInput, Button} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation();
@@ -50,15 +51,15 @@ const OtpVerificationScreen = () => {
               textColor="black"
               maxLength={6}
               style={styles.input}
-              activeOutlineColor="#333"
+              activeOutlineColor="lightgray"
               error={!!errors.otp}
             />
             {errors.otp && touched.otp && (
-              <Text style={styles.errorText}>{errors.otp}</Text>
+              <Text style={GlobalStyle.errorText}>{errors.otp}</Text>
             )}
 
             <View style={styles.buttonContainer}>
-              <Button labelStyle={styles.labelStyle} onPress={handleSubmit}>
+              <Button labelStyle={GlobalStyle.labelStyle} onPress={handleSubmit}>
                 Send OTP
               </Button>
             </View>
