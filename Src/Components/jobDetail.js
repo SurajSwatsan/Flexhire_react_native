@@ -12,6 +12,7 @@ import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/TheamColors';
 import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ReviewPage from '../Constant/CustomReviewPage';
 
 const JobDetailScreen = ({route, navigation}) => {
   const {jobData} = route.params; // Get company data from params
@@ -29,7 +30,9 @@ const JobDetailScreen = ({route, navigation}) => {
               {/* Directly accessing the properties of jobData */}
               <View style={{marginBottom: 20}}>
                 <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>Job Description:</Text>
+                  <Text style={styles.jobDescriptionheader}>
+                    Job Description:
+                  </Text>
                   <Text style={styles.jobDescription}>
                     {jobData.job_description}
                   </Text>
@@ -44,14 +47,21 @@ const JobDetailScreen = ({route, navigation}) => {
                     {jobData.employment_types?.join(', ')}
                   </Text>
                 </View>
-                <View style={styles.educationContainer}>
-                  <Text style={styles.educationHeader}>Education:</Text>
-                  {jobData.education?.map((edu, index) => (
-                    <View key={index} style={styles.educationTab}>
-                      <Text style={styles.educationText}>{edu}</Text>
-                    </View>
-                  ))}
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Job Role:</Text>
+                  <Text style={styles.jobDetails1}>{jobData.role}</Text>
                 </View>
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Education:</Text>
+                  <View style={styles.educationItemsContainer}>
+                    {jobData.education?.map((edu, index) => (
+                      <View key={index}>
+                        <Text style={styles.jobDetails1}>{edu}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Working Modes:</Text>
                   <Text style={styles.jobDetails1}>
@@ -60,39 +70,72 @@ const JobDetailScreen = ({route, navigation}) => {
                 </View>
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Role Category:</Text>
-                  <Text style={styles.jobDetails1}>{jobData.role_category}</Text>
+                  <Text style={styles.jobDetails1}>
+                    {jobData.role_category}
+                  </Text>
+                </View>
+                <View style={styles.jobDepartmentContainer}>
+                  <Text style={styles.jobDetailsheader}>Industry Type:</Text>
+                  <Text style={styles.jobDetails1}>
+                    {jobData.industry_type}
+                  </Text>
                 </View>
               </View>
             </View>
-            <Text style={styles.jobDetails1}>
-              Recruiter Name: {jobData.recruiter_name}
-            </Text>
-            <Text style={styles.jobDetails1}>
-              Contact Email: {jobData.company.contact_email}
-            </Text>
-            <Text style={styles.jobDetails1}>Phone: {jobData.company.phone}</Text>
           </View>
         );
       case 'Company':
         return (
           <View>
-            <Text style={styles.jobTitle}>{jobData.company.company_name}</Text>
-            <Text style={styles.jobDetails1}>About: {jobData.company.about}</Text>
-            <Text style={styles.jobDetails1}>Industry: {jobData.company.industry}</Text>
-            <Text style={styles.jobDetails1}>Location: {jobData.company.location}</Text>
-            <Text style={styles.jobDetails1}>
-              Contact Email: {jobData.company.contact_email}
+            <Text style={styles.jobDescriptionheader}>
+              {jobData.company.company_name}
             </Text>
-            <Text style={styles.jobDetails1}>Phone: {jobData.company.phone}</Text>
-            <Text style={styles.jobDetails1}>
-              Recruiter Name: {jobData.company.recruiter_name}
-            </Text>
-            <Text style={styles.jobDetails1}>Website: {jobData.company.website}</Text>
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}>About:</Text>
+              <Text style={styles.jobDetails1}>{jobData.company.about}</Text>
+            </View>
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}>Industry:</Text>
+              <Text style={styles.jobDetails1}>{jobData.company.industry}</Text>
+            </View>
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}>Location:</Text>
+              <Text style={styles.jobDetails1}>{jobData.company.location}</Text>
+            </View>
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}>Contact Email:</Text>
+              <Text style={styles.jobDetails1}>
+                {jobData.company.contact_email}
+              </Text>
+            </View>
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}>Phone:</Text>
+              <Text style={styles.jobDetails1}>{jobData.company.phone}</Text>
+            </View>
+
+            {/* <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}> Recruiter Name:</Text>
+              <Text style={styles.jobDetails1}>
+                {jobData.company.recruiter_name}
+              </Text>
+            </View> */}
+
+            <View style={styles.jobDepartmentContainer}>
+              <Text style={styles.jobDetailsheader}> Website:</Text>
+              <Text style={styles.jobDetails1}>{jobData.company.website}</Text>
+            </View>
           </View>
         );
       case 'Review':
         return (
-         <View></View>
+          <View>
+            <ReviewPage />
+          </View>
         );
       default:
         return null;
@@ -118,10 +161,10 @@ const JobDetailScreen = ({route, navigation}) => {
                 style={styles.logo}
               />
             </View>
-            <Text style={styles.jobTitle}>
-              {jobData.job_title}
+            <Text style={styles.jobTitle}>{jobData.job_title}</Text>
+            <Text style={styles.companyName}>
+              {jobData.company.company_name}
             </Text>
-            <Text style={styles.companyName}>{jobData.company_name}</Text>
             <View style={styles.locationContainer}>
               <IconButton
                 icon="map-marker"
@@ -129,9 +172,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 size={18}
                 style={{padding: 0, marginLeft: -10, height: 20}}
               />
-              <Text style={styles.location}>
-                {jobData.job_location}
-              </Text>
+              <Text style={styles.location}>{jobData.job_location}</Text>
             </View>
 
             <View style={styles.mainfildContainer}>
@@ -202,7 +243,6 @@ const JobDetailScreen = ({route, navigation}) => {
           </View>
         </View>
       </ScrollView>
-      
 
       {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
@@ -211,9 +251,7 @@ const JobDetailScreen = ({route, navigation}) => {
           // onPress={() => addJobIfNotExist(company)} // On apply button press
           // disabled={isApplied} // Disable if already applied
         >
-          <Text style={styles.applyButtonText}>
-            {isApplied ? 'Applied' : 'Apply'}
-          </Text>
+          <Text style={styles.applyButtonText}>Apply</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -223,7 +261,7 @@ const JobDetailScreen = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: colors.background,
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
@@ -253,6 +291,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   mainfildContainer: {
+    marginHorizontal: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between', // Adjusts space between items
@@ -271,7 +310,7 @@ const styles = StyleSheet.create({
     marginLeft: 4, // Space between the icon and text
   },
   jobDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#000',
     textAlign: 'justify',
   },
@@ -283,7 +322,7 @@ const styles = StyleSheet.create({
   },
   companyInfo: {
     top: -40,
-    marginHorizontal: 12,
+    // marginHorizontal: 12,
   },
   jobDetails: {
     fontSize: 12,
@@ -292,10 +331,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   jobDetails1: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#000',
     alignItems: 'center',
   },
+
   iconstyle: {
     backgroundColor: colors.background,
   },
@@ -316,6 +356,11 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: 'contain', // Adjusts the image to cover the container uniformly
+  },
+  applyButtonContainer: {
+    backgroundColor: colors.cardBgcolor,
+    borderTopColor: colors.lightgaryText,
+    borderTopWidth: 1,
   },
   applyButton: {
     // marginTop: 24,
@@ -338,8 +383,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 24,
+    width: '100%',
     borderBottomColor: 'lightgray',
     borderBottomWidth: 1,
+    color: colors.blackText,
   },
   tabButton: {
     paddingVertical: 10,
@@ -353,6 +400,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   contentContainer: {
+    marginHorizontal: 12,
     marginTop: 20,
   },
   contentText: {
@@ -360,7 +408,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   jobDetailsContainer: {
-    marginBottom: 12,
+    marginBottom: 4,
     // alignItems: 'center',
   },
   jobDescriptionheader: {
@@ -370,30 +418,18 @@ const styles = StyleSheet.create({
     color: colors.blackText,
   },
   jobDepartmentContainer: {
-    marginBottom: 4,
-    gap: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 8,
+    gap: 2,
+    // flexDirection: 'row',
+    // // alignItems: 'center',
   },
   jobDetailsheader: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  educationContainer: {
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    marginVertical: 10,
-  },
-  educationHeader: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: 'gray',
-  },
-  educationText: {
-    color: '#000',
     fontSize: 12,
-    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#808080',
+  },
+  educationItemsContainer: {
+    flexWrap: 'wrap', // Allow items to wrap if there are too many to fit
   },
 });
 export default JobDetailScreen;
