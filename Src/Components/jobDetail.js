@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 12,
     fontWeight: 'bold',
-    // alignSelf: 'center',
+    alignSelf: 'center',
     color: '#000',
   },
   companyName: {
