@@ -13,6 +13,8 @@ import {Button, TextInput, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
+import {colors} from '../../Global_CSS/TheamColors';
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -75,28 +77,28 @@ const SignupScreen = () => {
                 style={styles.textarea}
                 mode="outlined"
                 label="Email"
-                activeOutlineColor="#333"
+                activeOutlineColor="lightgray"
                 textColor="black"
                 value={values.email}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
               />
               {errors.email && touched.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
+                <Text style={GlobalStyle.errorText}>{errors.email}</Text>
               )}
 
               <TextInput
                 style={styles.textarea}
                 mode="outlined"
                 label="Mobile Number"
-                activeOutlineColor="#333"
+                activeOutlineColor="lightgray"
                 textColor="black"
                 value={values.phoneNumber}
                 onChangeText={handleChange('phoneNumber')}
                 onBlur={handleBlur('phoneNumber')}
               />
               {errors.phoneNumber && touched.phoneNumber && (
-                <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                <Text style={GlobalStyle.errorText}>{errors.phoneNumber}</Text>
               )}
 
               {/* Password Input */}
@@ -105,7 +107,7 @@ const SignupScreen = () => {
                   style={styles.textarea}
                   mode="outlined"
                   label="Password"
-                  activeOutlineColor="#333"
+                  activeOutlineColor="lightgray"
                   secureTextEntry={!isPasswordVisible}
                   textColor="black"
                   value={values.password}
@@ -121,14 +123,14 @@ const SignupScreen = () => {
                 />
               </View>
               {errors.password && touched.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
+                <Text style={GlobalStyle.errorText}>{errors.password}</Text>
               )}
 
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={[styles.textarea, styles.passwordInput]}
                   mode="outlined"
-                  activeOutlineColor="#333"
+                  activeOutlineColor="lightgray"
                   label="Confirm Password"
                   secureTextEntry={!isConfermPasswordVisible}
                   textColor="black"
@@ -147,11 +149,15 @@ const SignupScreen = () => {
                 />
               </View>
               {errors.confirmPassword && touched.confirmPassword && (
-                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                <Text style={GlobalStyle.errorText}>
+                  {errors.confirmPassword}
+                </Text>
               )}
 
               <View style={styles.buttonContainer}>
-                <Button labelStyle={styles.labelStyle} onPress={handleSubmit}>
+                <Button
+                  labelStyle={GlobalStyle.labelStyle}
+                  onPress={handleSubmit}>
                   Signup
                 </Button>
               </View>
@@ -207,9 +213,11 @@ const styles = StyleSheet.create({
   },
 
   eyeIcon: {
+    color: colors.primary,
+    top: 16,
+    position: 'absolute',
+    right: 10,
     alignSelf: 'center',
-    marginLeft: -46,
-    paddingRight: 14,
   },
   errorText: {
     color: 'red',

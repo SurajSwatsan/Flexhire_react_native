@@ -4,6 +4,8 @@ import {TextInput, Button, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
+import {colors} from '../../Global_CSS/TheamColors';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
 const ResetPasswordScreen = () => {
   const navigation = useNavigation();
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
@@ -58,7 +60,7 @@ const ResetPasswordScreen = () => {
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 style={[styles.input, styles.passwordInput]}
-                activeOutlineColor="#97A97C"
+                activeOutlineColor="lightgrey"
                 error={!!errors.password}
               />
               <IconButton
@@ -70,7 +72,7 @@ const ResetPasswordScreen = () => {
               />
             </View>
             {errors.password && touched.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
+              <Text style={GlobalStyle.errorText}>{errors.password}</Text>
             )}
             <View style={styles.passwordContainer}>
               <TextInput
@@ -83,7 +85,7 @@ const ResetPasswordScreen = () => {
                 value={values.confirmPassword}
                 onChangeText={handleChange('confirmPassword')}
                 onBlur={handleBlur('confirmPassword')}
-                activeOutlineColor="#97A97C"
+                activeOutlineColor="lightgrey"
                 error={!!errors.confirmPassword}
               />
 
@@ -98,10 +100,14 @@ const ResetPasswordScreen = () => {
               />
             </View>
             {errors.confirmPassword && touched.confirmPassword && (
-              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+              <Text style={GlobalStyle.errorText}>
+                {errors.confirmPassword}
+              </Text>
             )}
             <View style={styles.buttonContainer}>
-              <Button labelStyle={styles.labelStyle} onPress={handleSubmit}>
+              <Button
+                labelStyle={GlobalStyle.labelStyle}
+                onPress={handleSubmit}>
                 Submit
               </Button>
             </View>
@@ -148,8 +154,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   eyeIcon: {
-    marginLeft: -45,
-    paddingRight: 14,
+    color: colors.primary,
+    position: 'absolute',
+    right: 10,
+    top: 1,
+    alignSelf: 'center',
   },
   buttonContainer: {
     alignItems: 'center',

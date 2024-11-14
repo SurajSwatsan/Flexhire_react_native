@@ -13,8 +13,8 @@ import LogoutComponent from '../Screens/UserScreens/LogoutScreen.js';
 import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.js';
 import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
-import HomeComponent from '../Screens/BottomTabScreens/HomeScreen.js';
 import JobDetailScreen from '../Components/JobDetail.js';
+import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -32,7 +32,7 @@ const StackNavigation = () => {
       />
       <Stack.Screen
         name="Home"
-        component={HomeComponent}
+        component={HomeScreen}
         options={{headerShown: false}}
       />
 
@@ -91,20 +91,11 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen
-        name='UserApplies'
-        component={UserApplies}
-      />
+      <Stack.Screen name="UserApplies" component={UserApplies} />
 
-      <Stack.Screen
-      name='ApplyJobScreen'
-      component={ApplyJobScreen}
-      />
+      <Stack.Screen name="ApplyJobScreen" component={ApplyJobScreen} />
 
-      <Stack.Screen
-      name='AppliedJobs'
-      component={ApplyJobScreen}
-      />
+      <Stack.Screen name="AppliedJobs" component={ApplyJobScreen} />
     </Stack.Navigator>
   );
 };

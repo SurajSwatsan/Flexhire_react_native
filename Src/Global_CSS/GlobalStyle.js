@@ -1,15 +1,20 @@
 import {StyleSheet} from 'react-native';
+import {colors} from './TheamColors';
 
 const GlobalStyle = StyleSheet.create({
   labelStyle: {
-    color: '#ffffff',
-    backgroundColor: '#00334d',
+    color: colors.whiteText,
+    backgroundColor: colors.primary,
     padding: 14,
     borderRadius: 8,
     fontSize: 16,
     fontWeight: 'bold',
     height: 48,
     width: '100%',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 11,
   },
   headerStyle: {
     flexDirection: 'row',

@@ -4,6 +4,7 @@ import {Button, TextInput} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
 const ForgotpasswordScreen = () => {
   const navigation = useNavigation();
   const forgotPasswordSchema = Yup.object().shape({
@@ -44,14 +45,16 @@ const ForgotpasswordScreen = () => {
               value={values.email}
               onChangeText={handleChange('email')}
               onBlur={() => setFieldTouched('email')}
-              activeOutlineColor="#333"
+              activeOutlineColor="lightgray"
               error={!!errors.email}
             />
             {errors.email && touched.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
+              <Text style={GlobalStyle.errorText}>{errors.email}</Text>
             ) : null}
             <View style={styles.buttonContainer}>
-              <Button labelStyle={styles.labelStyle} onPress={handleSubmit}>
+              <Button
+                labelStyle={GlobalStyle.labelStyle}
+                onPress={handleSubmit}>
                 Send OTP
               </Button>
             </View>
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   buttonContainer: {
-    marginVertical:12,
+    marginVertical: 12,
   },
   labelStyle: {
     color: '#ffffff',

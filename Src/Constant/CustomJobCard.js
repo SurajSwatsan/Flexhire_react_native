@@ -198,10 +198,11 @@ const CustomJobCard = ({
  
 const styles = StyleSheet.create({
   companyContainer: {
+    width: '100%',
     padding: 5,
     backgroundColor: '#fff',
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 12,
   },
   companyHeader: {
     flexDirection: 'row',
@@ -229,6 +230,8 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     alignSelf: 'center',
+    right: -14,
+    top:-6,
     // height: 20,
   },
   jobDetailsContainer: {
