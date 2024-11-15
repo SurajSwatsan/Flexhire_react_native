@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {IconButton} from 'react-native-paper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import {colors} from '../Global_CSS/TheamColors';
 import {useNavigation} from '@react-navigation/native';
@@ -11,7 +12,11 @@ const CustomJobCard = ({
   savedJobs = [],
   toggleSaveJob,
   showBookmarkIcon = true,
-  showCheckmarkIcon = false,
+  isApplied = false,
+  showLocation = true,
+  showWorkModes = true,
+  showRating = false,
+  showPostedDate = true,
 }) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
@@ -60,25 +65,37 @@ const CustomJobCard = ({
     }
   };
 
-  const handleApplyJob = async job => {
-    try {
-      const isJobApplied = appliedJobs.some(
-        appliedJob => appliedJob.job_title === job.job_title,
-      );
+  const getPostedDate = postedDate => {
+    const daysDifference = moment().diff(moment(postedDate), 'days');
 
-      if (isJobApplied) return;
-
-      const updatedAppliedJobs = [...appliedJobs, jobData];
-      setAppliedJobs(updatedAppliedJobs);
-
-      await AsyncStorage.setItem(
-        'appliedJobs',
-        JSON.stringify(updatedAppliedJobs),
-      );
-    } catch (error) {
-      console.error('Failed to apply for job', error);
+    if (daysDifference <= 30) {
+      return moment(postedDate).fromNow(); // e.g., "3 days ago"
+    } else {
+      return moment(postedDate).format('D MMM YYYY'); // e.g., "1 Jan 2024"
     }
   };
+
+  // const getPostedDate = postedDate => {
+  //   const hoursDifference = moment().diff(moment(postedDate), 'hours');
+  //   const daysDifference = moment().diff(moment(postedDate), 'days');
+  
+  //   // If the job was posted within the last 24 hours
+  //   if (hoursDifference < 24) {
+  //     // Round the hours difference to the nearest hour and return as "X hrs ago"
+  //     const roundedHours = Math.ceil(hoursDifference / 1);  // Round to the nearest hour
+  //     return `${roundedHours} hrs ago`; // e.g., "3 hrs ago"
+  //   }
+    
+  //   // If the job was posted more than 24 hours ago but within the last 30 days
+  //   else if (daysDifference <= 30) {
+  //     return `${hoursDifference} hours ago`; // e.g., "48 hours ago"
+  //   } 
+    
+  //   // If the job was posted more than 30 days ago
+  //   else {
+  //     return moment(postedDate).format('D MMM YYYY'); // e.g., "1 Jan 2024"
+  //   }
+  // };
 
   if (!jobData || typeof jobData !== 'object') {
     return <Text style={styles.errorText}>Invalid job data</Text>;
@@ -128,47 +145,47 @@ const CustomJobCard = ({
               onPress={() => handleToggleSaveJob(jobData)}
             />
           )}
+        </View>
 
-          {showCheckmarkIcon && (
+        {/* Conditionally render the location */}
+        {showLocation && (
+          <View style={styles.location}>
             <IconButton
-              style={styles.applyButton}
-              icon={
-                appliedJobs.some(
-                  appliedJob => appliedJob.job_title === jobData.job_title,
-                )
-                  ? 'check-circle'
-                  : 'application'
-              }
-              iconColor={
-                appliedJobs.some(
-                  appliedJob => appliedJob.job_title === jobData.job_title,
-                )
-                  ? colors.primary
-                  : 'gray'
-              }
-              size={28}
-              onPress={() => handleApplyJob(jobData)}
+              icon="map-marker"
+              iconColor={colors.primary}
+              size={18}
+              style={{padding: 0, marginLeft: -10, height: 20}}
             />
-          )}
-        </View>
-
-        <View style={styles.location}>
-          <IconButton
-            icon="map-marker"
-            iconColor={colors.primary}
-            size={18}
-            style={{padding: 0, marginLeft: -10, height: 20}}
-          />
-          <Text style={styles.jobLocation}>{jobData.job_location}</Text>
-        </View>
-        <View style={styles.jobDetailsContainer}>
-          <View style={styles.chipContainer}>
-            {jobData.work_modes.map((mode, index) => (
-              <Text key={index} style={styles.chip}>
-                {mode}
-              </Text>
-            ))}
+            <Text style={styles.jobLocation}>{jobData.job_location}</Text>
           </View>
+        )}
+
+        {/* Conditionally render rating */}
+        {showRating && jobData.company.rating && (
+          <View style={styles.ratingContainer}>
+            <Ionicons
+              name="star"
+              size={16}
+              color="#ffd700"
+              style={styles.ratingIcon}
+            />
+            <Text style={styles.ratingText}>{jobData.company.rating}</Text>
+          </View>
+        )}
+        <View style={styles.jobDetailsContainer}>
+          {/* Conditionally render the work modes */}
+          {showWorkModes &&
+            jobData.work_modes &&
+            jobData.work_modes.length > 0 && (
+              <View style={styles.chipContainer}>
+                {jobData.work_modes.map((mode, index) => (
+                  <Text key={index} style={styles.chip}>
+                    {mode}
+                  </Text>
+                ))}
+              </View>
+            )}
+
           <View style={{height: 0.5, backgroundColor: 'lightgray'}} />
 
           {/* <Text style={styles.education}>
@@ -183,12 +200,28 @@ const CustomJobCard = ({
               justifyContent: 'space-between',
               margin: 8,
             }}>
-            <Text style={styles.jobDetails}>
-              {jobData.salary_min} - {jobData.salary_max}
-            </Text>
-            <Text style={styles.jobPostedDate}>
-              {moment(jobData.posted_date).format('MMMM D, YYYY')}
-            </Text>
+            {/* Conditionally render salary or "Applied" status */}
+            {isApplied ? (
+              <View style={styles.appliedContainer}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={14}
+                  color="#009900"
+                  style={styles.checkmarkIcon}
+                />
+                <Text style={styles.appliedText}>Applied</Text>
+              </View>
+            ) : (
+              <Text style={styles.jobDetails}>
+                {jobData.salary_min} - {jobData.salary_max}
+              </Text>
+            )}
+            {/* Conditionally render the posted date */}
+            {showPostedDate && jobData.posted_date && (
+              <Text style={styles.jobPostedDate}>
+                {getPostedDate(jobData.posted_date)}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -286,6 +319,20 @@ const styles = StyleSheet.create({
     color: '#808080',
     marginLeft: -12,
   },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 15,
+    marginLeft: 8,
+  },
+  ratingIcon: {
+    marginRight: 4,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: '#000',
+  },
   jobPostedDate: {
     fontSize: 12,
     color: '#808080',
@@ -296,6 +343,25 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginVertical: 10,
+  },
+  appliedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgb(230, 255, 238)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 5,
+  },
+  checkmarkIcon: {
+    marginRight: 0,
+  },
+  appliedText: {
+    fontSize: 10,
+    color: 'green',
+    fontWeight: 'bold',
+    marginLeft: 4,
+    textAlign: 'center',
+    backgroundColor: 'rgb(230, 255, 238)',
   },
 });
 

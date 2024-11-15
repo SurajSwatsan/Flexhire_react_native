@@ -18,7 +18,7 @@ import CustomJobCard from '../Constant/CustomJobCard';
 const JobDetailScreen = ({route, navigation}) => {
   const {jobData} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
-  
+
   const [isApplied, setIsApplied] = useState(false);
 
   // console.log('Company Data:', jobData);
@@ -46,9 +46,6 @@ const JobDetailScreen = ({route, navigation}) => {
     checkAppliedStatus();
   }, [jobData.id]);
 
- 
-  
-
   const handleApply = async () => {
     if (isApplied) return; // Prevent applying again if already applied
 
@@ -61,18 +58,23 @@ const JobDetailScreen = ({route, navigation}) => {
       parsedAppliedJobs.push(jobData);
 
       // Save the updated applied jobs list to AsyncStorage
-      await AsyncStorage.setItem('appliedJobs', JSON.stringify(parsedAppliedJobs));
+      await AsyncStorage.setItem(
+        'appliedJobs',
+        JSON.stringify(parsedAppliedJobs),
+      );
 
       // Set the job as applied
       setIsApplied(true);
 
       // Optionally, show a success message (Toast or Alert)
       alert('You have successfully applied for the job!');
+
+      // Navigate to UserApplies Screen
+      navigation.navigate('UserApplies');
     } catch (error) {
       console.log('Error applying for job:', error);
     }
   };
-
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -296,8 +298,7 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.contentContainer}>{renderTabs()}</View>
           </View>
 
-
-            {/* Related Jobs */}
+          {/* Related Jobs */}
           {relatedJobs && Object.keys(relatedJobs).length > 0 && (
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
@@ -335,19 +336,18 @@ const JobDetailScreen = ({route, navigation}) => {
           <Text style={styles.applyButtonText}>Apply</Text>
         </TouchableOpacity>
       </View> */}
-     {/* Apply Button */}
-     <View style={styles.applyButtonContainer}>
-              <TouchableOpacity
-                style={[styles.applyButton, isApplied && styles.appliedButton]}
-                onPress={handleApply}
-                disabled={isApplied} // Disable if already applied
-              >
-                <Text style={styles.applyButtonText}>
-                  {isApplied ? 'Applied' : 'Apply'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-      
+      {/* Apply Button */}
+      <View style={styles.applyButtonContainer}>
+        <TouchableOpacity
+          style={[styles.applyButton, isApplied && styles.appliedButton]}
+          onPress={handleApply}
+          disabled={isApplied} // Disable if already applied
+        >
+          <Text style={styles.applyButtonText}>
+            {isApplied ? 'Applied' : 'Apply'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

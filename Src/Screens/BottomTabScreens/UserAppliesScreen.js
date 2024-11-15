@@ -1,361 +1,134 @@
-
-// import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// import React from 'react';
-// import { useNavigation } from '@react-navigation/native';
-// import { colors } from '../../Global_CSS/TheamColors';
-
-// const UserApplies = () => {
-//   const navigation = useNavigation();
-
-//   return (
-//     <View style={styles.applyContainer}>
-//       <View style={styles.ImageContainer}>
-//         <Image
-//           source={require('../../Assets/ApplyImages/apply.png')}
-//           style={styles.Image}
-//         />
-//         <Text style={styles.textContainer}>You haven't applied yet!</Text>
-//       </View>
-
-//       <View style={styles.bottomTextContainer}>
-//         <Text style={styles.bottomText}>
-//           Search for jobs and start applying. You can track your applications here!
-//         </Text>
-//       </View>
-
-//       <TouchableOpacity
-//         style={styles.buttonContainer}
-//         onPress={() => navigation.navigate('searchjob', { query: '' })}
-//       >
-//         <Text style={styles.buttonText}>Start my job search</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   applyContainer: {
-//     flex: 1,
-//     backgroundColor: colors.background,
-//     justifyContent: 'center',
-//     width: '100%',
-//     alignItems: 'center',
-//   },
-//   ImageContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingHorizontal: 25,
-//     textAlign: 'center',
-//     padding: 5,
-//   },
-//   Image: {
-//     height: 200,
-//     width: 200,
-//   },
-//   textContainer: {
-//     fontSize: 20,
-//     color: colors.blackText,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//   },
-//   bottomTextContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     margin: 5,
-//     padding: 5,
-//   },
-//   bottomText: {
-//     fontSize: 14,
-//     color: colors.blackText,
-//     textAlign: 'center',
-//   },
-//   buttonContainer: {
-//     backgroundColor: colors.lightgaryText,
-//     borderRadius: 10,
-//     padding: 10,
-//     margin: 5,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   buttonText: {
-//     color: colors.primary,
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default UserApplies;
-
-// import React, { useEffect, useState } from 'react';
-// import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { useNavigation } from '@react-navigation/native';
-// import { colors } from '../../Global_CSS/TheamColors';
-// import CustomJobCard from '../../Constant/CustomJobCard'; // Assuming CustomJobCard is a component for displaying job cards
-
-// const UserApplies = () => {
-//   const navigation = useNavigation();
-//   const [appliedJobs, setAppliedJobs] = useState([]);
-
-//   // Fetch applied jobs from AsyncStorage
-//   useEffect(() => {
-//     const getAppliedJobs = async () => {
-//       try {
-//         const appliedJobsData = await AsyncStorage.getItem('appliedJobs');
-//         if (appliedJobsData) {
-//           setAppliedJobs(JSON.parse(appliedJobsData)); // Parse and set applied jobs
-//         } else {
-//           setAppliedJobs([]); // Set empty array if no data is found
-//         }
-//       } catch (error) {
-//         console.log('Error fetching applied jobs:', error);
-//       }
-//     };
-
-//     getAppliedJobs();
-//   }, []); // Run once when component mounts
-
-//   // Navigate to job search page
-//   const handleStartSearch = () => {
-//     navigation.navigate('searchjob', { query: '' });
-//   };
-
-//   return (
-//     <View style={styles.applyContainer}>
-//       {appliedJobs.length === 0 ? (
-//         // Show message if no jobs have been applied
-//         <View style={styles.ImageContainer}>
-//           <Image
-//             source={require('../../Assets/ApplyImages/apply.png')}
-//             style={styles.Image}
-//           />
-//           <Text style={styles.textContainer}>You haven't applied yet!</Text>
-//         </View>
-//       ) : (
-//         // Show applied jobs if there are any
-//         <ScrollView style={styles.jobsListContainer}>
-//           <Text style={styles.textContainer}>Your Applied Jobs</Text>
-//           {appliedJobs.map((job, index) => (
-//             <View key={index} style={styles.jobCardContainer}>
-//               <CustomJobCard jobData={job} /> {/* Display applied job details using CustomJobCard */}
-//             </View>
-//           ))}
-//         </ScrollView>
-//       )}
-
-//       <View style={styles.bottomTextContainer}>
-//         <Text style={styles.bottomText}>
-//           {appliedJobs.length === 0
-//             ? 'Search for jobs and start applying. You can track your applications here!'
-//             : 'You can view and manage your applications here!'}
-//         </Text>
-//       </View>
-
-//       <TouchableOpacity
-//         style={styles.buttonContainer}
-//         onPress={handleStartSearch}
-//       >
-//         <Text style={styles.buttonText}>Start my job search</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   applyContainer: {
-//     flex: 1,
-//     backgroundColor: colors.background,
-//     justifyContent: 'center',
-//     width: '100%',
-//     alignItems: 'center',
-//     padding: 16,
-//   },
-//   ImageContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingHorizontal: 25,
-//     textAlign: 'center',
-//     padding: 5,
-//   },
-//   Image: {
-//     height: 200,
-//     width: 200,
-//   },
-//   textContainer: {
-//     fontSize: 20,
-//     color: colors.blackText,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//   },
-//   bottomTextContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     margin: 5,
-//     padding: 5,
-//   },
-//   bottomText: {
-//     fontSize: 14,
-//     color: colors.blackText,
-//     textAlign: 'center',
-//   },
-//   buttonContainer: {
-//     backgroundColor: colors.lightgaryText,
-//     borderRadius: 10,
-//     padding: 10,
-//     margin: 5,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   buttonText: {
-//     color: colors.primary,
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-//   jobsListContainer: {
-//     width: '100%',
-//     paddingTop: 16,
-//   },
-//   jobCardContainer: {
-//     marginBottom: 12,
-//   },
-// });
-
-// export default UserApplies;
-
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { colors } from '../../Global_CSS/TheamColors';
-import CustomJobCard from '../../Constant/CustomJobCard'; // Assuming CustomJobCard is a component for displaying job cards
+import {colors} from '../../Global_CSS/TheamColors';
+import CustomJobCard from '../../Constant/CustomJobCard'; // Ensure correct import path
 
-const UserApplies = () => {
-  const navigation = useNavigation();
+const UserApplies = ({navigation}) => {
   const [appliedJobs, setAppliedJobs] = useState([]);
-
-  // Fetch applied jobs from AsyncStorage
+  const [showBookmarkIcon, setShowBookmarkIcon] = useState(false);
+  // Fetch applied jobs from AsyncStorage on component mount
   useEffect(() => {
-    const getAppliedJobs = async () => {
+    const fetchAppliedJobs = async () => {
       try {
         const appliedJobsData = await AsyncStorage.getItem('appliedJobs');
         if (appliedJobsData) {
-          setAppliedJobs(JSON.parse(appliedJobsData)); // Parse and set applied jobs
-        } else {
-          setAppliedJobs([]); // Set empty array if no data is found
+          setAppliedJobs(JSON.parse(appliedJobsData));
         }
       } catch (error) {
         console.log('Error fetching applied jobs:', error);
       }
     };
 
-    getAppliedJobs();
-  }, []); // Run once when component mounts
+    fetchAppliedJobs();
+  }, []);
 
-  // Navigate to job search page
-  const handleStartSearch = () => {
-    navigation.navigate('searchjob', { query: '' });
+  const toggleBookmarkVisibility = () => {
+    setShowBookmarkIcon(prevState => !prevState);
   };
 
   return (
-    <View style={styles.applyContainer}>
+    <View style={styles.container}>
+      {/* If there are no applied jobs, display a message */}
       {appliedJobs.length === 0 ? (
-        // Show message if no jobs have been applied
-        <View style={styles.ImageContainer}>
-          <Image
-            source={require('../../Assets/ApplyImages/apply.png')}
-            style={styles.Image}
-          />
-          <Text style={styles.textContainer}>You haven't applied yet!</Text>
+        <View style={styles.noJobsContainer}>
+          <Text style={styles.noJobs}>
+            You haven't applied for any jobs yet!
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('SearchJob')}>
+            <Text style={styles.buttonText}>Start Job Search</Text>
+          </TouchableOpacity>
         </View>
       ) : (
-        // Show applied jobs if there are any
-        <ScrollView style={styles.jobsListContainer}>
-          <Text style={styles.textContainer}>Your Applied Jobs</Text>
-          {appliedJobs.map((job, index) => (
-            <View key={index} style={styles.jobCardContainer}>
-              <CustomJobCard jobData={job} /> {/* Display applied job details using CustomJobCard */}
+        // Display applied jobs in a vertical list with margin between them
+        <ScrollView
+          showsVerticalScrollIndicator={false} // To hide the scroll bar
+          showBookmarkIcon={false}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.contentContainer}>
+          {appliedJobs.map((jobdata, index) => (
+            <View key={jobdata.id || index} style={styles.jobCardContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  // Navigate to JobDetailScreen for the applied job
+                  navigation.navigate('JobDetailScreen', {
+                    jobData: jobdata,
+                  });
+                }}>
+                <CustomJobCard
+                  jobData={jobdata}
+                  showBookmarkIcon={showBookmarkIcon}
+                  isApplied={true}
+                  showLocation = {false}
+                  showWorkModes = {false}
+                  showRating = {true}
+                  showPostedDate = {true}
+                />
+              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
       )}
-
-      <View style={styles.bottomTextContainer}>
-        <Text style={styles.bottomText}>
-          {appliedJobs.length === 0
-            ? 'Search for jobs and start applying. You can track your applications here!'
-            : 'You can view and manage your applications here!'}
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={handleStartSearch}
-      >
-        <Text style={styles.buttonText}>Start my job search</Text>
-      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  applyContainer: {
+  container: {
     flex: 1,
+    justifyContent: 'flex-start', // Ensure content is top-aligned
+    alignItems: 'center',
     backgroundColor: colors.background,
-    justifyContent: 'center',
+    padding: 18,
     width: '100%',
-    alignItems: 'center',
-    padding: 16,
   },
-  ImageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 25,
-    textAlign: 'center',
-    padding: 5,
-  },
-  Image: {
-    height: 200,
-    width: 200,
-  },
-  textContainer: {
-    fontSize: 20,
-    color: colors.blackText,
+  heading: {
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginBottom: 20,
+    color: colors.primary,
   },
-  bottomTextContainer: {
-    alignItems: 'center',
+  noJobsContainer: {
     justifyContent: 'center',
-    margin: 5,
-    padding: 5,
+    alignItems: 'center',
+    marginTop: 20,
   },
-  bottomText: {
-    fontSize: 14,
+  noJobs: {
+    fontSize: 16,
     color: colors.blackText,
     textAlign: 'center',
+    marginBottom: 20,
   },
-  buttonContainer: {
-    backgroundColor: colors.lightgaryText,
-    borderRadius: 10,
+  button: {
+    backgroundColor: colors.primary,
     padding: 10,
-    margin: 5,
+    borderRadius: 8,
+    marginTop: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   buttonText: {
-    color: colors.primary,
-    fontSize: 14,
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  jobsListContainer: {
-    width: '100%',
-    paddingTop: 16,
+  scrollContainer: {
+    width: '100%', // Full width for the ScrollView
+  },
+  contentContainer: {
+    paddingBottom: 20, // Adds padding at the bottom for better spacing
   },
   jobCardContainer: {
-    marginBottom: 12,
+    marginBottom: 15, // Space between job cards
+    width: '100%', // Ensures full width usage for each job card
   },
 });
 
 export default UserApplies;
-
-
