@@ -17,9 +17,9 @@ const profileStyle = StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    color: colors.blackText,
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: colors.secodary,
+    fontSize: 14,
+    fontWeight: '600',
   },
   userDataContainer: {
     marginHorizontal: 12,
@@ -64,7 +64,7 @@ const profileStyle = StyleSheet.create({
   },
 
   selectedTabText: {
-    color: '#fff',
+    color: colors.whiteText,
   },
   unselectedTabText: {
     color: colors.blackText,
@@ -81,7 +81,8 @@ const profileStyle = StyleSheet.create({
     marginVertical: 4,
   },
   tabBtnText: {
-    color: '#fff',
+    color: colors.whiteText,
+
     fontSize: 12,
   },
 });

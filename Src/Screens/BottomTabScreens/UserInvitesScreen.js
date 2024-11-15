@@ -5,7 +5,7 @@ import Index from '../UserProfile';
 const UserInvitesScreen = () => {
   return (
     <View>
-      <Index/>
+      {/* <Index/> */}
     </View>
   );
 }

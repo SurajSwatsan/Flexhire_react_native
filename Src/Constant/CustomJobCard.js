@@ -5,7 +5,7 @@ import moment from 'moment';
 import {colors} from '../Global_CSS/TheamColors';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
- 
+
 const CustomJobCard = ({
   jobData,
   savedJobs = [],
@@ -16,12 +16,12 @@ const CustomJobCard = ({
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
   const [appliedJobs, setAppliedJobs] = useState([]);
- 
+
   useEffect(() => {
     loadSavedJobs();
     loadAppliedJobs();
   }, []);
- 
+
   const loadSavedJobs = async () => {
     try {
       const storedJobs = await AsyncStorage.getItem('savedJobs');
@@ -30,7 +30,7 @@ const CustomJobCard = ({
       console.error('Failed to load saved jobs', error);
     }
   };
- 
+
   const loadAppliedJobs = async () => {
     try {
       const storedAppliedJobs = await AsyncStorage.getItem('appliedJobs');
@@ -39,19 +39,19 @@ const CustomJobCard = ({
       console.error('Failed to load applied jobs', error);
     }
   };
- 
+
   const handleToggleSaveJob = async job => {
     try {
       const isJobSaved = localSavedJobs.some(
         savedJob => savedJob.job_title === job.job_title,
       );
- 
+
       const updatedJobs = isJobSaved
         ? localSavedJobs.filter(
             savedJob => savedJob.job_title !== job.job_title,
           )
         : [...localSavedJobs, jobData];
- 
+
       setLocalSavedJobs(updatedJobs);
       await AsyncStorage.setItem('savedJobs', JSON.stringify(updatedJobs));
       if (!isJobSaved && toggleSaveJob) toggleSaveJob(jobData);
@@ -59,18 +59,18 @@ const CustomJobCard = ({
       console.error('Failed to save or remove job', error);
     }
   };
- 
+
   const handleApplyJob = async job => {
     try {
       const isJobApplied = appliedJobs.some(
         appliedJob => appliedJob.job_title === job.job_title,
       );
- 
+
       if (isJobApplied) return;
- 
+
       const updatedAppliedJobs = [...appliedJobs, jobData];
       setAppliedJobs(updatedAppliedJobs);
- 
+
       await AsyncStorage.setItem(
         'appliedJobs',
         JSON.stringify(updatedAppliedJobs),
@@ -79,11 +79,11 @@ const CustomJobCard = ({
       console.error('Failed to apply for job', error);
     }
   };
- 
+
   if (!jobData || typeof jobData !== 'object') {
     return <Text style={styles.errorText}>Invalid job data</Text>;
   }
- 
+
   return (
     <View style={styles.companyContainer}>
       <TouchableOpacity
@@ -106,7 +106,7 @@ const CustomJobCard = ({
               </Text>
             </View>
           </View>
- 
+
           {showBookmarkIcon && (
             <IconButton
               style={styles.saveIcon}
@@ -128,7 +128,7 @@ const CustomJobCard = ({
               onPress={() => handleToggleSaveJob(jobData)}
             />
           )}
- 
+
           {showCheckmarkIcon && (
             <IconButton
               style={styles.applyButton}
@@ -151,7 +151,7 @@ const CustomJobCard = ({
             />
           )}
         </View>
- 
+
         <View style={styles.location}>
           <IconButton
             icon="map-marker"
@@ -170,7 +170,7 @@ const CustomJobCard = ({
             ))}
           </View>
           <View style={{height: 0.5, backgroundColor: 'lightgray'}} />
- 
+
           {/* <Text style={styles.education}>
             Education: {jobData.education.join(', ')}
           </Text> */}
@@ -195,7 +195,7 @@ const CustomJobCard = ({
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   companyContainer: {
     width: '100%',
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   saveIcon: {
     alignSelf: 'center',
     right: -14,
-    top:-6,
+    top: -6,
     // height: 20,
   },
   jobDetailsContainer: {
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     margin: 5,
     gap: 8,
   },
- 
+
   chip: {
     fontSize: 12,
     paddingVertical: 6,
@@ -298,5 +298,5 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
- 
+
 export default CustomJobCard;

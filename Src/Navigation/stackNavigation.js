@@ -15,6 +15,7 @@ import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.j
 import DefaultScreen from '../Screens/DefaultScreen.js';
 import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
+import Index from '../Screens/UserProfile/Profile/index.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -96,6 +97,11 @@ const StackNavigation = () => {
       <Stack.Screen name="ApplyJobScreen" component={ApplyJobScreen} />
 
       <Stack.Screen name="AppliedJobs" component={ApplyJobScreen} />
+      <Stack.Screen
+        name="userProfileScreen"
+        component={Index}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
