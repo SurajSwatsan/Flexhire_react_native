@@ -35,7 +35,7 @@ const ModalFooter = ({
 const styles = StyleSheet.create({
   modalFooter: {
     borderTopColor: 'lightgray',
-    borderTopWidth: 1,
+    // borderTopWidth: 1,
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
     alignItems: 'center',

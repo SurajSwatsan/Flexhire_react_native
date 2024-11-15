@@ -32,8 +32,9 @@ const profileStyle = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
     borderRadius: 8,
+    padding: 12,
   },
-  ScrollViewContent: {
+  ScrollContent: {
     justifyContent: 'center',
     margin: 12,
   },
@@ -85,5 +86,12 @@ const profileStyle = StyleSheet.create({
 
     fontSize: 12,
   },
+  textarea: {
+    backgroundColor: 'white',
+    width: effectiveWidth,
+    height: 48,
+    borderColor: 'lightgrey',
+  },
+
 });
 export default profileStyle;
