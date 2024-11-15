@@ -2,6 +2,7 @@
 import CompanysData from '../../Constant/Data/CompanyData.json'
 export const JOB_POST = 'JOB_POST';
 export const SELECT_JOB = 'SELECT_JOB';
+// export const RELATIVE_JOBPOST = 'RELATIVE_JOBPOST';
 export const jobPost = () => {
   return {
     type: JOB_POST,
@@ -14,3 +15,9 @@ export const selectJob = job => {
     payload: job,
   };
 };
+// export const relativeJob = () => {
+//   return {
+//     type: RELATIVE_JOBPOST,
+//     payload: CompanysData.related_jobs, // Access the 'Company' array in the JSON
+//   };
+// }

@@ -13,13 +13,66 @@ import {colors} from '../Global_CSS/TheamColors';
 import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
+import CustomJobCard from '../Constant/CustomJobCard';
 
 const JobDetailScreen = ({route, navigation}) => {
   const {jobData} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
-  const [isApplied, setIsApplied] = useState(false); // Track if the job has been applied to
+  
+  const [isApplied, setIsApplied] = useState(false);
 
-  console.log('Company Data:', jobData);
+  // console.log('Company Data:', jobData);
+
+  const relatedJobs = jobData.related_jobs;
+
+  console.log('related Data:', relatedJobs);
+
+  // Check if job is already applied
+  useEffect(() => {
+    const checkAppliedStatus = async () => {
+      try {
+        const appliedJobs = await AsyncStorage.getItem('appliedJobs');
+        if (appliedJobs) {
+          const parsedAppliedJobs = JSON.parse(appliedJobs);
+          if (parsedAppliedJobs.some(job => job.id === jobData.id)) {
+            setIsApplied(true); // Set status to applied if found
+          }
+        }
+      } catch (error) {
+        console.log('Error checking applied jobs:', error);
+      }
+    };
+
+    checkAppliedStatus();
+  }, [jobData.id]);
+
+ 
+  
+
+  const handleApply = async () => {
+    if (isApplied) return; // Prevent applying again if already applied
+
+    try {
+      // Get the list of applied jobs from AsyncStorage
+      const appliedJobs = await AsyncStorage.getItem('appliedJobs');
+      const parsedAppliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
+
+      // Add the current job to the applied jobs list
+      parsedAppliedJobs.push(jobData);
+
+      // Save the updated applied jobs list to AsyncStorage
+      await AsyncStorage.setItem('appliedJobs', JSON.stringify(parsedAppliedJobs));
+
+      // Set the job as applied
+      setIsApplied(true);
+
+      // Optionally, show a success message (Toast or Alert)
+      alert('You have successfully applied for the job!');
+    } catch (error) {
+      console.log('Error applying for job:', error);
+    }
+  };
+
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -141,6 +194,7 @@ const JobDetailScreen = ({route, navigation}) => {
         return null;
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
@@ -241,19 +295,59 @@ const JobDetailScreen = ({route, navigation}) => {
             </View>
             <View style={styles.contentContainer}>{renderTabs()}</View>
           </View>
+
+
+            {/* Related Jobs */}
+          {relatedJobs && Object.keys(relatedJobs).length > 0 && (
+            <View style={styles.relatedjobcontainer}>
+              <View style={styles.displayContainer}>
+                <Text style={styles.contHead}>Related Jobs</Text>
+                <Text style={styles.seeAll}>See All</Text>
+              </View>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.scrollContainer}
+                contentContainerStyle={styles.contentContainer}>
+                {Object.entries(relatedJobs).map(([key, jobdata], index) => (
+                  <View key={jobdata.id || index} style={{marginRight: 12}}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        // Navigate to JobDetailScreen for the related job
+                        navigation.navigate('JobDetailScreen', {
+                          jobData: jobdata,
+                        });
+                      }}>
+                      <CustomJobCard jobData={jobdata} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         </View>
       </ScrollView>
 
-      {/* Apply Button */}
+      {/* Apply Button
       <View style={styles.applyButtonContainer}>
-        <TouchableOpacity
-          style={styles.applyButton}
-          // onPress={() => addJobIfNotExist(company)} // On apply button press
-          // disabled={isApplied} // Disable if already applied
-        >
+        <TouchableOpacity style={styles.applyButton}>
           <Text style={styles.applyButtonText}>Apply</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
+     {/* Apply Button */}
+     <View style={styles.applyButtonContainer}>
+              <TouchableOpacity
+                style={[styles.applyButton, isApplied && styles.appliedButton]}
+                onPress={handleApply}
+                disabled={isApplied} // Disable if already applied
+              >
+                <Text style={styles.applyButtonText}>
+                  {isApplied ? 'Applied' : 'Apply'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+      
     </View>
   );
 };
@@ -374,6 +468,12 @@ const styles = StyleSheet.create({
   appliedButton: {
     backgroundColor: 'green', // Disabled color to indicate the button is applied
   },
+  displayContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
 
   applyButtonText: {
     color: 'white',
@@ -430,6 +530,31 @@ const styles = StyleSheet.create({
   },
   educationItemsContainer: {
     flexWrap: 'wrap', // Allow items to wrap if there are too many to fit
+  },
+  contHead: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.blackText,
+  },
+  seeAll: {
+    fontSize: 14,
+    color: colors.blackText,
+    marginRight: 8,
+  },
+  displayContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    marginHorizontal: 10,
+  },
+  scrollContainer: {
+    // paddingVertical: 8,
+    backgroundColor: colors.background,
+    marginBottom: 12,
+  },
+  relatedjobcontainer: {
+    // marginHorizontal:10,
   },
 });
 export default JobDetailScreen;
