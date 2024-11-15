@@ -19,7 +19,7 @@ const ReusableTextInput = ({name, label, ...props}) => {
           mode="outlined"
           outlineColor="lightgrey"
           textColor="black"
-          activeOutlineColor="#333"
+          activeOutlineColor="lightgrey"
           value={field.value}
           onChangeText={text => helpers.setValue(text)}
           onBlur={() => helpers.setTouched(true)}
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     // marginTop: 4,
-    fontSize: 12,
+    fontSize: 11,
   },
 });
 export default ReusableTextInput;

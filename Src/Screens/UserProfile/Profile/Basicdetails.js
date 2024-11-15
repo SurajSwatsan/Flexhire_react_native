@@ -10,10 +10,10 @@ import React, {useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import ReusableTextInput from '../../Constant/CustomTextInput';
-import ModalFooter from '../../Constant/ProfileModalFooter';
-import {colors} from '../../Global_CSS/TheamColors';
-import profileStyle from './ProfileStyle';
+import ReusableTextInput from '../../../Constant/CustomTextInput';
+import ModalFooter from '../../../Constant/ProfileModalFooter';
+import profileStyle from '../ProfileStyle';
+import {colors} from '../../../Global_CSS/TheamColors';
 
 const AVAILABILITY_OPTIONS = [
   '15 days',

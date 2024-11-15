@@ -10,20 +10,17 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {IconButton} from 'react-native-paper';
 
-const ProfileImage = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
+const ProfileImage = ({onImageSelect, selectedImage}) => {
+  // Accept `onImageSelect` and `selectedImage` as props
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleImagePicker = async () => {
     try {
       const response = await launchImageLibrary({mediaType: 'photo'});
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.assets) {
-        setSelectedImage(response.assets[0].uri);
-        setModalVisible(false); // Close the modal after selecting the image
+      if (response.assets) {
+        const uri = response.assets[0].uri;
+        onImageSelect(uri); // Pass URI back to parent component
+        setModalVisible(false); // Close modal after selecting the image
       }
     } catch (error) {
       console.error('Image picker failed: ', error);
@@ -32,7 +29,7 @@ const ProfileImage = () => {
 
   // Function to remove the selected image
   const removeImage = () => {
-    setSelectedImage(null);
+    onImageSelect(null); // Reset selected image in the parent component
   };
 
   return (
@@ -125,9 +122,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    height: 80,
-    width: 80,
-    borderRadius: 50,
+    height: 150,
+    width: 150,
+    borderRadius: 100,
     backgroundColor: '#808080',
     justifyContent: 'center',
     alignItems: 'center',
@@ -146,9 +143,9 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   image: {
-    width: 75,
-    height: 75,
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 100,
     marginTop: 10,
   },
   modalContainer: {
