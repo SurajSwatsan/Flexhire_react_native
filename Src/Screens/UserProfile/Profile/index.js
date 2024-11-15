@@ -14,6 +14,7 @@ import BasicDetails from './Basicdetails';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PersonalInformation from './PersonalInformation';
 import profileStyle from '../ProfileStyle';
+import Keyskills from './Keyskills';
 
 const Index = () => {
   const route = useRoute();
@@ -53,6 +54,7 @@ const Index = () => {
             </View>
             {/* <BasicDetails /> */}
             <PersonalInformation />
+            <Keyskills />
           </View>
         );
       case 'Education':

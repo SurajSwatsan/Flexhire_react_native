@@ -149,7 +149,7 @@ const Index = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.primary,
   },
   headContainer: {
     alignItems: 'center',
@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
 
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
+    fontWeight: '600',
+    color: colors.whiteText,
   },
   headingText: {
     marginVertical: 20,

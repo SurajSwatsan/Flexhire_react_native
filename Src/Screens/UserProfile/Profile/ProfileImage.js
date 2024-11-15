@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {IconButton} from 'react-native-paper';
+import {colors} from '../../../Global_CSS/TheamColors';
 
 const ProfileImage = ({onImageSelect, selectedImage}) => {
   // Accept `onImageSelect` and `selectedImage` as props
@@ -39,7 +40,7 @@ const ProfileImage = ({onImageSelect, selectedImage}) => {
           <View style={styles.iconContainer}>
             <IconButton
               icon="camera-plus"
-              iconColor="#ffffff"
+              iconColor="#333"
               size={40}
               style={styles.iconButton}
             />
@@ -122,10 +123,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    height: 150,
-    width: 150,
+    height: 120,
+    width: 120,
     borderRadius: 100,
-    backgroundColor: '#808080',
+    backgroundColor: colors.cardBgcolor,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -147,6 +148,8 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 100,
     marginTop: 10,
+    borderWidth: 0.5,
+    borderColor: colors.cardBgcolor,
   },
   modalContainer: {
     flex: 1,
