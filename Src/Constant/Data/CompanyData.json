@@ -30,7 +30,10 @@
         "location": "Chicago, IL",
         "industry": "Data Science",
         "website": "https://www.insightanalytics.com",
-        "rating": "4.5"
+        "rating": "4.5",
+        "tagline": "Make the world's information accessible and useful",
+        "employee":100
+        
       },
       "related_jobs": [
         {
@@ -68,7 +71,15 @@
             "location": "Chicago, IL",
             "industry": "Data Science",
             "website": "https://www.insightanalytics.com",
-            "rating": "4.5"
+            "rating": "4.5",
+            "tagline": "Make the world's information accessible and useful",
+            
+            "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ]
           }
         },
         {
@@ -106,7 +117,8 @@
             "location": "Chicago, IL",
             "industry": "Data Science",
             "website": "https://www.insightanalytics.com",
-            "rating": "4.5"
+            "rating": "4.5",
+            "tagline": "Make the world's information accessible and useful"
           }
         }
       ]
@@ -145,7 +157,16 @@
         "location": "San Francisco, CA",
         "industry": "Information Technology",
         "website": "https://www.techinnovations.com",
-        "rating": "4.7"
+        "rating": "4.7",
+        "tagline": "Make the world's information accessible and useful",
+        "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ],
+            "employee":100
+
       }
     },
     {
@@ -179,7 +200,16 @@
         "location": "New York, NY",
         "industry": "Marketing",
         "website": "https://www.creativesolutions.com",
-        "rating": "4.3"
+        "rating": "4.3",
+        "tagline": "Make the world's information accessible and useful",
+        "employee":100,
+
+        "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ]
       }
     },
     {
@@ -216,7 +246,14 @@
         "location": "Chicago, IL",
         "industry": "Healthcare",
         "website": "https://www.healthtechsolutions.com",
-        "rating": "4.6"
+        "rating": "4.6",
+        "tagline": "Make the world's information accessible and useful",
+        "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ]
       }
     },
     {
@@ -253,7 +290,14 @@
         "location": "Austin, TX",
         "industry": "Retail",
         "website": "https://www.ecofriendlyproducts.com",
-        "rating": "4.4"
+        "rating": "4.4",
+        "tagline": "Make the world's information accessible and useful",
+        "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ]
       }
     },
     {
@@ -286,7 +330,14 @@
         "location": "Chicago, IL",
         "industry": "Data Science",
         "website": "https://www.insightanalytics.com",
-        "rating": "4.5"
+        "rating": "4.5",
+        "tagline": "Make the world's information accessible and useful",
+        "services": [
+              "Data Analysis",
+              "Predictive Analytics",
+              "Business Intelligence",
+              "Machine Learning Solutions"
+            ]
       }
     }
   ]

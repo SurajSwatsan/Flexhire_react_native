@@ -2,7 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SearchJobScreen from '../Components/searchResults.js';
 import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen.js';
-import ApplyJobScreen from '../Components/ApplyJobScreen.js';
+
 import SavedJobScreen from '../Screens/BottomTabScreens/SavedJobList.js';
 import DetailsComponent from '../Trialpages/detailsComponent.js';
 import LoginScreen from '../Screens/UserScreens/LoginScreen.js';
@@ -16,6 +16,7 @@ import DefaultScreen from '../Screens/DefaultScreen.js';
 import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
+import CompanyOverviewScreen from '../Components/CompanyOverview.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -94,13 +95,17 @@ const StackNavigation = () => {
 
       <Stack.Screen name="UserApplies" component={UserApplies} />
 
-      <Stack.Screen name="ApplyJobScreen" component={ApplyJobScreen} />
-
-      <Stack.Screen name="AppliedJobs" component={ApplyJobScreen} />
+     
       <Stack.Screen
         name="userProfileScreen"
         component={Index}
         options={{headerShown: false}}
+      />
+
+      <Stack.Screen
+      name='CompanyOverview'
+      component={CompanyOverviewScreen}
+      options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

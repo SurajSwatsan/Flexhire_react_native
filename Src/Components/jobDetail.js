@@ -310,7 +310,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.scrollContainer}
-                contentContainerStyle={styles.contentContainer}>
+                contentContainerStyle={styles.contentContainer1}>
                 {Object.entries(relatedJobs).map(([key, jobdata], index) => (
                   <View key={jobdata.id || index} style={{marginRight: 12}}>
                     <TouchableOpacity
@@ -330,12 +330,7 @@ const JobDetailScreen = ({route, navigation}) => {
         </View>
       </ScrollView>
 
-      {/* Apply Button
-      <View style={styles.applyButtonContainer}>
-        <TouchableOpacity style={styles.applyButton}>
-          <Text style={styles.applyButtonText}>Apply</Text>
-        </TouchableOpacity>
-      </View> */}
+      
       {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
@@ -503,6 +498,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 20,
   },
+  contentContainer1: {
+    alignItems: 'center',  // Center the cards horizontally
+    marginHorizontal:14,
+    marginVertical:14,
+    paddingVertical:6
+  },
   contentText: {
     fontSize: 16,
     color: '#333',
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
     marginHorizontal: 10,
   },
   scrollContainer: {
@@ -554,7 +555,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   relatedjobcontainer: {
-    // marginHorizontal:10,
+    marginTop:16,
+    marginBottom:24,
   },
 });
 export default JobDetailScreen;

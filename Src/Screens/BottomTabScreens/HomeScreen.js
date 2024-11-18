@@ -135,6 +135,7 @@ const HomeScreen = () => {
               contentContainerStyle={styles.contentContainer}>
               {jobs.map((jobdata, index) => (
                 <View key={jobdata.id || index} style={{marginRight: 12}}>
+                  
                   <CustomCompanyCard jobData={jobdata} />
                 </View>
               ))}
