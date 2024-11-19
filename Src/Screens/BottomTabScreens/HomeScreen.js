@@ -105,8 +105,8 @@ const HomeScreen = () => {
                   <CustomJobCard jobData={jobdata} />
                 </View>
               ))}
-            </ScrollView>
-          </View>
+       </ScrollView>
+       </View>
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Recent Jobs</Text>
@@ -155,7 +155,7 @@ const HomeScreen = () => {
           </View>
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>Top Companys</Text>
+              <Text style={styles.contHead}>Top Companies</Text>
               <Text style={styles.seeAll}>See All</Text>
             </View>
             <ScrollView
@@ -170,6 +170,8 @@ const HomeScreen = () => {
               ))}
             </ScrollView>
           </View>
+
+         
         </View>
       </ScrollView>
     </View>

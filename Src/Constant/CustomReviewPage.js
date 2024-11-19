@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: 'center',
     flexDirection: 'row',
-    alignSelf: 'center',
+    // alignSelf: 'center',
   },
   averageRatingText: {
     fontSize: 16,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     borderWidth: 0.5,
-    borderColor: colors.lightgaryText,
+    borderColor: '#e6e6e6',
   },
   reviewerInfo: {
     flexDirection: 'row',

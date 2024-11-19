@@ -6,15 +6,27 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
 import {Button} from 'react-native-paper';
+import CustomJobCard from '../Constant/CustomJobCard';
+import {useSelector} from 'react-redux';
+import CustomCarousel from '../Constant/CustomCarousel';
+import ReviewPage from '../Constant/CustomReviewPage';
+const {width} = Dimensions.get('window'); // Get the screen width
 
 const CompanyOverviewScreen = ({route}) => {
   const {jobData} = route.params;
   const [activeTab, setActiveTab] = useState('Overview');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const jobs = useSelector(state => state.Jobs.jobsData);
+
+  if (!jobs || jobs.length === 0) {
+    return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
+  }
 
   // State to control visibility of all services
   const [showAllServices, setShowAllServices] = useState(false);
@@ -49,19 +61,19 @@ const CompanyOverviewScreen = ({route}) => {
                     </Text>
                   </TouchableOpacity>
                    */}
-                    <Text style={styles.jobDetailsheader}>About Us:</Text>
-              <Text style={styles.jobDetails1}>
-                {isExpanded
-                  ? jobData.company.about // Full description when expanded
-                  : jobData.company.about.length > 50
-                  ? `${jobData.company.about.substring(0, 50)}...` // Truncate if not expanded
-                  : jobData.company.about}
-              </Text>
-              <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
-                <Text style={styles.readMoreText}>
-                  {isExpanded ? 'Read Less' : 'Read More'}
-                </Text>
-              </TouchableOpacity>
+                  <Text style={styles.jobDetailsheader}>About Us:</Text>
+                  <Text style={styles.jobDetails1}>
+                    {isExpanded
+                      ? jobData.company.about // Full description when expanded
+                      : jobData.company.about.length > 50
+                      ? `${jobData.company.about.substring(0, 50)}...` // Truncate if not expanded
+                      : jobData.company.about}
+                  </Text>
+                  <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
+                    <Text style={styles.readMoreText}>
+                      {isExpanded ? 'Read Less' : 'Read More'}
+                    </Text>
+                  </TouchableOpacity>
                   <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>Get in touch</Text>
                   </TouchableOpacity>
@@ -70,6 +82,42 @@ const CompanyOverviewScreen = ({route}) => {
             </View>
             <View style={styles.benefitContainer}>
               <Text style={styles.textBenefits}>Benefits</Text>
+            </View>
+
+            <View style={{marginVertical: 12, marginLeft: 16}}>
+              <View style={styles.displayContainer}>
+                <Text style={styles.contHead}>Recent Jobs</Text>
+                <Text style={styles.seeAll}>See All</Text>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.contentContainer}>
+                {jobs.map((jobdata, index) => (
+                  <View key={jobdata.id || index} style={{marginRight: 12}}>
+                    <CustomJobCard jobData={jobdata} />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* our team */}
+            <View
+              style={{
+                marginTop: 12,
+                marginBottom: 24,
+                flex: 1,
+                // backgroundColor: colors.whiteText,
+                width:'100%'
+              }}>
+              {/* <View style={styles.screen}> */}
+              {/* <Text style={styles.teamHead}>Our Team</Text> */}
+              <CustomCarousel />
+              {/* </View> */}
+            </View>
+
+            <View style={styles.review}>
+              <ReviewPage/>
             </View>
           </View>
         );
@@ -360,17 +408,14 @@ const styles = StyleSheet.create({
     color: colors.whiteText,
   },
 
-  containermain: {
-   
-  },
+  containermain: {},
 
   overviewContainer: {
     marginHorizontal: 12,
-   backgroundColor: 'white',
+    backgroundColor: 'white',
     padding: 12,
     borderRadius: 8,
-    marginBottom:10
-    
+    marginBottom: 10,
   },
   overviewImage: {
     marginRight: 20, // Add margin to separate the image from the content
@@ -422,17 +467,65 @@ const styles = StyleSheet.create({
     fontSize: 12, // Smaller font size
     fontWeight: 'bold', // Bold text
   },
-  benefitContainer:{
-    backgroundColor:colors.whiteText,marginHorizontal: 12,
+  benefitContainer: {
+    backgroundColor: colors.whiteText,
+    marginHorizontal: 12,
     backgroundColor: 'white',
-     padding: 12,
-     borderRadius: 8,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
   },
-  textBenefits:{
-    color:colors.blackText,
-    fontSize:16,
-    fontWeight:'bold'
+  textBenefits: {
+    color: colors.blackText,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
+  displayContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  contHead: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.blackText,
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+  teamHead: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.blackText,
+    alignSelf: 'center',
+    color: colors.primary,
+    backgroundColor: colors.whiteText,
+    width: '100%',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 18,
+  },
+  seeAll: {
+    fontSize: 14,
+    color: colors.blackText,
+    marginRight: 10,
+  },
+
+  screen: {
+    flex: 1,
+    backgroundColor: colors.whiteText,
+    borderRadius: 8,
+    // margin:12
+    // marginLeft:-12,
+  },
+  contentContainer:{
+      
+  },
+  review:{
+    // marginHorizontal:12,
+    backgroundColor:'#fafafa',
+    padding:18
+  }
 });
 
 export default CompanyOverviewScreen;
