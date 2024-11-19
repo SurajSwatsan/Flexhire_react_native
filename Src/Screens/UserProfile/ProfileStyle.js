@@ -43,8 +43,9 @@ const profileStyle = StyleSheet.create({
     marginVertical: 8,
   },
   formHeading: {
+    alignSelf: 'center',
     fontSize: 18,
-    color: colors.blackText,
+    color: colors.secodary,
     marginVertical: 12,
     fontWeight: 'bold',
   },
@@ -94,17 +95,25 @@ const profileStyle = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: 'row',
-    // justifyContent: 'flex-start',
     flexWrap: 'wrap',
+    gap: 8,
   },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: colors.primary,
     backgroundColor: colors.background,
-    marginRight: 8,
-    borderRadius: 8,
+    borderRadius: 5,
+  },
+  chipText: {
     fontSize: 13,
+    color: colors.primary,
+  },
+  outputData: {
+    marginLeft: 12,
+  },
+  error: {
+    color: 'red',
+    fontSize: 11,
   },
 });
 export default profileStyle;

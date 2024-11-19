@@ -25,37 +25,40 @@ const Index = () => {
     switch (activeTab) {
       case 'Personal':
         return (
-          <View style={styles.personalContainer}>
-            <View style={styles.contactContainer}>
-              <Text style={styles.contactText}>CONTACT DETAIL</Text>
-              <View style={styles.contactTextCon}>
-                <Ionicons
-                  name="mail-outline"
-                  size={24}
-                  style={styles.iconstyle}
-                />
+          <ScrollView style={{flex: 1}}>
+            <View style={styles.personalContainer}>
+              <View style={styles.contactContainer}>
+                <Text style={styles.contactText}>CONTACT DETAIL</Text>
+                <View style={styles.contactTextCon}>
+                  <Ionicons
+                    name="mail-outline"
+                    size={24}
+                    style={styles.iconstyle}
+                  />
 
-                <View>
-                  <Text style={{color: '#000'}}>Email</Text>
-                  <Text style={{color: '#000'}}>vinodgavade@.com</Text>
+                  <View>
+                    <Text style={{color: '#000'}}>Email</Text>
+                    <Text style={{color: '#000'}}>vinodgavade@.com</Text>
+                  </View>
+                </View>
+                <View style={styles.contactTextCon}>
+                  <Ionicons
+                    name="phone-portrait-sharp"
+                    size={24}
+                    style={styles.iconstyle}
+                  />
+                  <View>
+                    <Text style={{color: '#000'}}>Phone Number</Text>
+                    <Text style={{color: '#000'}}>9876543210</Text>
+                  </View>
                 </View>
               </View>
-              <View style={styles.contactTextCon}>
-                <Ionicons
-                  name="phone-portrait-sharp"
-                  size={24}
-                  style={styles.iconstyle}
-                />
-                <View>
-                  <Text style={{color: '#000'}}>Phone Number</Text>
-                  <Text style={{color: '#000'}}>9876543210</Text>
-                </View>
-              </View>
+              {/* <BasicDetails /> */}
+              <PersonalInformation />
+
+              <Keyskills />
             </View>
-            {/* <BasicDetails /> */}
-            <PersonalInformation />
-            <Keyskills />
-          </View>
+          </ScrollView>
         );
       case 'Education':
         return <View></View>;

@@ -2,37 +2,44 @@ import React, {useState} from 'react';
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import {TextInput} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
 
 const ReusableDatePicker = ({label, value, onChange}) => {
   const [showPicker, setShowPicker] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
-    setShowPicker(false); // Close picker after date selection
+    setShowPicker(false);
     if (selectedDate) {
-      onChange(selectedDate); // Call parent onChange function with the selected date
+      onChange(selectedDate); // Pass the raw date to the parent
     }
   };
 
+  // Format date using moment
+  const formattedDate = value
+    ? moment(value).format('YYYY-MM-DD') // Format as YYYY-MM-DD
+    : 'Select Date';
+
   return (
     <View style={styles.dateContainer}>
-      <TouchableOpacity onPress={() => setShowPicker(true)}>
+      <TouchableOpacity
+        onPress={() => setShowPicker(true)}
+        accessible={true}
+        accessibilityLabel={`Select ${label}`}>
         <TextInput
           style={styles.inputBox}
           label={label}
           mode="outlined"
+          value={formattedDate}
           textColor="#333"
           outlineColor="lightgray"
           activeOutlineColor="gray"
-          value={value.toLocaleString('default', {
-            month: 'long',
-            year: 'numeric',
-          })}
-          editable={false} // Makes the input box non-editable
+          editable={false}
         />
       </TouchableOpacity>
+
       {showPicker && (
         <DateTimePicker
-          value={value}
+          value={value || new Date()}
           mode="date"
           display="default"
           onChange={handleDateChange}
@@ -44,7 +51,6 @@ const ReusableDatePicker = ({label, value, onChange}) => {
 
 const styles = StyleSheet.create({
   dateContainer: {
-    flex: 1,
     marginVertical: 8,
   },
   inputBox: {

@@ -16,7 +16,7 @@ const ReusableTextInput = ({name, label, ...props}) => {
         <TextInput
           label={label}
           style={styles.textarea}
-          // mode="outlined"
+          mode="outlined"
           outlineColor="lightgrey"
           textColor="black"
           activeOutlineColor="lightgrey"

@@ -4,9 +4,9 @@ import {Button, IconButton, TextInput, Chip} from 'react-native-paper';
 import {Formik} from 'formik';
 import profileStyle from '../ProfileStyle';
 import CustomHeader from '../../../Constant/CustomBackIcon';
-import {colors} from '../../../Global_CSS/TheamColors';
 import ModalFooter from '../../../Constant/ProfileModalFooter';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {colors} from '../../../Global_CSS/TheamColors';
 
 const Skills = [
   {label: 'JavaScript', value: '1'},
@@ -112,52 +112,29 @@ const Skills = [
 ];
 const Keyskills = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [keySkills, setKeySkills] = useState([]); // Chips that are added but not submitted
-  const [submittedSkills, setSubmittedSkills] = useState([]); // Submitted skills
-  const [searchText, setSearchText] = useState(''); // Search term for filtering
-  let formikRef = null;
+  const [submittedSkills, setSubmittedSkills] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   const openModal = () => setModalVisible(true);
 
   const closeModal = () => {
-    setKeySkills([]); // Clear unsaved chips when modal is closed
-    setSearchText(''); // Clear the search text
+    setSearchText('');
     setModalVisible(false);
   };
 
-  const handleFormSubmit = () => {
-    setSubmittedSkills(prevSkills => [...prevSkills, ...keySkills]);
-    setKeySkills([]); // Clear key skills after submission
-    setSearchText(''); // Clear the search text
-    closeModal();
-  };
-
-  const addSkills = skill => {
-    if (skill && !keySkills.includes(skill)) {
-      setKeySkills(prevSkills => [...prevSkills, skill]);
+  const toggleSkillSelection = skill => {
+    if (submittedSkills.includes(skill)) {
+      // Remove skill if already in the list
+      setSubmittedSkills(prevSkills => prevSkills.filter(s => s !== skill));
+    } else {
+      // Add skill if not in the list
+      setSubmittedSkills(prevSkills => [...prevSkills, skill]);
     }
-  };
-
-  const removeSubmittedSkill = indexToRemove => {
-    setSubmittedSkills(prevSkills =>
-      prevSkills.filter((_, index) => index !== indexToRemove),
-    );
   };
 
   const filteredSkills = Skills.filter(skill =>
     skill.label.toLowerCase().includes(searchText.toLowerCase()),
   );
-
-  const isSkillSelectedOrSubmitted = skill =>
-    keySkills.includes(skill) || submittedSkills.includes(skill);
-
-  const toggleSkillSelection = skill => {
-    if (keySkills.includes(skill)) {
-      setKeySkills(keySkills.filter(s => s !== skill));
-    } else if (!submittedSkills.includes(skill)) {
-      addSkills(skill);
-    }
-  };
 
   return (
     <View style={profileStyle.mainContainer}>
@@ -173,22 +150,21 @@ const Keyskills = () => {
           style={profileStyle.editButton}
         />
       </View>
-      <View style={profileStyle.outputdata}>
-        <View>
-          <Text style={profileStyle.displayText}>
-            {submittedSkills.length > 0 ? (
-              <View style={profileStyle.chipContainer}>
-                {submittedSkills.map((skill, index) => (
-                  <Text key={index} style={profileStyle.chip}>
-                    {skill}
-                  </Text>
-                ))}
+      <View style={profileStyle.outputData}>
+        {submittedSkills.length > 0 ? (
+          <View style={profileStyle.chipContainer}>
+            {submittedSkills.map((skill, index) => (
+              <View key={index} style={profileStyle.chip}>
+                <Text style={profileStyle.chipText}>{skill}</Text>
               </View>
-            ) : (
-              'No skills added yet.'
-            )}
+            ))}
+          </View>
+        ) : (
+          <Text style={profileStyle.optionalData}>
+            Selecting your key skills, will increase your chances of being
+            contacted for job opportunities.
           </Text>
-        </View>
+        )}
       </View>
       <Modal
         animationType="slide"
@@ -198,8 +174,8 @@ const Keyskills = () => {
         <View style={profileStyle.modalBackground}>
           <View style={profileStyle.modalContainer}>
             <ScrollView contentContainerStyle={profileStyle.modalContent}>
-              <Text style={profileStyle.heading}>Key skills</Text>
-              <Text style={profileStyle.subText1}>Search for your skills</Text>
+              <Text style={profileStyle.formHeading}>Key skills</Text>
+              {/* <Text style={profileStyle.subText1}>Search for your skills</Text> */}
               <TextInput
                 style={profileStyle.textarea}
                 label="Search"
@@ -210,28 +186,21 @@ const Keyskills = () => {
                 value={searchText}
                 onChangeText={text => setSearchText(text)}
               />
-
               <View style={profileStyle.skillsContainer}>
                 {filteredSkills.map(skill => (
                   <View key={skill.value} style={[styles.skillListContainer]}>
                     <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        padding: 12,
-                        borderBottomWidth: 0.5,
-                        borderColor: 'lightgrey',
-                      }}
+                      style={styles.SkillListContainer}
                       onTouchEnd={() => toggleSkillSelection(skill.label)}>
                       <Text
                         style={[
                           styles.skillList,
-                          isSkillSelectedOrSubmitted(skill.label) &&
+                          submittedSkills.includes(skill.label) &&
                             styles.selectedSkill,
                         ]}>
                         {skill.label}
                       </Text>
-                      {isSkillSelectedOrSubmitted(skill.label) ? (
+                      {submittedSkills.includes(skill.label) ? (
                         <Ionicons
                           name="checkmark-sharp"
                           size={18}
@@ -242,20 +211,8 @@ const Keyskills = () => {
                   </View>
                 ))}
               </View>
-
-              <Formik
-                innerRef={ref => (formikRef = ref)}
-                initialValues={{keySkills: ''}}
-                onSubmit={handleFormSubmit}>
-                {({handleSubmit}) => (
-                  <View>{/* Custom footer component */}</View>
-                )}
-              </Formik>
             </ScrollView>
-            <ModalFooter
-              onPress={() => formikRef?.handleSubmit()}
-              onCancel={closeModal}
-            />
+            <ModalFooter onPress={closeModal} onCancel={closeModal} />
           </View>
         </View>
       </Modal>
@@ -265,11 +222,23 @@ const Keyskills = () => {
 
 const styles = StyleSheet.create({
   skillList: {
+    flex: 1,
     color: 'black',
-    fontSize: 15,
+    fontSize: 13,
+  },
+  selectedSkill: {
+    fontWeight: 'bold',
+    color: '#009900',
   },
   iconStyle: {
     color: '#009900',
+  },
+  SkillListContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderBottomWidth: 0.5,
+    borderColor: 'lightgrey',
   },
 });
 
