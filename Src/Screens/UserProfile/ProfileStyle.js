@@ -92,6 +92,19 @@ const profileStyle = StyleSheet.create({
     height: 48,
     borderColor: 'lightgrey',
   },
-
+  chipContainer: {
+    flexDirection: 'row',
+    // justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    color: colors.primary,
+    backgroundColor: colors.background,
+    marginRight: 8,
+    borderRadius: 8,
+    fontSize: 13,
+  },
 });
 export default profileStyle;
