@@ -14,18 +14,19 @@ import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
 import CustomJobCard from '../Constant/CustomJobCard';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const JobDetailScreen = ({route, navigation}) => {
   const {jobData} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
 
   const [isApplied, setIsApplied] = useState(false);
-
+ 
   // console.log('Company Data:', jobData);
 
   const relatedJobs = jobData.related_jobs;
 
-  console.log('related Data:', relatedJobs);
+  // console.log('related Data:', relatedJobs);
 
   // Check if job is already applied
   useEffect(() => {
@@ -201,8 +202,24 @@ const JobDetailScreen = ({route, navigation}) => {
     <View style={styles.container}>
       <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
-        <Text style={GlobalStyle.headerText}>Job Information</Text>
-        <View />
+        <View style={styles.headerRightContainer}>
+          <TouchableOpacity>
+            <Ionicons
+              name="bookmark-outline"
+              size={24}
+              color={colors.primary}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Ionicons
+              name="share-social-outline"
+              size={24}
+              color={colors.primary}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.companyInfoContainer}>
@@ -330,7 +347,6 @@ const JobDetailScreen = ({route, navigation}) => {
         </View>
       </ScrollView>
 
-      
       {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
@@ -339,7 +355,7 @@ const JobDetailScreen = ({route, navigation}) => {
           disabled={isApplied} // Disable if already applied
         >
           <Text style={styles.applyButtonText}>
-            {isApplied ? 'Applied' : 'Apply'}
+            {isApplied ? 'Applied' : 'Apply for Job'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -353,6 +369,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  icon: {
+    // justifyContent: 'flex-end',
+  },
+  headerRightContainer: {
+    flexDirection: 'row',
+    gap: 18,
   },
   scrollView: {
     flex: 1,
@@ -499,10 +522,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   contentContainer1: {
-    alignItems: 'center',  // Center the cards horizontally
-    marginHorizontal:14,
-    marginVertical:14,
-    paddingVertical:6
+    alignItems: 'center', // Center the cards horizontally
+    marginHorizontal: 8,
+    marginVertical: 8,
+    paddingVertical: 6,
   },
   contentText: {
     fontSize: 16,
@@ -536,6 +559,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.blackText,
+    marginTop: 8,
   },
   seeAll: {
     fontSize: 14,
@@ -551,12 +575,12 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     // paddingVertical: 8,
-    backgroundColor: colors.background,
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   relatedjobcontainer: {
-    marginTop:16,
-    marginBottom:24,
+    // marginTop:16,
+    marginBottom: 24,
+    backgroundColor: colors.background,
   },
 });
 export default JobDetailScreen;

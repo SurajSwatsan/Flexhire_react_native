@@ -22,6 +22,7 @@ const GlobalStyle = StyleSheet.create({
     marginHorizontal: 12,
     marginVertical: 18,
     justifyContent: 'space-between',
+  
   },
   headerText: {
     fontSize: 20,

@@ -23,7 +23,7 @@
       "company": {
         "id": 1,
         "company_name": "Insight Analytics",
-        "about": "Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.",
+        "about": "Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.",
         "logo": "https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192",
         "contact_email": "alex.johnson@insightanalytics.com",
         "phone": "+1234567899",
@@ -32,6 +32,12 @@
         "website": "https://www.insightanalytics.com",
         "rating": "4.5",
         "tagline": "Make the world's information accessible and useful",
+        "services": [
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
         "employee":100
         
       },
@@ -72,14 +78,9 @@
             "industry": "Data Science",
             "website": "https://www.insightanalytics.com",
             "rating": "4.5",
-            "tagline": "Make the world's information accessible and useful",
+            "tagline": "Make the world's information accessible and useful"
             
-            "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ]
+           
           }
         },
         {
@@ -209,7 +210,8 @@
               "Predictive Analytics",
               "Business Intelligence",
               "Machine Learning Solutions"
-            ]
+            ],
+            "employee":100
       }
     },
     {
@@ -253,7 +255,8 @@
               "Predictive Analytics",
               "Business Intelligence",
               "Machine Learning Solutions"
-            ]
+            ],
+            "employee":100
       }
     },
     {
@@ -297,7 +300,8 @@
               "Predictive Analytics",
               "Business Intelligence",
               "Machine Learning Solutions"
-            ]
+            ],
+            "employee":100
       }
     },
     {
@@ -337,7 +341,8 @@
               "Predictive Analytics",
               "Business Intelligence",
               "Machine Learning Solutions"
-            ]
+            ],
+            "employee":100
       }
     }
   ]

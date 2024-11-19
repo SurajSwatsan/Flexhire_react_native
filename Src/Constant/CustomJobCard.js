@@ -138,7 +138,7 @@ const CustomJobCard = ({
                 localSavedJobs.some(
                   savedJob => savedJob.job_title === jobData.job_title,
                 )
-                  ? '#000'
+                  ? colors.primary
                   : 'gray'
               }
               size={28}
@@ -337,7 +337,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#808080',
     textAlign: 'right',
-    marginRight: 12,
   },
   errorText: {
     color: 'red',
