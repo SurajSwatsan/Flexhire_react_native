@@ -11,6 +11,7 @@ import {TextInput} from 'react-native-paper';
 import profileStyle from '../Screens/UserProfile/ProfileStyle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ModalFooter from './ProfileModalFooter';
+import {colors} from '../Global_CSS/TheamColors';
 
 const CustomSelectionModal = ({
   title,
@@ -62,7 +63,11 @@ const CustomSelectionModal = ({
     setModalVisible(false); // Close the modal
     onSubmit && onSubmit(selected);
   };
-
+  const onRemoveChip = value => {
+    const updatedSelected = selected.filter(item => item.value !== value);
+    setSelected(updatedSelected);
+    setSelectedItems(updatedSelected); // Update parent state
+  };
   const handleSearch = text => {
     setSearchText(text);
     if (text === '') {
@@ -88,15 +93,38 @@ const CustomSelectionModal = ({
   return (
     <View>
       {/* Input box to open the modal */}
-      <TouchableOpacity
-        style={Styles.inputBox}
-        onPress={() => setModalVisible(true)}>
-        <Text style={Styles.inputBoxText}>
-          {selected.length > 0
-            ? selected.map(item => item.label).join(', ') // Display selected items
-            : placeholder}
-        </Text>
-      </TouchableOpacity>
+
+      <View>
+        {/* TouchableOpacity for selection */}
+        <TouchableOpacity
+          style={[Styles.inputBox, Styles.inputContainer]}
+          onPress={() => setModalVisible(true)}>
+          <Text style={Styles.inputBoxText}>{placeholder}</Text>
+          <Ionicons
+            name="add-circle-outline"
+            size={24}
+            style={Styles.iconstyle}
+          />
+        </TouchableOpacity>
+
+        {/* Display selected items as chips */}
+        {selected.length > 0 && (
+          <View style={Styles.chipContainer}>
+            {selected.map(item => (
+              <View key={item.value} style={Styles.chip}>
+                <Text style={Styles.chipText}>{item.label}</Text>
+                <TouchableOpacity onPress={() => onRemoveChip(item.value)}>
+                  <Ionicons
+                    name="close-circle-outline"
+                    size={16}
+                    style={Styles.closeIcon}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
 
       {/* Modal */}
       <Modal animationType="slide" transparent visible={isModalVisible}>
@@ -174,6 +202,11 @@ const CustomSelectionModal = ({
 
 const Styles = StyleSheet.create({
   modalHeader: {},
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   inputBoxText: {
     fontSize: 16,
     color: '#000',
@@ -183,10 +216,13 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     height: 48,
+
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     borderRadius: 5,
-    borderColor: '#ccc',
+    // borderColor: '#ccc',
     paddingHorizontal: 8,
     marginVertical: 12,
   },
@@ -220,6 +256,30 @@ const Styles = StyleSheet.create({
     color: 'red',
     fontSize: 14,
     paddingTop: 10,
+  },
+  iconstyle: {
+    color: colors.primary,
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginVertical: 8,
+    gap: 8,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipText: {
+    color: '#000',
+    marginRight: 8,
+  },
+  closeIcon: {
+    color: colors.primary,
   },
 });
 

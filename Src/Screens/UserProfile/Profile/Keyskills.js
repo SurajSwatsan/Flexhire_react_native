@@ -1,12 +1,9 @@
 import {Modal, StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useState} from 'react';
-import {Button, IconButton, TextInput, Chip} from 'react-native-paper';
-import {Formik} from 'formik';
+import {IconButton, TextInput} from 'react-native-paper';
 import profileStyle from '../ProfileStyle';
-import CustomHeader from '../../../Constant/CustomBackIcon';
 import ModalFooter from '../../../Constant/ProfileModalFooter';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../../../Global_CSS/TheamColors';
 
 const Skills = [
   {label: 'JavaScript', value: '1'},

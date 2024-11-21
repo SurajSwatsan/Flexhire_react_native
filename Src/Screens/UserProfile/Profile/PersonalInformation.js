@@ -500,12 +500,12 @@ const JobRole = [
   },
 ];
 const NOTICEPERIOD_OPTIONS = [
-  {value: 1, label: 'Immediate'},
-  {value: 2, label: '15 days'},
-  {value: 3, label: '1 month'},
-  {value: 4, label: '2 months'},
-  {value: 5, label: '3 months'},
-  {value: 6, label: 'more than 3 months'},
+  {value: 'Immediate', label: 'Immediate'},
+  {value: '15 days', label: '15 days'},
+  {value: '1 month', label: '1 month'},
+  {value: '2 months', label: '2 months'},
+  {value: '3 months', label: '3 months'},
+  {value: 'more than 3 months', label: 'more than 3 months'},
 ];
 
 // Validation Schema
@@ -576,12 +576,13 @@ const PersonalInformation = () => {
     const formattedValues = {
       ...values,
       DOB: values.DOB ? moment(values.DOB).format('YYYY-MM-DD') : null, // Format DOB
+      selectedLocations: values.selectedLocations.map(loc => loc.label), // Extract labels for display
     };
     setSubmittedData(formattedValues);
     setModalVisible(false);
     console.log('Form Submitted:', formattedValues);
   };
-  // Handlers
+
   const openModal = () => setModalVisible(true);
   const closeModal = () => {
     setModalVisible(false);
@@ -613,17 +614,56 @@ const PersonalInformation = () => {
 
       {submittedData ? (
         <View style={profileStyle.userDataContainer}>
-          <Text style={{color: '#000'}}>Submitted Data:</Text>
-          {Object.keys(submittedData).map(key => (
-            <View key={key}>
-              <Text style={{color: '#000'}}>{key}:</Text>
-              <Text style={{color: '#000'}}>
-                {key === 'DOB' && submittedData[key]
-                  ? moment(submittedData[key]).format('MMMM DD, YYYY') // Display DOB in formatted form
-                  : submittedData[key] || 'Not provided'}
-              </Text>
-            </View>
-          ))}
+          <TouchableOpacity onPress={handleEdit}>
+            {Object.keys(submittedData).map(key => (
+              <View
+                key={key}
+                style={{
+                  flexDirection: 'row',
+                  marginBottom: 5,
+                  gap: 18,
+                }}>
+                {/* Key (Label) */}
+                <Text
+                  style={{
+                    color: '#000',
+                    flex: 1,
+                    fontWeight: 'bold',
+                    fontSize: 13,
+                  }}>
+                  {key}
+                </Text>
+                {/* Value */}
+                <Text
+                  style={{
+                    color: '#000',
+                    flex: 1,
+                    textAlign: 'left',
+                    fontSize: 13,
+                  }}>
+                  {(() => {
+                    if (key === 'DOB' && submittedData[key]) {
+                      return moment(submittedData[key]).format('MMMM DD, YYYY');
+                    } else if (
+                      key === 'selectedLocations' &&
+                      submittedData[key]
+                    ) {
+                      return submittedData[key].join(', '); // Show selected locations
+                    } else if (
+                      typeof submittedData[key] === 'object' &&
+                      submittedData[key] !== null
+                    ) {
+                      return (
+                        submittedData[key].label || submittedData[key].value
+                      );
+                    } else {
+                      return submittedData[key] || 'Not provided';
+                    }
+                  })()}
+                </Text>
+              </View>
+            ))}
+          </TouchableOpacity>
         </View>
       ) : (
         <View style={profileStyle.userDataContainer}>

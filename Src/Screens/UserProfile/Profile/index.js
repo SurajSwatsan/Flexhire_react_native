@@ -15,6 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PersonalInformation from './PersonalInformation';
 import profileStyle from '../ProfileStyle';
 import Keyskills from './Keyskills';
+import {max} from 'moment';
 
 const Index = () => {
   const route = useRoute();
@@ -25,40 +26,42 @@ const Index = () => {
     switch (activeTab) {
       case 'Personal':
         return (
-          <ScrollView style={{flex: 1}}>
-            <View style={styles.personalContainer}>
+          <View style={styles.personalContainer}>
+            <ScrollView style={styles.scrollContainer}>
               <View style={styles.contactContainer}>
                 <Text style={styles.contactText}>CONTACT DETAIL</Text>
-                <View style={styles.contactTextCon}>
-                  <Ionicons
-                    name="mail-outline"
-                    size={24}
-                    style={styles.iconstyle}
-                  />
-
-                  <View>
-                    <Text style={{color: '#000'}}>Email</Text>
-                    <Text style={{color: '#000'}}>vinodgavade@.com</Text>
+                <TouchableOpacity>
+                  <View style={styles.contactTextCon}>
+                    <Ionicons
+                      name="mail-outline"
+                      size={24}
+                      style={styles.iconstyle}
+                    />
+                    <View>
+                      <Text style={{color: '#000'}}>Email</Text>
+                      <Text style={{color: '#000'}}>vinodgavade@.com</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.contactTextCon}>
-                  <Ionicons
-                    name="phone-portrait-sharp"
-                    size={24}
-                    style={styles.iconstyle}
-                  />
-                  <View>
-                    <Text style={{color: '#000'}}>Phone Number</Text>
-                    <Text style={{color: '#000'}}>9876543210</Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <View style={styles.contactTextCon}>
+                    <Ionicons
+                      name="phone-portrait-sharp"
+                      size={24}
+                      style={styles.iconstyle}
+                    />
+                    <View>
+                      <Text style={{color: '#000'}}>Phone Number</Text>
+                      <Text style={{color: '#000'}}>9876543210</Text>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               </View>
               {/* <BasicDetails /> */}
               <PersonalInformation />
-
               <Keyskills />
-            </View>
-          </ScrollView>
+            </ScrollView>
+          </View>
         );
       case 'Education':
         return <View></View>;
@@ -70,7 +73,7 @@ const Index = () => {
   };
 
   return (
-    <View style={{backgroundColor: colors.primary}}>
+    <View style={styles.mainContainer}>
       <View style={styles.headContainer}>
         <View style={styles.imageContainer}>
           {selectedImage ? (
@@ -91,62 +94,63 @@ const Index = () => {
         </View>
       </View>
       <View style={styles.bodyContainer}>
-        <ScrollView style={styles.ScrollViewContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.tabContainer}>
-            <TouchableOpacity
+        {/* <ScrollView style={styles.ScrollViewContainer}> */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[
+              styles.tabButton,
+              activeTab === 'Personal' && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab('Personal')}>
+            <Text
               style={[
-                styles.tabButton,
-                activeTab === 'Personal' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('Personal')}>
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === 'Personal' && styles.activeTabText,
-                ]}>
-                Personal
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+                styles.tabText,
+                activeTab === 'Personal' && styles.activeTabText,
+              ]}>
+              Personal
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tabButton,
+              activeTab === 'Education' && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab('Education')}>
+            <Text
               style={[
-                styles.tabButton,
-                activeTab === 'Education' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('Education')}>
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === 'Education' && styles.activeTabText,
-                ]}>
-                Education
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+                styles.tabText,
+                activeTab === 'Education' && styles.activeTabText,
+              ]}>
+              Education
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tabButton,
+              activeTab === 'Professional' && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab('Professional')}>
+            <Text
               style={[
-                styles.tabButton,
-                activeTab === 'Professional' && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab('Professional')}>
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === 'Professional' && styles.activeTabText,
-                ]}>
-                Professional
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-          <View style={styles.contentContainer}>{renderTabs()}</View>
-        </ScrollView>
+                styles.tabText,
+                activeTab === 'Professional' && styles.activeTabText,
+              ]}>
+              Professional
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.contentContainer}>{renderTabs()}</View>
+        {/* </ScrollView> */}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    backgroundColor: colors.primary,
+    flex: 1,
+  },
   headContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -179,14 +183,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
   },
   bodyContainer: {
+    flex: 1,
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
     marginTop: 12,
+    paddingBottom: 24,
   },
-  ScrollViewContainer: {
-    paddingVertical: 12,
-  },
+  // ScrollViewContainer: {
+  //   paddingVertical: 12,
+  // },
   tabContainer: {
     flexDirection: 'row',
     marginTop: 24,
@@ -208,10 +214,7 @@ const styles = StyleSheet.create({
     color: colors.secodary,
   },
   personalContainer: {
-    // flex: 1,
-    // backgroundColor: colors.blackText,
     padding: 12,
-    marginTop: 24,
   },
   contactText: {
     color: colors.secodary,
