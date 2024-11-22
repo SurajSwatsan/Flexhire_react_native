@@ -62,14 +62,14 @@ const profileStyle = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   unselectedTab: {
-    backgroundColor: 'lightgray',
+    backgroundColor: colors.background,
   },
 
   selectedTabText: {
     color: colors.whiteText,
   },
   unselectedTabText: {
-    color: colors.blackText,
+    color: colors.primary,
   },
   TabContainer: {
     flexDirection: 'row',
@@ -99,6 +99,9 @@ const profileStyle = StyleSheet.create({
     gap: 8,
   },
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: colors.background,

@@ -7,527 +7,255 @@ import ReusableTextInput from '../../../Constant/CustomTextInput';
 import ModalFooter from '../../../Constant/ProfileModalFooter';
 import profileStyle from '../ProfileStyle';
 import {colors} from '../../../Global_CSS/TheamColors';
-import ReusableDatePicker from '../../../Constant/CustomDatePicker';
 import CustomSelectionModal from '../../../Constant/CustomSelectionModal';
 import CustomTabs from '../../../Constant/CustomTabs';
-import moment from 'moment';
 
-const GENDER_OPTIONS = [
-  {value: '1', label: 'Male'},
-  {value: '2', label: 'Female'},
-  {value: '3', label: 'Other'},
+const Cities = [
+  {id: 1, value: 'Bangalore'},
+  {id: 2, value: 'Hyderabad'},
+  {id: 3, value: 'Chennai'},
+  {id: 4, value: 'Pune'},
+  {id: 5, value: 'Gurgaon'},
+  {id: 6, value: 'Noida'},
+  {id: 7, value: 'Kolkata'},
+  {id: 8, value: 'Mumbai'},
+  {id: 9, value: 'Delhi'},
+  {id: 10, value: 'Ahmedabad'},
+  {id: 11, value: 'Chandigarh'},
+  {id: 12, value: 'Coimbatore'},
+  {id: 13, value: 'Jaipur'},
+  {id: 14, value: 'Indore'},
+  {id: 15, value: 'Bhubaneswar'},
+  {id: 16, value: 'Mysuru'},
+  {id: 17, value: 'Visakhapatnam'},
+  {id: 18, value: 'Surat'},
+  {id: 19, value: 'Kochi'},
+  {id: 20, value: 'Nagpur'},
 ];
 
-const Citys = [
-  {label: 'Bangalore', value: '1'},
-  {label: 'Hyderabad', value: '2'},
-  {label: 'Chennai', value: '3'},
-  {label: 'Pune', value: '4'},
-  {label: 'Gurgaon', value: '5'},
-  {label: 'Noida', value: '6'},
-  {label: 'Kolkata', value: '7'},
-  {label: 'Mumbai', value: '8'},
-  {label: 'Delhi', value: '9'},
-  {label: 'Ahmedabad', value: '10'},
-  {label: 'Chandigarh', value: '11'},
-  {label: 'Coimbatore', value: '12'},
-  {label: 'Jaipur', value: '13'},
-  {label: 'Indore', value: '14'},
-  {label: 'Bhubaneswar', value: '15'},
-  {label: 'Mysuru', value: '16'},
-  {label: 'Visakhapatnam', value: '17'},
-  {label: 'Surat', value: '18'},
-  {label: 'Kochi', value: '19'},
-  {label: 'Nagpur', value: '20'},
-];
-const IndiaStates = [
-  {label: 'Andhra Pradesh', value: '1'},
-  {label: 'Arunachal Pradesh', value: '2'},
-  {label: 'Assam', value: '3'},
-  {label: 'Bihar', value: '4'},
-  {label: 'Chhattisgarh', value: '5'},
-  {label: 'Goa', value: '6'},
-  {label: 'Gujarat', value: '7'},
-  {label: 'Haryana', value: '8'},
-  {label: 'Himachal Pradesh', value: '9'},
-  {label: 'Jharkhand', value: '10'},
-  {label: 'Karnataka', value: '11'},
-  {label: 'Kerala', value: '12'},
-  {label: 'Madhya Pradesh', value: '13'},
-  {label: 'Maharashtra', value: '14'},
-  {label: 'Manipur', value: '15'},
-  {label: 'Meghalaya', value: '16'},
-  {label: 'Mizoram', value: '17'},
-  {label: 'Nagaland', value: '18'},
-  {label: 'Odisha', value: '19'},
-  {label: 'Punjab', value: '20'},
-  {label: 'Rajasthan', value: '21'},
-  {label: 'Sikkim', value: '22'},
-  {label: 'Tamil Nadu', value: '23'},
-  {label: 'Telangana', value: '24'},
-  {label: 'Tripura', value: '25'},
-  {label: 'Uttar Pradesh', value: '26'},
-  {label: 'Uttarakhand', value: '27'},
-  {label: 'West Bengal', value: '28'},
-  {label: 'Andaman and Nicobar Islands', value: '29'},
-  {label: 'Chandigarh', value: '30'},
-  {label: 'Dadra and Nagar Haveli and Daman and Diu', value: '31'},
-  {label: 'Lakshadweep', value: '32'},
-  {label: 'Delhi', value: '33'},
-  {label: 'Puducherry', value: '34'},
-  {label: 'Jammu & Kashmir', value: '35'}, // Union Territory
-  {label: 'Ladakh', value: '36'}, // Union Territory
-];
-const MaharashtraCities = [
-  {label: 'Mumbai', value: '1'},
-  {label: 'Pune', value: '2'},
-  {label: 'Nagpur', value: '3'},
-  {label: 'Nashik', value: '4'},
-  {label: 'Thane', value: '5'},
-  {label: 'Aurangabad', value: '6'},
-  {label: 'Solapur', value: '7'},
-  {label: 'Satara', value: '8'},
-  {label: 'Kolhapur', value: '9'},
-  {label: 'Navi Mumbai', value: '10'},
-  {label: 'Kalyan-Dombivli', value: '11'},
-  {label: 'Chandrapur', value: '12'},
-  {label: 'Jalgaon', value: '13'},
-  {label: 'Ulhasnagar', value: '14'},
-  {label: 'Ahmednagar', value: '15'},
-  {label: 'Ratnagiri', value: '16'},
-  {label: 'Wardha', value: '17'},
-  {label: 'Beed', value: '18'},
-  {label: 'Shirdi', value: '19'},
-  {label: 'Ichalkaranji', value: '20'},
-  {label: 'Amravati', value: '21'},
-  {label: 'Bhusawal', value: '22'},
-  {label: 'Bhandara', value: '23'},
-  {label: 'Chinchwad', value: '24'},
-  {label: 'Dombivli', value: '25'},
-  {label: 'Ghatkopar', value: '26'},
-  {label: 'Ichalkaranji', value: '27'},
-  {label: 'Jalna', value: '28'},
-  {label: 'Khamgaon', value: '29'},
-  {label: 'Latur', value: '30'},
-  {label: 'Malegaon', value: '31'},
-  {label: 'Matheran', value: '32'},
-  {label: 'Miraj', value: '33'},
-  {label: 'Nagothane', value: '34'},
-  {label: 'Osmanabad', value: '35'},
-  {label: 'Parbhani', value: '36'},
-  {label: 'Raigad', value: '37'},
-  {label: 'Ratnagiri', value: '38'},
-  {label: 'Sangli', value: '39'},
-  {label: 'Satara', value: '40'},
-  {label: 'Shivajinagar', value: '41'},
-  {label: 'Solapur', value: '42'},
-  {label: 'Talegaon', value: '43'},
-  {label: 'Tirora', value: '44'},
-  {label: 'Vadgaon', value: '45'},
-  {label: 'Vasai-Virar', value: '46'},
-  {label: 'Wai', value: '47'},
-  {label: 'Worli', value: '48'},
-  {label: 'Yavatmal', value: '49'},
-  {label: 'Pimpalgaon', value: '50'},
-  {label: 'Chopda', value: '51'},
-  {label: 'Dattawadi', value: '52'},
-  {label: 'Devgad', value: '53'},
-  {label: 'Dhule', value: '54'},
-  {label: 'Gadchiroli', value: '55'},
-  {label: 'Gokul', value: '56'},
-  {label: 'Hingoli', value: '57'},
-  {label: 'Junnar', value: '58'},
-  {label: 'Kankavli', value: '59'},
-  {label: 'Karjat', value: '60'},
-  {label: 'Khargone', value: '61'},
-  {label: 'Kundal', value: '62'},
-  {label: 'Lohgaon', value: '63'},
-  {label: 'Malkapur', value: '64'},
-  {label: 'Malkapur', value: '65'},
-  {label: 'Mhasla', value: '66'},
-  {label: 'Mokhada', value: '67'},
-  {label: 'Mulund', value: '68'},
-  {label: 'Mulshi', value: '69'},
-  {label: 'Nandurbar', value: '70'},
-  {label: 'Navi Mumbai', value: '71'},
-  {label: 'Ozar', value: '72'},
-  {label: 'Pachora', value: '73'},
-  {label: 'Palghar', value: '74'},
-  {label: 'Panchgani', value: '75'},
-  {label: 'Pandharpur', value: '76'},
-  {label: 'Panvel', value: '77'},
-  {label: 'Pimpalgaon', value: '78'},
-  {label: 'Pratapgarh', value: '79'},
-  {label: 'Rajapur', value: '80'},
-  {label: 'Rajgurunagar', value: '81'},
-  {label: 'Ranjangaon', value: '82'},
-  {label: 'Ratnagiri', value: '83'},
-  {label: 'Sangli', value: '84'},
-  {label: 'Sankh', value: '85'},
-  {label: 'Saswad', value: '86'},
-  {label: 'Sawantwadi', value: '87'},
-  {label: 'Shahapur', value: '88'},
-  {label: 'Shindkheda', value: '89'},
-  {label: 'Sinnar', value: '90'},
-  {label: 'Solapur', value: '91'},
-  {label: 'Taloja', value: '92'},
-  {label: 'Thane', value: '93'},
-  {label: 'Tirora', value: '94'},
-  {label: 'Udgir', value: '95'},
-  {label: 'Vasai', value: '96'},
-  {label: 'Vengurla', value: '97'},
-  {label: 'Vidyanagar', value: '98'},
-  {label: 'Vikhroli', value: '99'},
-  {label: 'Wada', value: '100'},
-  {label: 'Wadi', value: '101'},
-];
 const Industries = [
-  {label: 'BPM', value: 'BPM'},
-  {label: 'Analytics / KPO / Research', value: 'Analytics / KPO / Research'},
-  {label: 'BPM / BPO', value: 'BPM / BPO'},
-  {label: 'IT Services', value: 'IT Services'},
-  {label: 'IT Services & Consulting', value: 'IT Services & Consulting'},
-  {label: 'Technology', value: 'Technology'},
-  {
-    label: 'Electronic Components / Semiconductors',
-    value: 'Electronic Components / Semiconductors',
-  },
-  {label: 'Electronics Manufacturing', value: 'Electronics Manufacturing'},
-  {
-    label: 'Electronic Manufacturing Services (EMS)',
-    value: 'Electronic Manufacturing Services (EMS)',
-  },
-  {label: 'Emerging Technologies', value: 'Emerging Technologies'},
-  {label: '3D Printing', value: '3D Printing'},
-  {label: 'AI/ML', value: 'AI/ML'},
-  {label: 'AR/VR', value: 'AR/VR'},
-  {label: 'Blockchain', value: 'Blockchain'},
-  {label: 'Cloud', value: 'Cloud'},
-  {label: 'Cybersecurity', value: 'Cybersecurity'},
-  {label: 'Drones/Robotics', value: 'Drones/Robotics'},
-  {label: 'IoT', value: 'IoT'},
-  {label: 'Nanotechnology', value: 'Nanotechnology'},
-  {label: 'Hardware & Networking', value: 'Hardware & Networking'},
-  {label: 'Internet', value: 'Internet'},
-  {label: 'E-Commerce', value: 'E-Commerce'},
-  {label: 'OTT', value: 'OTT'},
-  {label: 'Software Product', value: 'Software Product'},
-  {label: 'BFSI', value: 'BFSI'},
-  {label: 'Banking', value: 'Banking'},
-  {label: 'Financial Services', value: 'Financial Services'},
-  {label: 'Asset Management', value: 'Asset Management'},
-  {label: 'Broking', value: 'Broking'},
-  {label: 'FinTech / Payments', value: 'FinTech / Payments'},
-  {label: 'Insurance', value: 'Insurance'},
-  {
-    label: 'Investment Banking / Venture Capital / Private Equity',
-    value: 'Investment Banking / Venture Capital / Private Equity',
-  },
-  {label: 'NBFC', value: 'NBFC'},
-  {label: 'Micro Finance', value: 'Micro Finance'},
-  {label: 'Education', value: 'Education'},
-  {label: 'Education / Training', value: 'Education / Training'},
-  {label: 'E-Learning / EdTech', value: 'E-Learning / EdTech'},
-  {label: 'Manufacturing & Production', value: 'Manufacturing & Production'},
-  {label: 'Auto Components', value: 'Auto Components'},
-  {label: 'Tyre', value: 'Tyre'},
-  {label: 'Automobile', value: 'Automobile'},
-  {label: 'Automobile Dealers', value: 'Automobile Dealers'},
-  {label: 'Electric Vehicle (EV)', value: 'Electric Vehicle (EV)'},
-  {label: 'Building Material', value: 'Building Material'},
-  {label: 'Cement', value: 'Cement'},
-  {label: 'Ceramic', value: 'Ceramic'},
-  {label: 'Glass', value: 'Glass'},
-  {label: 'Chemicals', value: 'Chemicals'},
-  {label: 'Paints', value: 'Paints'},
-  {label: 'Defence & Aerospace', value: 'Defence & Aerospace'},
-  {label: 'Electrical Equipment', value: 'Electrical Equipment'},
-  {
-    label: 'Fertilizers / Pesticides / Agro chemicals',
-    value: 'Fertilizers / Pesticides / Agro chemicals',
-  },
-  {label: 'Industrial Automation', value: 'Industrial Automation'},
-  {
-    label: 'Industrial Equipment / Machinery',
-    value: 'Industrial Equipment / Machinery',
-  },
-  {label: 'Construction Equipment', value: 'Construction Equipment'},
-  {label: 'Machine Tools', value: 'Machine Tools'},
-  {label: 'Iron & Steel', value: 'Iron & Steel'},
-  {label: 'Metals & Mining', value: 'Metals & Mining'},
-  {label: 'Packaging & Containers', value: 'Packaging & Containers'},
-  {
-    label: 'Petrochemical / Plastics / Rubber',
-    value: 'Petrochemical / Plastics / Rubber',
-  },
-  {label: 'Pulp & Paper', value: 'Pulp & Paper'},
-  {
-    label: 'Infrastructure, Transport & Real Estate',
-    value: 'Infrastructure, Transport & Real Estate',
-  },
-  {label: 'Aviation', value: 'Aviation'},
-  {label: 'Courier / Logistics', value: 'Courier / Logistics'},
-  {label: 'Logistics Tech', value: 'Logistics Tech'},
-  {label: 'Engineering & Construction', value: 'Engineering & Construction'},
-  {label: 'Oil & Gas', value: 'Oil & Gas'},
-  {label: 'Ports & Shipping', value: 'Ports & Shipping'},
-  {label: 'Shipbuilding', value: 'Shipbuilding'},
-  {label: 'Power', value: 'Power'},
-  {label: 'Hydro', value: 'Hydro'},
-  {label: 'Nuclear', value: 'Nuclear'},
-  {label: 'Solar', value: 'Solar'},
-  {label: 'Wind', value: 'Wind'},
-  {label: 'Railways', value: 'Railways'},
-  {label: 'Real Estate', value: 'Real Estate'},
-  {label: 'Co-working', value: 'Co-working'},
-  {label: 'Urban Transport', value: 'Urban Transport'},
-  {
-    label: 'Water Treatment / Waste Management',
-    value: 'Water Treatment / Waste Management',
-  },
-  {
-    label: 'Consumer, Retail & Hospitality',
-    value: 'Consumer, Retail & Hospitality',
-  },
-  {label: 'Beauty & Personal Care', value: 'Beauty & Personal Care'},
-  {label: 'Beverage', value: 'Beverage'},
-  {label: 'Brewery / Distillery', value: 'Brewery / Distillery'},
-  {
-    label: 'Consumer Electronics & Appliances',
-    value: 'Consumer Electronics & Appliances',
-  },
-  {label: 'Fitness & Wellness', value: 'Fitness & Wellness'},
-  {label: 'FMCG', value: 'FMCG'},
-  {label: 'Tobacco', value: 'Tobacco'},
-  {label: 'Food Processing', value: 'Food Processing'},
-  {label: 'Dairy', value: 'Dairy'},
-  {label: 'Meat / Poultry', value: 'Meat / Poultry'},
-  {label: 'Sugar', value: 'Sugar'},
-  {label: 'Furniture & Furnishing', value: 'Furniture & Furnishing'},
-  {label: 'Gems & Jewellery', value: 'Gems & Jewellery'},
-  {label: 'Hotels & Restaurants', value: 'Hotels & Restaurants'},
-  {label: 'Leather', value: 'Leather'},
-  {label: 'Retail', value: 'Retail'},
-  {label: 'Textile & Apparel', value: 'Textile & Apparel'},
-  {label: 'Fashion', value: 'Fashion'},
-  {label: 'Handicraft', value: 'Handicraft'},
-  {label: 'Home Textile', value: 'Home Textile'},
-  {label: 'Technical Textile', value: 'Technical Textile'},
-  {label: 'Yarn & Fabric', value: 'Yarn & Fabric'},
-  {label: 'Travel & Tourism', value: 'Travel & Tourism'},
-  {label: 'Healthcare & Life Sciences', value: 'Healthcare & Life Sciences'},
-  {label: 'Biotechnology', value: 'Biotechnology'},
-  {
-    label: 'Clinical Research / Contract Research',
-    value: 'Clinical Research / Contract Research',
-  },
-  {label: 'Medical Devices & Equipment', value: 'Medical Devices & Equipment'},
-  {label: 'Medical Services / Hospital', value: 'Medical Services / Hospital'},
-  {label: 'Diagnostics', value: 'Diagnostics'},
-  {
-    label: 'Pharmaceutical & Life Sciences',
-    value: 'Pharmaceutical & Life Sciences',
-  },
-  {
-    label: 'Media, Entertainment & Telecom',
-    value: 'Media, Entertainment & Telecom',
-  },
-  {label: 'Advertising & Marketing', value: 'Advertising & Marketing'},
-  {label: 'Digital Marketing', value: 'Digital Marketing'},
-  {label: 'Public Relations', value: 'Public Relations'},
-  {label: 'Animation & VFX', value: 'Animation & VFX'},
-  {label: 'Events / Live Entertainment', value: 'Events / Live Entertainment'},
-  {
-    label: 'Film / Music / Entertainment',
-    value: 'Film / Music / Entertainment',
-  },
-  {label: 'Gaming', value: 'Gaming'},
-  {label: 'Printing & Publishing', value: 'Printing & Publishing'},
-  {
-    label: 'Sports / Leisure & Recreation',
-    value: 'Sports / Leisure & Recreation',
-  },
-  {label: 'Telecom / ISP', value: 'Telecom / ISP'},
-  {label: 'TV / Radio', value: 'TV / Radio'},
-  {label: 'Professional Services', value: 'Professional Services'},
-  {label: 'Accounting / Auditing', value: 'Accounting / Auditing'},
-  {
-    label: 'Architecture / Interior Design',
-    value: 'Architecture / Interior Design',
-  },
-  {
-    label: 'Content Development / Language',
-    value: 'Content Development / Language',
-  },
-  {label: 'Design', value: 'Design'},
-  {
-    label: 'Facility Management Services',
-    value: 'Facility Management Services',
-  },
-  {
-    label: 'Law Enforcement / Security Services',
-    value: 'Law Enforcement / Security Services',
-  },
-  {label: 'Legal', value: 'Legal'},
-  {label: 'Management Consulting', value: 'Management Consulting'},
-  {label: 'Recruitment / Staffing', value: 'Recruitment / Staffing'},
-  {label: 'Miscellaneous', value: 'Miscellaneous'},
-  {
-    label: 'Agriculture / Forestry / Fishing',
-    value: 'Agriculture / Forestry / Fishing',
-  },
-  {label: 'Agri-tech', value: 'Agri-tech'},
-  {
-    label: 'Government / Public Administration',
-    value: 'Government / Public Administration',
-  },
-  {label: 'Import & Export', value: 'Import & Export'},
-  {
-    label: 'NGO / Social Services / Industry Associations',
-    value: 'NGO / Social Services / Industry Associations',
-  },
+  {id: 1, value: 'BPM'},
+  {id: 2, value: 'Analytics / KPO / Research'},
+  {id: 3, value: 'BPM / BPO'},
+  {id: 4, value: 'IT Services'},
+  {id: 5, value: 'IT Services & Consulting'},
+  {id: 6, value: 'Technology'},
+  {id: 7, value: 'Electronic Components / Semiconductors'},
+  {id: 8, value: 'Electronics Manufacturing'},
+  {id: 9, value: 'Electronic Manufacturing Services (EMS)'},
+  {id: 10, value: 'Emerging Technologies'},
+  {id: 11, value: '3D Printing'},
+  {id: 12, value: 'AI/ML'},
+  {id: 13, value: 'AR/VR'},
+  {id: 14, value: 'Blockchain'},
+  {id: 15, value: 'Cloud'},
+  {id: 16, value: 'Cybersecurity'},
+  {id: 17, value: 'Drones/Robotics'},
+  {id: 18, value: 'IoT'},
+  {id: 19, value: 'Nanotechnology'},
+  {id: 20, value: 'Hardware & Networking'},
+  {id: 21, value: 'Internet'},
+  {id: 22, value: 'E-Commerce'},
+  {id: 23, value: 'OTT'},
+  {id: 24, value: 'Software Product'},
+  {id: 25, value: 'BFSI'},
+  {id: 26, value: 'Banking'},
+  {id: 27, value: 'Financial Services'},
+  {id: 28, value: 'Asset Management'},
+  {id: 29, value: 'Broking'},
+  {id: 30, value: 'FinTech / Payments'},
+  {id: 31, value: 'Insurance'},
+  {id: 32, value: 'Investment Banking / Venture Capital / Private Equity'},
+  {id: 33, value: 'NBFC'},
+  {id: 34, value: 'Micro Finance'},
+  {id: 35, value: 'Education'},
+  {id: 36, value: 'Education / Training'},
+  {id: 37, value: 'E-Learning / EdTech'},
+  {id: 38, value: 'Manufacturing & Production'},
+  {id: 39, value: 'Auto Components'},
+  {id: 40, value: 'Tyre'},
+  {id: 41, value: 'Automobile'},
+  {id: 42, value: 'Automobile Dealers'},
+  {id: 43, value: 'Electric Vehicle (EV)'},
+  {id: 44, value: 'Building Material'},
+  {id: 45, value: 'Cement'},
+  {id: 46, value: 'Ceramic'},
+  {id: 47, value: 'Glass'},
+  {id: 48, value: 'Chemicals'},
+  {id: 49, value: 'Paints'},
+  {id: 50, value: 'Defence & Aerospace'},
+  {id: 51, value: 'Electrical Equipment'},
+  {id: 52, value: 'Fertilizers / Pesticides / Agro chemicals'},
+  {id: 53, value: 'Industrial Automation'},
+  {id: 54, value: 'Industrial Equipment / Machinery'},
+  {id: 55, value: 'Construction Equipment'},
+  {id: 56, value: 'Machine Tools'},
+  {id: 57, value: 'Iron & Steel'},
+  {id: 58, value: 'Metals & Mining'},
+  {id: 59, value: 'Packaging & Containers'},
+  {id: 60, value: 'Petrochemical / Plastics / Rubber'},
+  {id: 61, value: 'Pulp & Paper'},
+  {id: 62, value: 'Infrastructure, Transport & Real Estate'},
+  {id: 63, value: 'Aviation'},
+  {id: 64, value: 'Courier / Logistics'},
+  {id: 65, value: 'Logistics Tech'},
+  {id: 66, value: 'Engineering & Construction'},
+  {id: 67, value: 'Oil & Gas'},
+  {id: 68, value: 'Ports & Shipping'},
+  {id: 69, value: 'Shipbuilding'},
+  {id: 70, value: 'Power'},
+  {id: 71, value: 'Hydro'},
+  {id: 72, value: 'Nuclear'},
+  {id: 73, value: 'Solar'},
+  {id: 74, value: 'Wind'},
+  {id: 75, value: 'Railways'},
+  {id: 76, value: 'Real Estate'},
+  {id: 77, value: 'Co-working'},
+  {id: 78, value: 'Urban Transport'},
+  {id: 79, value: 'Water Treatment / Waste Management'},
+  {id: 80, value: 'Consumer, Retail & Hospitality'},
+  {id: 81, value: 'Beauty & Personal Care'},
+  {id: 82, value: 'Beverage'},
+  {id: 83, value: 'Brewery / Distillery'},
+  {id: 84, value: 'Consumer Electronics & Appliances'},
+  {id: 85, value: 'Fitness & Wellness'},
+  {id: 86, value: 'FMCG'},
+  {id: 87, value: 'Tobacco'},
+  {id: 88, value: 'Food Processing'},
+  {id: 89, value: 'Dairy'},
+  {id: 90, value: 'Meat / Poultry'},
+  {id: 91, value: 'Sugar'},
+  {id: 92, value: 'Furniture & Furnishing'},
+  {id: 93, value: 'Gems & Jewellery'},
+  {id: 94, value: 'Hotels & Restaurants'},
+  {id: 95, value: 'Leather'},
+  {id: 96, value: 'Retail'},
+  {id: 97, value: 'Textile & Apparel'},
+  {id: 98, value: 'Fashion'},
+  {id: 99, value: 'Handicraft'},
+  {id: 100, value: 'Home Textile'},
+  {id: 101, value: 'Technical Textile'},
+  {id: 102, value: 'Yarn & Fabric'},
+  {id: 103, value: 'Travel & Tourism'},
+  {id: 104, value: 'Healthcare & Life Sciences'},
+  {id: 105, value: 'Biotechnology'},
+  {id: 106, value: 'Clinical Research / Contract Research'},
+  {id: 107, value: 'Medical Devices & Equipment'},
+  {id: 108, value: 'Medical Services / Hospital'},
+  {id: 109, value: 'Diagnostics'},
+  {id: 110, value: 'Pharmaceutical & Life Sciences'},
+  {id: 111, value: 'Media, Entertainment & Telecom'},
+  {id: 112, value: 'Advertising & Marketing'},
+  {id: 113, value: 'Digital Marketing'},
+  {id: 114, value: 'Public Relations'},
+  {id: 115, value: 'Animation & VFX'},
+  {id: 116, value: 'Events / Live Entertainment'},
+  {id: 117, value: 'Film / Music / Entertainment'},
+  {id: 118, value: 'Gaming'},
+  {id: 119, value: 'Printing & Publishing'},
+  {id: 120, value: 'Sports / Leisure & Recreation'},
+  {id: 121, value: 'Telecom / ISP'},
+  {id: 122, value: 'TV / Radio'},
+  {id: 123, value: 'Professional Services'},
+  {id: 124, value: 'Accounting / Auditing'},
+  {id: 125, value: 'Architecture / Interior Design'},
+  {id: 126, value: 'Content Development / Language'},
+  {id: 127, value: 'Design'},
+  {id: 128, value: 'Facility Management Services'},
+  {id: 129, value: 'Law Enforcement / Security Services'},
+  {id: 130, value: 'Legal'},
+  {id: 131, value: 'Management Consulting'},
+  {id: 132, value: 'Recruitment / Staffing'},
+  {id: 133, value: 'Miscellaneous'},
+  {id: 134, value: 'Agriculture / Forestry / Fishing'},
+  {id: 135, value: 'Agri-tech'},
+  {id: 136, value: 'Government / Public Administration'},
+  {id: 137, value: 'Import & Export'},
+  {id: 138, value: 'NGO / Social Services / Industry Associations'},
 ];
+
 const Department = [
-  {label: 'BFSI, Investments & Trading', value: 'BFSI, Investments & Trading'},
-  {
-    label: 'Customer Success, Service & Operations',
-    value: 'Customer Success, Service & Operations',
-  },
-  {label: 'Data Science & Analytics', value: 'Data Science & Analytics'},
-  {
-    label: 'Engineering - Hardware & Networks',
-    value: 'Engineering - Hardware & Networks',
-  },
-  {label: 'Engineering - Software & QA', value: 'Engineering - Software & QA'},
-  {label: 'Finance & Accounting', value: 'Finance & Accounting'},
-  {label: 'Human Resources', value: 'Human Resources'},
-  {label: 'IT & Information Security', value: 'IT & Information Security'},
-  {label: 'Marketing & Communication', value: 'Marketing & Communication'},
-  {label: 'Product Management', value: 'Product Management'},
-  {
-    label: 'Production, Manufacturing & Engineering',
-    value: 'Production, Manufacturing & Engineering',
-  },
-  {
-    label: 'Project & Program Management',
-    value: 'Project & Program Management',
-  },
-  {label: 'Quality Assurance', value: 'Quality Assurance'},
-  {
-    label: 'Sales & Business Development',
-    value: 'Sales & Business Development',
-  },
-  {label: 'UX, Design & Architecture', value: 'UX, Design & Architecture'},
-  {label: 'Administration & Facilities', value: 'Administration & Facilities'},
-  {label: 'Aviation & Aerospace', value: 'Aviation & Aerospace'},
-  {
-    label: 'Construction & Site Engineering',
-    value: 'Construction & Site Engineering',
-  },
-  {label: 'Consulting', value: 'Consulting'},
-  {
-    label: 'Content, Editorial & Journalism',
-    value: 'Content, Editorial & Journalism',
-  },
-  {label: 'CSR & Social Service', value: 'CSR & Social Service'},
-  {label: 'Energy & Mining', value: 'Energy & Mining'},
-  {label: 'Environment Health & Safety', value: 'Environment Health & Safety'},
-  {
-    label: 'Food, Beverage & Hospitality',
-    value: 'Food, Beverage & Hospitality',
-  },
-  {label: 'Healthcare & Life Sciences', value: 'Healthcare & Life Sciences'},
-  {label: 'Legal & Regulatory', value: 'Legal & Regulatory'},
-  {
-    label: 'Media Production & Entertainment',
-    value: 'Media Production & Entertainment',
-  },
-  {
-    label: 'Merchandising, Retail & eCommerce',
-    value: 'Merchandising, Retail & eCommerce',
-  },
-  {label: 'Procurement & Supply Chain', value: 'Procurement & Supply Chain'},
-  {label: 'Research & Development', value: 'Research & Development'},
-  {
-    label: 'Risk Management & Compliance',
-    value: 'Risk Management & Compliance',
-  },
-  {label: 'Security Services', value: 'Security Services'},
-  {label: 'Shipping & Maritime', value: 'Shipping & Maritime'},
-  {
-    label: 'Sports, Fitness & Personal Care',
-    value: 'Sports, Fitness & Personal Care',
-  },
-  {label: 'Strategic & Top Management', value: 'Strategic & Top Management'},
-  {label: 'Teaching & Training', value: 'Teaching & Training'},
-  {label: 'Other', value: 'Other'},
+  {id: 1, value: 'BFSI, Investments & Trading'},
+  {id: 2, value: 'Customer Success, Service & Operations'},
+  {id: 3, value: 'Data Science & Analytics'},
+  {id: 4, value: 'Engineering - Hardware & Networks'},
+  {id: 5, value: 'Engineering - Software & QA'},
+  {id: 6, value: 'Finance & Accounting'},
+  {id: 7, value: 'Human Resources'},
+  {id: 8, value: 'IT & Information Security'},
+  {id: 9, value: 'Marketing & Communication'},
+  {id: 10, value: 'Product Management'},
+  {id: 11, value: 'Production, Manufacturing & Engineering'},
+  {id: 12, value: 'Project & Program Management'},
+  {id: 13, value: 'Quality Assurance'},
+  {id: 14, value: 'Sales & Business Development'},
+  {id: 15, value: 'UX, Design & Architecture'},
+  {id: 16, value: 'Administration & Facilities'},
+  {id: 17, value: 'Aviation & Aerospace'},
+  {id: 18, value: 'Construction & Site Engineering'},
+  {id: 19, value: 'Consulting'},
+  {id: 20, value: 'Content, Editorial & Journalism'},
+  {id: 21, value: 'CSR & Social Service'},
+  {id: 22, value: 'Energy & Mining'},
+  {id: 23, value: 'Environment Health & Safety'},
+  {id: 24, value: 'Food, Beverage & Hospitality'},
+  {id: 25, value: 'Healthcare & Life Sciences'},
+  {id: 26, value: 'Legal & Regulatory'},
+  {id: 27, value: 'Media Production & Entertainment'},
+  {id: 28, value: 'Merchandising, Retail & eCommerce'},
+  {id: 29, value: 'Procurement & Supply Chain'},
+  {id: 30, value: 'Research & Development'},
+  {id: 31, value: 'Risk Management & Compliance'},
+  {id: 32, value: 'Security Services'},
+  {id: 33, value: 'Shipping & Maritime'},
+  {id: 34, value: 'Sports, Fitness & Personal Care'},
+  {id: 35, value: 'Strategic & Top Management'},
+  {id: 36, value: 'Teaching & Training'},
+  {id: 37, value: 'Other'},
 ];
+
 const RoleCategory = [
-  {label: 'DBA / Data warehousing', value: 'DBA / Data warehousing'},
-  {label: 'DevOps', value: 'DevOps'},
-  {
-    label: 'Quality Assurance and Testing',
-    value: 'Quality Assurance and Testing',
-  },
-  {label: 'Software Development', value: 'Software Development'},
+  {id: 1, value: 'DBA / Data warehousing'},
+  {id: 2, value: 'DevOps'},
+  {id: 3, value: 'Quality Assurance and Testing'},
+  {id: 4, value: 'Software Development'},
 ];
 const JobRole = [
-  {label: 'Automation Architect', value: 'Automation Architect'},
-  {label: 'Automation Developer', value: 'Automation Developer'},
-  {label: 'Back End Developer', value: 'Back End Developer'},
-  {label: 'Big Data Engineer', value: 'Big Data Engineer'},
-  {label: 'CRM Architect', value: 'CRM Architect'},
-  {label: 'Data Engineer', value: 'Data Engineer'},
-  {label: 'Data Platform Engineer', value: 'Data Platform Engineer'},
-  {label: 'Embedded Systems Engineer', value: 'Embedded Systems Engineer'},
-  {label: 'Engineering Manager', value: 'Engineering Manager'},
-  {label: 'ERP Architect', value: 'ERP Architect'},
-  {label: 'ERP Developer', value: 'ERP Developer'},
-  {label: 'Front End Developer', value: 'Front End Developer'},
-  {label: 'Full Stack Developer', value: 'Full Stack Developer'},
-  {label: 'Game Developer / Programmer', value: 'Game Developer / Programmer'},
-  {label: 'Head - Engineering', value: 'Head - Engineering'},
-  {label: 'Mobile / App Developer', value: 'Mobile / App Developer'},
-  {label: 'Practice Manager / Head', value: 'Practice Manager / Head'},
-  {label: 'Search Engineer', value: 'Search Engineer'},
-  {label: 'Solution Architect', value: 'Solution Architect'},
-  {label: 'Technical Architect', value: 'Technical Architect'},
-  {label: 'Technical Lead', value: 'Technical Lead'},
-  {label: 'Webmaster', value: 'Webmaster'},
-  {
-    label: 'Software Development - Other',
-    value: 'Software Development - Other',
-  },
-];
-const NOTICEPERIOD_OPTIONS = [
-  {value: 'Immediate', label: 'Immediate'},
-  {value: '15 days', label: '15 days'},
-  {value: '1 month', label: '1 month'},
-  {value: '2 months', label: '2 months'},
-  {value: '3 months', label: '3 months'},
-  {value: 'more than 3 months', label: 'more than 3 months'},
+  {id: 1, value: 'Automation Architect'},
+  {id: 2, value: 'Automation Developer'},
+  {id: 3, value: 'Back End Developer'},
+  {id: 4, value: 'Big Data Engineer'},
+  {id: 5, value: 'CRM Architect'},
+  {id: 6, value: 'Data Engineer'},
+  {id: 7, value: 'Data Platform Engineer'},
+  {id: 8, value: 'Embedded Systems Engineer'},
+  {id: 9, value: 'Engineering Manager'},
+  {id: 10, value: 'ERP Architect'},
+  {id: 11, value: 'ERP Developer'},
+  {id: 12, value: 'Front End Developer'},
+  {id: 13, value: 'Full Stack Developer'},
+  {id: 14, value: 'Game Developer / Programmer'},
+  {id: 15, value: 'Head - Engineering'},
+  {id: 16, value: 'Mobile / App Developer'},
+  {id: 17, value: 'Practice Manager / Head'},
+  {id: 18, value: 'Search Engineer'},
+  {id: 19, value: 'Solution Architect'},
+  {id: 20, value: 'Technical Architect'},
+  {id: 21, value: 'Technical Lead'},
+  {id: 22, value: 'Webmaster'},
+  {id: 23, value: 'Software Development - Other'},
 ];
 
-// Validation Schema
+const NOTICEPERIOD_OPTIONS = [
+  {id: 1, value: 'Immediate'},
+  {id: 2, value: '15 days'},
+  {id: 3, value: '1 month'},
+  {id: 4, value: '2 months'},
+  {id: 5, value: '3 months'},
+  {id: 6, value: 'more than 3 months'},
+];
+
 const validationSchema = Yup.object().shape({
-  fullName: Yup.string().required('Full Name is required'),
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  phoneNumber: Yup.string()
-    .matches(/^[0-9]{10}$/, 'Phone Number must be 10 digits')
-    .required('Phone Number is required'),
-  DOB: Yup.date()
-    .nullable() // Allow null or empty values initially
-    .required('Date of Birth is required')
-    .typeError('Invalid Date of Birth') // Custom error message for invalid date format
-    .max(new Date(), 'Date of Birth cannot be in the future'),
-  gender: Yup.string()
-    .oneOf(
-      GENDER_OPTIONS.map(option => option.value),
-      'Invalid gender selected',
-    )
-    .required('Gender is required'),
   currentLocation: Yup.string().required('Current Location is required'),
   noticePeriod: Yup.string()
     .oneOf(
@@ -540,21 +268,25 @@ const validationSchema = Yup.object().shape({
   expectedSalary: Yup.string().required('Expected Salary is required'),
 });
 
-// Helper: Initial Values
 const getInitialValues = (editingIndex, submittedData) => {
-  if (editingIndex !== null) {
-    return submittedData;
+  if (editingIndex !== null && submittedData) {
+    return {
+      currentLocation: submittedData.currentLocation || '',
+      selectedLocations: submittedData.selectedLocations || [],
+      industry: submittedData.industry || '',
+      department: submittedData.department || '',
+      roleCategory: submittedData.roleCategory || '',
+      jobRole: submittedData.jobRole || '',
+      noticePeriod: submittedData.noticePeriod || '',
+      experience: submittedData.experience || '',
+      annualSalary: submittedData.annualSalary || '',
+      expectedSalary: submittedData.expectedSalary || '',
+    };
   }
+
   return {
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    DOB: new Date(),
-    gender: '',
     currentLocation: '',
     selectedLocations: [],
-    homeState: '',
-    homeCity: '',
     industry: '',
     department: '',
     roleCategory: '',
@@ -568,35 +300,49 @@ const getInitialValues = (editingIndex, submittedData) => {
 
 const PersonalInformation = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [submittedData, setSubmittedData] = useState([]);
+  const [submittedData, setSubmittedData] = useState(null); // Single entry handling
   const [editingIndex, setEditingIndex] = useState(null);
   let formikRef = null;
-
   const handleFormSubmit = values => {
     const formattedValues = {
       ...values,
-      DOB: values.DOB ? moment(values.DOB).format('YYYY-MM-DD') : null, // Format DOB
-      selectedLocations: values.selectedLocations.map(loc => loc.label), // Extract labels for display
+      selectedLocations: values.selectedLocations.map(location =>
+        typeof location === 'string'
+          ? location // If already a string, use it directly
+          : Cities.find(city => city.value === location?.value)?.value ||
+            location?.value ||
+            '',
+      ),
+      industry:
+        Industries.find(industry => industry.value === values.industry)
+          ?.value || '',
+      department:
+        Department.find(department => department.value === values.department)
+          ?.value || '',
+      roleCategory:
+        RoleCategory.find(category => category.value === values.roleCategory)
+          ?.value || '',
+      jobRole: JobRole.find(job => job.value === values.jobRole)?.value || '',
+      noticePeriod:
+        NOTICEPERIOD_OPTIONS.find(
+          option => option.value === values.noticePeriod,
+        )?.value || '',
     };
+    console.log('Selected Locations:', values.selectedLocations);
+
     setSubmittedData(formattedValues);
     setModalVisible(false);
     console.log('Form Submitted:', formattedValues);
   };
 
-  const openModal = () => setModalVisible(true);
+  const openModal = () => {
+    setEditingIndex(submittedData ? 0 : null); // Set editingIndex based on existing data
+    setModalVisible(true);
+  };
+
   const closeModal = () => {
     setModalVisible(false);
     setEditingIndex(null);
-  };
-
-  const handleEdit = () => {
-    setEditingIndex(0);
-    openModal();
-  };
-
-  const handleDelete = () => {
-    setSubmittedData(null);
-    closeModal();
   };
 
   return (
@@ -604,7 +350,7 @@ const PersonalInformation = () => {
       <View style={profileStyle.editContainer}>
         <Text style={profileStyle.heading}>PERSONAL INFORMATION</Text>
         <IconButton
-          icon="plus-circle-outline"
+          icon={submittedData ? 'pencil-outline' : 'plus-circle-outline'}
           iconColor={colors.blackText}
           size={20}
           onPress={openModal}
@@ -614,16 +360,52 @@ const PersonalInformation = () => {
 
       {submittedData ? (
         <View style={profileStyle.userDataContainer}>
-          <TouchableOpacity onPress={handleEdit}>
-            {Object.keys(submittedData).map(key => (
-              <View
-                key={key}
-                style={{
-                  flexDirection: 'row',
-                  marginBottom: 5,
-                  gap: 18,
-                }}>
-                {/* Key (Label) */}
+          <TouchableOpacity onPress={openModal}>
+            {[
+              {
+                label: 'Industry',
+                value: submittedData.industry || 'Not provided',
+              },
+              {
+                label: 'Department',
+                value: submittedData.department || 'Not provided',
+              },
+              {
+                label: 'Role Category',
+                value: submittedData.roleCategory || 'Not provided',
+              },
+              {
+                label: 'Job Role',
+                value: submittedData.jobRole || 'Not provided',
+              },
+              {
+                label: 'Experience',
+                value: submittedData.experience || 'Not provided',
+              },
+              {
+                label: 'Annual Salary',
+                value:
+                  `${submittedData.annualSalary || ''} LPA` || 'Not provided',
+              },
+              {
+                label: 'Expected Salary',
+                value:
+                  `${submittedData.expectedSalary || ''} LPA` || 'Not provided',
+              },
+              {
+                label: 'Current Location',
+                value: submittedData.currentLocation || 'Not provided',
+              },
+              {
+                label: 'Preferred Locations',
+                value:
+                  Array.isArray(submittedData.selectedLocations) &&
+                  submittedData.selectedLocations.length > 0
+                    ? submittedData.selectedLocations.join(', ')
+                    : 'Not provided',
+              },
+            ].map((field, index) => (
+              <View key={index} style={{flexDirection: 'row', marginBottom: 5}}>
                 <Text
                   style={{
                     color: '#000',
@@ -631,9 +413,8 @@ const PersonalInformation = () => {
                     fontWeight: 'bold',
                     fontSize: 13,
                   }}>
-                  {key}
+                  {field.label}
                 </Text>
-                {/* Value */}
                 <Text
                   style={{
                     color: '#000',
@@ -641,25 +422,7 @@ const PersonalInformation = () => {
                     textAlign: 'left',
                     fontSize: 13,
                   }}>
-                  {(() => {
-                    if (key === 'DOB' && submittedData[key]) {
-                      return moment(submittedData[key]).format('MMMM DD, YYYY');
-                    } else if (
-                      key === 'selectedLocations' &&
-                      submittedData[key]
-                    ) {
-                      return submittedData[key].join(', '); // Show selected locations
-                    } else if (
-                      typeof submittedData[key] === 'object' &&
-                      submittedData[key] !== null
-                    ) {
-                      return (
-                        submittedData[key].label || submittedData[key].value
-                      );
-                    } else {
-                      return submittedData[key] || 'Not provided';
-                    }
-                  })()}
+                  {field.value}
                 </Text>
               </View>
             ))}
@@ -698,40 +461,6 @@ const PersonalInformation = () => {
                       PERSONAL INFORMATION
                     </Text>
 
-                    {/* Input Fields */}
-                    <ReusableTextInput
-                      name="fullName"
-                      label="Full Name*"
-                      value={values.fullName}
-                      onChangeText={handleChange('fullName')}
-                    />
-                    <ReusableTextInput
-                      name="email"
-                      label="Email Id*"
-                      value={values.email}
-                      onChangeText={handleChange('email')}
-                    />
-                    <ReusableTextInput
-                      name="phoneNumber"
-                      label="Phone Number*"
-                      value={values.phoneNumber}
-                      keyboardType="numeric"
-                      onChangeText={handleChange('phoneNumber')}
-                    />
-                    <ReusableDatePicker
-                      label="Date of Birth*"
-                      value={values.DOB}
-                      onChange={date => setFieldValue('DOB', date)}
-                    />
-                    <CustomTabs
-                      label="Gender*"
-                      options={GENDER_OPTIONS}
-                      selectedValue={values.gender}
-                      setFieldValue={setFieldValue}
-                      fieldName="gender"
-                      error={errors.gender}
-                      touched={touched.gender}
-                    />
                     <ReusableTextInput
                       name="currentLocation"
                       label="Current Location*"
@@ -739,85 +468,86 @@ const PersonalInformation = () => {
                       onChangeText={handleChange('currentLocation')}
                     />
 
-                    {/* Selection Modals */}
                     <CustomSelectionModal
                       title="Preferred Locations"
-                      data={Citys}
-                      selectedItems={values.selectedLocations}
+                      data={Cities}
+                      selectedItems={values.selectedLocations.map(
+                        location =>
+                          Cities.find(city => city.value === location) || {
+                            id: null,
+                            value: location,
+                          },
+                      )}
                       setSelectedItems={items =>
-                        setFieldValue('selectedLocations', items)
+                        setFieldValue(
+                          'selectedLocations',
+                          items.map(item => item?.value || ''),
+                        )
                       }
                       placeholder="Select Preferred Locations"
                       isMultiSelect
-                    />
-
-                    <CustomSelectionModal
-                      title="Home State"
-                      data={IndiaStates}
-                      selectedItems={values.homeState}
-                      setSelectedItems={items =>
-                        setFieldValue('homeState', items)
-                      }
-                      placeholder="Select Home State"
-                      isMultiSelect={false} // Single selection
-                    />
-
-                    <CustomSelectionModal
-                      title="Home City"
-                      data={MaharashtraCities}
-                      selectedItems={values.homeCity}
-                      setSelectedItems={items =>
-                        setFieldValue('homeCity', items)
-                      }
-                      placeholder="Select Home City"
-                      isMultiSelect={false} // Single selection
+                      maxSelectionLimit={9}
                     />
 
                     <CustomSelectionModal
                       title="Industry"
                       data={Industries}
-                      selectedItems={values.industry}
-                      setSelectedItems={items =>
-                        setFieldValue('industry', items)
+                      selectedItems={
+                        Industries.find(
+                          item => item.value === values.industry,
+                        ) || null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('industry', item?.value || '')
                       }
                       placeholder="Select Current Industry"
-                      isMultiSelect={false} // Single selection
+                      isMultiSelect={false}
                     />
 
                     <CustomSelectionModal
                       title="Department"
                       data={Department}
-                      selectedItems={values.department}
-                      setSelectedItems={items =>
-                        setFieldValue('department', items)
+                      selectedItems={
+                        Department.find(
+                          item => item.value === values.department,
+                        ) || null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('department', item?.value || '')
                       }
                       placeholder="Select Current Department"
-                      isMultiSelect={false} // Single selection
+                      isMultiSelect={false}
                     />
 
                     <CustomSelectionModal
                       title="Role Category"
                       data={RoleCategory}
-                      selectedItems={values.roleCategory}
-                      setSelectedItems={items =>
-                        setFieldValue('roleCategory', items)
+                      selectedItems={
+                        RoleCategory.find(
+                          item => item.value === values.roleCategory,
+                        ) || null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('roleCategory', item?.value || '')
                       }
                       placeholder="Select Role Category"
-                      isMultiSelect={false} // Single selection
+                      isMultiSelect={false}
                     />
 
                     <CustomSelectionModal
                       title="Job Role"
                       data={JobRole}
-                      selectedItems={values.jobRole}
-                      setSelectedItems={items =>
-                        setFieldValue('jobRole', items)
+                      selectedItems={
+                        JobRole.find(item => item.value === values.jobRole) ||
+                        null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('jobRole', item?.value || '')
                       }
                       placeholder="Select Current Job Role"
-                      isMultiSelect={false} // Single selection
+                      isMultiSelect={false}
                     />
 
-                    {/* Notice Period */}
                     <CustomTabs
                       label="Notice Period*"
                       options={NOTICEPERIOD_OPTIONS}
@@ -828,7 +558,6 @@ const PersonalInformation = () => {
                       touched={touched.noticePeriod}
                     />
 
-                    {/* Numeric Inputs */}
                     <ReusableTextInput
                       name="experience"
                       label="Experience*"
@@ -859,12 +588,11 @@ const PersonalInformation = () => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
-            onDelete={handleDelete}
-            showDelete={editingIndex !== null}
           />
         </View>
       </Modal>
     </View>
   );
 };
+
 export default PersonalInformation;

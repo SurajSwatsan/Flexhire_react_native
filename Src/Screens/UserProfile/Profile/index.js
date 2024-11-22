@@ -10,12 +10,14 @@ import {
 import {useRoute} from '@react-navigation/native';
 import Personaldetails from './PersonalInformation';
 import {colors} from '../../../Global_CSS/TheamColors';
-import BasicDetails from './Basicdetails';
+import BasicDetails from './BasicInformation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PersonalInformation from './PersonalInformation';
 import profileStyle from '../ProfileStyle';
 import Keyskills from './Keyskills';
 import {max} from 'moment';
+import BasicInformation from './BasicInformation';
+import Languages from './Languages';
 
 const Index = () => {
   const route = useRoute();
@@ -57,9 +59,10 @@ const Index = () => {
                   </View>
                 </TouchableOpacity>
               </View>
-              {/* <BasicDetails /> */}
+              <BasicInformation />
               <PersonalInformation />
               <Keyskills />
+              <Languages />
             </ScrollView>
           </View>
         );
@@ -150,6 +153,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.primary,
     flex: 1,
+    marginBottom: 12,
+  },
+  contentContainer: {
+    flex: 1,
   },
   headContainer: {
     justifyContent: 'space-between',
@@ -188,11 +195,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
     marginTop: 12,
-    paddingBottom: 24,
   },
-  // ScrollViewContainer: {
-  //   paddingVertical: 12,
-  // },
+  scrollContainer: {
+    // marginBottom: 56,
+  },
   tabContainer: {
     flexDirection: 'row',
     marginTop: 24,
@@ -216,6 +222,7 @@ const styles = StyleSheet.create({
   personalContainer: {
     padding: 12,
   },
+
   contactText: {
     color: colors.secodary,
     fontWeight: '600',
