@@ -8,6 +8,7 @@ import {
   View,
   Dimensions,
   FlatList,
+  ImageBackground,
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
@@ -16,7 +17,8 @@ import CustomJobCard from '../Constant/CustomJobCard';
 import {useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
-import {SwiperFlatList} from 'react-native-swiper-flatlist';
+import Swiper from 'react-native-swiper';
+// import {SwiperFlatList} from 'react-native-swiper-flatlist';
 
 const {width, height} = Dimensions.get('window'); // Get the screen width
 
@@ -142,30 +144,119 @@ const CompanyOverviewScreen = ({route}) => {
 
       case 'why_join_us':
         return (
-          <View style={styles. companyContainer}>
-          <View style={styles.companysliderContainer}>
-          <Text style={styles.title}>Life at Company</Text>
-          <SwiperFlatList
-            autoplay
-            autoplayDelay={10}
-            autoplayLoop
-            index={1}
-            showPagination
-            style={{ height: height * 0.3}} // Height of the swiper container
-            data={images}
-            renderItem={({ item }) => (
-              <View style={styles.imageContainer}>
-                <Image
-                  source={item}
-                  style={styles.image1}
-                />
+          <View style={styles.companymainContaner}>
+            <View style={styles.videoContainer}>
+              {jobData.youtubeVideos.map((video, index) => (
+                <View key={index} style={styles.videoCard}>
+                  {/* Left side: Image & Video Thumbnail */}
+                  <TouchableOpacity
+                    style={styles.imageContainer}
+                    onPress={() => openVideo(video.url)} // Handle the click to open the video
+                  >
+                    <ImageBackground
+                      source={require('../Assets/sliderImages/slider5.jpg')} // Replace with your actual thumbnail URL
+                      style={styles.thumbnail}
+                      imageStyle={styles.imageBackground} // To apply styling to the background image
+                    >
+                      {/* Play button overlay */}
+                      <View style={styles.playButtonContainer}>
+                        <Text style={styles.playButton}>▶</Text>
+                      </View>
+                    </ImageBackground>
+                  </TouchableOpacity>
+
+                  {/* Right side: Title, Description, Date */}
+                  <View style={styles.VideotextContainer}>
+                    <Text style={styles.videoTitle}>{video.title}</Text>
+                    <Text style={styles.videoDescription}>
+                      {video.description}
+                    </Text>
+                    <Text style={styles.videoDate}>{video.date}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View style={styles.companyContainer}>
+              <View style={styles.companysliderContainer}>
+                <Text style={styles.title}>Life at Company</Text>
+                <Swiper
+                  style={styles.wrapper}
+                  showsPagination={true} // Show pagination dots
+                  autoplay={true} // Enable auto-play
+                  loop={true} // Loop the images
+                  paginationStyle={styles.paginationStyle} // Customize pagination position
+                  dot={<View style={styles.dot} />} // Customize the inactive dot
+                  activeDot={<View style={styles.activeDot} />} // Customize the active dot
+                >
+                  {images.map((image, index) => (
+                    <View key={index} style={styles.slide}>
+                      <Image source={image} style={styles.sliderimage} />
+                    </View>
+                  ))}
+                </Swiper>
               </View>
-            )}
-            paginationStyle={styles.paginationStyle} // Custom pagination styling
-            
-          />
+            </View>
+            <View style={styles.testContainer}>
+              <View style={styles.testMain}> 
+                {jobData?.testimonials.map((testimonial, index) => (
+                  <View key={index} style={styles.testcard}>
+                    {/* Left side: Text */}
+                    <View style={styles.textContainer}>
+                      <Text style={styles.testimonialText}>
+                        "{testimonial.text}"
+                      </Text>
+                      <Text style={styles.name}>{testimonial.name}</Text>
+                      <Text style={styles.designation}>
+                        {testimonial.designation}
+                      </Text>
+                    </View>
+
+                    {/* Right side: Image */}
+                    <Image
+                      source={require('../Assets/companyImges/person.jpg')}
+                      style={styles.textimage}
+                    />
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.keymainContainer}>
+              <View style={styles.keyconatiner}>
+                <Text style={styles.textkeyContainer}>Key Highlight's</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {jobData?.key_highlights.map((highlight, index) => (
+                  <View key={index} style={styles.keyCard}>
+                    <Image
+                      source={require('../Assets/benifitsImages/paid_time.png')} // Using the icon URI directly
+                      style={styles.icon1}
+                    />
+                    <Text style={styles.keyText}>{highlight.name}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={styles.awardContainer}>
+              <Text style={styles.awardHeading}>Awards</Text>
+              <View style={styles.awardimageContainer}>
+                <Image 
+                   source={require('../Assets/ApplyImages/awards.png')}
+                   style={styles.awardImage}
+                />
+                <View style={styles.awardInfo}> 
+                  {jobData.awards.map((award, index) => (
+                    <View key={index} style={styles.awardtext}> 
+                      <Text style={styles.cardTitle}>{award.title}</Text>
+                      <Text style={styles.cardDate}>{award.date}</Text>
+                    </View>
+                  ))}
+                  </View>
+                </View>
+              </View>
+           
           </View>
-        </View>
         );
 
       case 'Jobs':
@@ -482,6 +573,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     padding: 12,
     borderRadius: 8,
+    marginTop:12
   },
   overviewImage: {
     flexDirection: 'row', // Align image and content horizontally
@@ -564,8 +656,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   icon: {
-    width: 72,
-    height: 72,
+    width: 84,
+    height: 84,
     marginBottom: 8,
   },
   benefitText: {
@@ -628,53 +720,269 @@ const styles = StyleSheet.create({
   relatedjobcontainer: {
     margin: 12,
   },
-  companyContainer: {
-    backgroundColor: '#fafafa',
+
+  companymainContaner: {
+    // padding: 12,
+    borderRadius: 8,
   },
-  companysliderContainer: {
-    marginHorizontal: 18,
-    marginVertical: 18,
+  videoContainer: {
+    marginHorizontal: 12,
+    // marginVertical:18
+    marginBottom: 12,
   },
-  companyText: {
-    color: 'black', // Replace with your color constant
+  videoCard: {
+    flexDirection: 'row', // Arrange the children (image and text) in a row
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 8,
+    marginVertical: 10,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 5,
+    // elevation: 5,
+  },
+
+  imageContainer: {
+    width: 130, // Adjust based on the size you want for the thumbnail
+    height: 120,
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginRight: 15, // Space between image and text
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover', // Ensures the image covers the area without distortion
+  },
+  imageBackground: {
+    // Additional styles to the image background if needed
+    borderRadius: 10,
+  },
+  playButtonContainer: {
+    position: 'absolute',
+    top: '30%',
+    // left: '50%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
+    borderRadius: 30,
+    // padding: 10,
+  },
+  playButton: {
+    fontSize: 24,
+    color: '#fff', // White play icon
+    textAlign: 'center',
+  },
+  VideotextContainer: {
+    flex: 1, // Take up the remaining space on the right
+    // justifyContent: 'space-between', // Distribute content vertically
+    margin: 4,
+    justifyContent: 'center',
+  },
+  videoTitle: {
     fontWeight: 'bold',
-    fontSize: 16,
-    // padding: 4,
-    marginBottom: 8,
+    fontSize: 14,
+    color: colors.blackText,
+    alignItems: 'center',
+  },
+  videoDescription: {
+    fontSize: 12,
+    color: colors.blackText,
+    // marginVertical: 5,
+  },
+  videoDate: {
+    fontSize: 10,
+    color: '#888',
+    textAlign: 'right', // Align the date to the right end
+    marginTop: 40,
   },
   companyContainer: {
     flex: 1,
     justifyContent: 'center',
-    // alignItems: 'center',
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    backgroundColor: '#fafafa',
   },
-  companysliderContainer:{
-    marginHorizontal:18,
-    marginVertical:18
+  companysliderContainer: {
+    marginHorizontal: 18,
+    // marginVertical: 24,
+    marginBottom: 36,
+    marginTop: 18,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-    color:'#000',
-   
+    color: '#000',
   },
-  imageContainer: {
+
+  wrapper: {
+    height: 200, // Set the height of the swiper (you can adjust this)
+  },
+  slide: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-   margin:8
   },
-  image1: {
-    width: 250, // Image width
-    height: 200, // Image height
-    resizeMode: 'cover', // Ensure the image covers the container without distortion
-    borderRadius: 8, // Optional: Rounded corners for images
+  sliderimage: {
+    width: '100%', // Makes the image cover the full width
+    height: '100%', // Makes the image cover the full height
+    resizeMode: 'cover', // Ensures the image is not distorted
+    borderRadius: 8,
   },
   paginationStyle: {
-    bottom: 10, // Adjust the position of the pagination dots
+    bottom: -20, // Adjust this value to change the position of the dots
+  },
+  dot: {
+    backgroundColor: colors.lightgaryText, // Inactive dot color
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    margin: 3,
+  },
+  activeDot: {
+    backgroundColor: '#004466', // Active dot color
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    margin: 3,
+  },
+  testContainer: {
+    backgroundColor:'#e3f0e9'
    
   },
-  
+  testMain:{
+    marginHorizontal: 18,
+    marginVertical: 18,
+  },
+  testcard: {
+    flexDirection: 'row', // Arrange children in a row
+   
+    borderRadius: 10,
+    padding: 20,
+    marginVertical: 10,
+   
+  },
+  textContainer: {
+    flex: 1, // Take remaining space
+    justifyContent: 'center', // Center content vertically
+    paddingRight: 10, // Space between text and image
+  },
+  testimonialText: {
+    fontStyle: 'italic',
+    fontSize: 12,
+    color: '#333',
+    marginBottom: 8,
+  },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#333',
+    // marginBottom: 3,
+  },
+  designation: {
+    fontSize: 12,
+    color: '#777',
+  },
+  textimage: {
+    width: 120,
+    height: 130,
+    borderRadius: 60, // Make the image circular
+    alignSelf: 'center', // Center the image vertically
+  },
+  keymainContainer: {
+    marginHorizontal: 12,
+    // backgroundColor:'#fafafa'
+  },
+  keyconatiner: {
+    marginHorizontal: 18,
+    // marginVertical: 18,
+    marginTop: 18,
+    marginBottom: 4,
+  },
+  textkeyContainer: {
+    fontSize: 16,
+    color: colors.blackText,
+    fontWeight: 'bold',
+  },
+  keyCard: {
+    flexDirection: 'column', // Stack the icon below the name
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 8,
+    width: 120,
+    height: 150, // Increase height to give space for both icon and text
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    marginBottom: 24,
+    margin: 8,
+    // marginHorizontal: 8,
+  },
+  icon1: {
+    width: 84,
+    height: 84,
+    marginBottom: 5,
+  },
+  keyText: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: colors.blackText,
+  },
+  awardContainer: {
+    backgroundColor: '#e3f0e9',
+    marginVertical: 18,
+    // marginHorizontal:18
+  },
+  awardHeading: {
+    color: colors.blackText,
+    marginHorizontal: 18,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop:12
+  },
+  awardimageContainer: {
+    flexDirection: 'row',
+    justifyContent:'center',
+    marginHorizontal:12,
+    marginBottom:8,
+  },
+  awardImage:{
+    height:200,
+    width:150
+  },
+  awardInfo:{
+      flexDirection:'column',
+      alignSelf:'center',
+      marginLeft:20,
+      flex: 1, // Take up the remaining space
+      backgroundColor: '#fff', 
+      padding: 12, // Padding inside the info section
+      borderRadius: 10, 
+      
+      justifyContent:'center'
+      
+     
+  },
+  awardtext:{
+    margin:4,
+    
+  },
+ 
+  cardTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  cardDate: {
+    fontSize: 10,
+    color:colors.blackText,
+    // marginVertical: 5,
+  },
 });
 
 export default CompanyOverviewScreen;

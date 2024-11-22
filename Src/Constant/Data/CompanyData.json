@@ -38,8 +38,7 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee":100
-        
+        "employee": 100
       },
       "benefits": [
         {
@@ -55,7 +54,93 @@
           "icon": "/Assets/benifitsImages/paid_time.png"
         }
       ],
-      
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "title": "Welcome to Our Company",
+          "description": "An overview of our journey and values.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/n_Cn8eFo7u8?si=yok1faASbTPK0PmG",
+          "date": "November 1, 2024",
+          "isPlaying": "false"
+        },
+        {
+          "title": "Innovating Sustainability",
+          "description": "Revolutionizing sustainability through technology.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/6nAIbRUokOY?si=9Gsbkq4haLabY4dy",
+          "date": "October 15, 2024",
+          "isPlaying": "false"
+        }
+      ],
+      "awards": [
+        {
+          "title": "Best Innovation ",
+          "date": "2024-01-15",
+          "description": "Awarded for outstanding innovation in technology solutions."
+        },
+        {
+          "title": "Employee Excellence ",
+          "date": "2023-09-10",
+          "description": "Recognizing excellence in team performance and leadership."
+        },
+        {
+          "title": "Community Impact",
+          "date": "2023-06-05",
+          "description": "For significant contributions to the local community."
+        },
+        {
+          "title": "Top Employer ",
+          "date": "2022-12-25",
+          "description": "Acknowledging exceptional workplace culture and benefits."
+        }
+      ],
+
       "related_jobs": [
         {
           "id": 6,
@@ -94,11 +179,9 @@
             "website": "https://www.insightanalytics.com",
             "rating": "4.5",
             "tagline": "Make the world's information accessible and useful"
-            
-           
           }
         },
-        
+
         {
           "id": 7,
           "job_title": "Data Scientist",
@@ -177,13 +260,12 @@
         "rating": "4.7",
         "tagline": "Make the world's information accessible and useful",
         "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ],
-            "employee":100
-
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
+        "employee": 100
       },
       "benefits": [
         {
@@ -198,8 +280,71 @@
           "name": "Paid Time Off",
           "icon": "../Assets/benifitsImages/paid_time.png"
         }
+      ],
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "title": "Welcome to Our Company",
+          "description": "An overview of our journey and values.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/n_Cn8eFo7u8?si=yok1faASbTPK0PmG",
+          "date": "November 1, 2024",
+          "isPlaying": "false"
+        },
+        {
+          "title": "Innovating Sustainability",
+          "description": "Revolutionizing sustainability through technology.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/6nAIbRUokOY?si=9Gsbkq4haLabY4dy",
+          "date": "October 15, 2024",
+          "isPlaying": "false"
+        }
       ]
-      
     },
     {
       "id": 3,
@@ -234,15 +379,15 @@
         "website": "https://www.creativesolutions.com",
         "rating": "4.3",
         "tagline": "Make the world's information accessible and useful",
-        "employee":100,
+        "employee": 100,
 
         "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ],
-            "employee":100
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
+        "employee": 100
       },
       "benefits": [
         {
@@ -256,6 +401,70 @@
         {
           "name": "Paid Time Off",
           "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ],
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "title": "Welcome to Our Company",
+          "description": "An overview of our journey and values.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/n_Cn8eFo7u8?si=yok1faASbTPK0PmG",
+          "date": "November 1, 2024",
+          "isPlaying": "false"
+        },
+        {
+          "title": "Innovating Sustainability",
+          "description": "Revolutionizing sustainability through technology.",
+          "thumbnail": "assets/company_overview/image5.jpg",
+          "url": "https://www.youtube.com/embed/6nAIbRUokOY?si=9Gsbkq4haLabY4dy",
+          "date": "October 15, 2024",
+          "isPlaying": "false"
         }
       ]
     },
@@ -296,12 +505,12 @@
         "rating": "4.6",
         "tagline": "Make the world's information accessible and useful",
         "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ],
-            "employee":100
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
+        "employee": 100
       },
       "benefits": [
         {
@@ -315,6 +524,52 @@
         {
           "name": "Paid Time Off",
           "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ],
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
         }
       ]
     },
@@ -355,12 +610,12 @@
         "rating": "4.4",
         "tagline": "Make the world's information accessible and useful",
         "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ],
-            "employee":100
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
+        "employee": 100
       },
       "benefits": [
         {
@@ -374,6 +629,52 @@
         {
           "name": "Paid Time Off",
           "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ],
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
         }
       ]
     },
@@ -410,12 +711,12 @@
         "rating": "4.5",
         "tagline": "Make the world's information accessible and useful",
         "services": [
-              "Data Analysis",
-              "Predictive Analytics",
-              "Business Intelligence",
-              "Machine Learning Solutions"
-            ],
-            "employee":100
+          "Data Analysis",
+          "Predictive Analytics",
+          "Business Intelligence",
+          "Machine Learning Solutions"
+        ],
+        "employee": 100
       },
       "benefits": [
         {
@@ -430,8 +731,53 @@
           "name": "Paid Time Off",
           "icon": "../Assets/benifitsImages/paid_time.png"
         }
+      ],
+      "key_highlights": [
+        {
+          "name": "User-Friendly Interface",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/desktop.svg"
+        },
+        {
+          "name": "24/7 Customer Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/headset.svg"
+        },
+        {
+          "name": "Cross-Platform Integration",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync-alt.svg"
+        },
+        {
+          "name": "Personalized Experience",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/cogs.svg"
+        },
+        {
+          "name": "Regular Updates",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/sync.svg"
+        },
+        {
+          "name": "Robust Security",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/lock.svg"
+        },
+        {
+          "name": "Fast Response Time",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/clock.svg"
+        },
+        {
+          "name": "Knowledge Base",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/book.svg"
+        },
+        {
+          "name": "Multilingual Support",
+          "icon": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/globe.svg"
+        }
+      ],
+      "testimonials": [
+        {
+          "text": "A person who is happy is not because everything is right in his life, He is happy because his attitude towards everything in his life is right.",
+          "name": "Sundar Pichai",
+          "designation": "Cheif Executive Officer",
+          "image": "https://example.com/path/to/sundar_pichai_image.jpg"
+        }
       ]
-      
     }
   ]
 }
