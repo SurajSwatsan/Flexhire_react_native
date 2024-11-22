@@ -4,7 +4,7 @@ import profileStyle from '../Screens/UserProfile/ProfileStyle';
 
 const CustomTabs = ({
   label,
-  options, // Options like NOTICEPERIOD_OPTIONS or GENDER_OPTIONS
+  options, // Options like GENDER_OPTIONS
   selectedValue,
   setFieldValue,
   fieldName,
@@ -17,7 +17,7 @@ const CustomTabs = ({
       <View style={profileStyle.TabContainer}>
         {options.map(option => (
           <TouchableOpacity
-            key={option.value}
+            key={option.id} // Use the `id` as the unique key
             style={[
               profileStyle.tabBtnStyle,
               selectedValue === option.value
@@ -32,7 +32,7 @@ const CustomTabs = ({
                   ? profileStyle.selectedTabText
                   : profileStyle.unselectedTabText,
               ]}>
-              {option.label}
+              {option.value}
             </Text>
           </TouchableOpacity>
         ))}

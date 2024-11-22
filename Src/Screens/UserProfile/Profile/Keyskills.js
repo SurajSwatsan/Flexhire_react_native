@@ -1,9 +1,17 @@
-import {Modal, StyleSheet, Text, View, ScrollView} from 'react-native';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useState} from 'react';
 import {IconButton, TextInput} from 'react-native-paper';
 import profileStyle from '../ProfileStyle';
 import ModalFooter from '../../../Constant/ProfileModalFooter';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {colors} from '../../../Global_CSS/TheamColors';
 
 const Skills = [
   {label: 'JavaScript', value: '1'},
@@ -109,36 +117,37 @@ const Skills = [
 ];
 const Keyskills = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [submittedSkills, setSubmittedSkills] = useState([]);
+  const [submittedSkills, setSubmittedSkills] = useState([]); // Stores selected skills
   const [searchText, setSearchText] = useState('');
 
   const openModal = () => setModalVisible(true);
-
   const closeModal = () => {
     setSearchText('');
     setModalVisible(false);
   };
 
   const toggleSkillSelection = skill => {
-    if (submittedSkills.includes(skill)) {
-      // Remove skill if already in the list
-      setSubmittedSkills(prevSkills => prevSkills.filter(s => s !== skill));
-    } else {
-      // Add skill if not in the list
-      setSubmittedSkills(prevSkills => [...prevSkills, skill]);
-    }
+    // Add or remove skill from the list
+    setSubmittedSkills(
+      prevSkills =>
+        prevSkills.includes(skill)
+          ? prevSkills.filter(s => s !== skill) // Remove skill
+          : [...prevSkills, skill], // Add skill
+    );
   };
 
   const filteredSkills = Skills.filter(skill =>
     skill.label.toLowerCase().includes(searchText.toLowerCase()),
   );
 
+  const removeChip = skill => {
+    setSubmittedSkills(prevSkills => prevSkills.filter(s => s !== skill));
+  };
+
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <View style={profileStyle.displayContainer}>
-          <Text style={profileStyle.heading}>KEY SKILLS</Text>
-        </View>
+        <Text style={profileStyle.heading}>KEY SKILLS</Text>
         <IconButton
           icon="plus-circle-outline"
           iconColor="black"
@@ -147,22 +156,32 @@ const Keyskills = () => {
           style={profileStyle.editButton}
         />
       </View>
+
       <View style={profileStyle.outputData}>
         {submittedSkills.length > 0 ? (
           <View style={profileStyle.chipContainer}>
             {submittedSkills.map((skill, index) => (
-              <View key={index} style={profileStyle.chip}>
+              <TouchableOpacity
+                key={index}
+                style={profileStyle.chip}
+                onPress={() => removeChip(skill)}>
                 <Text style={profileStyle.chipText}>{skill}</Text>
-              </View>
+                <Ionicons
+                  name="close-circle-outline"
+                  size={16}
+                  style={styles.iconstyle}
+                />
+              </TouchableOpacity>
             ))}
           </View>
         ) : (
           <Text style={profileStyle.optionalData}>
-            Selecting your key skills, will increase your chances of being
+            Selecting your key skills will increase your chances of being
             contacted for job opportunities.
           </Text>
         )}
       </View>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -171,8 +190,7 @@ const Keyskills = () => {
         <View style={profileStyle.modalBackground}>
           <View style={profileStyle.modalContainer}>
             <ScrollView contentContainerStyle={profileStyle.modalContent}>
-              <Text style={profileStyle.formHeading}>Key skills</Text>
-              {/* <Text style={profileStyle.subText1}>Search for your skills</Text> */}
+              <Text style={profileStyle.formHeading}>Key Skills</Text>
               <TextInput
                 style={profileStyle.textarea}
                 label="Search"
@@ -185,27 +203,26 @@ const Keyskills = () => {
               />
               <View style={profileStyle.skillsContainer}>
                 {filteredSkills.map(skill => (
-                  <View key={skill.value} style={[styles.skillListContainer]}>
-                    <View
-                      style={styles.SkillListContainer}
-                      onTouchEnd={() => toggleSkillSelection(skill.label)}>
-                      <Text
-                        style={[
-                          styles.skillList,
-                          submittedSkills.includes(skill.label) &&
-                            styles.selectedSkill,
-                        ]}>
-                        {skill.label}
-                      </Text>
-                      {submittedSkills.includes(skill.label) ? (
-                        <Ionicons
-                          name="checkmark-sharp"
-                          size={18}
-                          style={styles.iconStyle}
-                        />
-                      ) : null}
-                    </View>
-                  </View>
+                  <TouchableOpacity
+                    key={skill.value}
+                    style={styles.skillListContainer}
+                    onPress={() => toggleSkillSelection(skill.label)}>
+                    <Text
+                      style={[
+                        styles.skillList,
+                        submittedSkills.includes(skill.label) &&
+                          styles.selectedSkill,
+                      ]}>
+                      {skill.label}
+                    </Text>
+                    {submittedSkills.includes(skill.label) && (
+                      <Ionicons
+                        name="checkmark-sharp"
+                        size={18}
+                        style={styles.iconStyle}
+                      />
+                    )}
+                  </TouchableOpacity>
                 ))}
               </View>
             </ScrollView>
@@ -230,12 +247,15 @@ const styles = StyleSheet.create({
   iconStyle: {
     color: '#009900',
   },
-  SkillListContainer: {
+  skillListContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
     borderBottomWidth: 0.5,
     borderColor: 'lightgrey',
+  },
+  iconstyle: {
+    color: colors.primary,
   },
 });
 

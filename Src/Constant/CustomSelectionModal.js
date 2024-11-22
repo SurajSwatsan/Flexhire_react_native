@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Modal,
   Text,
@@ -15,37 +15,53 @@ import {colors} from '../Global_CSS/TheamColors';
 
 const CustomSelectionModal = ({
   title,
-  data,
+  data, // Array of objects like [{id: 1, value: 'India'}, {id: 2, value: 'United States'}]
   selectedItems,
   setSelectedItems,
   placeholder,
   isMultiSelect = false,
-  maxSelectionLimit, // No default value, should be passed if required
+  maxSelectionLimit,
   onSubmit,
   onCancel,
-  onDelete, // Assuming you still want to keep delete functionality as an option
 }) => {
   const [filteredData, setFilteredData] = useState(data);
-  const [selected, setSelected] = useState(selectedItems || []);
+  const [selected, setSelected] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [isModalVisible, setModalVisible] = useState(false); // Modal visibility state
-  const [validationError, setValidationError] = useState(null); // Validation error state
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [validationError, setValidationError] = useState(null);
+
+  // Sync state when `selectedItems` changes
+  useEffect(() => {
+    if (Array.isArray(selectedItems)) {
+      setSelected(selectedItems);
+    } else if (selectedItems) {
+      setSelected([selectedItems]);
+    } else {
+      setSelected([]);
+    }
+  }, [selectedItems]);
 
   const toggleSelection = item => {
     if (isMultiSelect) {
-      // Check if selection limit is passed and is reached, do nothing if the limit is reached
+      // Prevent adding new items if the limit is reached
       if (
         maxSelectionLimit &&
         selected.length >= maxSelectionLimit &&
-        !selected.includes(item)
+        !selected.some(selectedItem => selectedItem.id === item.id)
       ) {
-        return; // Do nothing if the limit is reached
-      } else {
-        setSelected(prev =>
-          prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item],
-        );
+        console.log('Selection limit reached'); // Optional: Log limit breach
+        return;
       }
+
+      // Add or remove the item
+      setSelected(
+        prev =>
+          prev.some(selectedItem => selectedItem.id === item.id)
+            ? prev.filter(selectedItem => selectedItem.id !== item.id) // Remove
+            : [...prev, item], // Add
+      );
     } else {
+      // Replace current selection for single-select
       setSelected([item]);
     }
   };
@@ -53,96 +69,79 @@ const CustomSelectionModal = ({
   const applySelection = () => {
     if (selected.length === 0) {
       setValidationError('Please select at least one item');
-      return; // Do not submit if no items are selected
+      return;
     }
-
-    // Reset validation error when a valid selection is made
     setValidationError(null);
-
     setSelectedItems(isMultiSelect ? selected : selected[0] || null);
-    setModalVisible(false); // Close the modal
+    setModalVisible(false);
     onSubmit && onSubmit(selected);
   };
-  const onRemoveChip = value => {
-    const updatedSelected = selected.filter(item => item.value !== value);
-    setSelected(updatedSelected);
-    setSelectedItems(updatedSelected); // Update parent state
-  };
+
   const handleSearch = text => {
     setSearchText(text);
     if (text === '') {
-      setFilteredData(data); // Show full list when search is cleared
+      setFilteredData(data);
     } else {
       setFilteredData(
         data.filter(item =>
-          item.label.toLowerCase().includes(text.toLowerCase()),
+          item.value.toLowerCase().includes(text.toLowerCase()),
         ),
       );
     }
   };
 
   const resetModal = () => {
-    setModalVisible(false); // Close the modal
-    setSelected([]); // Reset selected items
-    setSearchText(''); // Reset search input
-    setFilteredData(data); // Reset data
-    setValidationError(null); // Reset validation error
-    onCancel && onCancel(); // Trigger the cancel callback if provided
+    setModalVisible(false);
+    setSearchText('');
+    setFilteredData(data);
+    setValidationError(null);
+    onCancel && onCancel();
+  };
+
+  const removeChip = id => {
+    const updatedSelected = selected.filter(item => item.id !== id);
+    setSelected(updatedSelected);
+    setSelectedItems(updatedSelected);
   };
 
   return (
     <View>
-      {/* Input box to open the modal */}
+      <TouchableOpacity
+        style={[Styles.inputBox, Styles.inputContainer]}
+        onPress={() => setModalVisible(true)}>
+        <Text style={Styles.inputBoxText}>{placeholder}</Text>
+        <Ionicons
+          name="add-circle-outline"
+          size={18}
+          style={Styles.iconstyle}
+        />
+      </TouchableOpacity>
 
-      <View>
-        {/* TouchableOpacity for selection */}
-        <TouchableOpacity
-          style={[Styles.inputBox, Styles.inputContainer]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={Styles.inputBoxText}>{placeholder}</Text>
-          <Ionicons
-            name="add-circle-outline"
-            size={24}
-            style={Styles.iconstyle}
-          />
-        </TouchableOpacity>
+      {selected.length > 0 && (
+        <View style={profileStyle.chipContainer}>
+          {selected.map((item, index) => (
+            <View key={index} style={profileStyle.chip}>
+              <Text style={profileStyle.chipText}>{item.value}</Text>
+              <TouchableOpacity onPress={() => removeChip(item.id)}>
+                <Ionicons
+                  name="close-circle-outline"
+                  size={16}
+                  style={Styles.iconstyle}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
 
-        {/* Display selected items as chips */}
-        {selected.length > 0 && (
-          <View style={Styles.chipContainer}>
-            {selected.map(item => (
-              <View key={item.value} style={Styles.chip}>
-                <Text style={Styles.chipText}>{item.label}</Text>
-                <TouchableOpacity onPress={() => onRemoveChip(item.value)}>
-                  <Ionicons
-                    name="close-circle-outline"
-                    size={16}
-                    style={Styles.closeIcon}
-                  />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-
-      {/* Modal */}
       <Modal animationType="slide" transparent visible={isModalVisible}>
         <View style={profileStyle.modalContainer}>
           <View style={Styles.modalHeader}>
             <Text style={profileStyle.formHeading}>{title}</Text>
           </View>
-
-          {/* Conditionally render the note */}
-          {maxSelectionLimit && (
-            <Text style={Styles.note}>
-              Note: You can select a maximum of {maxSelectionLimit} {title}
-            </Text>
-          )}
-
           <TextInput
             style={profileStyle.textarea}
-            label="Search.."
+            label="Search..."
             mode="outlined"
             outlineColor="lightgrey"
             textColor="black"
@@ -151,49 +150,46 @@ const CustomSelectionModal = ({
             onChangeText={handleSearch}
           />
           <FlatList
-            data={filteredData} // Use filteredData for the list
-            keyExtractor={item => item.value}
+            data={filteredData}
+            keyExtractor={item => item.id.toString()}
             renderItem={({item}) => (
-              <View key={item.value} style={[profileStyle.itemContainer]}>
-                <View
+              <View key={item.id} style={[profileStyle.itemContainer]}>
+                <TouchableOpacity
                   style={[
-                    Styles.SkillListContainer,
+                    Styles.ItemListContainer,
                     maxSelectionLimit &&
                     selected.length >= maxSelectionLimit &&
-                    !selected.includes(item)
-                      ? Styles.disabledItem // Disable item if the limit is reached
+                    !selected.some(selectedItem => selectedItem.id === item.id)
+                      ? Styles.disabledItem
                       : null,
                   ]}
-                  onTouchEnd={() => toggleSelection(item)}>
+                  onPress={() => toggleSelection(item)}>
                   <Text
                     style={[
                       Styles.itemText,
-                      selected.includes(item) && Styles.selectedItemText,
+                      selected.some(
+                        selectedItem => selectedItem.id === item.id,
+                      ) && Styles.selectedItemText,
                     ]}>
-                    {item.label}
+                    {item.value}
                   </Text>
-                  {selected.includes(item) && (
+                  {selected.some(
+                    selectedItem => selectedItem.id === item.id,
+                  ) && (
                     <Ionicons
                       name="checkmark-sharp"
                       size={18}
                       style={Styles.iconStyle}
                     />
                   )}
-                </View>
+                </TouchableOpacity>
               </View>
             )}
           />
-
-          {/* Validation Error */}
           {validationError && (
             <Text style={Styles.validationError}>{validationError}</Text>
           )}
-
-          {/* ModalFooter with actions */}
-          <ModalFooter
-            onPress={applySelection}
-            onCancel={resetModal} // Reset modal on cancel
-          />
+          <ModalFooter onPress={applySelection} onCancel={resetModal} />
         </View>
       </Modal>
     </View>
@@ -208,27 +204,15 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputBoxText: {
-    fontSize: 16,
-    color: '#000',
+    fontSize: 14,
+    color: colors.secodary,
   },
   inputBox: {
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
     height: 48,
-
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    borderRadius: 5,
-    // borderColor: '#ccc',
     paddingHorizontal: 8,
-    marginVertical: 12,
-  },
-  note: {
-    fontSize: 12,
-    color: 'black',
+    marginTop: 12,
   },
   itemText: {
     fontSize: 13,
@@ -242,7 +226,7 @@ const Styles = StyleSheet.create({
   iconStyle: {
     color: '#009900',
   },
-  SkillListContainer: {
+  ItemListContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
@@ -250,7 +234,7 @@ const Styles = StyleSheet.create({
     borderColor: 'lightgrey',
   },
   disabledItem: {
-    opacity: 0.5, // Make it look disabled
+    opacity: 0.5,
   },
   validationError: {
     color: 'red',
@@ -258,27 +242,6 @@ const Styles = StyleSheet.create({
     paddingTop: 10,
   },
   iconstyle: {
-    color: colors.primary,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginVertical: 8,
-    gap: 8,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  chipText: {
-    color: '#000',
-    marginRight: 8,
-  },
-  closeIcon: {
     color: colors.primary,
   },
 });

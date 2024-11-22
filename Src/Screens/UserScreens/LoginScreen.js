@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   StyleSheet,
   SafeAreaView,
@@ -121,109 +120,101 @@ const LoginScreen = () => {
             }) => (
               <>
                 <View>
-                  <KeyboardAwareScrollView>
+                  <TextInput
+                    style={styles.textarea}
+                    mode="outlined"
+                    outlineColor="lightgrey"
+                    label="Email/Mobile Number"
+                    textColor="black"
+                    value={values.emailOrPhone}
+                    onChangeText={handleChange('emailOrPhone')}
+                    onBlur={handleBlur('emailOrPhone')}
+                    activeOutlineColor="lightgrey"
+                    error={!!errors.emailOrPhone}
+                  />
+                  {errors.emailOrPhone && touched.emailOrPhone ? (
+                    <Text style={GlobalStyle.errorText}>
+                      {errors.emailOrPhone}
+                    </Text>
+                  ) : null}
+
+                  <View style={styles.passwordContainer}>
                     <TextInput
-                      style={styles.textarea}
+                      style={[styles.textarea, styles.passwordInput]}
                       mode="outlined"
                       outlineColor="lightgrey"
-                      label="Email/Mobile Number"
+                      label="Password"
                       textColor="black"
-                      value={values.emailOrPhone}
-                      onChangeText={handleChange('emailOrPhone')}
-                      onBlur={handleBlur('emailOrPhone')}
                       activeOutlineColor="lightgrey"
-                      error={!!errors.emailOrPhone}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      secureTextEntry={!ispasswordVisible}
+                      error={!!errors.password}
+                      name="password"
                     />
-                    {errors.emailOrPhone && touched.emailOrPhone ? (
-                      <Text style={GlobalStyle.errorText}>
-                        {errors.emailOrPhone}
-                      </Text>
-                    ) : null}
+                    <IconButton
+                      icon={ispasswordVisible ? 'eye-off' : 'eye'}
+                      color={colors.primary}
+                      size={26}
+                      onPress={() => setpasswordVisibility(!ispasswordVisible)}
+                      style={styles.eyeIcon}
+                    />
+                  </View>
+                  {errors.password && touched.password ? (
+                    <Text style={GlobalStyle.errorText}>{errors.password}</Text>
+                  ) : null}
 
-                    <View style={styles.passwordContainer}>
-                      <TextInput
-                        style={[styles.textarea, styles.passwordInput]}
-                        mode="outlined"
-                        outlineColor="lightgrey"
-                        label="Password"
-                        textColor="black"
-                        activeOutlineColor="lightgrey"
-                        value={values.password}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        secureTextEntry={!ispasswordVisible}
-                        error={!!errors.password}
-                        name="password"
-                      />
-                      <IconButton
-                        icon={ispasswordVisible ? 'eye-off' : 'eye'}
-                        color={colors.primary}
-                        size={26}
-                        onPress={() =>
-                          setpasswordVisibility(!ispasswordVisible)
-                        }
-                        style={styles.eyeIcon}
-                      />
-                    </View>
-                    {errors.password && touched.password ? (
-                      <Text style={GlobalStyle.errorText}>
-                        {errors.password}
-                      </Text>
-                    ) : null}
-
+                  <View style={styles.checkboxContainer}>
                     <View style={styles.checkboxContainer}>
-                      <View style={styles.checkboxContainer}>
-                        <Checkbox
-                          status={checked ? 'checked' : 'unchecked'}
-                          onPress={() => setChecked(!checked)}
-                          color={colors.primary}
-                        />
-                        <Text style={styles.checkboxtext1}>Remember me</Text>
-                      </View>
-
-                      <TouchableOpacity onPress={HandleForgotpassword}>
-                        <Text style={styles.checkboxtext2}>
-                          Forgot password?
-                        </Text>
-                      </TouchableOpacity>
+                      <Checkbox
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => setChecked(!checked)}
+                        color={colors.primary}
+                      />
+                      <Text style={styles.checkboxtext1}>Remember me</Text>
                     </View>
 
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        labelStyle={GlobalStyle.labelStyle}
-                        onPress={handleSubmit}>
-                        Login
-                      </Button>
-                    </View>
+                    <TouchableOpacity onPress={HandleForgotpassword}>
+                      <Text style={styles.checkboxtext2}>Forgot password?</Text>
+                    </TouchableOpacity>
+                  </View>
 
-                    <View>
-                      <View style={styles.socialContainer_Heading}>
-                        <View style={styles.sociallineContainer} />
-                        <Text style={styles.socialtextContainer}>OR</Text>
-                        <View style={styles.sociallineContainer} />
-                      </View>
-                      <View style={styles.socialContainer}>
-                        <Image
-                          style={styles.socialImages}
-                          source={require('../../Assets/Images/google_icon.png')}
-                        />
-                        <Image
-                          style={styles.socialImages}
-                          source={require('../../Assets/Images/linkedin_icon.png')}
-                        />
-                      </View>
-                    </View>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      labelStyle={GlobalStyle.labelStyle}
+                      onPress={handleSubmit}>
+                      Login
+                    </Button>
+                  </View>
 
-                    <View style={styles.signupContainer}>
-                      <Text style={styles.signupText1}>
-                        Don't have an account?
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => navigation.push('SignupScreen')}>
-                        <Text style={styles.signupText2}>Create account</Text>
-                      </TouchableOpacity>
+                  <View>
+                    <View style={styles.socialContainer_Heading}>
+                      <View style={styles.sociallineContainer} />
+                      <Text style={styles.socialtextContainer}>OR</Text>
+                      <View style={styles.sociallineContainer} />
                     </View>
-                  </KeyboardAwareScrollView>
+                    <View style={styles.socialContainer}>
+                      <Image
+                        style={styles.socialImages}
+                        source={require('../../Assets/Images/google_icon.png')}
+                      />
+                      <Image
+                        style={styles.socialImages}
+                        source={require('../../Assets/Images/linkedin_icon.png')}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={styles.signupContainer}>
+                    <Text style={styles.signupText1}>
+                      Don't have an account?
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => navigation.push('SignupScreen')}>
+                      <Text style={styles.signupText2}>Create account</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </>
             )}
