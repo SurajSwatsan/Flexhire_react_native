@@ -41,6 +41,21 @@
         "employee":100
         
       },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "/Assets/benifitsImages/paid_time.png"
+        }
+      ],
+      
       "related_jobs": [
         {
           "id": 6,
@@ -83,6 +98,7 @@
            
           }
         },
+        
         {
           "id": 7,
           "job_title": "Data Scientist",
@@ -168,7 +184,22 @@
             ],
             "employee":100
 
-      }
+      },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ]
+      
     },
     {
       "id": 3,
@@ -212,7 +243,21 @@
               "Machine Learning Solutions"
             ],
             "employee":100
-      }
+      },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ]
     },
     {
       "id": 4,
@@ -257,7 +302,21 @@
               "Machine Learning Solutions"
             ],
             "employee":100
-      }
+      },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ]
     },
     {
       "id": 5,
@@ -302,7 +361,21 @@
               "Machine Learning Solutions"
             ],
             "employee":100
-      }
+      },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ]
     },
     {
       "id": 6,
@@ -343,7 +416,22 @@
               "Machine Learning Solutions"
             ],
             "employee":100
-      }
+      },
+      "benefits": [
+        {
+          "name": "Health Insurance",
+          "icon": "../Assets/benifitsImages/Health.png"
+        },
+        {
+          "name": "Flexible Working Hours",
+          "icon": "../Assets/benifitsImages/flexible_time.png"
+        },
+        {
+          "name": "Paid Time Off",
+          "icon": "../Assets/benifitsImages/paid_time.png"
+        }
+      ]
+      
     }
   ]
 }

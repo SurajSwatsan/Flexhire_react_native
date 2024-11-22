@@ -1,15 +1,20 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import Index from '../UserProfile';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 const UserInvitesScreen = () => {
+
+
+
   return (
     <View>
       {/* <Index/> */}
     </View>
+    
   );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+ 
+})
 
 export default UserInvitesScreen;

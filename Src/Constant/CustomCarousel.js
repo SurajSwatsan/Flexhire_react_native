@@ -125,7 +125,7 @@ const CustomCarousel = () => {
             <Ionicons
               name="chevron-forward-outline"
               size={30}
-              color="#808080"
+              color="#000"
             />
           </Text>
         </TouchableOpacity>
@@ -162,12 +162,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
 
-    // padding: 10,
-    // alignItems: 'center',
-    // elevation: 2, // For Android shadow
+   
     marginRight: 20, // Ensures spacing between cards
     minHeight: 200,
-    marginBottom: 10,
+    // marginBottom: 8,
+    marginTop:12
   },
   card_content: {
     padding: 12,

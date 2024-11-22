@@ -174,13 +174,6 @@ const JobDetailScreen = ({route, navigation}) => {
               <Text style={styles.jobDetails1}>{jobData.company.phone}</Text>
             </View>
 
-            {/* <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}> Recruiter Name:</Text>
-              <Text style={styles.jobDetails1}>
-                {jobData.company.recruiter_name}
-              </Text>
-            </View> */}
-
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}> Website:</Text>
               <Text style={styles.jobDetails1}>{jobData.company.website}</Text>

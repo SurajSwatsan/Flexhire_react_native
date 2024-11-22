@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../Global_CSS/TheamColors';
@@ -36,8 +37,13 @@ const UserApplies = ({navigation}) => {
   return (
     <View style={styles.container}>
       {/* If there are no applied jobs, display a message */}
+      
       {appliedJobs.length === 0 ? (
         <View style={styles.noJobsContainer}>
+        <Image
+          source={require('../../Assets/ApplyImages/apply.png')}
+          style={styles.Image}
+        />
           <Text style={styles.noJobs}>
             You haven't applied for any jobs yet!
           </Text>
@@ -84,7 +90,7 @@ const UserApplies = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start', // Ensure content is top-aligned
+    justifyContent: 'center', // Ensure content is top-aligned
     alignItems: 'center',
     backgroundColor: colors.background,
     padding: 18,
@@ -96,16 +102,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: colors.primary,
   },
+  Image: {
+    height: 200,
+    width: 200,
+  },
   noJobsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    // marginTop: 20,
   },
   noJobs: {
     fontSize: 16,
     color: colors.blackText,
     textAlign: 'center',
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   button: {
     backgroundColor: colors.primary,

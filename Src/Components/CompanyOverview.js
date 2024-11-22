@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
@@ -15,7 +16,11 @@ import CustomJobCard from '../Constant/CustomJobCard';
 import {useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
-const {width} = Dimensions.get('window'); // Get the screen width
+import {SwiperFlatList} from 'react-native-swiper-flatlist';
+
+const {width, height} = Dimensions.get('window'); // Get the screen width
+
+const {width: screenWidth} = Dimensions.get('window');
 
 const CompanyOverviewScreen = ({route}) => {
   const {jobData} = route.params;
@@ -23,6 +28,10 @@ const CompanyOverviewScreen = ({route}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const jobs = useSelector(state => state.Jobs.jobsData);
+
+  const relatedJobs = jobData.related_jobs;
+
+  const truncatedLength = 50;
 
   if (!jobs || jobs.length === 0) {
     return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
@@ -33,6 +42,14 @@ const CompanyOverviewScreen = ({route}) => {
 
   // Function to toggle visibility of all services
   const toggleServices = () => setShowAllServices(prev => !prev);
+
+  const images = [
+    require('../Assets/sliderImages/slider4.jpg'),
+    require('../Assets/sliderImages/slider5.jpg'),
+    require('../Assets/sliderImages/slider1.jpg'),
+    require('../Assets/sliderImages/slider2.jpg'),
+    require('../Assets/sliderImages/slider3.jpg'),
+  ];
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -47,26 +64,15 @@ const CompanyOverviewScreen = ({route}) => {
                 />
 
                 <View style={styles.content}>
-                  {/* <Text style={styles.jobDetailsheader}>About Us:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {isExpanded
-                      ? jobData.company.about
-                      : jobData.company.about.length > 50
-                      ? `${jobData.company.about.substring(0, 50)}...`
-                      : jobData.company.about}
-                  </Text>
-                  <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
-                    <Text style={styles.readMoreText}>
-                      {isExpanded ? 'Read Less' : 'Read More'}
-                    </Text>
-                  </TouchableOpacity>
-                   */}
                   <Text style={styles.jobDetailsheader}>About Us:</Text>
                   <Text style={styles.jobDetails1}>
                     {isExpanded
-                      ? jobData.company.about // Full description when expanded
-                      : jobData.company.about.length > 50
-                      ? `${jobData.company.about.substring(0, 50)}...` // Truncate if not expanded
+                      ? jobData.company.about // Show full description when expanded
+                      : jobData.company.about.length > truncatedLength
+                      ? `${jobData.company.about.substring(
+                          0,
+                          truncatedLength,
+                        )}...` // Truncate if not expanded
                       : jobData.company.about}
                   </Text>
                   <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
@@ -80,51 +86,112 @@ const CompanyOverviewScreen = ({route}) => {
                 </View>
               </View>
             </View>
+
             <View style={styles.benefitContainer}>
               <Text style={styles.textBenefits}>Benefits</Text>
-            </View>
 
-            <View style={{marginVertical: 12, marginLeft: 16}}>
-              <View style={styles.displayContainer}>
-                <Text style={styles.contHead}>Recent Jobs</Text>
-                <Text style={styles.seeAll}>See All</Text>
-              </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.contentContainer}>
-                {jobs.map((jobdata, index) => (
-                  <View key={jobdata.id || index} style={{marginRight: 12}}>
-                    <CustomJobCard jobData={jobdata} />
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {jobData?.benefits.map((benefit, index) => (
+                  <View key={index} style={styles.benefitCard}>
+                    <Image
+                      source={require('../Assets/benifitsImages/Health.png')}
+                      style={styles.icon}
+                    />
+                    <Text style={styles.benefitText}>{benefit.name}</Text>
                   </View>
                 ))}
               </ScrollView>
+            </View>
+
+            <View style={styles.recentContainer}>
+              <View style={{marginVertical: 12, marginLeft: 16}}>
+                <View style={styles.displayContainer}>
+                  <Text style={styles.contHead}>Recent Jobs</Text>
+                  <Text style={styles.seeAll}>See All</Text>
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.contentContainer}>
+                  {jobs.map((jobdata, index) => (
+                    <View key={jobdata.id || index} style={{marginRight: 12}}>
+                      <CustomJobCard jobData={jobdata} />
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
 
             {/* our team */}
             <View
               style={{
                 marginTop: 12,
-                marginBottom: 24,
+                marginBottom: 12,
                 flex: 1,
                 // backgroundColor: colors.whiteText,
-                width:'100%'
+                width: '100%',
               }}>
-              {/* <View style={styles.screen}> */}
-              {/* <Text style={styles.teamHead}>Our Team</Text> */}
               <CustomCarousel />
-              {/* </View> */}
             </View>
 
             <View style={styles.review}>
-              <ReviewPage/>
+              <ReviewPage />
             </View>
           </View>
         );
-      case 'Beyond-Work':
-        return <View></View>;
+
+      case 'why_join_us':
+        return (
+          <View style={styles. companyContainer}>
+          <View style={styles.companysliderContainer}>
+          <Text style={styles.title}>Life at Company</Text>
+          <SwiperFlatList
+            autoplay
+            autoplayDelay={10}
+            autoplayLoop
+            index={1}
+            showPagination
+            style={{ height: height * 0.3}} // Height of the swiper container
+            data={images}
+            renderItem={({ item }) => (
+              <View style={styles.imageContainer}>
+                <Image
+                  source={item}
+                  style={styles.image1}
+                />
+              </View>
+            )}
+            paginationStyle={styles.paginationStyle} // Custom pagination styling
+            
+          />
+          </View>
+        </View>
+        );
+
       case 'Jobs':
-        return <View></View>;
+        return (
+          <View>
+            {relatedJobs && Object.keys(relatedJobs).length > 0 && (
+              <View style={styles.relatedjobcontainer}>
+                <ScrollView>
+                  {Object.entries(relatedJobs).map(([key, jobdata], index) => (
+                    <View key={jobdata.id || index} style={{marginBottom: 14}}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // Navigate to JobDetailScreen for the related job
+                          navigation.navigate('JobDetailScreen', {
+                            jobData: jobdata,
+                          });
+                        }}>
+                        <CustomJobCard jobData={jobdata} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </View>
+        );
       default:
         return null;
     }
@@ -169,7 +236,7 @@ const CompanyOverviewScreen = ({route}) => {
               />
               <Text style={styles.jobLocation}>{jobData.location}</Text>
             </View>
-            <View style={styles.location}>
+            {/* <View style={styles.location}>
               <Ionicons
                 name="person" // Icon for openings
                 color={colors.primary} // Icon color
@@ -179,7 +246,7 @@ const CompanyOverviewScreen = ({route}) => {
               <Text style={styles.jobLocation}>
                 {jobData.company.employee} employee
               </Text>
-            </View>
+            </View> */}
           </View>
         </View>
       </View>
@@ -246,15 +313,15 @@ const CompanyOverviewScreen = ({route}) => {
             <TouchableOpacity
               style={[
                 styles.tabButton,
-                activeTab === 'Beyond-Work' && styles.activeTab,
+                activeTab === 'why_join_us' && styles.activeTab,
               ]}
-              onPress={() => setActiveTab('Beyond-Work')}>
+              onPress={() => setActiveTab('why_join_us')}>
               <Text
                 style={[
                   styles.tabText,
-                  activeTab === 'Beyond-Work' && styles.activeTabText,
+                  activeTab === 'why_join_us' && styles.activeTabText,
                 ]}>
-                Beyond Work
+                Why Join Us
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -411,29 +478,29 @@ const styles = StyleSheet.create({
   containermain: {},
 
   overviewContainer: {
-    marginHorizontal: 12,
-    backgroundColor: 'white',
+    // marginHorizontal: 12,
+    backgroundColor: '#fafafa',
     padding: 12,
     borderRadius: 8,
-    marginBottom: 10,
   },
   overviewImage: {
-    marginRight: 20, // Add margin to separate the image from the content
-    flexDirection: 'row',
-    gap: 10,
-    flexWrap: 'wrap',
-    alignItems: 'center',
+    flexDirection: 'row', // Align image and content horizontally
+    marginVertical: 12,
+    alignItems: 'flex-start', // Align items at the start
+    margin: 8,
   },
   image: {
     width: 120, // Set the width of the image
     height: 160, // Set the height of the image
     borderRadius: 10,
-    resizeMode: 'cover', // Make sure the image doesn't stretch, but covers the area
+    resizeMode: 'cover', // Ensure the image doesn't stretch but covers the area
+    marginRight: 12, // Space between image and content
   },
   content: {
-    flex: 2, // Ensures the content takes more space than the image
+    flex: 1, // Allow content to take the remaining space
     paddingLeft: 12, // Add padding to the left to create inner spacing
-    justifyContent: 'center',
+    justifyContent: 'center', // Align the text at the top
+    alignSelf: 'center',
   },
   jobDetailsheader: {
     fontSize: 16, // Set font size for the header
@@ -447,8 +514,7 @@ const styles = StyleSheet.create({
   },
   readMoreText: {
     fontSize: 10,
-    color: colors.primary, // You can use your theme color for the button
-
+    color: colors.primary, // Use your theme color for the button
     fontWeight: 'bold',
     textDecorationLine: 'underline',
     marginBottom: 10,
@@ -468,17 +534,50 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', // Bold text
   },
   benefitContainer: {
-    backgroundColor: colors.whiteText,
-    marginHorizontal: 12,
-    backgroundColor: 'white',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
+    marginTop: 18,
+    paddingHorizontal: 10,
+    marginBottom: 18,
   },
   textBenefits: {
-    color: colors.blackText,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 10,
+    color: colors.blackText,
+    marginHorizontal: 12,
+  },
+  benefitCard: {
+    flexDirection: 'column', // Stack the icon below the name
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 8,
+    width: 120,
+    height: 150, // Increase height to give space for both icon and text
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    // marginBottom:12,
+    margin: 8,
+    marginHorizontal: 8,
+  },
+  icon: {
+    width: 72,
+    height: 72,
+    marginBottom: 8,
+  },
+  benefitText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+
+  recentContainer: {
+    backgroundColor: '#fafafa',
+    // margin:8,
   },
   displayContainer: {
     flexDirection: 'row',
@@ -518,14 +617,64 @@ const styles = StyleSheet.create({
     // margin:12
     // marginLeft:-12,
   },
-  contentContainer:{
-      
+  contentContainer: {
+    marginBottom: 12,
   },
-  review:{
+  review: {
     // marginHorizontal:12,
-    backgroundColor:'#fafafa',
-    padding:18
-  }
+    backgroundColor: '#fafafa',
+    padding: 16,
+  },
+  relatedjobcontainer: {
+    margin: 12,
+  },
+  companyContainer: {
+    backgroundColor: '#fafafa',
+  },
+  companysliderContainer: {
+    marginHorizontal: 18,
+    marginVertical: 18,
+  },
+  companyText: {
+    color: 'black', // Replace with your color constant
+    fontWeight: 'bold',
+    fontSize: 16,
+    // padding: 4,
+    marginBottom: 8,
+  },
+  companyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    // alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  companysliderContainer:{
+    marginHorizontal:18,
+    marginVertical:18
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color:'#000',
+   
+  },
+  imageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+   margin:8
+  },
+  image1: {
+    width: 250, // Image width
+    height: 200, // Image height
+    resizeMode: 'cover', // Ensure the image covers the container without distortion
+    borderRadius: 8, // Optional: Rounded corners for images
+  },
+  paginationStyle: {
+    bottom: 10, // Adjust the position of the pagination dots
+   
+  },
+  
 });
 
 export default CompanyOverviewScreen;

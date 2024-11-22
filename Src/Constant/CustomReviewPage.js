@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
-import { colors } from '../Global_CSS/TheamColors';
+import moment from 'moment'; // Import moment
 
 const reviewsData = [
   {
@@ -87,11 +87,17 @@ const ReviewPage = () => {
       {/* List of Reviews */}
       {reviewsData.map((item) => (
         <View key={item.id} style={styles.reviewContainer}>
-          {/* Reviewer Image and Info */}
+          {/* Reviewer Image, Name, and Date */}
           <View style={styles.reviewerInfo}>
             <Image source={item.imageUrl} style={styles.reviewerImage} />
             <View style={styles.reviewerDetails}>
-              <Text style={styles.reviewerName}>{item.reviewerName}</Text>
+              <View style={styles.reviewerNameDateContainer}>
+                <Text style={styles.reviewerName}>{item.reviewerName}</Text>
+                <Text style={styles.reviewDate}>
+                  {moment(item.date).format('D MMM YYYY')}
+                </Text>
+              </View>
+              {/* Review Rating (Stars and Rating Value) */}
               <View style={styles.starsContainer}>
                 {renderStars(item.rating)}
                 <Text style={styles.ratingValue}> ({item.rating.toFixed(1)})</Text>
@@ -101,11 +107,6 @@ const ReviewPage = () => {
 
           {/* Review Comment */}
           <Text style={styles.reviewText}>{item.reviewText}</Text>
-
-          {/* Review Date */}
-          <View style={styles.reviewDateContainer}>
-            <Text style={styles.reviewDate}>{item.date}</Text>
-          </View>
         </View>
       ))}
     </ScrollView>
@@ -117,16 +118,14 @@ const styles = StyleSheet.create({
     // padding: 20,
   },
   averageRatingContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
     alignItems: 'center',
     flexDirection: 'row',
-    // alignSelf: 'center',
   },
   averageRatingText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    margin: 5,
   },
   starsContainer: {
     flexDirection: 'row',
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
   averageRatingValue: {
     fontSize: 14,
     color: '#555',
-    marginLeft: 5, // Space between stars and rating value
+    marginLeft: 5,
   },
   reviewContainer: {
     backgroundColor: 'white',
@@ -150,6 +149,7 @@ const styles = StyleSheet.create({
   reviewerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 8,
   },
   reviewerImage: {
     width: 50,
@@ -159,11 +159,21 @@ const styles = StyleSheet.create({
   },
   reviewerDetails: {
     flexDirection: 'column',
+    flex: 1,
+  },
+  reviewerNameDateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   reviewerName: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
+  },
+  reviewDate: {
+    fontSize: 12,
+    color: '#888',
   },
   reviewText: {
     fontSize: 14,
@@ -174,17 +184,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#333',
     fontWeight: 'bold',
-    marginLeft: 5, // Space between stars and rating value
-  },
-  reviewDateContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end', // Pushes the date to the right
-    marginTop: 10,
-  },
-  reviewDate: {
-    fontSize: 10,
-    color: '#888',
+    marginLeft: 5,
   },
 });
 
 export default ReviewPage;
+
+
