@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
+  Animated,
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
@@ -18,7 +19,7 @@ import {useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
 import Swiper from 'react-native-swiper';
-// import {SwiperFlatList} from 'react-native-swiper-flatlist';
+import Timeline from 'react-native-timeline-flatlist';
 
 const {width, height} = Dimensions.get('window'); // Get the screen width
 
@@ -28,6 +29,10 @@ const CompanyOverviewScreen = ({route}) => {
   const {jobData} = route.params;
   const [activeTab, setActiveTab] = useState('Overview');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const [employeeCount] = useState(jobData.company.employee);
+  const animatedValue = new Animated.Value(0); // Initialize animated value
+  const [currentCount, setCurrentCount] = useState(0); // Track the live counter value
 
   const jobs = useSelector(state => state.Jobs.jobsData);
 
@@ -52,6 +57,24 @@ const CompanyOverviewScreen = ({route}) => {
     require('../Assets/sliderImages/slider2.jpg'),
     require('../Assets/sliderImages/slider3.jpg'),
   ];
+
+  // Function to animate the counter incrementally
+  const animateCounter = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count >= employeeCount) {
+        clearInterval(interval); // Stop once we reach the employee count
+      } else {
+        count += 1; // Increment by 1 every interval
+        setCurrentCount(count); // Update state to reflect the current count
+        animatedValue.setValue(count); // Update animated value
+      }
+    }, 0); // Update the counter every 30 milliseconds (adjust as needed for smoother animation)
+  };
+
+  useEffect(() => {
+    animateCounter(); // Start the counter animation when the component mounts
+  }, []);
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -139,6 +162,24 @@ const CompanyOverviewScreen = ({route}) => {
             <View style={styles.review}>
               <ReviewPage />
             </View>
+
+            <View style={styles.counterContainer}>
+
+                <Image
+                  source={require('../Assets/ApplyImages/team5.png')}
+                  style={styles.conterImage}
+                />
+                <View style={styles.counternumberContainer}>
+                  {/* Display the animated counter */}
+                  <Animated.Text style={styles.counter}>
+                    {Math.floor(currentCount)}+
+                   
+                  </Animated.Text>
+                  <Text style={styles.counterTitle}>Professional Team</Text>
+                </View>
+             
+              
+            </View>
           </View>
         );
 
@@ -196,12 +237,12 @@ const CompanyOverviewScreen = ({route}) => {
                 </Swiper>
               </View>
             </View>
-            <View style={styles.testContainer}>
-              <View style={styles.testMain}> 
+            <View style={styles.testimonialmainContainer}>
+              <View style={styles.testimonialMain}>
                 {jobData?.testimonials.map((testimonial, index) => (
-                  <View key={index} style={styles.testcard}>
+                  <View key={index} style={styles.testimonialcard}>
                     {/* Left side: Text */}
-                    <View style={styles.textContainer}>
+                    <View style={styles.testimonialContainer}>
                       <Text style={styles.testimonialText}>
                         "{testimonial.text}"
                       </Text>
@@ -241,21 +282,49 @@ const CompanyOverviewScreen = ({route}) => {
             <View style={styles.awardContainer}>
               <Text style={styles.awardHeading}>Awards</Text>
               <View style={styles.awardimageContainer}>
-                <Image 
-                   source={require('../Assets/ApplyImages/awards.png')}
-                   style={styles.awardImage}
+                <Image
+                  source={require('../Assets/ApplyImages/awards.png')}
+                  style={styles.awardImage}
                 />
-                <View style={styles.awardInfo}> 
-                  {jobData.awards.map((award, index) => (
-                    <View key={index} style={styles.awardtext}> 
+                <View style={styles.awardInfo}>
+                  {/* {jobData.awards.map((award, index) => (
+                    <View key={index} style={styles.awardtext}>
                       <Text style={styles.cardTitle}>{award.title}</Text>
                       <Text style={styles.cardDate}>{award.date}</Text>
                     </View>
-                  ))}
-                  </View>
+                  ))} */}
+                  <ScrollView horizontal={true}>
+                    <View style={{flex: 1, paddingVertical: 12}}>
+                      <Timeline
+                        data={jobData.awards} // Data mapped correctly with 'time' instead of 'date'
+                        circleSize={15} // Size of the circle (dot) in the timeline
+                        circleColor="#004466" // Color of the circle (dot)
+                        lineColor="#acd2be" // Color of the connecting line
+                        innerCircle={'dot'} // Use a simple dot in the inner circle
+                        titleStyle={styles.cardTitle} // Title style for the awards
+                        descriptionStyle={styles.cardDate} // Date style for the award description (optional)
+                        renderTime={() => null} // Disable time (no need to display time)
+                        renderDetail={rowData => (
+                          <View style={styles.detailContainer}>
+                            <Text style={styles.cardTitle}>
+                              {rowData.title}
+                            </Text>
+
+                            <Text style={styles.cardDate}>{rowData.date}</Text>
+                          </View>
+                        )}
+                        options={{
+                          style: {
+                            // marginLeft: 10, // Space between circle and content
+                          },
+                        }}
+                        eventContainerStyle={{marginTop: -10}}
+                      />
+                    </View>
+                  </ScrollView>
                 </View>
               </View>
-           
+            </View>
           </View>
         );
 
@@ -281,6 +350,10 @@ const CompanyOverviewScreen = ({route}) => {
                 </ScrollView>
               </View>
             )}
+
+            <View style={styles.review}>
+              <ReviewPage />
+            </View>
           </View>
         );
       default:
@@ -289,7 +362,7 @@ const CompanyOverviewScreen = ({route}) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={{flex: 1}}>
       {/* Banner Section */}
       <View style={styles.bannerContainer}>
         <Image
@@ -573,7 +646,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     padding: 12,
     borderRadius: 8,
-    marginTop:12
+    marginTop: 12,
   },
   overviewImage: {
     flexDirection: 'row', // Align image and content horizontally
@@ -710,13 +783,59 @@ const styles = StyleSheet.create({
     // marginLeft:-12,
   },
   contentContainer: {
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   review: {
     // marginHorizontal:12,
     backgroundColor: '#fafafa',
     padding: 16,
   },
+  counterContainer: {
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: '#e3f0e9',
+    flexDirection:'row',
+    paddingHorizontal:12,
+    paddingVertical:18
+   
+    // marginVertical:12
+  },
+  counterTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    
+    color: '#004d3d',
+  },
+  counterSubconatiner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'space-between',
+    // marginHorizontal:12,
+    marginVertical:12
+  },
+  conterImage: {
+    height: 150,
+    width: 150,
+  },
+  counternumberContainer: {
+    backgroundColor: '#e3f0e9',
+   
+    // height: 120,
+    // width: 120,
+    // justifyContent: 'space-between',
+    // alignItems: 'center',
+    // marginLeft: 12,
+    // marginVertical: 18,
+    // marginHorizontal:18
+  },
+  counter: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#00cc00',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   relatedjobcontainer: {
     margin: 12,
   },
@@ -847,26 +966,24 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     margin: 3,
   },
-  testContainer: {
-    backgroundColor:'#e3f0e9'
-   
+  testimonialmainContainer: {
+    backgroundColor: '#e3f0e9',
   },
-  testMain:{
+  testimonialMain: {
     marginHorizontal: 18,
     marginVertical: 18,
   },
-  testcard: {
+  testimonialcard: {
     flexDirection: 'row', // Arrange children in a row
-   
-    borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
-   
+
+    // borderRadius: 10,
+    // padding: 20,
+    // marginVertical: 10,
   },
-  textContainer: {
+  testimonialContainer: {
     flex: 1, // Take remaining space
     justifyContent: 'center', // Center content vertically
-    paddingRight: 10, // Space between text and image
+    paddingRight: 12, // Space between text and image
   },
   testimonialText: {
     fontStyle: 'italic',
@@ -943,45 +1060,48 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop:12
+    marginTop: 12,
   },
   awardimageContainer: {
     flexDirection: 'row',
-    justifyContent:'center',
-    marginHorizontal:12,
-    marginBottom:8,
+    justifyContent: 'center',
+    marginHorizontal: 12,
+    marginBottom: 8,
   },
-  awardImage:{
-    height:200,
-    width:150
+  awardImage: {
+    height: 150,
+    width: 150,
   },
-  awardInfo:{
-      flexDirection:'column',
-      alignSelf:'center',
-      marginLeft:20,
-      flex: 1, // Take up the remaining space
-      backgroundColor: '#fff', 
-      padding: 12, // Padding inside the info section
-      borderRadius: 10, 
-      
-      justifyContent:'center'
-      
-     
+  awardInfo: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    // marginLeft: 20,
+    flex: 1, // Take up the remaining space
+    backgroundColor: '#fff',
+    // padding: 8, // Padding inside the info section
+    borderRadius: 10,
+
+    justifyContent: 'center',
   },
-  awardtext:{
-    margin:4,
-    
+  awardtext: {
+    margin: 4,
   },
- 
+
   cardTitle: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#000',
   },
   cardDate: {
-    fontSize: 10,
-    color:colors.blackText,
+    fontSize: 8,
+    color: colors.blackText,
     // marginVertical: 5,
+  },
+
+  detailContainer: {
+    flexDirection: 'column', // Stack the title and date vertically
+    // paddingLeft: 10, // Space between timeline circle and content
+    justifyContent: 'flex-start', // Align the content to the left
   },
 });
 

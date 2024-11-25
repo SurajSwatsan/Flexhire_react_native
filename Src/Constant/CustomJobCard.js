@@ -65,37 +65,27 @@ const CustomJobCard = ({
     }
   };
 
-  const getPostedDate = postedDate => {
-    const daysDifference = moment().diff(moment(postedDate), 'days');
-
-    if (daysDifference <= 30) {
-      return moment(postedDate).fromNow(); // e.g., "3 days ago"
-    } else {
-      return moment(postedDate).format('D MMM YYYY'); // e.g., "1 Jan 2024"
-    }
-  };
-
   // const getPostedDate = postedDate => {
-  //   const hoursDifference = moment().diff(moment(postedDate), 'hours');
   //   const daysDifference = moment().diff(moment(postedDate), 'days');
-  
-  //   // If the job was posted within the last 24 hours
-  //   if (hoursDifference < 24) {
-  //     // Round the hours difference to the nearest hour and return as "X hrs ago"
-  //     const roundedHours = Math.ceil(hoursDifference / 1);  // Round to the nearest hour
-  //     return `${roundedHours} hrs ago`; // e.g., "3 hrs ago"
-  //   }
-    
-  //   // If the job was posted more than 24 hours ago but within the last 30 days
-  //   else if (daysDifference <= 30) {
-  //     return `${hoursDifference} hours ago`; // e.g., "48 hours ago"
-  //   } 
-    
-  //   // If the job was posted more than 30 days ago
-  //   else {
+
+  //   if (daysDifference <= 30) {
+  //     return moment(postedDate).fromNow(); // e.g., "3 days ago"
+  //   } else {
   //     return moment(postedDate).format('D MMM YYYY'); // e.g., "1 Jan 2024"
   //   }
   // };
+
+  const getPostedDate = postedDate => {
+    const formattedDate = moment(postedDate, moment.ISO_8601); // Force Moment to interpret as ISO format
+  
+    const daysDifference = moment().diff(formattedDate, 'days');
+  
+    if (daysDifference <= 30) {
+      return formattedDate.fromNow(); // e.g., "3 days ago"
+    } else {
+      return formattedDate.format('D MMM YYYY'); // e.g., "1 Jan 2024"
+    }
+  };
 
   if (!jobData || typeof jobData !== 'object') {
     return <Text style={styles.errorText}>Invalid job data</Text>;
