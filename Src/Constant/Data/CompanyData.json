@@ -38,8 +38,8 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee": 100,
-        "inviteMessage": "We’d love to have you join our team!"
+        "employee": 100
+       
       },
       "benefits": [
         {
@@ -266,8 +266,8 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee": 100,
-        "inviteMessage": "We’d love to have you join our team!"
+        "employee": 100
+        
       },
       "benefits": [
         {
@@ -388,9 +388,8 @@
           "Predictive Analytics",
           "Business Intelligence",
           "Machine Learning Solutions"
-        ],
-        "employee": 100,
-        "inviteMessage": "Exciting opportunity for you at our company!"
+        ]
+       
       },
       "benefits": [
         {
@@ -513,8 +512,8 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee": 100,
-        "inviteMessage": "Exciting opportunity for you at our company!"
+        "employee": 100
+       
 
       },
       "benefits": [
@@ -620,8 +619,7 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee": 100,
-       "inviteMessage": "Join us and help shape the future of technology!"
+        "employee": 100
       },
       "benefits": [
         {
@@ -722,9 +720,7 @@
           "Business Intelligence",
           "Machine Learning Solutions"
         ],
-        "employee": 100,
-        "inviteMessage": "Join us and help shape the future of technology!"
-
+        "employee": 100
       },
       "benefits": [
         {

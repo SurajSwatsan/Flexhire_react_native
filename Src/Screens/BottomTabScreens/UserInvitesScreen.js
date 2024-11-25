@@ -1,8 +1,10 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../Global_CSS/TheamColors';
+import CustomJobCard from '../../Constant/CustomJobCard';
 
-const UserInvitesScreen = () => {
+const UserInvitesScreen = ({}) => {
+ 
   return (
     <View style={styles.inviteContainer}>
       <View style={styles.textContainer}>
@@ -14,6 +16,39 @@ const UserInvitesScreen = () => {
           Recruiters have chosen you from a large pool of candidates to apply to
           these jobs.
         </Text>
+      </View>
+      <View>
+      {/* <ScrollView
+          showsVerticalScrollIndicator={false} // To hide the scroll bar
+          showBookmarkIcon={false}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.contentContainer}>
+          {jobData.map((jobdata, index) => (
+            <View key={jobdata.id || index} style={styles.jobCardContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  // Navigate to JobDetailScreen for the applied job
+                  navigation.navigate('JobDetailScreen', {
+                    jobData: jobdata,
+                  });
+                }}>
+                <CustomJobCard
+                  jobData={jobdata}
+                  showBookmarkIcon={showBookmarkIcon}
+                  isApplied={true}
+                  showLocation = {false}
+                  showWorkModes = {false}
+                  showRating = {true}
+                  showPostedDate = {true}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </ScrollView> */}
+        
+        <CustomJobCard
+        // jobData={jobdata}
+        />
       </View>
     </View>
   );
