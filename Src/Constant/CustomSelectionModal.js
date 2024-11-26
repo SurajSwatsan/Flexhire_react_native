@@ -209,7 +209,7 @@ const Styles = StyleSheet.create({
   },
   inputBoxText: {
     fontSize: 14,
-    color: colors.secodary,
+    color: colors.secondary,
   },
   inputBox: {
     alignContent: 'center',

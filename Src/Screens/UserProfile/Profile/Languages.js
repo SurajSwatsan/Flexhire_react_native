@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   Languages: {
     fontSize: 18,
-    color: colors.secodary,
+    color: colors.secondary,
     fontWeight: 'bold',
   },
   outpurtData: {

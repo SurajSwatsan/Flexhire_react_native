@@ -1,15 +1,15 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomJobCard from '../../Constant/CustomJobCard';
 
 const UserInvitesScreen = ({}) => {
- 
   return (
     <View style={styles.inviteContainer}>
       <View style={styles.textContainer}>
-        <Image source={require('../../Assets/invitesImages/Invite.png')}
-         style={styles.image}
+        <Image
+          source={require('../../Assets/invitesImages/Invite.png')}
+          style={styles.image}
         />
         <Text style={styles.inviteText}>Nvites:Your invitation to apply</Text>
         <Text style={styles.contentText}>
@@ -18,7 +18,7 @@ const UserInvitesScreen = ({}) => {
         </Text>
       </View>
       <View>
-      {/* <ScrollView
+        {/* <ScrollView
           showsVerticalScrollIndicator={false} // To hide the scroll bar
           showBookmarkIcon={false}
           style={styles.scrollContainer}
@@ -45,7 +45,7 @@ const UserInvitesScreen = ({}) => {
             </View>
           ))}
         </ScrollView> */}
-        
+
         <CustomJobCard
         // jobData={jobdata}
         />
@@ -65,9 +65,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  image:{
-    height:100,
-    width:100
+  image: {
+    height: 100,
+    width: 100,
   },
   inviteText: {
     fontSize: 24,

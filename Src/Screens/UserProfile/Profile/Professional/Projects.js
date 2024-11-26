@@ -110,33 +110,34 @@ const Projects = () => {
         />
       </View>
 
-      <FlatList
-        data={projectList}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => (
-          <TouchableOpacity
-            style={profileStyle.userDataContainer}
-            onPress={() => openModal(index)}>
-            <Text style={profileStyle.optionalData}>{item.projecttitle}</Text>
-            <Text style={profileStyle.optionalData}>
-              {formatDate(item.workedFrom)} -{' '}
-              {item.projectstatus === 'Finished'
-                ? formatDate(item.workedTill)
-                : 'Present'}
-            </Text>
-            <Text style={profileStyle.optionalData}>{item.client}</Text>
-          </TouchableOpacity>
-        )}
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              height: 0.5,
-              backgroundColor: 'lightgray', // Line color
-              marginVertical: 8, // Spacing around the line
-            }}
-          />
-        )}
-      />
+      <View style={{paddingBottom: 20}}>
+        {/* Added padding for content spacing */}
+        {projectList.map((item, index) => (
+          <View key={index}>
+            <TouchableOpacity
+              style={profileStyle.userDataContainer}
+              onPress={() => openModal(index)}>
+              <Text style={profileStyle.optionalData}>{item.projecttitle}</Text>
+              <Text style={profileStyle.optionalData}>
+                {formatDate(item.workedFrom)} -
+                {item.projectstatus === 'Finished'
+                  ? formatDate(item.workedTill)
+                  : 'Present'}
+              </Text>
+              <Text style={profileStyle.optionalData}>{item.client}</Text>
+            </TouchableOpacity>
+
+            {/* Separator */}
+            <View
+              style={{
+                height: 0.5,
+                backgroundColor: 'lightgray', // Line color
+                marginVertical: 8, // Spacing around the line
+              }}
+            />
+          </View>
+        ))}
+      </View>
 
       <Modal
         animationType="slide"

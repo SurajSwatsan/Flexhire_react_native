@@ -19,13 +19,13 @@ import HigherEducation from './Education/HigherEducation';
 import Employment from './Professional/Employment';
 import Itskills from './Professional/Itskills';
 import Projects from './Professional/Projects';
+import Accomplishments from './Professional/Accomplishments';
 
 const Index = () => {
   const route = useRoute();
   const {selectedImage} = route.params || {};
   const [activeTab, setActiveTab] = useState('Personal');
 
-  const navigation = useNavigation();
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -80,8 +80,10 @@ const Index = () => {
             <ScrollView style={styles.scrollContainer}>
               <Employment />
               <Itskills />
+              <Projects />
+              <Accomplishments/>
             </ScrollView>
-            <Projects />
+            
           </View>
         );
       default:
@@ -230,7 +232,7 @@ const styles = StyleSheet.create({
     color: colors.blackText,
   },
   activeTabText: {
-    color: colors.secodary,
+    color: colors.secondary,
   },
 
   line: {
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgray',
   },
   contactText: {
-    color: colors.secodary,
+    color: colors.secondary,
     fontWeight: '600',
   },
   contactContainer: {
