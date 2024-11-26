@@ -1,17 +1,17 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {colors} from '../../Global_CSS/TheamColors';
 const screenWidth = Dimensions.get('window').width;
-const horizontalMargin = 12 * 2; // Total margin (left + right)
+// const horizontalMargin = 12 * 2; // Total margin (left + right)
 
-const effectiveWidth = screenWidth - horizontalMargin;
+// const effectiveWidth = screenWidth - horizontalMargin;
 const profileStyle = StyleSheet.create({
   mainContainer: {
-    width: effectiveWidth,
-    borderRadius: 8,
-    backgroundColor: colors.cardBgcolor,
+    borderBottomColor: 'lightgray',
+    borderBottomWidth: 0.5,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
   editContainer: {
-    marginLeft: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -22,7 +22,6 @@ const profileStyle = StyleSheet.create({
     fontWeight: '600',
   },
   userDataContainer: {
-    marginHorizontal: 12,
     marginBottom: 12,
   },
   optionalData: {
@@ -43,10 +42,10 @@ const profileStyle = StyleSheet.create({
     marginVertical: 8,
   },
   formHeading: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     fontSize: 18,
     color: colors.secodary,
-    marginVertical: 12,
+    marginTop: 12,
     fontWeight: 'bold',
   },
   formSubHeading: {
@@ -54,15 +53,17 @@ const profileStyle = StyleSheet.create({
     color: colors.blackText,
   },
   label: {
-    color: colors.blackText,
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 15,
+    color: colors.secodary,
   },
   selectedTab: {
     backgroundColor: colors.primary,
   },
   unselectedTab: {
     backgroundColor: colors.background,
+  },
+  CustomTabContainer: {
+    marginTop: 12,
   },
 
   selectedTabText: {
@@ -72,24 +73,27 @@ const profileStyle = StyleSheet.create({
     color: colors.primary,
   },
   TabContainer: {
+    marginTop: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: 8,
   },
   tabBtnStyle: {
-    padding: 12,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 8,
-    marginRight: 4,
-    marginVertical: 4,
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: colors.background,
+    borderRadius: 5,
   },
   tabBtnText: {
     color: colors.whiteText,
-
-    fontSize: 12,
+    fontSize: 13,
   },
   textarea: {
     backgroundColor: 'white',
-    width: effectiveWidth,
+    // width: effectiveWidth,
     height: 48,
     borderColor: 'lightgrey',
   },
@@ -112,11 +116,34 @@ const profileStyle = StyleSheet.create({
     color: colors.primary,
   },
   outputData: {
-    marginLeft: 12,
+    marginBottom: 12,
   },
   error: {
     color: 'red',
     fontSize: 11,
+  },
+  iconStyle: {
+    color: colors.primary,
+  },
+  suggestionsContainer: {
+    flexDirection: 'column',
+    flexWrap: 'wrap',
+    backgroundColor: colors.background,
+    // padding: 8,
+    // paddingHorizontal: 12,
+    position: 'absolute',
+    top: 170,
+    zIndex: 1,
+    width: '90%',
+
+    // overflow: 'auto',
+    borderRadius: 5,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: colors.primary,
+    padding: 8,
+    borderRadius: 4,
   },
 });
 export default profileStyle;

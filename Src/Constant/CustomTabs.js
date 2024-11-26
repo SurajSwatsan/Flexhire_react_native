@@ -12,7 +12,7 @@ const CustomTabs = ({
   touched, // Touched state from Formik
 }) => {
   return (
-    <View>
+    <View style={profileStyle.CustomTabContainer}>
       <Text style={profileStyle.label}>{label}</Text>
       <View style={profileStyle.TabContainer}>
         {options.map(option => (

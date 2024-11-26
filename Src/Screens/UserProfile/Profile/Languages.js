@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import React, {useState} from 'react';
 import {Button, IconButton} from 'react-native-paper'; // Import IconButton
@@ -16,7 +17,12 @@ import {colors} from '../../../Global_CSS/TheamColors';
 import CustomSelectionModal from '../../../Constant/CustomSelectionModal';
 import profileStyle from '../ProfileStyle';
 import ModalFooter from '../../../Constant/ProfileModalFooter';
-
+import CustomTabs from '../../../Constant/CustomTabs';
+const PROFICIENCY_OPTIONS = [
+  {id: 1, value: 'Beginner'},
+  {id: 2, value: 'Proficient'},
+  {id: 3, value: 'Expert'},
+];
 const Language = [
   {id: 1, value: 'English'},
   {id: 2, value: 'Spanish'},
@@ -124,7 +130,7 @@ const Languages = () => {
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <Text style={profileStyle.heading}>Languages</Text>
+        <Text style={profileStyle.heading}>LANGUAGE</Text>
         <IconButton
           icon={'plus-circle-outline'}
           iconColor={colors.blackText}
@@ -143,10 +149,10 @@ const Languages = () => {
               <View style={styles.iconsContainer}>
                 {/* Delete Icon */}
                 <IconButton
-                  icon="delete"
-                  iconColor="#ff0000"
+                  icon="pencil-outline"
+                  iconColor="#000"
                   size={18}
-                  onPress={() => deleteLanguage(index)} // Call the separate delete function
+                  onPress={() => handleEdit(index)} // Call the separate delete function
                   style={styles.iconButton}
                 />
               </View>
@@ -184,126 +190,111 @@ const Languages = () => {
         visible={modalVisible}
         onRequestClose={closeModal}>
         <View style={profileStyle.modalContainer}>
-          <Formik
-            initialValues={{
-              language: language,
-              proficiency: proficiency,
-              comfortablein: comfortablein || [],
-            }}
-            validationSchema={validationSchema}
-            innerRef={ref => (formikRef = ref)}
-            onSubmit={handleFormSubmit}>
-            {({handleSubmit, setFieldValue, values, errors, touched}) => (
-              <View style={styles.container}>
-                <Text style={profileStyle.formHeading}>
-                  LANGUAGE PROFICIENCY
-                </Text>
-                <Text style={profileStyle.formSubHeading}>
-                  Strengthen your resume by letting recruiters know you can
-                  communicate in multiple languages
-                </Text>
-                <View style={styles.headlinecontainer}>
-                  <CustomSelectionModal
-                    title="Language"
-                    data={Language}
-                    selectedItems={
-                      Language.find(item => item.value === values.language) ||
-                      null
-                    }
-                    setSelectedItems={item =>
-                      setFieldValue('language', item?.value || '')
-                    }
-                    placeholder="Select Language"
-                    isMultiSelect={false}
-                  />
-                  {errors.language && touched.language && (
-                    <Text style={styles.error}>{errors.language}</Text>
-                  )}
-                </View>
+          <FlatList
+            data={[{key: 'form'}]}
+            renderItem={() => (
+              <Formik
+                initialValues={{
+                  language: language,
+                  proficiency: proficiency,
+                  comfortablein: comfortablein || [],
+                }}
+                validationSchema={validationSchema}
+                innerRef={ref => (formikRef = ref)}
+                onSubmit={handleFormSubmit}>
+                {({handleSubmit, setFieldValue, values, errors, touched}) => (
+                  <View style={profileStyle.formContainer}>
+                    <Text style={profileStyle.formHeading}>
+                      LANGUAGE PROFICIENCY
+                    </Text>
+                    <Text style={profileStyle.formSubHeading}>
+                      Strengthen your resume by letting recruiters know you can
+                      communicate in multiple languages
+                    </Text>
+                    <CustomSelectionModal
+                      title="Language"
+                      data={Language}
+                      selectedItems={
+                        Language.find(item => item.value === values.language) ||
+                        null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('language', item?.value || '')
+                      }
+                      placeholder="Select Language"
+                      isMultiSelect={false}
+                    />
+                    {errors.language && touched.language && (
+                      <Text style={styles.error}>{errors.language}</Text>
+                    )}
 
-                <View style={{marginVertical: 12}}>
-                  <Text style={{color: '#000', fontWeight: 'bold'}}>
-                    Proficiency
-                  </Text>
-                  <View style={styles.proficiencyStatusContainer}>
-                    {['Beginner', 'Proficient', 'Expert'].map(level => (
-                      <TouchableOpacity
-                        key={level}
-                        style={[
-                          styles.statusButton,
-                          values.proficiency === level
-                            ? styles.selectedButton
-                            : styles.unselectedButton,
-                        ]}
-                        onPress={() => setFieldValue('proficiency', level)}>
-                        <Text
-                          style={[
-                            styles.statusText,
-                            values.proficiency === level
-                              ? styles.selectedText
-                              : styles.unselectedText,
-                          ]}>
-                          {level}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                    <CustomTabs
+                      label=" Proficiency*"
+                      options={PROFICIENCY_OPTIONS}
+                      selectedValue={values.proficiency}
+                      setFieldValue={setFieldValue}
+                      fieldName="proficiency"
+                      error={errors.proficiency}
+                      touched={touched.proficiency}
+                    />
+                    <View style={{marginVertical: 12}}>
+                      <Text style={{color: '#000', fontWeight: 'bold'}}>
+                        Comfortable In
+                      </Text>
+                      <View style={styles.comfortableinContainer}>
+                        {[
+                          {label: 'Reading', icon: 'book-outline'},
+                          {label: 'Writing', icon: 'pencil-outline'},
+                          {label: 'Speaking', icon: 'mic-outline'},
+                        ].map(option => (
+                          <TouchableOpacity
+                            key={option.label}
+                            style={[
+                              styles.statusButton,
+                              values.comfortablein.includes(option.label)
+                                ? styles.selectedButton
+                                : styles.unselectedButton,
+                            ]}
+                            onPress={() =>
+                              toggleSelection(
+                                option.label,
+                                values,
+                                setFieldValue,
+                              )
+                            }>
+                            <Ionicons
+                              name={option.icon}
+                              size={18}
+                              color={
+                                values.comfortablein.includes(option.label)
+                                  ? '#fff'
+                                  : '#333'
+                              }
+                              style={{marginRight: 8}} // Add spacing between the icon and text
+                            />
+                            <Text
+                              style={[
+                                styles.statusText,
+                                values.comfortablein.includes(option.label)
+                                  ? styles.selectedText
+                                  : styles.unselectedText,
+                              ]}>
+                              {option.label}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+
+                      {errors.comfortablein && touched.comfortablein && (
+                        <Text style={styles.error}>{errors.comfortablein}</Text>
+                      )}
+                    </View>
                   </View>
-                  {errors.proficiency && touched.proficiency && (
-                    <Text style={styles.error}>{errors.proficiency}</Text>
-                  )}
-                </View>
-
-                <View style={{marginVertical: 12}}>
-                  <Text style={{color: '#000', fontWeight: 'bold'}}>
-                    Comfortable In
-                  </Text>
-                  <View style={styles.comfortableinContainer}>
-                    {[
-                      {label: 'Reading', icon: 'book-outline'},
-                      {label: 'Writing', icon: 'pencil-outline'},
-                      {label: 'Speaking', icon: 'mic-outline'},
-                    ].map(option => (
-                      <TouchableOpacity
-                        key={option.label}
-                        style={[
-                          styles.statusButton,
-                          values.comfortablein.includes(option.label)
-                            ? styles.selectedButton
-                            : styles.unselectedButton,
-                        ]}
-                        onPress={() =>
-                          toggleSelection(option.label, values, setFieldValue)
-                        }>
-                        <Ionicons
-                          name={option.icon}
-                          size={18}
-                          color={
-                            values.comfortablein.includes(option.label)
-                              ? '#fff'
-                              : '#333'
-                          }
-                          style={{marginRight: 8}} // Add spacing between the icon and text
-                        />
-                        <Text
-                          style={[
-                            styles.statusText,
-                            values.comfortablein.includes(option.label)
-                              ? styles.selectedText
-                              : styles.unselectedText,
-                          ]}>
-                          {option.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {errors.comfortablein && touched.comfortablein && (
-                    <Text style={styles.error}>{errors.comfortablein}</Text>
-                  )}
-                </View>
-              </View>
+                )}
+              </Formik>
             )}
-          </Formik>
+            keyExtractor={item => item.key}
+          />
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
@@ -322,22 +313,8 @@ const Languages = () => {
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    margin: 12,
-    backgroundColor: '#00334d',
-    borderRadius: 8,
-  },
-  editContainer: {
-    marginHorizontal: 12,
-    flexDirection: 'row',
+  container: {
     justifyContent: 'space-between',
-    alignContent: 'center',
-  },
-  AddButton: {
-    color: '#f2f2f2',
-    fontWeight: 'bold',
-    marginVertical: 12,
   },
   iconTextContainer: {
     flexDirection: 'row',
@@ -345,35 +322,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginBottom: 12,
-  },
-  iconWithText: {
-    backgroundColor: colors.background,
-    alignItems: 'center',
-
-    padding: 8,
-    flexDirection: 'row',
-    // gap: 8,
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-  },
-  modalContainer: {
-    height: '100%',
-    backgroundColor: 'white',
-    borderRadius: 8,
-  },
-  modalContent: {
-    justifyContent: 'center',
-    margin: 12,
-  },
-
-  subText1: {
-    color: '#333',
-    fontSize: 12,
-  },
-  container: {
-    marginVertical: 12,
   },
 
   error: {
@@ -389,9 +337,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   outpurtData: {
-    // margin: 12,
-    // backgroundColor: '#fff',
-    paddingHorizontal: 12,
     borderRadius: 8,
     justifyContent: 'space-between',
     flexDirection: 'column',
@@ -405,8 +350,8 @@ const styles = StyleSheet.create({
   },
   displayText: {
     fontWeight: 'bold',
-    fontSize: 16,
-    color: '#000',
+    fontSize: 14,
+    color: colors.primary,
   },
   displayText1: {
     color: '#000',

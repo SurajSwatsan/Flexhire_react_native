@@ -7,7 +7,8 @@ const screenWidth = Dimensions.get('window').width;
 const horizontalMargin = 12 * 2; // Total margin (left + right)
 
 const effectiveWidth = screenWidth - horizontalMargin;
-const ReusableTextInput = ({name, label, ...props}) => {
+
+const ReusableTextInput = ({name, label, note, ...props}) => {
   const [field, meta, helpers] = useField(name);
 
   return (
@@ -26,8 +27,11 @@ const ReusableTextInput = ({name, label, ...props}) => {
           error={meta.touched && meta.error}
           {...props}
         />
-        {meta.touched && meta.error && (
+        {/* Show error if present, else show note */}
+        {meta.touched && meta.error ? (
           <Text style={styles.error}>{meta.error}</Text>
+        ) : (
+          note && <Text style={styles.note}>{note}</Text>
         )}
       </View>
     </>
@@ -40,14 +44,21 @@ const styles = StyleSheet.create({
   },
   textarea: {
     backgroundColor: 'white',
-    width: effectiveWidth,
+    // width: effectiveWidth,
+    // width: '100%',
     height: 48,
     borderColor: 'lightgrey',
   },
   error: {
     color: 'red',
-    // marginTop: 4,
     fontSize: 11,
+    marginTop: 4,
+  },
+  note: {
+    color: 'grey',
+    fontSize: 11,
+    marginTop: 4,
   },
 });
+
 export default ReusableTextInput;

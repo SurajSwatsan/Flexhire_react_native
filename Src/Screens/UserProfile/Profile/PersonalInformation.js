@@ -380,7 +380,8 @@ const PersonalInformation = () => {
               },
               {
                 label: 'Experience',
-                value: submittedData.experience || 'Not provided',
+                value:
+                  `${submittedData.experience || ''} Years` || 'Not provided',
               },
               {
                 label: 'Annual Salary',
@@ -548,16 +549,6 @@ const PersonalInformation = () => {
                       isMultiSelect={false}
                     />
 
-                    <CustomTabs
-                      label="Notice Period*"
-                      options={NOTICEPERIOD_OPTIONS}
-                      selectedValue={values.noticePeriod}
-                      setFieldValue={setFieldValue}
-                      fieldName="noticePeriod"
-                      error={errors.noticePeriod}
-                      touched={touched.noticePeriod}
-                    />
-
                     <ReusableTextInput
                       name="experience"
                       label="Experience*"
@@ -578,6 +569,15 @@ const PersonalInformation = () => {
                       value={values.expectedSalary}
                       keyboardType="numeric"
                       onChangeText={handleChange('expectedSalary')}
+                    />
+                    <CustomTabs
+                      label="Notice Period*"
+                      options={NOTICEPERIOD_OPTIONS}
+                      selectedValue={values.noticePeriod}
+                      setFieldValue={setFieldValue}
+                      fieldName="noticePeriod"
+                      error={errors.noticePeriod}
+                      touched={touched.noticePeriod}
                     />
                   </View>
                 )}

@@ -7,22 +7,25 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {useRoute} from '@react-navigation/native';
-import Personaldetails from './PersonalInformation';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {colors} from '../../../Global_CSS/TheamColors';
-import BasicDetails from './BasicInformation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PersonalInformation from './PersonalInformation';
-import profileStyle from '../ProfileStyle';
 import Keyskills from './Keyskills';
-import {max} from 'moment';
 import BasicInformation from './BasicInformation';
 import Languages from './Languages';
+import Education from './Education/Education';
+import HigherEducation from './Education/HigherEducation';
+import Employment from './Professional/Employment';
+import Itskills from './Professional/Itskills';
+import Projects from './Professional/Projects';
 
 const Index = () => {
   const route = useRoute();
   const {selectedImage} = route.params || {};
   const [activeTab, setActiveTab] = useState('Personal');
+
+  const navigation = useNavigation();
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -32,30 +35,27 @@ const Index = () => {
             <ScrollView style={styles.scrollContainer}>
               <View style={styles.contactContainer}>
                 <Text style={styles.contactText}>CONTACT DETAIL</Text>
-                <TouchableOpacity>
-                  <View style={styles.contactTextCon}>
-                    <Ionicons
-                      name="mail-outline"
-                      size={24}
-                      style={styles.iconstyle}
-                    />
-                    <View>
-                      <Text style={{color: '#000'}}>Email</Text>
-                      <Text style={{color: '#000'}}>vinodgavade@.com</Text>
-                    </View>
+                <TouchableOpacity style={styles.contactTextCon}>
+                  <Ionicons
+                    name="mail-outline"
+                    size={24}
+                    style={styles.iconstyle}
+                  />
+                  <View>
+                    <Text style={{color: '#000'}}>Email</Text>
+                    <Text style={{color: '#000'}}>vinodgavade@.com</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
-                  <View style={styles.contactTextCon}>
-                    <Ionicons
-                      name="phone-portrait-sharp"
-                      size={24}
-                      style={styles.iconstyle}
-                    />
-                    <View>
-                      <Text style={{color: '#000'}}>Phone Number</Text>
-                      <Text style={{color: '#000'}}>9876543210</Text>
-                    </View>
+                <View style={styles.line} />
+                <TouchableOpacity style={styles.contactTextCon}>
+                  <Ionicons
+                    name="phone-portrait-sharp"
+                    size={24}
+                    style={styles.iconstyle}
+                  />
+                  <View>
+                    <Text style={{color: '#000'}}>Phone Number</Text>
+                    <Text style={{color: '#000'}}>9876543210</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -63,13 +63,27 @@ const Index = () => {
               <PersonalInformation />
               <Keyskills />
               <Languages />
+              <View style={{height: 100}} />
             </ScrollView>
           </View>
         );
       case 'Education':
-        return <View></View>;
+        return (
+          <View>
+            <Education />
+            <HigherEducation />
+          </View>
+        );
       case 'Professional':
-        return <View></View>;
+        return (
+          <View>
+            <ScrollView style={styles.scrollContainer}>
+              <Employment />
+              <Itskills />
+            </ScrollView>
+            <Projects />
+          </View>
+        );
       default:
         return null;
     }
@@ -153,7 +167,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.primary,
     flex: 1,
-    marginBottom: 12,
   },
   contentContainer: {
     flex: 1,
@@ -219,10 +232,11 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: colors.secodary,
   },
-  personalContainer: {
-    padding: 12,
-  },
 
+  line: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'lightgray',
+  },
   contactText: {
     color: colors.secodary,
     fontWeight: '600',
@@ -231,14 +245,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: 'lightgray',
     marginBottom: 8,
+    padding: 12,
   },
   contactTextCon: {
     alignItems: 'center',
     flexDirection: 'row',
     paddingVertical: 18,
     gap: 18,
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'lightgray',
   },
   iconstyle: {
     color: colors.primary,

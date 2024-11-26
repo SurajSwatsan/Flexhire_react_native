@@ -120,24 +120,25 @@ const LoginScreen = () => {
             }) => (
               <>
                 <View>
-                  <TextInput
-                    style={styles.textarea}
-                    mode="outlined"
-                    outlineColor="lightgrey"
-                    label="Email/Mobile Number"
-                    textColor="black"
-                    value={values.emailOrPhone}
-                    onChangeText={handleChange('emailOrPhone')}
-                    onBlur={handleBlur('emailOrPhone')}
-                    activeOutlineColor="lightgrey"
-                    error={!!errors.emailOrPhone}
-                  />
-                  {errors.emailOrPhone && touched.emailOrPhone ? (
-                    <Text style={GlobalStyle.errorText}>
-                      {errors.emailOrPhone}
-                    </Text>
-                  ) : null}
-
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.textarea}
+                      mode="outlined"
+                      outlineColor="lightgrey"
+                      label="Email/Mobile Number"
+                      textColor="black"
+                      value={values.emailOrPhone}
+                      onChangeText={handleChange('emailOrPhone')}
+                      onBlur={handleBlur('emailOrPhone')}
+                      activeOutlineColor="lightgrey"
+                      error={!!errors.emailOrPhone}
+                    />
+                    {errors.emailOrPhone && touched.emailOrPhone ? (
+                      <Text style={GlobalStyle.errorText}>
+                        {errors.emailOrPhone}
+                      </Text>
+                    ) : null}
+                  </View>
                   <View style={styles.passwordContainer}>
                     <TextInput
                       style={[styles.textarea, styles.passwordInput]}

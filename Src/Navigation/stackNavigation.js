@@ -17,6 +17,7 @@ import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
+import BasicInformation from '../Screens/UserProfile/Profile/BasicInformation.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -95,7 +96,6 @@ const StackNavigation = () => {
 
       <Stack.Screen name="UserApplies" component={UserApplies} />
 
-     
       <Stack.Screen
         name="userProfileScreen"
         component={Index}
@@ -103,9 +103,14 @@ const StackNavigation = () => {
       />
 
       <Stack.Screen
-      name='CompanyOverview'
-      component={CompanyOverviewScreen}
-      options={{headerShown: false}}
+        name="CompanyOverview"
+        component={CompanyOverviewScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="BasicInfo"
+        component={BasicInformation}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

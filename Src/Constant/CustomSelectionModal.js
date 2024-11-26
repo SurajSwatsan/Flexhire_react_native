@@ -105,14 +105,14 @@ const CustomSelectionModal = ({
   };
 
   return (
-    <View>
+    <View style={Styles.Container}>
       <TouchableOpacity
         style={[Styles.inputBox, Styles.inputContainer]}
         onPress={() => setModalVisible(true)}>
         <Text style={Styles.inputBoxText}>{placeholder}</Text>
         <Ionicons
-          name="add-circle-outline"
-          size={18}
+          name="chevron-down-outline"
+          size={24}
           style={Styles.iconstyle}
         />
       </TouchableOpacity>
@@ -197,7 +197,11 @@ const CustomSelectionModal = ({
 };
 
 const Styles = StyleSheet.create({
-  modalHeader: {},
+  Container: {
+    borderBottomColor: 'lightgray',
+    borderBottomWidth: 0.5,
+    paddingBottom: 12,
+  },
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -210,9 +214,10 @@ const Styles = StyleSheet.create({
   inputBox: {
     alignContent: 'center',
     justifyContent: 'center',
-    height: 48,
-    paddingHorizontal: 8,
-    marginTop: 12,
+    height: 36,
+    // backgroundColor: '#e29494',
+    // paddingHorizontal: 8,
+    // marginTop: 12,
   },
   itemText: {
     fontSize: 13,

@@ -41,11 +41,12 @@ const ReusableDropdown = ({options, placeholder, onSelect}) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginVertical: 8,
     // padding: 12,
   },
   dropdown: {
-    width: effectiveWidth,
+    // width: effectiveWidth,
     height: 51,
     borderColor: colors.lightgaryText,
     borderWidth: 1,
