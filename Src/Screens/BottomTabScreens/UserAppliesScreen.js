@@ -73,10 +73,13 @@ const UserApplies = ({navigation}) => {
                   jobData={jobdata}
                   showBookmarkIcon={showBookmarkIcon}
                   isApplied={true}
-                  showLocation = {false}
+                  showLocation = {true}
+                  showSalary={true}
                   showWorkModes = {false}
-                  showRating = {true}
+                  // showRating = {true}
                   showPostedDate = {true}
+
+                  
                 />
               </TouchableOpacity>
             </View>
@@ -95,7 +98,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: 18,
     width: '100%',
+    
   },
+  
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -139,6 +144,7 @@ const styles = StyleSheet.create({
     marginBottom: 15, // Space between job cards
     width: '100%', // Ensures full width usage for each job card
   },
+ 
 });
 
 export default UserApplies;

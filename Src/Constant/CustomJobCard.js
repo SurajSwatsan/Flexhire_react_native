@@ -17,6 +17,7 @@ const CustomJobCard = ({
   showWorkModes = true,
   showRating = false,
   showPostedDate = true,
+  showSalary=false,
 }) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
@@ -150,6 +151,25 @@ const CustomJobCard = ({
           </View>
         )}
 
+        {showSalary && jobData.salary_min && jobData.salary_max && (
+        <View style={styles.salaryContainer}>
+         
+          <View style={styles.experienceContainer}>
+            <Ionicons name="briefcase" size={14} color={colors.primary} />
+            <Text style={styles.jobDetailsalary}> {jobData.experience}</Text>
+          </View>
+          <Ionicons
+            name="cash"
+            size={14}
+            color="#004466"
+          />
+          <Text style={styles.jobDetailsalary}>
+            {jobData.salary_min} - {jobData.salary_max}
+          </Text>
+          
+        </View>
+      )}
+
         {/* Conditionally render rating */}
         {showRating && jobData.company.rating && (
           <View style={styles.ratingContainer}>
@@ -235,6 +255,7 @@ const styles = StyleSheet.create({
   companyInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical:8
   },
   companyImage: {
     width: 42,
@@ -299,6 +320,23 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontWeight: 'bold',
   },
+  jobDetailsalary:{
+    fontSize: 10,
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  experienceContainer:{
+    flexDirection: 'row',
+    marginRight:8,
+    gap:6
+   
+  },
+  salaryContainer:{
+    flexDirection:'row',
+    gap:6,
+    alignItems: 'center',
+    marginBottom:10
+  },
   location: {
     flexDirection: 'row',
     gap: 5,
@@ -312,9 +350,9 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 15,
-    marginLeft: 8,
+    marginTop: 6,
+    marginBottom: 12,
+    // marginLeft: 8,
   },
   ratingIcon: {
     marginRight: 4,

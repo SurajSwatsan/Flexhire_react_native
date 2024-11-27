@@ -78,10 +78,10 @@ const UserInvitesScreen = () => {
   return (
     <View style={styles.inviteContainer}>
       <View style={styles.textContainer}>
-        <Image
+        {/* <Image
           source={require('../../Assets/invitesImages/Invite.png')}
           style={styles.image}
-        />
+        /> */}
         <Text style={styles.inviteText}>Nvites:Your invitation to apply</Text>
         <Text style={styles.contentText}>
           Recruiters have chosen you from a large pool of candidates to apply to
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   textContainer: {
-    // marginVertical: 12,
+    marginVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal:12
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     // marginTop: 20,
-    marginVertical: 8,
+    // marginVertical: 8,
   },
   card: {
     backgroundColor: 'white',

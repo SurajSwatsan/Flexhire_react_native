@@ -59,22 +59,44 @@ const CompanyOverviewScreen = ({route}) => {
   ];
 
   // Function to animate the counter incrementally
+  // const animateCounter = () => {
+  //   let count = 0;
+  //   const interval = setInterval(() => {
+  //     if (count >= employeeCount) {
+  //       clearInterval(interval); // Stop once we reach the employee count
+  //     } else {
+  //       count += 1; // Increment by 1 every interval
+  //       setCurrentCount(count); // Update state to reflect the current count
+  //       animatedValue.setValue(count); // Update animated value
+  //     }
+  //   }, 0); // Update the counter every 30 milliseconds (adjust as needed for smoother animation)
+  // };
+
+  // useEffect(() => {
+  //   animateCounter(); // Start the counter animation when the component mounts
+  // }, []);
+
   const animateCounter = () => {
-    let count = 0;
-    const interval = setInterval(() => {
-      if (count >= employeeCount) {
-        clearInterval(interval); // Stop once we reach the employee count
-      } else {
-        count += 1; // Increment by 1 every interval
-        setCurrentCount(count); // Update state to reflect the current count
-        animatedValue.setValue(count); // Update animated value
-      }
-    }, 0); // Update the counter every 30 milliseconds (adjust as needed for smoother animation)
+    Animated.timing(animatedValue, {
+      toValue: employeeCount, // Target the employee count
+      duration: 3000, // Duration of the animation (3 seconds)
+      useNativeDriver: false, // No native driver needed for text updates
+    }).start();
   };
 
+  // Start the counter animation and listen for updates
   useEffect(() => {
-    animateCounter(); // Start the counter animation when the component mounts
-  }, []);
+    animateCounter();
+
+    const listenerId = animatedValue.addListener(({value}) => {
+      setCurrentCount(Math.floor(value)); // Use Math.floor to avoid fractional values
+    });
+
+    // Cleanup listener on unmount
+    return () => {
+      animatedValue.removeListener(listenerId);
+    };
+  }, [employeeCount]); // Run effect when employeeCount changes
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -164,21 +186,17 @@ const CompanyOverviewScreen = ({route}) => {
             </View>
 
             <View style={styles.counterContainer}>
-
-                <Image
-                  source={require('../Assets/ApplyImages/team5.png')}
-                  style={styles.conterImage}
-                />
-                <View style={styles.counternumberContainer}>
-                  {/* Display the animated counter */}
-                  <Animated.Text style={styles.counter}>
-                    {Math.floor(currentCount)}+
-                   
-                  </Animated.Text>
-                  <Text style={styles.counterTitle}>Professional Team</Text>
-                </View>
-             
-              
+              <Image
+                source={require('../Assets/ApplyImages/team5.png')}
+                style={styles.conterImage}
+              />
+              <View style={styles.counternumberContainer}>
+                {/* Display the animated counter */}
+                <Animated.Text style={styles.counter}>
+                  {currentCount}+
+                </Animated.Text>
+                <Text style={styles.counterTitle}>Professional Team</Text>
+              </View>
             </View>
           </View>
         );
@@ -794,24 +812,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundColor: '#e3f0e9',
-    flexDirection:'row',
-    paddingHorizontal:12,
-    paddingVertical:18
-   
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 18,
+
     // marginVertical:12
   },
   counterTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    
+
     color: '#004d3d',
   },
   counterSubconatiner: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     // marginHorizontal:12,
-    marginVertical:12
+    marginVertical: 12,
   },
   conterImage: {
     height: 150,
@@ -819,7 +837,7 @@ const styles = StyleSheet.create({
   },
   counternumberContainer: {
     backgroundColor: '#e3f0e9',
-   
+
     // height: 120,
     // width: 120,
     // justifyContent: 'space-between',
