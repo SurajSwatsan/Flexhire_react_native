@@ -23,6 +23,8 @@ const CustomSelectionModal = ({
   maxSelectionLimit,
   onSubmit,
   onCancel,
+  error,
+  touched,
 }) => {
   const [filteredData, setFilteredData] = useState(data);
   const [selected, setSelected] = useState([]);
@@ -116,6 +118,7 @@ const CustomSelectionModal = ({
           style={Styles.iconstyle}
         />
       </TouchableOpacity>
+      {touched && error && <Text style={profileStyle.error}>{error}</Text>}
 
       {selected.length > 0 && (
         <View style={profileStyle.chipContainer}>

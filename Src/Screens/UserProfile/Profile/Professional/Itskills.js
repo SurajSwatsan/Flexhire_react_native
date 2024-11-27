@@ -121,6 +121,10 @@ const SOFTWARE_SUGGESTIONS = [
   'Shopify',
   'WooCommerce',
 ];
+const SOFTWARE_OPTIONS = [
+  {label: 'Other', value: 'other'},
+  ...SOFTWARE_SUGGESTIONS.map(skill => ({label: skill, value: skill})),
+];
 
 // Dropdown Options
 const Years = Array.from({length: 31}, (_, i) => ({
@@ -154,7 +158,8 @@ const getInitialValues = (editingIndex, itSkillList) => {
   if (editingIndex !== null && itSkillList[editingIndex]) {
     const skill = itSkillList[editingIndex];
     return {
-      softwareName: skill.softwareName || '',
+      softwareName: skill.softwareName || '', // Set to 'other' for custom skills
+      othersoftwareName: skill.othersoftwareName || '', // Store custom skill name in othersoftwareName
       softwareVersion: skill.softwareVersion || '',
       experianceinYear: skill.experianceinYear || '',
       experianceinMonths: skill.experianceinMonths || '',
@@ -163,6 +168,7 @@ const getInitialValues = (editingIndex, itSkillList) => {
   }
   return {
     softwareName: '',
+    othersoftwareName: '',
     softwareVersion: '',
     experianceinYear: '',
     experianceinMonths: '',
@@ -201,10 +207,6 @@ const Itskills = () => {
     }
   };
   let formikRef = null;
-  const handleSuggestionSelect = (suggestion, setFieldValue) => {
-    setFieldValue('softwareName', suggestion);
-    setFilteredSuggestions([]); // Clear suggestions once selected
-  };
 
   const openModal = (index = null) => {
     setEditingIndex(index);
@@ -215,6 +217,9 @@ const Itskills = () => {
     setModalVisible(false);
     setEditingIndex(null);
     setFilteredSuggestions([]);
+    if (formikRef) {
+      formikRef.resetForm(); // Reset the form when closing the modal
+    }
   };
 
   const deleteSkill = () => {
@@ -246,14 +251,20 @@ const Itskills = () => {
           <TouchableOpacity
             style={[profileStyle.userDataContainer, styles.listContainer]}
             onPress={() => openModal(index)}>
+            {/* Display skill name or "Other" skill name */}
             <Text style={profileStyle.optionalData}>
-              {item.softwareName || '-'} - {item.softwareVersion || '-'}
+              {item.softwareName === 'other'
+                ? item.othersoftwareName
+                : item.softwareName}{' '}
+              - {item.softwareVersion || '-'}
             </Text>
+            {/* Display experience in years and months */}
             <Text style={profileStyle.optionalData}>
               {item.experianceinYear && item.experianceinMonths
                 ? `${item.experianceinYear} Years ${item.experianceinMonths} Months`
                 : '-'}
             </Text>
+            {/* Display last used year */}
             <Text style={profileStyle.optionalData}>
               {item.lastused || '-'}
             </Text>
@@ -284,37 +295,26 @@ const Itskills = () => {
                       softwares (Microsoft Word, Excel) and more, to show your
                       technical expertise.
                     </Text>
-                    <ReusableTextInput
-                      name="softwareName"
-                      label="Skill / Software Name*"
-                      value={values.softwareName}
-                      onChangeText={text =>
-                        handleSoftwareNameChange(text, setFieldValue)
+
+                    <ReusableDropdown
+                      options={SOFTWARE_OPTIONS} // Ensure the options array matches the structure
+                      placeholder="Select Skill / Software Name*"
+                      selectedValue={values.softwareName} // This must match a `value` in the options array
+                      onSelect={selected =>
+                        setFieldValue('softwareName', selected.value)
                       }
-                      // error={errors.softwareName}
-                      // touched={touched.softwareName}
                     />
-                    {/* Suggestions Dropdown */}
-                    {filteredSuggestions.length > 0 && (
-                      <View style={profileStyle.suggestionsContainer}>
-                        {filteredSuggestions.map((suggestion, idx) => (
-                          <TouchableOpacity
-                            key={idx}
-                            onPress={() =>
-                              handleSuggestionSelect(suggestion, setFieldValue)
-                            }
-                            style={{
-                              // borderBottomColor: 'white',
-                              // borderBottomWidth: 0.5,
-                              // width: '100%',
-                            }}>
-                            <Text style={profileStyle.suggestionText}>
-                              {suggestion}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
+                    {values.softwareName === 'other' && (
+                      <ReusableTextInput
+                        name="othersoftwareName"
+                        label=" Other Skill/ Software Name*"
+                        value={values.othersoftwareName}
+                        onChangeText={text =>
+                          setFieldValue('othersoftwareName', text)
+                        }
+                      />
                     )}
+
                     <ReusableTextInput
                       name="softwareVersion"
                       label="Software Version"
@@ -330,7 +330,7 @@ const Itskills = () => {
                       }}>
                       <ReusableDropdown
                         options={Years}
-                        placeholder=" Years*"
+                        placeholder="Years*"
                         selectedValue={values.experianceinYear}
                         onSelect={selected =>
                           setFieldValue('experianceinYear', selected.value)

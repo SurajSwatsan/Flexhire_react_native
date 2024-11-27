@@ -26,7 +26,6 @@ const Index = () => {
   const {selectedImage} = route.params || {};
   const [activeTab, setActiveTab] = useState('Personal');
 
-
   const renderTabs = () => {
     switch (activeTab) {
       case 'Personal':
@@ -81,9 +80,8 @@ const Index = () => {
               <Employment />
               <Itskills />
               <Projects />
-              <Accomplishments/>
+              <Accomplishments />
             </ScrollView>
-            
           </View>
         );
       default:
@@ -216,13 +214,16 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
+
     marginTop: 24,
     borderBottomColor: 'lightgray',
     borderBottomWidth: 1,
   },
   tabButton: {
+    // backgroundColor: colors.background,
     paddingVertical: 10,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
   },
   activeTab: {
     borderBottomColor: colors.primary,

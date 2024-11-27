@@ -13,7 +13,13 @@ const CustomTabs = ({
 }) => {
   return (
     <View style={profileStyle.CustomTabContainer}>
-      <Text style={profileStyle.label}>{label}</Text>
+      <Text
+        style={[
+          profileStyle.label, // Base label style
+          touched && error ? styles.errorLabel : null, // Apply error styling conditionally
+        ]}>
+        {label} {/* Always show the label */}
+      </Text>
       <View style={profileStyle.TabContainer}>
         {options.map(option => (
           <TouchableOpacity
@@ -37,9 +43,13 @@ const CustomTabs = ({
           </TouchableOpacity>
         ))}
       </View>
-      {touched && error && <Text style={profileStyle.error}>{error}</Text>}
     </View>
   );
 };
 
+const styles = {
+  errorLabel: {
+    color: 'red',
+  },
+};
 export default CustomTabs;

@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import {TextInput} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import profileStyle from '../Screens/UserProfile/ProfileStyle';
 
-const ReusableDatePicker = ({label, value, onChange}) => {
+const ReusableDatePicker = ({label, value, onChange, error, touched}) => {
   const [showPicker, setShowPicker] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
@@ -35,6 +36,7 @@ const ReusableDatePicker = ({label, value, onChange}) => {
           activeOutlineColor="gray"
           editable={false}
         />
+        {touched && error && <Text style={profileStyle.error}>{error}</Text>}
       </TouchableOpacity>
 
       {showPicker && (
