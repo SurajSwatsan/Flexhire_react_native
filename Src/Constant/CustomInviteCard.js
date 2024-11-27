@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   detailsText: {
     fontSize: 12,
-    color: colors.gray,
+    color:'gray',
     marginTop:4
   },
   Industryname: {

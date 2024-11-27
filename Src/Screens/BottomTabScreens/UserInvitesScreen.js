@@ -219,6 +219,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
     justifyContent: 'center',
+    color:'gray',
+
   },
   cardContainer: {
     // marginTop: 20,
@@ -250,11 +252,11 @@ const styles = StyleSheet.create({
 
   detailsText: {
     fontSize: 12,
-    color: colors.gray,
+    color: colors.blackText,
   },
   detailscompanytext: {
     fontSize: 10,
-    color: colors.gray,
+    color: colors.blackText,
   },
   detailsRow: {
     flexDirection: 'row',
@@ -306,12 +308,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   companyText: {
-    color: colors.gray,
+    color:'gray',
     fontSize: 12,
     marginBottom: 2,
   },
   companyReview: {
     fontSize: 10,
+    color:'gray',
+
   },
   icon: {
     flexDirection: 'row',
@@ -323,6 +327,8 @@ const styles = StyleSheet.create({
   companyDate: {
     fontSize: 10,
     alignItems: 'center',
+    color:'gray',
+
     // textAlign:'right',
   },
 });
