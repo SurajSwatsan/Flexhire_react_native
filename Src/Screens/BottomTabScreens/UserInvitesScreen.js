@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     // marginVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal:12
   },
   image: {
     height: 100,

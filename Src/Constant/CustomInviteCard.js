@@ -197,6 +197,8 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 12,
     marginTop: 4,
+    color:'gray',
+
   },
   ProfileText: {
     color: colors.blackText,
