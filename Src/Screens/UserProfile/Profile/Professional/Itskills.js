@@ -304,9 +304,9 @@ const Itskills = () => {
                               handleSuggestionSelect(suggestion, setFieldValue)
                             }
                             style={{
-                              borderBottomColor: 'white',
-                              borderBottomWidth: 0.5,
-                              width: '100%',
+                              // borderBottomColor: 'white',
+                              // borderBottomWidth: 0.5,
+                              // width: '100%',
                             }}>
                             <Text style={profileStyle.suggestionText}>
                               {suggestion}

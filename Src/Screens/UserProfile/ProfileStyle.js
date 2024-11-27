@@ -17,7 +17,7 @@ const profileStyle = StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    color: colors.secodary,
+    color: colors.secondary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -44,7 +44,7 @@ const profileStyle = StyleSheet.create({
   formHeading: {
     // alignSelf: 'center',
     fontSize: 18,
-    color: colors.secodary,
+    color: colors.secondary,
     marginTop: 12,
     fontWeight: 'bold',
   },
@@ -54,7 +54,7 @@ const profileStyle = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    color: colors.secodary,
+    color: colors.secondary,
   },
   selectedTab: {
     backgroundColor: colors.primary,
@@ -134,7 +134,7 @@ const profileStyle = StyleSheet.create({
     position: 'absolute',
     top: 170,
     zIndex: 1,
-    width: '90%',
+    width: '100%',
 
     // overflow: 'auto',
     borderRadius: 5,

@@ -224,7 +224,7 @@ const Employment = () => {
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <Text style={profileStyle.heading}>PERSONAL INFORMATION</Text>
+        <Text style={profileStyle.heading}>EMPLOYMENT</Text>
         <IconButton
           icon={'plus-circle-outline'}
           iconColor={colors.blackText}

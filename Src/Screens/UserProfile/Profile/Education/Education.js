@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.secodary,
+    color: colors.secondary,
   },
   classTabContainer: {
     marginTop: 12,
