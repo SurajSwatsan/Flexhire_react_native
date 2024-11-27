@@ -1,5 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
 import {
   Image,
   ScrollView,
@@ -8,15 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-=======
-import {Image, StyleSheet, Text, View} from 'react-native';
->>>>>>> 9e39cf9f7b861294adbcda0793176e53a12f33b7
 import {colors} from '../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 
-<<<<<<< HEAD
 export const companies = [
   {
     id: 1,
@@ -80,9 +75,6 @@ export const companies = [
 
 const UserInvitesScreen = () => {
   const navigation = useNavigation();
-=======
-const UserInvitesScreen = ({}) => {
->>>>>>> 9e39cf9f7b861294adbcda0793176e53a12f33b7
   return (
     <View style={styles.inviteContainer}>
       <View style={styles.textContainer}>
@@ -96,7 +88,6 @@ const UserInvitesScreen = ({}) => {
           these jobs.
         </Text>
       </View>
-<<<<<<< HEAD
 
       <ScrollView style={styles.cardContainer}>
         {companies.map(company => {
@@ -197,41 +188,6 @@ const UserInvitesScreen = ({}) => {
           );
         })}
       </ScrollView>
-=======
-      <View>
-        {/* <ScrollView
-          showsVerticalScrollIndicator={false} // To hide the scroll bar
-          showBookmarkIcon={false}
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.contentContainer}>
-          {jobData.map((jobdata, index) => (
-            <View key={jobdata.id || index} style={styles.jobCardContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  // Navigate to JobDetailScreen for the applied job
-                  navigation.navigate('JobDetailScreen', {
-                    jobData: jobdata,
-                  });
-                }}>
-                <CustomJobCard
-                  jobData={jobdata}
-                  showBookmarkIcon={showBookmarkIcon}
-                  isApplied={true}
-                  showLocation = {false}
-                  showWorkModes = {false}
-                  showRating = {true}
-                  showPostedDate = {true}
-                />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView> */}
-
-        <CustomJobCard
-        // jobData={jobdata}
-        />
-      </View>
->>>>>>> 9e39cf9f7b861294adbcda0793176e53a12f33b7
     </View>
   );
 };
