@@ -63,10 +63,10 @@ const ReusableDropdown = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginVertical: 8,
+    marginVertical: 12,
   },
   dropdown: {
-    height: 51,
+    height: 50,
     borderColor: colors.lightgaryText,
     borderWidth: 1,
     borderRadius: 5,
