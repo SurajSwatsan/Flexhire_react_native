@@ -13,6 +13,7 @@ import {
 import {IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../Global_CSS/TheamColors';
+import { createMaterialBottomTabNavigator } from 'react-native-paper/lib/typescript/react-navigation';
 
 const CustomDrawer = ({children}) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -45,7 +46,7 @@ const CustomDrawer = ({children}) => {
   };
 
   const notification = () => {
-    Alert.alert('Notification', 'You have a new notification!');
+    navigation.navigate('Notification')
   };
 
   const handleOutsideTap = () => {

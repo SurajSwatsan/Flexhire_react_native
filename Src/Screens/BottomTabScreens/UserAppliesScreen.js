@@ -10,8 +10,10 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomJobCard from '../../Constant/CustomJobCard'; // Ensure correct import path
+import { useNavigation } from '@react-navigation/native';
 
-const UserApplies = ({navigation}) => {
+const UserApplies = () => {
+  const navigation =useNavigation();
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [showBookmarkIcon, setShowBookmarkIcon] = useState(false);
   // Fetch applied jobs from AsyncStorage on component mount
@@ -32,6 +34,13 @@ const UserApplies = ({navigation}) => {
 
   const toggleBookmarkVisibility = () => {
     setShowBookmarkIcon(prevState => !prevState);
+  };
+
+  
+
+  const handleJobPress = (jobData) => {
+    // Navigate to the "ApplicationStatus" page when a job is pressed
+    navigation.navigate('ApplicationStatus', { jobData });
   };
 
   return (
@@ -63,12 +72,9 @@ const UserApplies = ({navigation}) => {
           {appliedJobs.map((jobdata, index) => (
             <View key={jobdata.id || index} style={styles.jobCardContainer}>
               <TouchableOpacity
-                onPress={() => {
-                  // Navigate to JobDetailScreen for the applied job
-                  navigation.navigate('JobDetailScreen', {
-                    jobData: jobdata,
-                  });
-                }}>
+               
+                onPress={() => handleJobPress(jobdata)}
+                >
                 <CustomJobCard
                   jobData={jobdata}
                   showBookmarkIcon={showBookmarkIcon}
@@ -78,6 +84,7 @@ const UserApplies = ({navigation}) => {
                   showWorkModes = {false}
                   // showRating = {true}
                   showPostedDate = {true}
+                  navigateToApplicationStatus = {true}
 
                   
                 />

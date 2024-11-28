@@ -4,15 +4,13 @@ import {IconButton} from 'react-native-paper';
 import CustomDrawer from '../CustomDrawer';
 
 const CustomHeader = () => {
-  const notification = () => {
-    Alert.alert('Notification', 'You have a new notification!');
-  };
+ 
   return (
     <View style={styles.nav}>
       <CustomDrawer />
       <IconButton
         icon="bell"
-        onPress={() => notification()}
+        onPress={() => navigation.navigate('Notification')}
         iconColor="#333"
         size={30}
       />

@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
   },
   relatedjobcontainer: {
     // marginTop:16,
-    marginBottom: 24,
+    // marginBottom: 24,
     backgroundColor: colors.background,
   },
 });

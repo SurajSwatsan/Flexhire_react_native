@@ -18,6 +18,7 @@ const CustomJobCard = ({
   showRating = false,
   showPostedDate = true,
   showSalary=false,
+  navigateToApplicationStatus,
 }) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
@@ -92,11 +93,23 @@ const CustomJobCard = ({
     return <Text style={styles.errorText}>Invalid job data</Text>;
   }
 
+  const handleCardPress = () => {
+    if (navigateToApplicationStatus) {
+      // Navigate to "ApplicationStatus" if the prop is passed
+      navigation.navigate('ApplicationStatus', { jobData });
+    } else {
+      // Navigate to "JobDetailScreen" by default
+      navigation.navigate('JobDetailScreen', { jobData });
+    }
+  };
+
   return (
     <View style={styles.companyContainer}>
       <TouchableOpacity
         style={{marginHorizontal: 8}}
-        onPress={() => navigation.navigate('JobDetailScreen', {jobData})}>
+        // onPress={() => navigation.navigate('JobDetailScreen', {jobData})}
+        onPress={handleCardPress}
+        >
         <View style={styles.companyHeader}>
           <View style={styles.companyInfo}>
             <Image
@@ -138,7 +151,7 @@ const CustomJobCard = ({
           )}
         </View>
 
-        {/* Conditionally render the location */}
+        
         {showLocation && (
           <View style={styles.location}>
             <IconButton

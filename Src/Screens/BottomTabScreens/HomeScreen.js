@@ -3,6 +3,7 @@ import {
   Alert,
   BackHandler,
   Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +18,8 @@ import {jobPost} from '../../Redux/Action/JobAction';
 import CustomJobCard from '../../Constant/CustomJobCard';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomCompanyCard from '../../Constant/CustomCompanyCard';
+import {CircularProgress} from 'react-native-circular-progress'; // Import the CircularProgress component
+
 const screenWidth = Dimensions.get('window').width;
 
 const HomeScreen = () => {
@@ -67,6 +70,8 @@ const HomeScreen = () => {
     return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
   }
 
+  const profileCompletion = 75;
+
   return (
     <View style={styles.bodycontainer}>
       <View style={styles.container}>
@@ -89,8 +94,36 @@ const HomeScreen = () => {
       </View>
 
       <ScrollView style={{flex: 1}}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('userProfileScreen')}
+          style={styles.profileContainer}>
+          <View style={styles.dataContainer}>
+            <View style={styles.profileImageWrapper}>
+              <CircularProgress
+                size={120}
+                width={8}
+                fill={profileCompletion}
+                rotation={220}
+                tintColor="#509570" // Color of the progress
+                backgroundColor="lightgray"
+                lineCap="round"
+                arcSweepAngle={360}
+              />
+
+              <Image
+                source={require('../../Assets/Images/Userimage.png')}
+                style={styles.profileImage}
+              />
+            </View>
+
+            <View style={styles.profile}>
+              <Text style={styles.profileName}>Xyz's Profile</Text>
+              <Text style={styles.profileDetail}>Missing details</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
         <View style={styles.JobsContainer}>
-          <View style={{marginVertical: 12, marginLeft: 18}}>
+          <View style={{marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Suggested Jobs</Text>
               <Text style={styles.seeAll}>See All</Text>
@@ -105,41 +138,39 @@ const HomeScreen = () => {
                   <CustomJobCard jobData={jobdata} />
                 </View>
               ))}
-       </ScrollView>
-       </View>
+            </ScrollView>
+          </View>
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Recent Jobs</Text>
               <Text style={styles.seeAll}>See All</Text>
             </View>
-           
-           {/* Random chips for future use need to place other data */}
+
+            {/* Random chips for future use need to place other data */}
             <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.chipContainer}
-      >
-        {chipLabels.map((label, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.chip,
-              selectedChip === label && styles.selectedChip, // Apply selected chip style
-            ]}
-            onPress={() => setSelectedChip(label)} // Update selected chip on press
-          >
-            <Text
-              style={[
-                styles.chipText,
-                selectedChip === label && styles.selectedChipText, // Apply text color change if selected
-              ]}
-            >
-              {label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.chipContainer}>
+              {chipLabels.map((label, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.chip,
+                    selectedChip === label && styles.selectedChip, // Apply selected chip style
+                  ]}
+                  onPress={() => setSelectedChip(label)} // Update selected chip on press
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedChip === label && styles.selectedChipText, // Apply text color change if selected
+                    ]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
 
             <ScrollView
               horizontal
@@ -170,8 +201,6 @@ const HomeScreen = () => {
               ))}
             </ScrollView>
           </View>
-
-         
         </View>
       </ScrollView>
     </View>
@@ -208,8 +237,50 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: '#fff',
   },
+  profileContainer: {
+    marginHorizontal: 12,
+    marginVertical: 12,
+    backgroundColor: '#e3f0e9',
+    // alignItems:'center',
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  dataContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap:18
+  },
+  profileImageWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 120,
+    height: 120,
+  },
+  profileImage: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+
+  profile: {
+    flexDirection: 'column',
+  },
+
+  profileName: {
+    color:'#478564',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  profileDetail: {
+    color: 'blue',
+  },
   JobsContainer: {
-    marginTop: 12,
+    // marginTop: 12,
   },
   displayContainer: {
     flexDirection: 'row',
@@ -234,7 +305,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   chipContainer: {
-   paddingVertical:4
+    paddingVertical: 4,
   },
   chip: {
     backgroundColor: colors.whiteText, // Default blue background for each chip
@@ -244,22 +315,20 @@ const styles = StyleSheet.create({
     marginRight: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom:8
+    marginBottom: 8,
   },
   selectedChip: {
     backgroundColor: colors.primary, // Darker blue for selected chip
-    color:colors.whiteText
-    
+    color: colors.whiteText,
   },
   chipText: {
     color: '#000',
     fontSize: 14,
     fontWeight: 'bold',
   },
-  selectedChipText:{
-    color:colors.whiteText
-  }
-
+  selectedChipText: {
+    color: colors.whiteText,
+  },
 });
 
 export default HomeScreen;

@@ -19,6 +19,8 @@ import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
 import BasicInformation from '../Screens/UserProfile/Profile/BasicInformation.js';
 import CustomInviteScreen from '../Constant/CustomInviteCard.js';
+import CustomNotificationScreen from '../Constant/CustomNotification.js';
+import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -115,9 +117,20 @@ const StackNavigation = () => {
       />
 
       <Stack.Screen
-      name="Invite"
-      component={CustomInviteScreen}
-      options={{headerShown: false}}
+        name="Invite"
+        component={CustomInviteScreen}
+        options={{headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="Notification"
+        component={CustomNotificationScreen}
+        options={{headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="ApplicationStatus"
+        component={ApplicationStatusScreen}
       />
     </Stack.Navigator>
   );
