@@ -16,6 +16,7 @@ import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen';
 import HomeComponent from '../Screens/BottomTabScreens/HomeScreen';
 import BookmarkScreen from '../Screens/BottomTabScreens/SavedJobList';
 import {colors} from '../Global_CSS/TheamColors';
+import JobScreen from '../Screens/BottomTabScreens/JobScreen';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
@@ -61,8 +62,8 @@ const CustomBottomTab = () => {
         return <UserInvites />;
       case 'Profile':
         return <UserProfile />;
-      case 'Bookmark':
-        return <BookmarkScreen />;
+      case 'Jobs':
+        return <JobScreen />;
       default:
         return <HomeComponent />;
     }
@@ -75,8 +76,9 @@ const CustomBottomTab = () => {
         <View style={styles.tabContainer}>
           {renderTab('Home', 'home', 'Home')}
           {renderTab('Applies', 'send', 'Applies')}
+          {renderTab('Jobs','briefcase','Jobs')}
           {renderTab('Invites', 'mail-sharp', 'Invites')}
-          {renderTab('Bookmark', 'bookmark', 'Bookmark')}
+          {/* {renderTab('Bookmark', 'bookmark', 'Bookmark')} */}
           {renderTab('Profile', 'person-sharp', 'Profile')}
         </View>
       </View>

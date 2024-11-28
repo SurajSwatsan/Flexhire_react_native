@@ -64,6 +64,7 @@ const CustomDrawer = ({children}) => {
           iconColor="#fff"
           size={36}
         />
+        
         <IconButton
           icon="bell"
           onPress={() => notification()}
@@ -124,8 +125,8 @@ const CustomDrawer = ({children}) => {
                 navigation.navigate('bookmark');
                 toggleDrawer();
               }}>
-              <Ionicons name="briefcase" size={18} style={styles.iconStyles} />
-              <Text style={styles.menuItemText}>Recommended jobs</Text>
+              <Ionicons name="bookmark" size={18} style={styles.iconStyles} />
+              <Text style={styles.menuItemText}>Bookmark</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
@@ -260,6 +261,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  icons:{
+    flexDirection:'row',
+    
   },
   menuItem: {
     color: '#333',

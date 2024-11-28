@@ -21,6 +21,7 @@ import BasicInformation from '../Screens/UserProfile/Profile/BasicInformation.js
 import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
+import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -94,10 +95,18 @@ const StackNavigation = () => {
       <Stack.Screen
         name="bookmark"
         component={SavedJobScreen}
-        options={{headerShown: false}}
+        // options={{headerShown: false}}
       />
 
-      <Stack.Screen name="UserApplies" component={UserApplies} />
+      <Stack.Screen
+       name="UserApplies" 
+       component={UserApplies} 
+       />
+
+      <Stack.Screen 
+      name='JobsScreen' 
+      component={JobScreen}
+      />
 
       <Stack.Screen
         name="userProfileScreen"
@@ -131,6 +140,7 @@ const StackNavigation = () => {
       <Stack.Screen
         name="ApplicationStatus"
         component={ApplicationStatusScreen}
+        options={{headerShown:false}}
       />
     </Stack.Navigator>
   );

@@ -107,6 +107,7 @@ const CustomNotificationScreen = () => {
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <CustomHeader />
+        <Text style={styles.headerText}>Notification</Text>
       </View>
       <Text style={styles.textInfo}>Stay up to date</Text>
 
@@ -150,6 +151,14 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 12,
     marginLeft: 12,
+    flexDirection:'row',
+    alignItems:'center',
+  },
+  headerText:{
+    fontSize:18,
+    color:colors.blackText,
+    fontWeight:'bold',
+    marginLeft:18
   },
   textInfo: {
     color: colors.blackText,

@@ -21,12 +21,8 @@ const JobDetailScreen = ({route, navigation}) => {
   const [activeTab, setActiveTab] = useState('About');
 
   const [isApplied, setIsApplied] = useState(false);
- 
-  // console.log('Company Data:', jobData);
 
   const relatedJobs = jobData.related_jobs;
-
-  // console.log('related Data:', relatedJobs);
 
   // Check if job is already applied
   useEffect(() => {
@@ -519,6 +515,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     marginVertical: 8,
     paddingVertical: 6,
+   
   },
   contentText: {
     fontSize: 16,
@@ -565,10 +562,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     marginHorizontal: 10,
+    marginVertical:8
   },
   scrollContainer: {
     // paddingVertical: 8,
     // marginBottom: 12,
+    marginHorizontal:12
   },
   relatedjobcontainer: {
     // marginTop:16,
