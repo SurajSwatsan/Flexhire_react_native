@@ -63,6 +63,7 @@ const Projects = () => {
   const [projectList, setProjectList] = useState([]);
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+  let formikRef = null;
 
   const openModal = (index = null) => {
     setSelectedProjectIndex(index);
@@ -145,138 +146,139 @@ const Projects = () => {
         visible={modalVisible}
         onRequestClose={closeModal}>
         <View style={profileStyle.modalContainer}>
-          <Formik
-            initialValues={
-              selectedProjectIndex !== null
-                ? projectList[selectedProjectIndex]
-                : initialProject
-            }
-            validationSchema={validationSchema}
-            onSubmit={handleFormSubmit}>
-            {({
-              handleChange,
-              handleSubmit,
-              setFieldValue,
-              values,
-              errors,
-              touched,
-            }) => (
-              <View style={profileStyle.formContainer}>
-                <Text style={profileStyle.formHeading}>PROJECT</Text>
-                <ReusableTextInput
-                  name="projecttitle"
-                  label="Project Title*"
-                  value={values.projecttitle}
-                  onChangeText={handleChange('projecttitle')}
-                  error={errors.projecttitle}
-                  touched={touched.projecttitle}
-                />
-                <ReusableTextInput
-                  name="client"
-                  label="Client*"
-                  value={values.client}
-                  onChangeText={handleChange('client')}
-                  error={errors.client}
-                  touched={touched.client}
-                />
-                <CustomTabs
-                  label="Project Status*"
-                  options={ProjectStatusOptions}
-                  selectedValue={values.projectstatus}
-                  setFieldValue={setFieldValue}
-                  fieldName="projectstatus"
-                  error={errors.projectstatus}
-                  touched={touched.projectstatus}
-                />
-                <ReusableDatePicker
-                  label="Worked From*"
-                  value={values.workedFrom}
-                  onChange={date => setFieldValue('workedFrom', date)}
-                />
-                {values.projectstatus === 'Finished' && (
-                  <ReusableDatePicker
-                    label="Worked Till*"
-                    value={values.workedTill}
-                    onChange={date => setFieldValue('workedTill', date)}
-                  />
-                )}
-                <ReusableTextInput
-                  name="projectDetails"
-                  label="Project Details*"
-                  value={values.projectDetails}
-                  onChangeText={handleChange('projectDetails')}
-                  error={errors.projectDetails}
-                  touched={touched.projectDetails}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowMoreDetails(!showMoreDetails)}>
-                  <Text
-                    style={{
-                      color: 'blue',
-                      fontWeight: 'bold',
-                      marginVertical: 10,
-                    }}>
-                    Add more details +
-                  </Text>
-                </TouchableOpacity>
-                {showMoreDetails && (
-                  <>
+          <FlatList
+            data={[{key: 'form'}]}
+            renderItem={() => (
+              <Formik
+                initialValues={
+                  selectedProjectIndex !== null
+                    ? projectList[selectedProjectIndex]
+                    : initialProject
+                }
+                validationSchema={validationSchema}
+                innerRef={ref => (formikRef = ref)}
+                onSubmit={handleFormSubmit}>
+                {({
+                  handleChange,
+                  handleSubmit,
+                  setFieldValue,
+                  values,
+                  errors,
+                  touched,
+                }) => (
+                  <View style={profileStyle.formContainer}>
+                    <Text style={profileStyle.formHeading}>PROJECT</Text>
                     <ReusableTextInput
-                      name="projectlocation"
-                      label="Project Location"
-                      value={values.projectlocation}
-                      onChangeText={handleChange('projectlocation')}
+                      name="projecttitle"
+                      label="Project Title*"
+                      value={values.projecttitle}
+                      onChangeText={handleChange('projecttitle')}
+                    />
+                    <ReusableTextInput
+                      name="client"
+                      label="Client*"
+                      value={values.client}
+                      onChangeText={handleChange('client')}
                     />
                     <CustomTabs
-                      label="Project Site*"
-                      options={ProjectSiteOptions}
-                      selectedValue={values.projectsite}
+                      label="Project Status*"
+                      options={ProjectStatusOptions}
+                      selectedValue={values.projectstatus}
                       setFieldValue={setFieldValue}
-                      fieldName="projectsite"
+                      fieldName="projectstatus"
+                      error={errors.projectstatus}
+                      touched={touched.projectstatus}
                     />
-                    <CustomTabs
-                      label="Nature of Employment*"
-                      options={EmploymentNatureOptions}
-                      selectedValue={values.natureofemployment}
-                      setFieldValue={setFieldValue}
-                      fieldName="natureofemployment"
+                    <ReusableDatePicker
+                      label="Worked From*"
+                      value={values.workedFrom}
+                      onChange={date => setFieldValue('workedFrom', date)}
                     />
-                    <ReusableDropdown
-                      options={TeamSizeOptions}
-                      placeholder="Team Size"
-                      selectedValue={values.teamsize}
-                      onSelect={item => setFieldValue('teamsize', item.value)}
-                    />
+                    {values.projectstatus === 'Finished' && (
+                      <ReusableDatePicker
+                        label="Worked Till*"
+                        value={values.workedTill}
+                        onChange={date => setFieldValue('workedTill', date)}
+                      />
+                    )}
                     <ReusableTextInput
-                      name="role"
-                      label="Role in Project"
-                      value={values.role}
-                      onChangeText={handleChange('role')}
+                      name="projectDetails"
+                      label="Project Details*"
+                      value={values.projectDetails}
+                      onChangeText={handleChange('projectDetails')}
                     />
-                    <ReusableTextInput
-                      name="roledescription"
-                      label="Role Description"
-                      value={values.roledescription}
-                      onChangeText={handleChange('roledescription')}
-                    />
-                    <ReusableTextInput
-                      name="skillsused"
-                      label="Skills Used"
-                      value={values.skillsused}
-                      onChangeText={handleChange('skillsused')}
-                    />
-                  </>
+                    <TouchableOpacity
+                      onPress={() => setShowMoreDetails(!showMoreDetails)}>
+                      <Text
+                        style={{
+                          color: 'blue',
+                          fontWeight: 'bold',
+                          marginVertical: 10,
+                        }}>
+                        Add more details +
+                      </Text>
+                    </TouchableOpacity>
+                    {showMoreDetails && (
+                      <>
+                        <ReusableTextInput
+                          name="projectlocation"
+                          label="Project Location"
+                          value={values.projectlocation}
+                          onChangeText={handleChange('projectlocation')}
+                        />
+                        <CustomTabs
+                          label="Project Site*"
+                          options={ProjectSiteOptions}
+                          selectedValue={values.projectsite}
+                          setFieldValue={setFieldValue}
+                          fieldName="projectsite"
+                        />
+                        <CustomTabs
+                          label="Nature of Employment*"
+                          options={EmploymentNatureOptions}
+                          selectedValue={values.natureofemployment}
+                          setFieldValue={setFieldValue}
+                          fieldName="natureofemployment"
+                        />
+                        <ReusableDropdown
+                          options={TeamSizeOptions}
+                          placeholder="Team Size"
+                          selectedValue={values.teamsize}
+                          onSelect={item =>
+                            setFieldValue('teamsize', item.value)
+                          }
+                        />
+                        <ReusableTextInput
+                          name="role"
+                          label="Role in Project"
+                          value={values.role}
+                          onChangeText={handleChange('role')}
+                        />
+                        <ReusableTextInput
+                          name="roledescription"
+                          label="Role Description"
+                          value={values.roledescription}
+                          onChangeText={handleChange('roledescription')}
+                        />
+                        <ReusableTextInput
+                          name="skillsused"
+                          label="Skills Used"
+                          value={values.skillsused}
+                          onChangeText={handleChange('skillsused')}
+                        />
+                      </>
+                    )}
+                  </View>
                 )}
-                <ModalFooter
-                  onPress={handleSubmit}
-                  onCancel={closeModal}
-                  deleteAction={
-                    selectedProjectIndex !== null ? deleteProject : null
-                  }
-                />
-              </View>
+              </Formik>
             )}
-          </Formik>
+            keyExtractor={item => item.key}
+          />
+          <ModalFooter
+            onPress={() => formikRef?.handleSubmit()}
+            onCancel={closeModal}
+            deleteAction={selectedProjectIndex !== null ? deleteProject : null}
+          />
         </View>
       </Modal>
     </View>

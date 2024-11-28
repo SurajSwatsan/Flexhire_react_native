@@ -1,14 +1,34 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import {colors} from '../Global_CSS/TheamColors';
+import profileStyle from '../Screens/UserProfile/ProfileStyle';
+import {Text} from 'react-native-paper';
+
 const screenWidth = Dimensions.get('window').width;
 const horizontalMargin = 12 * 2; // Total margin (left + right)
-
 const effectiveWidth = screenWidth - horizontalMargin;
-const ReusableDropdown = ({options, placeholder, onSelect}) => {
+
+const ReusableDropdown = ({
+  options,
+  placeholder,
+  selectedValue,
+  onSelect,
+  error, // Validation error from Formik
+  touched, // Touched state from Formik
+}) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
+  // Sync with external selectedValue
+  useEffect(() => {
+    if (selectedValue) {
+      const matchedItem = options.find(
+        option => option.value === selectedValue,
+      );
+      setSelectedItem(matchedItem || null); // Set selectedItem if a match is found
+    }
+  }, [selectedValue, options]);
 
   const handleSelect = item => {
     setSelectedItem(item);
@@ -30,11 +50,12 @@ const ReusableDropdown = ({options, placeholder, onSelect}) => {
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         itemTextStyle={{color: '#000'}}
-        value={selectedItem?.value}
+        value={selectedItem?.value} // Set the selected value
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => handleSelect(item)}
       />
+      {touched && error && <Text style={profileStyle.error}>{error}</Text>}
     </View>
   );
 };
@@ -42,12 +63,10 @@ const ReusableDropdown = ({options, placeholder, onSelect}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginVertical: 8,
-    // padding: 12,
+    marginVertical: 12,
   },
   dropdown: {
-    // width: effectiveWidth,
-    height: 51,
+    height: 50,
     borderColor: colors.lightgaryText,
     borderWidth: 1,
     borderRadius: 5,

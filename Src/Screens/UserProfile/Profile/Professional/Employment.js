@@ -17,8 +17,10 @@ import CustomSelectionModal from '../../../../Constant/CustomSelectionModal'; //
 import {IconButton} from 'react-native-paper';
 import profileStyle from '../../ProfileStyle';
 import * as Yup from 'yup';
-import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import {colors} from '../../../../Global_CSS/TheamColors';
+import moment from 'moment';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 const CURRENT_COMPANY_OPTIONS = [
   {id: 1, value: 'Yes'},
   {id: 2, value: 'No'},
@@ -79,126 +81,182 @@ const getInitialValues = (editingIndex, submittedDataList) => {
   ) {
     const submittedData = submittedDataList[editingIndex];
     return {
-      currentCompany: submittedData.currentCompany || 'Yes',
-      employmentType: submittedData.employmentType || 'Full-time',
-      currentCompanyName: submittedData.currentCompanyName || '',
-      currentJobTitle: submittedData.currentJobTitle || '',
-      jobProfile: submittedData.jobProfile || '',
-      updatedExperienceYears: submittedData.updatedExperienceYears || '',
-      updatedExperienceMonths: submittedData.updatedExperienceMonths || '',
-      joiningDate: submittedData.joiningDate || new Date(),
-      leavingDate: submittedData.leavingDate || new Date(),
-      noticePeriod: submittedData.noticePeriod || '',
-      currency: submittedData.currency || '₹',
-      salary: submittedData.salary || '',
-      selectedSkills: submittedData.selectedSkills || [],
-      previousCompanyName: submittedData.previousCompanyName || '',
-      previousJobTitle: submittedData.previousJobTitle || '',
-      previousJobProfile: submittedData.previousJobProfile || '',
-      workedfrom: submittedData.workedfrom || new Date(),
-      workedtill: submittedData.workedtill || new Date(),
-      location: submittedData.location || '',
-      department: submittedData.department || '',
+      ...submittedData,
+      selectedSkills: submittedData.selectedSkills || [], // Ensure selectedSkills is an array
+      joiningDate: submittedData.joiningDate
+        ? new Date(submittedData.joiningDate)
+        : null,
+      leavingDate: submittedData.leavingDate
+        ? new Date(submittedData.leavingDate)
+        : null,
+      workedfrom: submittedData.workedfrom
+        ? new Date(submittedData.workedfrom)
+        : null,
+      workedtill: submittedData.workedtill
+        ? new Date(submittedData.workedtill)
+        : null,
     };
   }
 
-  // Default values for a new entry
   return {
     currentCompany: 'Yes',
     employmentType: 'Full-time',
-    currentCompanyName: '',
-    currentJobTitle: '',
+    CompanyName: '',
+    JobTitle: '',
     jobProfile: '',
     updatedExperienceYears: '',
     updatedExperienceMonths: '',
-    joiningDate: new Date(),
-    leavingDate: new Date(),
+    joiningDate: null,
+    leavingDate: null,
+    workedfrom: null,
+    workedtill: null,
+    location: '',
+    department: '',
+    roleCategory: '',
+    role: '',
     noticePeriod: '',
     currency: '₹',
     salary: '',
     salarybreakdown: '',
+    fixedSalary: '',
+    variableSalary: '',
     selectedSkills: [],
-    previousCompanyName: '',
-    previousJobTitle: '',
-    previousJobProfile: '',
-    workedfrom: new Date(),
-    workedtill: new Date(),
-    location: '',
-    department: '',
   };
 };
 
-// // Validation Schema
-// const EmploymentValidationSchema = Yup.object().shape({
-//   currentCompanyName: Yup.string().when('currentCompany', {
-//     is: 'Yes',
-//     then: Yup.string().required('Current company name is required'),
-//   }),
-//   currentJobTitle: Yup.string().when('currentCompany', {
-//     is: 'Yes',
-//     then: Yup.string().required('Current job title is required'),
-//   }),
-//   jobProfile: Yup.string()
-//     .required('Job profile is required')
-//     .min(10, 'Profile description must be at least 10 characters'),
-//   updatedExperienceYears: Yup.string().when('currentCompany', {
-//     is: 'Yes',
-//     then: Yup.string().required('Experience in years is required'),
-//   }),
-//   updatedExperienceMonths: Yup.string().when('updatedExperienceYears', {
-//     is: value => value !== '30+',
-//     then: Yup.string().required('Experience in months is required'),
-//   }),
-//   salary: Yup.number()
-//     .required('Salary is required')
-//     .positive('Salary must be a positive number'),
-//   joiningDate: Yup.date().required('Joining date is required'),
-//   leavingDate: Yup.date().when('currentCompany', {
-//     is: 'No',
-//     then: Yup.date()
-//       .required('Leaving date is required')
-//       .min(Yup.ref('joiningDate'), 'Leaving date must be after joining date'),
-//   }),
-//   selectedSkills: Yup.array()
-//     .of(Yup.string())
-//     .min(1, 'At least one skill must be selected'),
-//   previousCompanyName: Yup.string().when('currentCompany', {
-//     is: 'No',
-//     then: Yup.string().required('Previous company name is required'),
-//   }),
-//   previousJobTitle: Yup.string().when('currentCompany', {
-//     is: 'No',
-//     then: Yup.string().required('Previous job title is required'),
-//   }),
-// });
+const EmploymentValidationSchema = values => {
+  const schema = {};
+
+  // Validation for Full-time employment when currentCompany is "Yes"
+  if (
+    values.employmentType === 'Full-time' &&
+    values.currentCompany === 'Yes'
+  ) {
+    schema.CompanyName = Yup.string().required(
+      'Current company name is required',
+    );
+    schema.JobTitle = Yup.string().required('Current job title is required');
+    schema.joiningDate = Yup.date()
+      .required('Joining date is required')
+      .max(new Date(), 'Joining date cannot be in the future');
+    schema.updatedExperienceYears = Yup.string().required(
+      'Experience in years is required',
+    );
+    schema.updatedExperienceMonths = Yup.string().required(
+      'Experience in months is required',
+    );
+    schema.salary = Yup.string().required('Salary is required');
+    schema.salarybreakdown = Yup.string()
+      .required('Salary breakdown is required')
+      .oneOf(
+        ['Fixed', 'Fixed + Variable'],
+        'Invalid salary breakdown selection',
+      );
+    schema.jobProfile = Yup.string()
+      .nullable() // Allow the field to be null or undefined
+      .notRequired() // Explicitly mark it as not required
+      .test(
+        'min-length-when-provided',
+        'Job profile must be at least 10 characters when provided',
+        value => !value || value.length >= 10,
+      );
+    schema.noticePeriod = Yup.string().required('Notice period is required');
+  }
+
+  // Validation for Full-time employment when currentCompany is "No"
+  if (values.employmentType === 'Full-time' && values.currentCompany === 'No') {
+    schema.CompanyName = Yup.string().required(
+      'Previous company name is required',
+    );
+    schema.JobTitle = Yup.string().required('Previous job title is required');
+    schema.jobProfile = Yup.string()
+    .nullable() // Allow the field to be null or undefined
+    .notRequired() // Explicitly mark it as not required
+    .test(
+      'min-length-when-provided',
+      'Job profile must be at least 10 characters when provided',
+      value => !value || value.length >= 10,
+    );
+    schema.joiningDate = Yup.date()
+      .required('Joining date is required')
+      .max(new Date(), 'Joining date cannot be in the future');
+    schema.leavingDate = Yup.date()
+      .required('Leaving date is required')
+      .min(Yup.ref('joiningDate'), 'Leaving date must be after joining date');
+  }
+
+  // Validation for Internship
+  if (values.employmentType === 'Internship') {
+    schema.CompanyName = Yup.string().required(
+      'Company name is required for internship',
+    );
+    schema.location = Yup.string().required(
+      'Location is required for internships',
+    );
+    schema.department = Yup.string().required(
+      'Department is required for internships',
+    );
+    schema.roleCategory = Yup.string().required(
+      'Role category is required for internship',
+    );
+    schema.role = Yup.string().required('Role is required for internship');
+    schema.workedfrom = Yup.date()
+      .required('Worked from date is required')
+      .max(new Date(), 'Worked from date cannot be in the future');
+
+    // Conditional validation for workedtill
+    if (values.currentCompany === 'No') {
+      schema.workedtill = Yup.date()
+        .required('Worked till date is required')
+        .min(
+          Yup.ref('workedfrom'),
+          'Worked till date must be after worked from date',
+        );
+    }
+  }
+
+  return Yup.object().shape(schema);
+};
+
 const Employment = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [submittedDataList, setSubmittedDataList] = useState([]); // For multiple entries
-  const [editingIndex, setEditingIndex] = useState(null); // Track which entry is being edited
+  const [submittedDataList, setSubmittedDataList] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null); // Track which data is being edited
+  let formikRef = null;
 
   const handleSubmitForm = values => {
-    const formattedSkills = values.selectedSkills.map(skill =>
-      typeof skill === 'string'
-        ? skill
-        : SKILLS.find(item => item.value === skill?.value)?.value ||
-          skill?.value ||
-          '',
-    );
-
     const formattedData = {
       ...values,
-      selectedSkills: formattedSkills, // Add formatted skills to saved data
+      selectedSkills: values.selectedSkills.map(skill =>
+        typeof skill === 'string'
+          ? skill
+          : SKILLS.find(item => item.value === skill?.value)?.value ||
+            skill?.value ||
+            '',
+      ),
+      workedfrom: values.workedfrom
+        ? moment(values.workedfrom).format('YYYY-MM-DD')
+        : null,
+      workedtill: values.workedtill
+        ? moment(values.workedtill).format('YYYY-MM-DD')
+        : null,
+      joiningDate: values.joiningDate
+        ? moment(values.joiningDate).format('YYYY-MM-DD')
+        : null,
+      leavingDate: values.leavingDate
+        ? moment(values.leavingDate).format('YYYY-MM-DD')
+        : null,
     };
 
     if (editingIndex !== null) {
-      // Update existing entry
+      // Update existing data
       setSubmittedDataList(prevData =>
-        prevData.map((entry, index) =>
-          index === editingIndex ? formattedData : entry,
+        prevData.map((data, index) =>
+          index === editingIndex ? formattedData : data,
         ),
       );
     } else {
-      // Add new entry
+      // Add new data
       setSubmittedDataList(prevData => [...prevData, formattedData]);
     }
 
@@ -214,6 +272,14 @@ const Employment = () => {
   const openModalForEdit = index => {
     setEditingIndex(index);
     setModalVisible(true);
+  };
+  const deleteEmployment = () => {
+    if (editingIndex !== null) {
+      setSubmittedDataList(
+        prevData => prevData.filter((_, index) => index !== editingIndex), // Use index for deletion
+      );
+      closeModal(); // Close modal after deletion
+    }
   };
 
   const closeModal = () => {
@@ -236,56 +302,69 @@ const Employment = () => {
 
       {/* Display all submitted data entries */}
       {submittedDataList.length > 0 ? (
-        submittedDataList.map((entry, index) => (
-          <View key={index} style={styles.outputContainer}>
+        submittedDataList.map((data, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.outputContainer}
+            onPress={() => openModalForEdit(index)}>
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
                 alignItems: 'center',
+                justifyContent: 'space-between',
               }}>
-              <Text style={styles.outputHeading}>Entry {index + 1}</Text>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 18,
+                  marginHorizontal: 18,
+                  gap: 12,
+                }}>
+                <Ionicons
+                  name="business" // Match the icon with the option
+                  size={42}
+                  color="gray"
+                  // style={{alignSelf: 'flex-start'}} // Spacing between icon and text
+                />
+                <View style={{flex: 1}}>
+                  <Text style={styles.CompanyName}>{data.CompanyName}</Text>
+                  {data.JobTitle && (
+                    <Text style={styles.JobTitle}>{data.JobTitle}</Text>
+                  )}
+                  {data.role && (
+                    <Text style={styles.JobTitle}>{data.role}</Text>
+                  )}
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}>
+                    <Text style={styles.otherdata}>{data.employmentType}</Text>
+                    <Text style={styles.otherdata}>
+                      {new Date(data.joiningDate).toLocaleDateString()} -{' '}
+                      {data.leavingDate
+                        ? new Date(data.leavingDate).toLocaleDateString()
+                        : 'Present'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
               <IconButton
                 icon="pencil-outline"
                 iconColor={'black'}
                 size={20}
-                onPress={() => openModalForEdit(index)} // Open modal with entry index
-                style={profileStyle.editButton}
+                onPress={() => openModalForEdit(index)}
+                style={{alignSelf: 'flex-start'}}
               />
             </View>
-            <Text style={styles.outputText}>
-              Current Company: {entry.currentCompany}
-            </Text>
-            <Text style={styles.outputText}>
-              Employment Type: {entry.employmentType}
-            </Text>
-            <Text style={styles.outputText}>
-              Current Company Name: {entry.currentCompanyName}
-            </Text>
-            <Text style={styles.outputText}>
-              Current Job Title: {entry.currentJobTitle}
-            </Text>
-            <Text style={styles.outputText}>
-              Job Profile: {entry.jobProfile}
-            </Text>
-            <Text style={styles.outputText}>
-              Joining Date: {new Date(entry.joiningDate).toLocaleDateString()}
-            </Text>
-            <Text style={styles.outputText}>
-              Notice Period: {entry.noticePeriod}
-            </Text>
-            <Text style={styles.outputText}>
-              Updated Experience: {entry.updatedExperienceYears} Years{' '}
-              {entry.updatedExperienceYears !== '30+'
-                ? `${entry.updatedExperienceMonths} Months`
-                : ''}
-            </Text>
-            <Text style={styles.outputText}>Currency: {entry.currency}</Text>
-            <Text style={styles.outputText}>Salary: {entry.salary}</Text>
-            <Text style={styles.outputText}>
-              Skills Used: {entry.selectedSkills.join(', ')}
-            </Text>
-          </View>
+            {data.jobProfile && (
+              <Text style={styles.jobProfile}>{data.jobProfile}</Text>
+            )}
+          </TouchableOpacity>
         ))
       ) : (
         <Text style={profileStyle.optionalData}>No data submitted yet.</Text>
@@ -300,8 +379,30 @@ const Employment = () => {
           <View style={profileStyle.modalContainer}>
             <Formik
               initialValues={getInitialValues(editingIndex, submittedDataList)}
+              // validationSchema={EmploymentValidationSchema}
+              validate={values => {
+                try {
+                  EmploymentValidationSchema(values).validateSync(values, {
+                    abortEarly: false,
+                  });
+                  return {};
+                } catch (validationErrors) {
+                  return validationErrors.inner.reduce((acc, error) => {
+                    acc[error.path] = error.message;
+                    return acc;
+                  }, {});
+                }
+              }}
+              innerRef={ref => (formikRef = ref)}
               onSubmit={handleSubmitForm}>
-              {({values, setFieldValue, handleSubmit, handleChange}) => (
+              {({
+                values,
+                setFieldValue,
+                handleSubmit,
+                handleChange,
+                errors,
+                touched,
+              }) => (
                 <ScrollView contentContainerStyle={styles.container}>
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>
@@ -346,6 +447,8 @@ const Employment = () => {
                                     selected.value,
                                   )
                                 }
+                                error={errors.updatedExperienceYears}
+                                touched={touched.updatedExperienceYears}
                               />
                             </View>
 
@@ -361,34 +464,36 @@ const Employment = () => {
                                       selected.value,
                                     )
                                   }
+                                  error={errors.updatedExperienceMonths}
+                                  touched={touched.updatedExperienceMonths}
                                 />
                               </View>
                             )}
                           </View>
 
                           <ReusableTextInput
-                            name="currentCompanyName"
+                            name="CompanyName"
                             label="Current Company Name*"
-                            value={values.currentCompanyName}
-                            onChangeText={handleChange('currentCompanyName')}
+                            value={values.CompanyName}
+                            onChangeText={handleChange('CompanyName')}
                           />
                           <ReusableTextInput
-                            name="currentJobTitle"
+                            name="JobTitle"
                             label="Current job title*"
-                            value={values.currentJobTitle}
-                            onChangeText={handleChange('currentJobTitle')}
+                            value={values.JobTitle}
+                            onChangeText={handleChange('JobTitle')}
                           />
 
-                          {/* Joining Date Picker */}
                           <ReusableDatePicker
                             label="Joining Date*"
                             value={values.joiningDate}
                             onChange={date =>
                               setFieldValue('joiningDate', date)
                             }
+                            error={errors.joiningDate}
+                            touched={touched.joiningDate}
                           />
 
-                          {/* Currency Dropdown */}
                           <Text style={styles.subheading}>Currency</Text>
                           <View
                             style={{
@@ -406,12 +511,13 @@ const Employment = () => {
                                 }
                               />
                             </View>
-                            <View style={{flex: 1, marginTop: -7}}>
+                            <View style={{flex: 1, top: -6}}>
                               <ReusableTextInput
                                 name="salary"
                                 label="Current salary"
                                 value={values.salary}
                                 onChangeText={handleChange('salary')}
+                                keyboardType="numeric"
                               />
                             </View>
                           </View>
@@ -423,9 +529,10 @@ const Employment = () => {
                             onSelect={selected =>
                               setFieldValue('salarybreakdown', selected.value)
                             }
+                            error={errors.salarybreakdown}
+                            touched={touched.salarybreakdown}
                           />
 
-                          {/* Show note if "Fixed" is selected */}
                           {values.salarybreakdown === 'Fixed' && (
                             <Text style={styles.noteText}>
                               Your total salary has been considered as fixed
@@ -433,15 +540,12 @@ const Employment = () => {
                             </Text>
                           )}
 
-                          {/* Show additional fields if "Fixed + Variable" is selected */}
                           {values.salarybreakdown === 'Fixed + Variable' && (
                             <View>
                               <View
                                 style={{
                                   flexDirection: 'row',
                                   alignItems: 'center',
-                                  gap: 4,
-                                  marginBottom: 8,
                                 }}>
                                 {/* Fixed Salary */}
                                 <View style={{flex: 1}}>
@@ -459,7 +563,6 @@ const Employment = () => {
                                 style={{
                                   flexDirection: 'row',
                                   alignItems: 'center',
-                                  gap: 4,
                                 }}>
                                 {/* Variable Salary */}
                                 <View style={{flex: 1}}>
@@ -477,7 +580,6 @@ const Employment = () => {
                             </View>
                           )}
 
-                          {/* Skills Used Multi-Select */}
                           <Text style={styles.subheading}>Skills Used</Text>
                           <CustomSelectionModal
                             title="Skills Used"
@@ -498,6 +600,8 @@ const Employment = () => {
                             placeholder="Select Skills"
                             isMultiSelect
                             maxSelectionLimit={5}
+                            error={errors.selectedSkills}
+                            touched={touched.selectedSkills}
                           />
 
                           <ReusableTextInput
@@ -507,13 +611,14 @@ const Employment = () => {
                             onChangeText={handleChange('jobProfile')}
                           />
 
-                          {/* Notice Period Tabs */}
                           <CustomTabs
                             label="Notice Period*"
                             options={NOTICEPERIOD_OPTIONS}
                             selectedValue={values.noticePeriod}
                             setFieldValue={setFieldValue}
                             fieldName="noticePeriod"
+                            error={errors.noticePeriod}
+                            touched={touched.noticePeriod}
                           />
                         </View>
                       )}
@@ -522,36 +627,36 @@ const Employment = () => {
                       values.employmentType === 'Full-time' && (
                         <View>
                           <ReusableTextInput
-                            name="previousCompanyName"
-                            label="Previous Company Name"
-                            value={values.previousCompanyName}
-                            onChangeText={handleChange('previousCompanyName')}
+                            name="CompanyName"
+                            label="Previous Company Name*"
+                            value={values.CompanyName}
+                            onChangeText={handleChange('CompanyName')}
                           />
                           <ReusableTextInput
-                            name="previousJobTitle"
-                            label="Previous Job Title"
-                            value={values.previousJobTitle}
-                            onChangeText={handleChange('previousJobTitle')}
+                            name="JobTitle"
+                            label="Previous Job Title*"
+                            value={values.JobTitle}
+                            onChangeText={handleChange('JobTitle')}
                           />
                           <ReusableTextInput
-                            name="previousJobProfile"
-                            label="Job Profile"
-                            value={values.previousJobProfile}
-                            onChangeText={handleChange('previousJobProfile')}
+                            name="jobProfile"
+                            label="Job Profile*"
+                            value={values.jobProfile}
+                            onChangeText={handleChange('jobProfile')}
                           />
 
                           <ReusableDatePicker
                             label="Joining Date"
                             value={values.joiningDate}
                             onChange={date =>
-                              setFieldValue('joiningDate', date)
+                              setFieldValue('joiningDate', new Date(date))
                             }
                           />
                           <ReusableDatePicker
                             label="Leaving Date"
                             value={values.leavingDate}
                             onChange={date =>
-                              setFieldValue('leavingDate', date)
+                              setFieldValue('leavingDate', new Date(date))
                             }
                           />
                         </View>
@@ -561,10 +666,10 @@ const Employment = () => {
                       values.employmentType === 'Internship' && (
                         <View>
                           <ReusableTextInput
-                            name="companyName"
-                            label="Company Name"
-                            value={values.companyName}
-                            onChangeText={handleChange('companyName')}
+                            name="CompanyName"
+                            label="Company Name*"
+                            value={values.CompanyName}
+                            onChangeText={handleChange('CompanyName')}
                           />
                           <ReusableTextInput
                             name="location"
@@ -574,9 +679,21 @@ const Employment = () => {
                           />
                           <ReusableTextInput
                             name="department"
-                            label="Department"
+                            label="Department*"
                             value={values.department}
                             onChangeText={handleChange('department')}
+                          />
+                          <ReusableTextInput
+                            name="roleCategory"
+                            label="Role Category*"
+                            value={values.roleCategory}
+                            onChangeText={handleChange('roleCategory')}
+                          />
+                          <ReusableTextInput
+                            name="role"
+                            label="Role*"
+                            value={values.role}
+                            onChangeText={handleChange('role')}
                           />
                           {/* Currency Dropdown */}
                           <Text style={styles.subheading}>Currency</Text>
@@ -602,15 +719,18 @@ const Employment = () => {
                                 label="Current salary"
                                 value={values.salary}
                                 onChangeText={handleChange('salary')}
+                                keyboardType="numeric"
                               />
                             </View>
                           </View>
                           <ReusableDatePicker
                             label="Worked From"
-                            value={values.joiningDate}
+                            value={values.workedfrom}
                             onChange={date =>
-                              setFieldValue('workingtrom', date)
+                              setFieldValue('workedfrom', new Date(date))
                             }
+                            error={errors.workedfrom}
+                            touched={touched.workedfrom}
                           />
 
                           <ReusableTextInput
@@ -625,10 +745,10 @@ const Employment = () => {
                       values.employmentType === 'Internship' && (
                         <View>
                           <ReusableTextInput
-                            name="companyName"
+                            name="CompanyName"
                             label="Company Name"
-                            value={values.companyName}
-                            onChangeText={handleChange('companyName')}
+                            value={values.CompanyName}
+                            onChangeText={handleChange('CompanyName')}
                           />
                           <ReusableTextInput
                             name="location"
@@ -638,9 +758,21 @@ const Employment = () => {
                           />
                           <ReusableTextInput
                             name="department"
-                            label="Department"
+                            label="Department*"
                             value={values.department}
                             onChangeText={handleChange('department')}
+                          />
+                          <ReusableTextInput
+                            name="roleCategory"
+                            label="Role Category*"
+                            value={values.roleCategory}
+                            onChangeText={handleChange('roleCategory')}
+                          />
+                          <ReusableTextInput
+                            name="role"
+                            label="Role*"
+                            value={values.role}
+                            onChangeText={handleChange('role')}
                           />
                           {/* Currency Dropdown */}
                           <Text style={styles.subheading}>Currency</Text>
@@ -666,35 +798,42 @@ const Employment = () => {
                                 label="Current salary"
                                 value={values.salary}
                                 onChangeText={handleChange('salary')}
+                                keyboardType="numeric"
                               />
                             </View>
                           </View>
                           <ReusableDatePicker
                             label="Worked From"
-                            value={values.joiningDate}
+                            value={values.workedfrom}
                             onChange={date =>
-                              setFieldValue('joiningDate', date)
+                              setFieldValue('workedfrom', new Date(date))
                             }
+                            error={errors.workedfrom}
+                            touched={touched.workedfrom}
                           />
 
                           <ReusableDatePicker
                             label="Worked Till*"
-                            value={values.leavingDate}
+                            value={values.workedtill}
                             onChange={date =>
-                              setFieldValue('leavingDate', date)
+                              setFieldValue('workedtill', new Date(date))
                             }
+                            error={errors.workedtill}
+                            touched={touched.workedtill}
                           />
                         </View>
                       )}
                     {/* Modal Footer */}
-                    <ModalFooter
-                      onPress={handleSubmit} // Correctly wired to handle form submission
-                      onCancel={() => console.log('Modal closed')}
-                    />
                   </View>
                 </ScrollView>
               )}
             </Formik>
+            <ModalFooter
+              onPress={() => formikRef?.handleSubmit()}
+              onCancel={closeModal}
+              showDelete={editingIndex !== null}
+              onDelete={editingIndex !== null ? deleteEmployment : null}
+            />
           </View>
         </View>
       </Modal>
@@ -715,22 +854,33 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   outputContainer: {
-    marginTop: 24,
-    padding: 16,
     borderRadius: 8,
-    backgroundColor: '#e8f5e9',
+    backgroundColor: colors.background,
   },
-  outputHeading: {
+  CompanyName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#2e7d32',
+    color: colors.primary,
   },
-  outputText: {
+  JobTitle: {
     fontSize: 16,
-    color: '#388e3c',
+    fontWeight: '500',
+    color: colors.primary,
     marginBottom: 4,
   },
+
+  otherdata: {
+    fontSize: 12,
+    color: 'gray',
+    marginBottom: 4,
+  },
+  jobProfile: {
+    fontSize: 13,
+    color: '#808080',
+    marginBottom: 18,
+    marginHorizontal: 18,
+  },
+
   noteText: {
     fontSize: 11,
     color: '#009900',
