@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -73,6 +74,7 @@ const Accomplishments = () => {
     presentation: [],
   });
   const [editingIndex, setEditingIndex] = useState(null);
+  let formikRef = null;
 
   const openModal = (key, index = null) => {
     setActiveTab(key);
@@ -563,33 +565,37 @@ const Accomplishments = () => {
         <View style={styles.savedDataSection}>{renderSavedData()}</View>
 
         <Modal visible={modalVisible} transparent onRequestClose={closeModal}>
-          <Formik
-            initialValues={
-              editingIndex !== null &&
-              savedData[activeTab] &&
-              savedData[activeTab][editingIndex]
-                ? savedData[activeTab][editingIndex]
-                : initialValues
-            }
-            validationSchema={getValidationSchema()}
-            onSubmit={handleSubmit}>
-            {({values, handleChange, handleSubmit, setFieldValue}) => (
-              <View style={profileStyle.modalContainer}>
-                {renderFields(values, handleChange, setFieldValue)}
-                <ModalFooter
-                  onPress={handleSubmit}
-                  onCancel={closeModal}
-                  showDelete={editingIndex !== null} // Show delete only if editing
-                  onDelete={() => {
-                    if (editingIndex !== null) {
-                      deleteItem(editingIndex); // Call deleteLanguage with the current index
-                      closeModal(); // Close the modal after deletion
-                    }
-                  }}
-                />
-              </View>
-            )}
-          </Formik>
+          <View style={profileStyle.modalContainer}>
+            <FlatList
+              data={[{key: 'form'}]}
+              renderItem={() => (
+                <Formik
+                  initialValues={
+                    editingIndex !== null &&
+                    savedData[activeTab] &&
+                    savedData[activeTab][editingIndex]
+                      ? savedData[activeTab][editingIndex]
+                      : initialValues
+                  }
+                  validationSchema={getValidationSchema()}
+                  innerRef={ref => (formikRef = ref)}
+                  onSubmit={handleSubmit}>
+                  {({values, handleChange, handleSubmit, setFieldValue}) => (
+                    <View style={profileStyle.modalContainer}>
+                      {renderFields(values, handleChange, setFieldValue)}
+                    </View>
+                  )}
+                </Formik>
+              )}
+              keyExtractor={item => item.key}
+            />
+            <ModalFooter
+              onPress={() => formikRef?.handleSubmit()} // Submits the form
+              onCancel={closeModal} // Cancels and closes the modal
+              showDelete={editingIndex !== null} // Shows the delete button if a project is selected
+              onDelete={deleteItem} // Deletes the project
+            />
+          </View>
         </Modal>
       </ScrollView>
     </View>
@@ -597,19 +603,15 @@ const Accomplishments = () => {
 };
 const labelSpecificStyles = {
   title: {
-    // labelStyle: {color: '#FF5733', fontWeight: 'bold', fontSize: 16},
     valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
   },
   url: {
-    // labelStyle: {color: '#3498DB', fontWeight: '600'},
     valueStyle: {color: 'skyblue', textDecorationLine: 'underline'},
   },
   description: {
-    // labelStyle: {color: '#9B59B6', fontStyle: 'italic'},
     valueStyle: {color: 'gray', fontSize: 13},
   },
   publishedDate: {
-    // labelStyle: {color: '#E67E22', fontWeight: 'bold'},
     valueStyle: {color: '#D35400', fontSize: 12},
   },
   patentTitle: {
@@ -644,7 +646,6 @@ const labelSpecificStyles = {
     valueStyle: {color: 'skyblue', fontSize: 13},
   },
   profiledescription: {
-    // labelStyle: {color: '#9B59B6', fontStyle: 'italic'},
     valueStyle: {color: 'gray', fontSize: 13},
   },
   presentationTitle: {
@@ -654,7 +655,6 @@ const labelSpecificStyles = {
     valueStyle: {color: 'skyblue', fontSize: 13},
   },
   presentationdescription: {
-    // labelStyle: {color: '#9B59B6', fontStyle: 'italic'},
     valueStyle: {color: 'gray', fontSize: 13},
   },
 };

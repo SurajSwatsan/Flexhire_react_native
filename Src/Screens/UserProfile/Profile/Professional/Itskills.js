@@ -243,34 +243,63 @@ const Itskills = () => {
       </View>
 
       {/* Display IT Skills List */}
-      <FlatList
-        horizontal
-        data={itSkillList}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({item, index}) => (
-          <TouchableOpacity
-            style={[profileStyle.userDataContainer, styles.listContainer]}
-            onPress={() => openModal(index)}>
-            {/* Display skill name or "Other" skill name */}
+      <View>
+        {itSkillList.length > 0 ? (
+          <FlatList
+            horizontal
+            data={itSkillList}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                style={[profileStyle.userDataContainer, styles.listContainer]}
+                onPress={() => openModal(index)}>
+                {/* Display skill name or "Other" skill name */}
+                <View style={styles.userData}>
+                  <Text style={profileStyle.optionalData}>
+                    {item.softwareName === 'other'
+                      ? item.othersoftwareName
+                      : item.softwareName}{' '}
+                    - {item.softwareVersion || '-'}
+                  </Text>
+                  {/* Display experience in years and months */}
+                  <Text style={profileStyle.optionalData}>
+                    {item.experianceinYear || item.experianceinMonths
+                      ? `${
+                          item.experianceinYear
+                            ? `${item.experianceinYear} Years`
+                            : ''
+                        } ${
+                          item.experianceinMonths
+                            ? `${item.experianceinMonths} Months`
+                            : ''
+                        }`.trim()
+                      : '-'}
+                  </Text>
+                  {/* Display last used year */}
+                  <Text style={profileStyle.optionalData}>
+                    {item.lastused || '-'}
+                  </Text>
+                </View>
+                <IconButton
+                  icon="pencil-outline"
+                  iconColor={'black'}
+                  size={20}
+                  onPress={() => openModal(index)}
+                />
+              </TouchableOpacity>
+            )}
+          />
+        ) : (
+          // Show optional text when no data is available
+          <View style={styles.noDataContainer}>
             <Text style={profileStyle.optionalData}>
-              {item.softwareName === 'other'
-                ? item.othersoftwareName
-                : item.softwareName}{' '}
-              - {item.softwareVersion || '-'}
+              Mention skills like programming languages (Java, Python),
+              softwares (Microsoft Word, Excel) and more, to show your technical
+              expertise.
             </Text>
-            {/* Display experience in years and months */}
-            <Text style={profileStyle.optionalData}>
-              {item.experianceinYear && item.experianceinMonths
-                ? `${item.experianceinYear} Years ${item.experianceinMonths} Months`
-                : '-'}
-            </Text>
-            {/* Display last used year */}
-            <Text style={profileStyle.optionalData}>
-              {item.lastused || '-'}
-            </Text>
-          </TouchableOpacity>
+          </View>
         )}
-      />
+      </View>
 
       {/* Modal for Adding or Editing IT Skills */}
       <Modal
@@ -377,12 +406,16 @@ const Itskills = () => {
 };
 const styles = StyleSheet.create({
   listContainer: {
-    justifyContent: 'center',
-    width: 160,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 'auto',
     padding: 12,
     backgroundColor: colors.background,
     marginRight: 12,
     borderRadius: 8,
+  },
+  userData: {
+    flex: 1,
   },
 });
 export default Itskills;

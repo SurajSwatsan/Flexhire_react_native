@@ -431,7 +431,7 @@ const PersonalInformation = () => {
         </View>
       ) : (
         <View style={profileStyle.userDataContainer}>
-          <Text style={profileStyle.optionalData}>No submitted data</Text>
+          <Text style={profileStyle.optionalData}>This information is important for employers to know you better.</Text>
         </View>
       )}
 

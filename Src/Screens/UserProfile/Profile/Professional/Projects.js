@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Modal, Text, View, TouchableOpacity, FlatList} from 'react-native';
+import {
+  Modal,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment'; // Import moment for date formatting
@@ -24,8 +31,8 @@ const ProjectStatusOptions = [
 ];
 
 const ProjectSiteOptions = [
-  {id: 1, label: 'Offsite', value: 'Offsite'},
-  {id: 2, label: 'Onsite', value: 'Onsite'},
+  {id: 1, label: 'Off Site', value: 'Off Site'},
+  {id: 2, label: 'On Site', value: 'On Site'},
 ];
 
 const EmploymentNatureOptions = [
@@ -42,8 +49,8 @@ const initialProject = {
   workedTill: '',
   projectDetails: '',
   projectlocation: '',
-  projectsite: '',
-  natureofemployment: '',
+  projectsite: 'Off Site',
+  natureofemployment: 'Full Time',
   teamsize: '',
   role: '',
   roledescription: '',
@@ -89,14 +96,15 @@ const Projects = () => {
 
   const deleteProject = () => {
     if (selectedProjectIndex !== null) {
-      setProjectList(
-        projectList.filter((_, idx) => idx !== selectedProjectIndex),
+      setProjectList(prevList =>
+        prevList.filter((_, idx) => idx !== selectedProjectIndex),
       );
       closeModal();
+      setSelectedProjectIndex(null);
     }
   };
 
-  const formatDate = date => (date ? moment(date).format('MMMM YYYY') : '');
+  const formatDate = date => (date ? moment(date).format('MMM YYYY') : '');
 
   return (
     <View style={profileStyle.mainContainer}>
@@ -111,33 +119,55 @@ const Projects = () => {
         />
       </View>
 
-      <View style={{paddingBottom: 20}}>
-        {/* Added padding for content spacing */}
-        {projectList.map((item, index) => (
-          <View key={index}>
-            <TouchableOpacity
-              style={profileStyle.userDataContainer}
-              onPress={() => openModal(index)}>
-              <Text style={profileStyle.optionalData}>{item.projecttitle}</Text>
-              <Text style={profileStyle.optionalData}>
-                {formatDate(item.workedFrom)} -
-                {item.projectstatus === 'Finished'
-                  ? formatDate(item.workedTill)
-                  : 'Present'}
-              </Text>
-              <Text style={profileStyle.optionalData}>{item.client}</Text>
-            </TouchableOpacity>
+      <View>
+        {projectList.length > 0 ? (
+          projectList.map((item, index) => (
+            <View key={index}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity
+                  style={[profileStyle.userDataContainer, styles.dataContainer]}
+                  onPress={() => openModal(index)}>
+                  <Text style={profileStyle.optionalData}>
+                    {item.projecttitle}
+                  </Text>
+                  <Text style={profileStyle.optionalData}>{item.client}</Text>
 
-            {/* Separator */}
-            <View
-              style={{
-                height: 0.5,
-                backgroundColor: 'lightgray', // Line color
-                marginVertical: 8, // Spacing around the line
-              }}
-            />
+                  <Text style={profileStyle.optionalData}>
+                    {formatDate(item.workedFrom)} -{' '}
+                    {item.projectstatus === 'Finished'
+                      ? formatDate(item.workedTill)
+                      : 'Present'}{' '}
+                    • {item.natureofemployment}
+                  </Text>
+                </TouchableOpacity>
+                <IconButton
+                  icon="pencil-outline"
+                  iconColor={'black'}
+                  size={20}
+                  onPress={() => openModal(index)}
+                />
+              </View>
+
+              {/* Separator */}
+              {projectList.length > 1 && index < projectList.length - 1 && (
+                <View style={styles.horizontalLine} />
+              )}
+            </View>
+          ))
+        ) : (
+          // Render when no data is available
+          <View style={styles.noDataContainer}>
+            <Text style={profileStyle.optionalData}>
+              Stand out to employers by adding details about projects that you
+              have done so far
+            </Text>
           </View>
-        ))}
+        )}
       </View>
 
       <Modal
@@ -275,14 +305,26 @@ const Projects = () => {
             keyExtractor={item => item.key}
           />
           <ModalFooter
-            onPress={() => formikRef?.handleSubmit()}
-            onCancel={closeModal}
-            deleteAction={selectedProjectIndex !== null ? deleteProject : null}
+            onPress={() => formikRef?.handleSubmit()} // Submits the form
+            onCancel={closeModal} // Cancels and closes the modal
+            showDelete={selectedProjectIndex !== null} // Shows the delete button if a project is selected
+            onDelete={deleteProject} // Deletes the project
           />
         </View>
       </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  horizontalLine: {
+    height: 0.5,
+    backgroundColor: 'lightgray', // Light gray color
+    marginVertical: 8,
+  },
+  dataContainer: {
+    flex: 1,
+  },
+});
 
 export default Projects;
