@@ -475,12 +475,12 @@ const styles = StyleSheet.create({
   appliedButton: {
     backgroundColor: 'green', // Disabled color to indicate the button is applied
   },
-  displayContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
+  // displayContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   marginBottom: 12,
+  // },
 
   applyButtonText: {
     color: 'white',
@@ -515,7 +515,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     marginVertical: 8,
     paddingVertical: 6,
-   
   },
   contentText: {
     fontSize: 16,
@@ -562,12 +561,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     marginHorizontal: 10,
-    marginVertical:8
+    marginVertical: 8,
   },
   scrollContainer: {
     // paddingVertical: 8,
     // marginBottom: 12,
-    marginHorizontal:12
+    marginHorizontal: 12,
   },
   relatedjobcontainer: {
     // marginTop:16,
