@@ -13,6 +13,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Timeline from 'react-native-timeline-flatlist';
 import CustomHeader from './CustomBackIcon';
 import CustomJobCard from './CustomJobCard';
+import moment from 'moment';
+import CustomTimelineScreen from './CustomTimeline';
 
 const applicationTimeline = [
   {stage: 'Applied', date: '2024-11-01', status: 'Application submitted'},
@@ -105,19 +107,20 @@ const ApplicationStatusScreen = ({route}) => {
         <View style={styles.timelineContainer}>
           <Text style={styles.timelineTitle}>Your Application Status</Text>
 
-          <ScrollView horizontal={true} style={styles.timelineWrapper}>
+          {/* <ScrollView horizontal={true} style={styles.timelineWrapper}>
             <View style={{flex: 1, paddingVertical: 12}}>
               <Timeline
                 data={applicationTimeline.map(item => ({
-                  time: item.date, // Add time (date) for the timeline
+                  time: moment(item.date).format('D MMM YYYY'), // Add time (date) for the timeline
                   title: item.stage, // Stage as title
                   description: item.status, // Status as description
                 }))}
                 circleSize={15} // Size of the circle (dot) in the timeline
                 circleColor="#004466" // Color of the circle (dot)
                 lineColor="#acd2be" // Color of the connecting line
-                innerCircle={'dot'} // Use a simple dot in the inner circle
+                innerCircle={'dot'}
                 titleStyle={styles.cardTitle} // Title style for the awards
+                
                 descriptionStyle={styles.cardDate} // Date style for the award description (optional)
                 renderTime={rowData => (
                   <Text style={styles.cardDate}>{rowData.time}</Text>
@@ -132,12 +135,17 @@ const ApplicationStatusScreen = ({route}) => {
                   style: {
                     marginLeft: 0, 
                     padding: 0, 
+                    width: '100%',
                   },
                 }}
                 eventContainerStyle={styles.eventContainer}
               />
             </View>
-          </ScrollView>
+          </ScrollView> */}
+
+          <CustomTimelineScreen/>
+         
+
           {relatedJobs && Object.keys(relatedJobs).length > 0 && (
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
@@ -234,7 +242,7 @@ const styles = StyleSheet.create({
   timelineWrapper: {
     marginTop: 18,
     backgroundColor: '#e3f0e9',
-    padding: 10,
+    padding: 12,
     borderRadius: 8,
   },
   
@@ -250,6 +258,7 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 12,
     color: colors.primary,
+    marginRight:5
   },
   timelineTitle: {
     fontSize: 18,
@@ -301,6 +310,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     marginHorizontal: 10,
+  },
+  eventContainer: {
+    // marginTop: 16,
+    // backgroundColor: '#fafafa',
+    // borderRadius:8,
+    // marginBottom: 8,
+    flexDirection: 'row',  // Ensure elements in each event are aligned horizontally
+    justifyContent: 'flex-start',  // Align all items to the left
+    alignItems: 'center', // Keep the items aligned vertically
   },
 });
 
