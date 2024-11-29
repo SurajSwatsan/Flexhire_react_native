@@ -141,47 +141,56 @@ const Languages = () => {
       </View>
 
       {/* Display List of Languages */}
-      {languagesList.map((lang, index) => (
-        <TouchableOpacity key={index} onPress={() => handleEdit(index)}>
-          <View style={styles.outpurtData}>
-            <View style={styles.languageDetails}>
-              <Text style={styles.displayText}>{lang.language}</Text>
-              <View style={styles.iconsContainer}>
-                {/* Delete Icon */}
-                <IconButton
-                  icon="pencil-outline"
-                  iconColor="#000"
-                  size={18}
-                  onPress={() => handleEdit(index)} // Call the separate delete function
-                  style={styles.iconButton}
-                />
-              </View>
-            </View>
-            <View style={styles.iconTextContainer}>
-              {lang.comfortablein.map(option => {
-                // Define icons for each comfortablein option
-                const icons = {
-                  Reading: 'book-outline',
-                  Writing: 'pencil-outline',
-                  Speaking: 'mic-outline',
-                };
-
-                return (
-                  <View key={option} style={profileStyle.chip}>
-                    <Ionicons
-                      name={icons[option]} // Match the icon with the option
-                      size={16}
-                      color="#333"
-                      style={{marginRight: 4}} // Spacing between icon and text
+      <View>
+        {languagesList.length > 0 ? (
+          languagesList.map((lang, index) => (
+            <TouchableOpacity key={index} onPress={() => handleEdit(index)}>
+              <View style={styles.outpurtData}>
+                <View style={styles.languageDetails}>
+                  <Text style={styles.displayText}>{lang.language}</Text>
+                  <View style={styles.iconsContainer}>
+                    {/* Edit Icon */}
+                    <IconButton
+                      icon="pencil-outline"
+                      iconColor="#000"
+                      size={18}
+                      onPress={() => handleEdit(index)}
+                      style={styles.iconButton}
                     />
-                    <Text style={profileStyle.chipText}>{option}</Text>
                   </View>
-                );
-              })}
-            </View>
+                </View>
+                <View style={styles.iconTextContainer}>
+                  {lang.comfortablein.map(option => {
+                    // Define icons for each comfortablein option
+                    const icons = {
+                      Reading: 'book-outline',
+                      Writing: 'pencil-outline',
+                      Speaking: 'mic-outline',
+                    };
+
+                    return (
+                      <View key={option} style={profileStyle.chip}>
+                        <Ionicons
+                          name={icons[option]} // Match the icon with the option
+                          size={16}
+                          color="#333"
+                          style={{marginRight: 4}} // Spacing between icon and text
+                        />
+                        <Text style={profileStyle.chipText}>{option}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          // Show optional text when no data is available
+          <View style={styles.noDataContainer}>
+            <Text style={profileStyle.optionalData}>Strengthen your resume by letting recruiters know you can communicate in multiple languages</Text>
           </View>
-        </TouchableOpacity>
-      ))}
+        )}
+      </View>
 
       {/* Modal for Adding or Editing Language */}
       <Modal

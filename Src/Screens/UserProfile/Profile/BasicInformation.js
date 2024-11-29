@@ -1,4 +1,4 @@
-import {Modal, Text, View, TouchableOpacity, FlatList} from 'react-native';
+import {Modal, Text, View, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import React, {useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
@@ -273,73 +273,36 @@ const BasicInformation = () => {
       </View>
 
       {submittedData ? (
-        <View style={profileStyle.userDataContainer}>
-          <TouchableOpacity onPress={openModal}>
-            {[
-              {
-                label: 'Full Name',
-                value: submittedData.fullName || '-',
-              },
-              {
-                label: 'Email',
-                value: submittedData.email || '-',
-              },
+  <View style={profileStyle.userDataContainer}>
+    <TouchableOpacity onPress={openModal}>
+      {[
+        {label: 'Full Name', value: submittedData.fullName},
+        {label: 'Email', value: submittedData.email},
+        {label: 'Phone Number', value: submittedData.phoneNumber},
+        {
+          label: 'Date of Birth',
+          value: submittedData.DOB
+            ? moment(submittedData.DOB).format('MMMM DD, YYYY')
+            : null,
+        },
+        {label: 'Gender', value: submittedData.gender},
+        {label: 'Country', value: submittedData.Country},
+        {label: 'State', value: submittedData.homeState},
+        {label: 'City', value: submittedData.homeCity},
+      ].map((field, index) => (
+        <View key={index} style={{flexDirection: 'row', marginBottom: 5}}>
+          <Text style={styles.labelText}>{field.label}</Text>
+          <Text style={styles.valueText}>{field.value || '-'}</Text>
+        </View>
+      ))}
+    </TouchableOpacity>
+  </View>
+) : (
+  <View style={profileStyle.userDataContainer}>
+    <Text style={profileStyle.optionalData}>No submitted data</Text>
+  </View>
+)}
 
-              {
-                label: 'Phone Number',
-                value: submittedData.phoneNumber || '-',
-              },
-              {
-                label: 'Date of Birth',
-                value: submittedData.DOB
-                  ? moment(submittedData.DOB).format('MMMM DD, YYYY')
-                  : '-',
-              },
-              {
-                label: 'Gender',
-                value: submittedData.gender || '-',
-              },
-              {
-                label: 'Country',
-                value: submittedData.Country || '-',
-              },
-              {
-                label: 'State',
-                value: submittedData.homeState || '-',
-              },
-              {
-                label: 'City',
-                value: submittedData.homeCity || '-',
-              },
-            ].map((field, index) => (
-              <View key={index} style={{flexDirection: 'row', marginBottom: 5}}>
-                <Text
-                  style={{
-                    color: '#000',
-                    flex: 1,
-                    fontWeight: 'bold',
-                    fontSize: 13,
-                  }}>
-                  {field.label}
-                </Text>
-                <Text
-                  style={{
-                    color: '#000',
-                    flex: 1,
-                    textAlign: 'left',
-                    fontSize: 13,
-                  }}>
-                  {field.value}
-                </Text>
-              </View>
-            ))}
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={profileStyle.userDataContainer}>
-          <Text style={profileStyle.optionalData}>No submitted data</Text>
-        </View>
-      )}
 
       <Modal
         animationType="slide"
@@ -454,5 +417,19 @@ const BasicInformation = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  labelText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+    width: '40%',
+  },
+  valueText: {
+    fontSize: 16,
+    color: '#000',
+    width: '60%',
+  },
+});
 
 export default BasicInformation;

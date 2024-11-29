@@ -12,26 +12,49 @@ import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import profileStyle from '../../ProfileStyle';
-import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
+import ReusableDropdown from '../../../../Constant/CustomDropdown';
+import CustomTabs from '../../../../Constant/CustomTabs';
 
 const EducationLevels = [
-  {id: 1, value: 'Doctorate'},
-  {id: 2, value: 'Post Graduate'},
-  {id: 3, value: 'Graduate'},
-  {id: 4, value: 'Diploma'},
-];
+  { id: 1, value: 'Doctorate', label: 'Doctorate' },
+  { id: 2, value: 'Post Graduate', label: 'Post Graduate' },
+  { id: 3, value: 'Graduate', label: 'Graduate' },
+  { id: 4, value: 'Diploma', label: 'Diploma' },
+];;
 
-const GradingSystem = [
-  {id: 1, value: 'Scale 10 Grading System'},
-  {id: 2, value: 'Scale 4 Grading System'},
-  {id: 3, value: '% Marks of 100 Maximum'},
-  {id: 4, value: 'Course Requires a Pass'},
+const startYear = 1980;
+const currentYear = new Date().getFullYear();
+const endYear = currentYear + 4;
+
+const StartingYear = Array.from(
+  {length: currentYear - startYear + 1},
+  (_, index) => ({
+    id: index + 1,
+    value: (currentYear - index).toString(),
+    label: (currentYear - index).toString(),
+  }),
+);
+
+const EndingYear = Array.from(
+  {length: endYear - startYear + 1}, // Total years from startYear to endYear
+  (_, index) => ({
+    id: index + 1,
+    value: (endYear - index).toString(), // Generate each year in descending order
+    label: (endYear - index).toString(), // Use the same year as the label
+  }),
+);
+const GRADING_OPTIONS = [
+  {id: 1, value: 'Scale 10 Grading System', label: 'Scale 10 Grading System'},
+  {id: 2, value: 'Scale 4 Grading System', label: 'Scale 4 Grading System'},
+  {id: 3, value: '% Marks of 100 Maximum', label: '% Marks of 100 Maximum'},
+  {id: 4, value: 'Course Requires a Pass', label: 'Course Requires a Pass'},
 ];
 
 const validationSchema = Yup.object().shape({
+  educationLevel: Yup.string().required('Education Level is required'),
   universityName: Yup.string().required('University Name is required'),
   course: Yup.string().required('Course is required'),
   specialization: Yup.string().required('Specialization is required'),
@@ -42,19 +65,40 @@ const validationSchema = Yup.object().shape({
     .matches(/^\d{4}$/, 'Ending Year must be a valid year')
     .required('Ending Year is required'),
   gradingSystem: Yup.string().required('Grading System is required'),
-  marks: Yup.string()
-    .matches(
-      /^\d+(\.\d{1,2})?$/,
-      'Marks must be a number with up to two decimals',
-    )
-    .nullable(),
+  courseType: Yup.string().required('Course Type is required'),
+  marks: Yup.string().test(
+    'Marks must be a percentage (0-100)',
+    function (value) {
+      const {gradingSystem} = this.parent; // Access the gradingSystem field
+      if (gradingSystem && gradingSystem !== 'Course Requires a Pass') {
+        if (!value) {
+          return this.createError({message: 'Marks is required'});
+        }
+        // Validate numeric format and range (0-100)
+        const isValidFormat = /^\d+(\.\d{1,2})?$/.test(value); // Numeric with up to 2 decimals
+        const isValidRange = parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
+        return isValidFormat && isValidRange;
+      }
+      return true; // Skip validation when gradingSystem is "Course Requires a Pass"
+    },
+  ),
 });
+const CourseType = [
+  {id: 1, label: 'Full Time', value: 'Full Time'},
+  {id: 2, label: 'Part Time', value: 'Part Time'},
+  {
+    id: 3,
+    label: 'Correspondence/Distance Learning',
+    value: 'Correspondence/Distance Learning',
+  },
+];
 
 const getInitialValues = () => ({
   educationLevel: '',
   universityName: '',
   course: '',
   specialization: '',
+  courseType: '',
   startingYear: '',
   endingYear: '',
   gradingSystem: '',
@@ -113,18 +157,48 @@ const HigherEducation = () => {
           data={educationData}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
-            <TouchableOpacity onPress={() => openModal(index)}>
-              <View style={profileStyle.userDataContainer}>
-                <Text style={styles.ClassText}>{item.educationLevel}</Text>
-                <Text style={styles.passoutText}>
-                  {item.universityName}, {item.course}, {item.specialization}
-                </Text>
-              </View>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity onPress={() => openModal(index)}>
+                <View style={profileStyle.userDataContainer}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <View style={{flex:1}}>
+                      <Text style={styles.ClassText}>
+                        {item.course}/{item.specialization}
+                      </Text>
+                      <Text style={styles.universityName}>
+                        {item.universityName}
+                      </Text>
+                      <Text style={styles.passoutText}>
+                        {item.startingYear}-{item.endingYear} • {item.courseType}
+                      </Text>
+                    </View>
+                    <View>
+                      <IconButton
+                        icon="pencil-outline"
+                        size={20}
+                        onPress={() => openModal(index)}
+                        iconColor={'black'}
+                        style={styles.editIcon}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+              {educationData.length > 1 && index < educationData.length - 1 && (
+                <View style={styles.horizontalLine} />
+              )}
+            </>
           )}
         />
       ) : (
-        <Text>No education details added yet.</Text>
+        <Text style={profileStyle.optionalData}>
+          Details like course, university, and more, help recruiters identify
+          your educational background.
+        </Text>
       )}
 
       <Modal
@@ -153,11 +227,25 @@ const HigherEducation = () => {
               }) => (
                 <View style={profileStyle.formContainer}>
                   <Text style={profileStyle.formHeading}>
-                    ADD EDUCATION DETAILS
+                    HIGHER EDUCATION DETAILS
                   </Text>
-
+                  <Text style={profileStyle.formSubHeading}>
+                    Details like course, university, and more, help recruiters
+                    identify your educational background
+                  </Text>
                   <View style={profileStyle.TabContainer}>
-                    {EducationLevels.map(option => (
+
+                  <CustomTabs
+                        label="Education*"
+                        options={EducationLevels}
+                        selectedValue={values.educationLevel}
+                        setFieldValue={setFieldValue}
+                        fieldName="educationLevel"
+                        error={errors.educationLevel}
+                        touched={touched.educationLevel}
+                      />
+
+                    {/* {EducationLevels.map(option => (
                       <TouchableOpacity
                         key={option.id}
                         style={[
@@ -179,7 +267,7 @@ const HigherEducation = () => {
                           {option.value}
                         </Text>
                       </TouchableOpacity>
-                    ))}
+                    ))} */}
                   </View>
 
                   {[
@@ -207,45 +295,60 @@ const HigherEducation = () => {
                         value={values.specialization}
                         onChangeText={handleChange('specialization')}
                       />
+
+                      <CustomTabs
+                        label="Course Type*"
+                        options={CourseType}
+                        selectedValue={values.courseType}
+                        setFieldValue={setFieldValue}
+                        fieldName="courseType"
+                        error={errors.courseType}
+                        touched={touched.courseType}
+                      />
                       <View style={styles.YearContainer}>
                         <View style={{width: '48%'}}>
-                          <ReusableTextInput
-                            name="startingYear"
-                            label="Starting Year*"
-                            value={values.startingYear}
-                            onChangeText={handleChange('startingYear')}
-                            keyboardType="numeric"
+                          <ReusableDropdown
+                            options={StartingYear}
+                            placeholder="Starting Year*"
+                            selectedValue={values.startingYear}
+                            onSelect={selected =>
+                              setFieldValue('startingYear', selected.value)
+                            }
+                            error={errors.startingYear}
+                            touched={touched.startingYear}
                           />
                         </View>
                         <View style={{width: '48%'}}>
-                          <ReusableTextInput
-                            name="endingYear"
-                            label="Ending Year*"
-                            value={values.endingYear}
-                            onChangeText={handleChange('endingYear')}
-                            keyboardType="numeric"
+                          <ReusableDropdown
+                            options={EndingYear}
+                            placeholder="Ending Year*"
+                            selectedValue={values.endingYear}
+                            onSelect={selected =>
+                              setFieldValue('endingYear', selected.value)
+                            }
+                            error={errors.endingYear}
+                            touched={touched.endingYear}
                           />
                         </View>
                       </View>
-                      <CustomSelectionModal
-                        title="Grading System*"
-                        data={GradingSystem}
-                        selectedItems={
-                          GradingSystem.find(
-                            item => item.value === values.gradingSystem,
-                          ) || null
+
+                      <ReusableDropdown
+                        options={GRADING_OPTIONS}
+                        placeholder="Grading System*"
+                        selectedValue={values.gradingSystem}
+                        onSelect={selected =>
+                          setFieldValue('gradingSystem', selected.value)
                         }
-                        setSelectedItems={item =>
-                          setFieldValue('gradingSystem', item?.value || '')
-                        }
-                        placeholder="Select Grading System"
+                        error={errors.gradingSystem}
+                        touched={touched.gradingSystem}
                       />
+
                       {/* Conditionally render Marks field */}
                       {values.gradingSystem &&
                         values.gradingSystem !== 'Course Requires a Pass' && (
                           <ReusableTextInput
                             name="marks"
-                            label="Marks"
+                            label="Marks*"
                             value={values.marks}
                             onChangeText={handleChange('marks')}
                             keyboardType="numeric"
@@ -272,18 +375,30 @@ const HigherEducation = () => {
 
 const styles = StyleSheet.create({
   ClassText: {
-    fontSize: 18,
+    flex: 1,
+    fontSize: 17,
     fontWeight: 'bold',
     color: colors.secondary,
   },
   passoutText: {
+    fontSize: 13,
+    color: colors.primary,
+  },
+  universityName: {
     fontSize: 14,
+    fontWeight: '600',
     color: colors.primary,
   },
   YearContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  horizontalLine: {
+    height: 0.5,
+    backgroundColor: 'lightgray', // Light gray color
+    marginVertical: 4,
+  },
+  editIcon: {},
 });
 
 export default HigherEducation;

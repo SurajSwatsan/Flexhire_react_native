@@ -16,6 +16,7 @@ import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
+import CustomTabs from '../../../../Constant/CustomTabs';
 
 const EducationBoards = [
   {id: 1, value: 'CBSE'},
@@ -53,9 +54,9 @@ const EducationBoards = [
   {id: 33, value: 'West Bengal'},
   {id: 34, value: 'Other'},
 ];
-const Class = [
-  {id: 1, value: '10th'},
-  {id: 2, value: '12th'},
+const EducationClass = [
+  {id: 1, value: '10th', label: 'Class 10th'},
+  {id: 2, value: '12th', label: 'Class 12th'},
 ];
 
 const startYear = 1980;
@@ -68,8 +69,6 @@ const PassoutYear = Array.from(
     value: (startYear + index).toString(),
   }),
 );
-
-console.log(PassoutYear);
 
 const SchoolMedium = [
   {id: 1, value: 'Assamese / Asomiya'},
@@ -92,15 +91,23 @@ const SchoolMedium = [
   {id: 18, value: 'Other'},
 ];
 const validationSchema = Yup.object().shape({
+  education: Yup.string().required('Education Level is required'),
   board: Yup.string().required('Board is required'),
   passout: Yup.string().required('Passout Year is required'),
   schoolMedium: Yup.string().required('School Medium is required'),
   marks: Yup.string()
-    .matches(
-      /^\d+(\.\d{1,2})?$/,
-      'Marks must be a number with up to two decimal places eg. 56.30',
-    )
-    .required('Marks are required'),
+    .required('Marks is required')
+    .matches(/^\d+(\.\d{1,2})?$/)
+    .test(
+      'is-valid-range',
+      '% marks of 100 maximum',
+      value =>
+        value !== undefined &&
+        value !== null &&
+        parseFloat(value) >= 0 &&
+        parseFloat(value) <= 100,
+    ),
+
   englishMarks: Yup.string()
     .matches(/^\d+$/, 'English Marks must be a whole number, eg 85')
     .test(
@@ -124,7 +131,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const getInitialValues = () => ({
-  class: '',
+  education: '',
   board: '',
   passout: '',
   schoolMedium: '',
@@ -168,14 +175,14 @@ const Education = () => {
     closeModal();
   };
 
-  const allClassesAdded = Class.every(cls =>
-    educationData.some(edu => edu.class === cls.value),
+  const allClassesAdded = EducationClass.every(cls =>
+    educationData.some(edu => edu.education === cls.value),
   );
 
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <Text style={profileStyle.heading}>EDUCATION DETAILS</Text>
+        <Text style={profileStyle.heading}>SECONDARY EDUCATION DETAILS</Text>
         {!allClassesAdded && (
           <IconButton
             icon="plus-circle-outline"
@@ -191,32 +198,38 @@ const Education = () => {
           data={educationData}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
-            <TouchableOpacity onPress={() => openModal(index)}>
-              <View style={profileStyle.userDataContainer}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
-                  <Text style={styles.ClassText}>{item.class}</Text>
-                  <IconButton
-                    icon="pencil-outline"
-                    size={20}
-                    onPress={() => openModal(index)}
-                    iconColor={'black'}
-                  />
+            <>
+              <TouchableOpacity onPress={() => openModal(index)}>
+                <View style={profileStyle.userDataContainer}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={styles.ClassText}>{item.education}</Text>
+                    <IconButton
+                      icon="pencil-outline"
+                      size={20}
+                      onPress={() => openModal(index)}
+                      iconColor={'black'}
+                    />
+                  </View>
+                  <View style={{marginTop: -10}}>
+                    <Text style={styles.boardText}>{item.board}</Text>
+                    <Text style={styles.passoutText}>{item.passout}</Text>
+                  </View>
                 </View>
-
-                <View style={{marginTop: -10}}>
-                  <Text style={styles.boardText}>{item.board}</Text>
-                  <Text style={styles.passoutText}>{item.passout}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+              {educationData.length > 1 && index < educationData.length - 1 && (
+                <View style={styles.horizontalLine} />
+              )}
+            </>
           )}
         />
       ) : (
-        <Text>No education details added yet.</Text>
+        <Text style={profileStyle.optionalData}>
+          Details like Board, Marks, and more educational background.
+        </Text>
       )}
 
       <Modal
@@ -245,35 +258,45 @@ const Education = () => {
               }) => (
                 <View style={profileStyle.formContainer}>
                   <Text style={profileStyle.formHeading}>
-                    EDUCATION INFORMATION
+                    SECONDARY EDUCATION INFORMATION
                   </Text>
                   <View style={profileStyle.formSubHeading}>
                     <Text style={profileStyle.formSubHeading}>
-                      Please fill in all the required fields.
+                      Details like education, Board, Marks, and more, help
+                      recruiters identify your educational background.
                     </Text>
                   </View>
                   <View style={styles.classTabContainer}>
-                    <Text style={profileStyle.label}>Class</Text>
+                    <CustomTabs
+                      label="Education*"
+                      options={EducationClass}
+                      selectedValue={values.education}
+                      setFieldValue={setFieldValue}
+                      fieldName="education"
+                      error={errors.education}
+                      touched={touched.education}
+                    />
+                    {/* <Text style={profileStyle.label}>Class</Text>
                     <View style={profileStyle.TabContainer}>
                       {Class.filter(
                         option =>
                           !educationData.some(
-                            saved => saved.class === option.value,
+                            saved => saved.education === option.value,
                           ),
                       ).map(option => (
                         <TouchableOpacity
                           key={option.id}
                           style={[
                             profileStyle.tabBtnStyle,
-                            values.class === option.value
+                            values.education === option.value
                               ? profileStyle.selectedTab
                               : profileStyle.unselectedTab,
                           ]}
-                          onPress={() => setFieldValue('class', option.value)}>
+                          onPress={() => setFieldValue('education', option.value)}>
                           <Text
                             style={[
                               profileStyle.tabBtnText,
-                              values.class === option.value
+                              values.education === option.value
                                 ? profileStyle.selectedTabText
                                 : profileStyle.unselectedTabText,
                             ]}>
@@ -281,7 +304,7 @@ const Education = () => {
                           </Text>
                         </TouchableOpacity>
                       ))}
-                    </View>
+                    </View> */}
                   </View>
                   <CustomSelectionModal
                     title="Board"
@@ -330,7 +353,7 @@ const Education = () => {
                     note="% marks of 100 maximum"
                   />
                   {/* Show English and Math Marks only for Class 12 */}
-                  {values.class === '12th' && (
+                  {values.education === '12th' && (
                     <>
                       <ReusableTextInput
                         name="englishMarks"
@@ -369,7 +392,7 @@ const Education = () => {
 const styles = StyleSheet.create({
   ClassText: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: colors.secondary,
   },
@@ -377,13 +400,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   boardText: {
-    fontWeight: 'bold',
-    fontSize: 15,
+    fontWeight: '600',
+    fontSize: 14,
     color: colors.primary,
   },
   passoutText: {
     fontSize: 13,
     color: colors.primary,
+  },
+  horizontalLine: {
+    height: 0.5,
+    backgroundColor: 'lightgray', // Light gray color
+    marginVertical: 4,
   },
 });
 export default Education;
