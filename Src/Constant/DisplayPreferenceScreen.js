@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const JobScreen = () => {
+const DispalyPreferenceScreen = () =>{
     return(
-    <View>
+      <View>
         <Text>Hello</Text>
-    </View>
+      </View>
     );
 };
 
@@ -13,4 +13,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default JobScreen;
+export default DispalyPreferenceScreen;

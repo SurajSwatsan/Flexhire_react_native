@@ -19,6 +19,7 @@ import CustomJobCard from '../../Constant/CustomJobCard';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomCompanyCard from '../../Constant/CustomCompanyCard';
 import {CircularProgress} from 'react-native-circular-progress'; // Import the CircularProgress component
+import moment from 'moment';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -70,6 +71,9 @@ const HomeScreen = () => {
     return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
   }
 
+  const lastUpdatedDate = '2024-11-24';
+  const daysSinceUpdate = moment().diff(moment(lastUpdatedDate), 'days');
+
   const profileCompletion = 75;
 
   return (
@@ -100,8 +104,8 @@ const HomeScreen = () => {
           <View style={styles.dataContainer}>
             <View style={styles.profileImageWrapper}>
               <CircularProgress
-                size={120}
-                width={8}
+                size={85}
+                width={4}
                 fill={profileCompletion}
                 rotation={220}
                 tintColor="#509570" // Color of the progress
@@ -118,6 +122,10 @@ const HomeScreen = () => {
 
             <View style={styles.profile}>
               <Text style={styles.profileName}>Xyz's Profile</Text>
+              <Text style={styles.profileDate}>
+              
+              Updated {daysSinceUpdate}{daysSinceUpdate === 1 ? 'd' : 'd'} ago
+              </Text>
               <Text style={styles.profileDetail}>Missing details</Text>
             </View>
           </View>
@@ -238,18 +246,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   profileContainer: {
-    marginHorizontal: 12,
+    marginHorizontal: 18,
     marginVertical: 12,
     backgroundColor: '#e3f0e9',
     // alignItems:'center',
-    paddingVertical: 12,
     borderRadius: 8,
   },
   dataContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap:18
   },
   profileImageWrapper: {
     position: 'relative',
@@ -260,8 +266,8 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     position: 'absolute',
-    width: 100,
-    height: 100,
+    width: 72,
+    height: 72,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: 'white',
@@ -270,14 +276,19 @@ const styles = StyleSheet.create({
   profile: {
     flexDirection: 'column',
   },
-
+  profileDate: {
+    color: '#478564',
+    fontSize: 12,
+  },
   profileName: {
-    color:'#478564',
-    fontSize: 18,
+    color: '#478564',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   profileDetail: {
     color: 'blue',
+    fontSize: 12,
+    marginTop:8
   },
   JobsContainer: {
     // marginTop: 12,

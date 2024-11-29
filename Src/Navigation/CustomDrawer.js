@@ -13,7 +13,7 @@ import {
 import {IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../Global_CSS/TheamColors';
-import { createMaterialBottomTabNavigator } from 'react-native-paper/lib/typescript/react-navigation';
+import {createMaterialBottomTabNavigator} from 'react-native-paper/lib/typescript/react-navigation';
 
 const CustomDrawer = ({children}) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -46,7 +46,7 @@ const CustomDrawer = ({children}) => {
   };
 
   const notification = () => {
-    navigation.navigate('Notification')
+    navigation.navigate('Notification');
   };
 
   const handleOutsideTap = () => {
@@ -64,7 +64,7 @@ const CustomDrawer = ({children}) => {
           iconColor="#fff"
           size={36}
         />
-        
+
         <IconButton
           icon="bell"
           onPress={() => notification()}
@@ -145,7 +145,7 @@ const CustomDrawer = ({children}) => {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                navigation.navigate('');
+                navigation.navigate('DisplayPreference');
                 toggleDrawer();
               }}>
               <Ionicons name="eye" size={18} style={styles.iconStyles} />
@@ -262,9 +262,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  icons:{
-    flexDirection:'row',
-    
+  icons: {
+    flexDirection: 'row',
   },
   menuItem: {
     color: '#333',

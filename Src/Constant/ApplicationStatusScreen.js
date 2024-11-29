@@ -130,8 +130,8 @@ const ApplicationStatusScreen = ({route}) => {
                 )}
                 options={{
                   style: {
-                    marginLeft: 10, // Space between circle and content
-                    // padding: 0,
+                    marginLeft: 0, 
+                    padding: 0, 
                   },
                 }}
                 eventContainerStyle={styles.eventContainer}
@@ -143,13 +143,13 @@ const ApplicationStatusScreen = ({route}) => {
               <View style={styles.displayContainer}>
                 <Text style={styles.contHead}>Similar Jobs</Text>
                 <TouchableOpacity>
-                <Text style={styles.seeAll}>See All</Text>
+                  <Text style={styles.seeAll}>See All</Text>
                 </TouchableOpacity>
               </View>
 
               <ScrollView>
                 {Object.entries(relatedJobs).map(([key, jobdata], index) => (
-                  <View key={jobdata.id || index} >
+                  <View key={jobdata.id || index} style={{marginBottom: 14}}>
                     <TouchableOpacity
                       onPress={() => {
                         // Navigate to JobDetailScreen for the related job
@@ -176,21 +176,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     backgroundColor: colors.background,
   },
-  hederText:{
-    flexDirection:'row',
-    alignItems:'center',
-    
+  hederText: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   companyHeader: {
     color: colors.blackText,
-    fontSize:16,
-    marginLeft:18
+    fontSize: 16,
+    marginLeft: 18,
   },
   jobContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     marginBottom: 8,
+    backgroundColor:'#fafafa',
+    padding:8,
+    borderRadius:8
   },
 
   image: {
@@ -225,8 +227,8 @@ const styles = StyleSheet.create({
   },
   viewDescription: {
     color: colors.secondary,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    // fontWeight: 'bold',
     marginBottom: 14,
   },
   timelineWrapper: {
@@ -235,6 +237,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
+  
   detailContainer: {
     flexDirection: 'column',
     // paddingLeft: 10,
@@ -276,7 +279,7 @@ const styles = StyleSheet.create({
 
   relatedjobcontainer: {
     // marginTop:16,
-    marginBottom: 24,
+    marginBottom: 12,
     backgroundColor: colors.background,
     marginTop: 12,
   },
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.blackText,
     marginRight: 8,
-    textDecorationLine:'underline'
+    textDecorationLine: 'underline',
   },
   displayContainer: {
     flexDirection: 'row',

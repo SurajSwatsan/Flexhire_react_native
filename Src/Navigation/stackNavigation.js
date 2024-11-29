@@ -22,6 +22,7 @@ import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
+import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -106,6 +107,11 @@ const StackNavigation = () => {
       <Stack.Screen 
       name='JobsScreen' 
       component={JobScreen}
+      />
+
+      <Stack.Screen
+      name="DisplayPreference"
+      component={DispalyPreferenceScreen}
       />
 
       <Stack.Screen
