@@ -14,7 +14,9 @@ import {useNavigation} from '@react-navigation/native';
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State for selected image URI
   const navigation = useNavigation();
+  const [showSections, setShowSections] = useState(false);
 
+  
   return (
     <View style={styles.mainContainer}>
       <ScrollView>
@@ -39,7 +41,8 @@ const Index = () => {
             style={styles.container}
             onPress={() =>
               navigation.navigate('userProfileScreen', {selectedImage})
-            }>
+            }
+            >
             <View style={styles.innerContainer}>
               <Ionicons
                 name="person-sharp"
@@ -54,7 +57,11 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}>
+          <TouchableOpacity style={styles.container}
+           onPress={() =>
+            navigation.navigate('UserApplies')
+          }
+          >
             <View style={styles.innerContainer}>
               <Ionicons
                 name="checkmark-circle-sharp"
@@ -69,8 +76,14 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}>
-            <View style={styles.innerContainer}>
+          <TouchableOpacity style={styles.container}
+            onPress={() =>
+              navigation.navigate("bookmark")
+            }
+          >
+            <View style={styles.innerContainer}
+          
+            >
               <Ionicons
                 name="arrow-down-circle-sharp"
                 size={18}
@@ -84,7 +97,11 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}>
+          <TouchableOpacity style={styles.container}
+          onPress={() =>
+            navigation.navigate("InterviewPage")
+          }
+          >
             <View style={styles.innerContainer}>
               <Ionicons
                 name="people-circle-sharp"
@@ -99,6 +116,9 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
+
+          {showSections && (
+            <>
           <TouchableOpacity style={styles.container}>
             <View style={styles.innerContainer}>
               <Ionicons
@@ -140,6 +160,7 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
+          </>)}
         </View>
       </ScrollView>
     </View>
@@ -174,11 +195,12 @@ const styles = StyleSheet.create({
     marginLeft: 18,
   },
   bodyContainer: {
-    flex: 1,
+    // flex: 1,
     height: '100%',
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    
   },
   container: {
     justifyContent: 'space-between',

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../Global_CSS/TheamColors';
 import moment from 'moment';
@@ -72,9 +72,9 @@ const CustomTimelineScreen = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        // data={applicationStatus}
-        data={applicationStatus.filter(item => {
+      {/* Map over applicationStatus array to render each item */}
+      {applicationStatus
+        .filter(item => {
           if (isRejectedPresent) {
             const rejectedIndex = applicationStatus.findIndex(
               entry => entry.name === 'Rejected',
@@ -90,8 +90,8 @@ const CustomTimelineScreen = () => {
           }
 
           return true; // Otherwise, show the item
-        })}
-        renderItem={({item, index}) => {
+        })
+        .map((item, index) => {
           // Find the corresponding entry from `res` using the name
           const statusData = res.find(entry => entry.name === item.name);
 
@@ -102,7 +102,7 @@ const CustomTimelineScreen = () => {
           const message = statusData ? statusData.message : '';
 
           return (
-            <View style={styles.itemContainer}>
+            <View style={styles.itemContainer} key={item.name}>
               {index > 0 && (
                 <View
                   style={[
@@ -116,7 +116,6 @@ const CustomTimelineScreen = () => {
                             !isStatusCompleted(item.name)
                           ? 'orange'
                           : 'gray',
-                      // height: isStatusPresent(item.name) ? '165%' : '80%',
                     },
                   ]}
                 />
@@ -151,15 +150,8 @@ const CustomTimelineScreen = () => {
                   />
                 </View>
               </View>
-              {/* <View style={[styles.line]}></View> */}
 
-              <View
-                style={[
-                  styles.textContainer,
-                  {
-                    // marginTop: isStatusPresent(item.name) ? 20 : 0, // Adjusting margin for text container
-                  },
-                ]}>
+              <View style={styles.textContainer}>
                 <Text
                   style={[
                     styles.cardTitle,
@@ -189,7 +181,6 @@ const CustomTimelineScreen = () => {
                             !isStatusCompleted(item.name)
                           ? 'orange'
                           : 'gray',
-                      // height: message ? 'auto' : 0,
                     },
                   ]}>
                   {date}
@@ -208,7 +199,6 @@ const CustomTimelineScreen = () => {
                             !isStatusCompleted(item.name)
                           ? 'orange'
                           : 'gray',
-                      // height: date ? 'auto' : 0,
                     },
                   ]}>
                   {message}
@@ -216,9 +206,7 @@ const CustomTimelineScreen = () => {
               </View>
             </View>
           );
-        }}
-        // keyExtractor={(item, index) => index.toString()}
-      />
+        })}
     </View>
   );
 };
@@ -232,7 +220,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     justifyContent: 'center',
   },
-
   cardTitle: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -253,7 +240,7 @@ const styles = StyleSheet.create({
   },
   line: {
     width: 2,
-    height: '134%',
+    height: '140%',
     left: 21,
     top: -34,
   },
@@ -275,21 +262,6 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'column',
     marginLeft: 20,
-  },
-  statusTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'grey',
-  },
-  statusCompletedTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'grey',
-  },
-  statusPendingTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'grey',
   },
 });
 

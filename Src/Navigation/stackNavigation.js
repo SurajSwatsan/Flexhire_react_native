@@ -23,6 +23,8 @@ import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
+import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
+import CustomBottomTab from './CustomBottomTab.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -148,7 +150,20 @@ const StackNavigation = () => {
         component={ApplicationStatusScreen}
         options={{headerShown:false}}
       />
+
+      <Stack.Screen
+      name='InterviewPage'
+      component={MyInterviewPage}
+      options={{headerShown:false}}
+      />
+
+      <Stack.Screen
+      name='CustomBottomTab'
+      component={CustomBottomTab}
+      options={{headerShown:false}}
+      />
     </Stack.Navigator>
+    
   );
 };
 
