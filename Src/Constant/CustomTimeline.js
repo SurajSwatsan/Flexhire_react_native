@@ -1,120 +1,224 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Timeline from 'react-native-timeline-flatlist';
-import {colors} from '../Global_CSS/TheamColors'; // Assuming you have a colors file
+import {colors} from '../Global_CSS/TheamColors';
+import moment from 'moment';
 
 const applicationStatus = [
-  'Applied',
-  'Application Viewed',
-  'Accepted',
-  'Rejected',
-  'Interview Scheduled',
-  'Hired',
+  {
+    name: 'Applied',
+    icon: 'document-text',
+  },
+  {
+    name: 'Application Viewed',
+    icon: 'eye',
+  },
+  {
+    name: 'Accepted',
+    icon: 'checkmark-circle',
+  },
+  {
+    name: 'Rejected',
+    icon: 'close-circle',
+  },
+  {
+    name: 'Interview Scheduled',
+    icon: 'calendar',
+  },
+  {
+    name: 'Hired',
+    icon: 'person',
+  },
 ];
 
 const res = [
   {
     date: '2024-11-01',
-    status: 'Applied',
+    name: 'Applied',
     message: 'Application submitted',
+    is_completed: true,
   },
   {
     date: '2024-11-03',
-    status: 'Application Viewed',
+    name: 'Application Viewed',
     message: 'Application viewed successfully',
+    is_completed: true,
   },
   {
     date: '2024-11-05',
-    status: 'Accepted',
+    name: 'Accepted',
     message: 'Application Accepted',
+    is_completed: false,
   },
-  {
-    date: '2024-11-05',
-    status: 'Rejected',
-    message: 'Application Rejected',
-  },
+  // {
+  //   date: '2024-11-05',
+  //   name: 'Rejected',
+  //   message: 'Application Rejected',
+  //   is_completed: false,
+  // },
 ];
 
 const CustomTimelineScreen = () => {
-  const [timelineData, setTimelineData] = useState([]);
+  const isAcceptedPresent = res.some(entry => entry.name === 'Accepted');
+  const isRejectedPresent = res.some(entry => entry.name === 'Rejected');
 
-  // Function to get date and message by status
-  const getDateByStatus = status => {
-    const item = res.find(entry => entry.status === status);
-    return item ? item.date : '';
+  const isStatusPresent = status => {
+    return res.some(entry => entry.name === status);
   };
-
-  // Function to get message by status
-  const getMessageByStatus = status => {
-    const item = res.find(entry => entry.status === status);
-    return item ? item.message : '';
+  const isStatusCompleted = name => {
+    const status = res.find(entry => entry.name === name);
+    return status.is_completed;
   };
-
-  // Function to map status to an icon
-  const getStatusIcon = status => {
-    switch (status) {
-      case 'Applied':
-        return 'document-text'; // Icon for Applied
-      case 'Application Viewed':
-        return 'eye'; // Icon for viewed
-      case 'Accepted':
-        return 'checkmark-circle'; // Icon for accepted
-      case 'Rejected':
-        return 'close-circle'; // Icon for rejected
-      case 'Interview Scheduled':
-        return 'calendar'; // Icon for interview scheduled
-      case 'Hired':
-        return 'person'; // Icon for hired
-      default:
-        return 'help-circle'; // Default icon for undefined status
-    }
-  };
-
-  // Prepare the timeline data when component mounts
-  useEffect(() => {
-    const data = applicationStatus.map(status => ({
-      time: getDateByStatus(status), // Get date by status
-      title: status, // Title is the status
-      description: getMessageByStatus(status), // Get message by status
-      icon: getStatusIcon(status), // Get the icon based on status
-    }));
-    setTimelineData(data); // Set the timeline data in the state
-  }, []); // Empty dependency array means this runs only once on mount
 
   return (
     <View style={styles.container}>
-      <ScrollView horizontal={true}>
-        <View style={{flex: 1, paddingVertical: 12}}>
-          <Timeline
-            data={timelineData} // Pass the formatted timeline data
-            // circleSize={20} // Size of the circle (dot) in the timeline (kept for structure)
-            // circleColor="#004466" // Color of the circle (dot)
-            lineColor="#acd2be" // Color of the connecting line
-            // innerCircle="icon" // You can keep a dot but customize its look if you like
-            titleStyle={styles.cardTitle} // Style for the title
-            descriptionStyle={styles.cardDescription} // Style for the description
-            renderTime={() => null} // Disable time display
-            renderDetail={item => (
-              <View style={styles.detailContainer}>
-                <View style={styles.iconWrapper}>
+      <FlatList
+        // data={applicationStatus}
+        data={applicationStatus.filter(item => {
+          if (isRejectedPresent) {
+            const rejectedIndex = applicationStatus.findIndex(
+              entry => entry.name === 'Rejected',
+            );
+            const itemIndex = applicationStatus.findIndex(
+              entry => entry.name === item.name,
+            );
+            return itemIndex <= rejectedIndex && item.name !== 'Accepted';
+          }
+
+          if (isAcceptedPresent) {
+            return item.name !== 'Rejected';
+          }
+
+          return true; // Otherwise, show the item
+        })}
+        renderItem={({item, index}) => {
+          // Find the corresponding entry from `res` using the name
+          const statusData = res.find(entry => entry.name === item.name);
+
+          // Get date and message (description) from the `res` data
+          const date = statusData
+            ? moment(statusData.date).format('D MMM YYYY')
+            : '';
+          const message = statusData ? statusData.message : '';
+
+          return (
+            <View style={styles.itemContainer}>
+              {index > 0 && (
+                <View
+                  style={[
+                    styles.line,
+                    {
+                      backgroundColor:
+                        isStatusPresent(item.name) &&
+                        isStatusCompleted(item.name)
+                          ? 'green'
+                          : isStatusPresent(item.name) &&
+                            !isStatusCompleted(item.name)
+                          ? 'orange'
+                          : 'gray',
+                      // height: isStatusPresent(item.name) ? '165%' : '80%',
+                    },
+                  ]}
+                />
+              )}
+
+              <View style={styles.iconContainer}>
+                <View
+                  style={[
+                    styles.circle,
+                    {
+                      borderColor:
+                        isStatusPresent(item.name) &&
+                        isStatusCompleted(item.name)
+                          ? 'green'
+                          : isStatusPresent(item.name) &&
+                            !isStatusCompleted(item.name)
+                          ? 'orange'
+                          : 'gray',
+                    },
+                  ]}>
                   <Ionicons
-                    name={item.icon} // Dynamically set the icon based on status
-                    size={20}
-                    color={colors.primary} // Set the icon color
+                    name={item.icon}
+                    size={14}
+                    color={
+                      isStatusPresent(item.name) && isStatusCompleted(item.name)
+                        ? 'green'
+                        : isStatusPresent(item.name) &&
+                          !isStatusCompleted(item.name)
+                        ? 'orange'
+                        : 'gray'
+                    }
                   />
                 </View>
-                <View>
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                  <Text style={styles.cardDate}>{item.time}</Text>
-                  <Text style={styles.description}>{item.description}</Text>
-                </View>
               </View>
-            )}
-            eventContainerStyle={{marginTop: -10}} // Adjust vertical spacing if needed
-          />
-        </View>
-      </ScrollView>
+              {/* <View style={[styles.line]}></View> */}
+
+              <View
+                style={[
+                  styles.textContainer,
+                  {
+                    // marginTop: isStatusPresent(item.name) ? 20 : 0, // Adjusting margin for text container
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    {
+                      color:
+                        isStatusPresent(item.name) &&
+                        isStatusCompleted(item.name)
+                          ? 'green'
+                          : isStatusPresent(item.name) &&
+                            !isStatusCompleted(item.name)
+                          ? 'orange'
+                          : 'gray',
+                    },
+                  ]}>
+                  {item.name}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.cardDate,
+                    {
+                      color:
+                        isStatusPresent(item.name) &&
+                        isStatusCompleted(item.name)
+                          ? 'green'
+                          : isStatusPresent(item.name) &&
+                            !isStatusCompleted(item.name)
+                          ? 'orange'
+                          : 'gray',
+                      // height: message ? 'auto' : 0,
+                    },
+                  ]}>
+                  {date}
+                </Text>
+
+                {/* Display message/description */}
+                <Text
+                  style={[
+                    styles.description,
+                    {
+                      color:
+                        isStatusPresent(item.name) &&
+                        isStatusCompleted(item.name)
+                          ? 'green'
+                          : isStatusPresent(item.name) &&
+                            !isStatusCompleted(item.name)
+                          ? 'orange'
+                          : 'gray',
+                      // height: date ? 'auto' : 0,
+                    },
+                  ]}>
+                  {message}
+                </Text>
+              </View>
+            </View>
+          );
+        }}
+        // keyExtractor={(item, index) => index.toString()}
+      />
     </View>
   );
 };
@@ -122,33 +226,70 @@ const CustomTimelineScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e3f0e9',
+    backgroundColor: '#fafafa',
     marginVertical: 14,
     borderRadius: 8,
-    paddingVertical: 18,
+    paddingVertical: 14,
     justifyContent: 'center',
   },
 
   cardTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: colors.primary,
   },
   cardDate: {
-    fontSize: 12,
-    color: colors.primary,
+    fontSize: 11,
+    color: 'gray',
   },
-  cardDescription: {
-    fontSize: 12,
-    color: colors.primary,
+  description: {
+    fontSize: 11,
+    color: 'gray',
   },
-  detailContainer: {
-    flexDirection: 'row', // Layout items horizontally
-    alignItems: 'center', // Align vertically
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingLeft: 10,
+    marginTop: 20,
   },
-  iconWrapper: {
-    marginRight: 10, // Add space between the icon and the text
+  line: {
+    width: 2,
+    height: '134%',
+    left: 21,
+    top: -34,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    top: -12,
+  },
+  circle: {
+    width: 24,
+    height: 24,
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    flexDirection: 'column',
+    marginLeft: 20,
+  },
+  statusTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'grey',
+  },
+  statusCompletedTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'grey',
+  },
+  statusPendingTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'grey',
   },
 });
 

@@ -16,16 +16,6 @@ import CustomJobCard from './CustomJobCard';
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 
-const applicationTimeline = [
-  {stage: 'Applied', date: '2024-11-01', status: 'Application submitted'},
-  {
-    stage: 'Interview Scheduled',
-    date: '2024-11-05',
-    status: 'Interview scheduled for next week',
-  },
-  {stage: 'Interviewed', date: '2024-11-10', status: 'Interview completed'},
-  {stage: 'Offer Received', date: '2024-11-15', status: 'Offer letter sent'},
-];
 
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
