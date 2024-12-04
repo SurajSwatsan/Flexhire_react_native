@@ -25,6 +25,7 @@ import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
 import CustomBottomTab from './CustomBottomTab.js';
+import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -158,8 +159,8 @@ const StackNavigation = () => {
       />
 
       <Stack.Screen
-      name='CustomBottomTab'
-      component={CustomBottomTab}
+      name='AnalyticPage'
+      component={AnalyticsPage}
       options={{headerShown:false}}
       />
     </Stack.Navigator>

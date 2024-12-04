@@ -126,8 +126,23 @@ const CustomDrawer = ({children}) => {
                 toggleDrawer();
               }}>
               <Ionicons name="bookmark" size={18} style={styles.iconStyles} />
-              <Text style={styles.menuItemText}>Bookmark</Text>
+              <Text style={styles.menuItemText}>Saved Jobs</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                navigation.navigate('AnalyticPage');
+                toggleDrawer();
+              }}>
+              <Ionicons
+                name="analytics-outline"
+                size={18}
+                style={styles.iconStyles}
+              />
+              <Text style={styles.menuItemText}>View all Analytics</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {

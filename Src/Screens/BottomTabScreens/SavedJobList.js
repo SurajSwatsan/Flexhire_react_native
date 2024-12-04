@@ -96,7 +96,7 @@ const SavedJobScreen = () => {
             <TouchableOpacity
               key={company.id}
               onPress={() =>
-                navigation.navigate('Invite', {companyId: company.id})
+                navigation.navigate('JobDetailScreen', {companyId: company.id})
               }
               style={styles.card}>
               <View style={styles.cardContent}>
