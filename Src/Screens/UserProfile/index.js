@@ -59,7 +59,8 @@ const Index = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.container}
            onPress={() =>
-            navigation.navigate('Applies')
+            navigation.navigate('UserApplies')
+            // navigation.navigate('Home', { screen: 'Applies' })           
           }
           >
             <View style={styles.innerContainer}>

@@ -163,6 +163,12 @@ const StackNavigation = () => {
       component={AnalyticsPage}
       options={{headerShown:false}}
       />
+
+{/* <Stack.Screen
+        name="CustomBottomTab"
+        component={CustomBottomTab}
+        options={{ headerShown: false }}
+      /> */}
     </Stack.Navigator>
     
   );
