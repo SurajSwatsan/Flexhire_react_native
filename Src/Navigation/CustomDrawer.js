@@ -14,11 +14,15 @@ import {IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../Global_CSS/TheamColors';
 import {createMaterialBottomTabNavigator} from 'react-native-paper/lib/typescript/react-navigation';
+import AuthViewController from '../Redux/Action/AuthViewController';
+import {useDispatch} from 'react-redux';
 
 const CustomDrawer = ({children}) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const translateX = useState(new Animated.Value(-300))[0];
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const {logout} = AuthViewController();
 
   const toggleDrawer = () => {
     if (drawerVisible) {
@@ -237,7 +241,7 @@ const CustomDrawer = ({children}) => {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                navigation.navigate('LogoutComponent');
+                dispatch(logout());
                 toggleDrawer();
               }}>
               <Ionicons name="log-out" size={18} style={styles.iconStyles} />

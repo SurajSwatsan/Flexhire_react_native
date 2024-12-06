@@ -420,13 +420,16 @@ const BasicInformation = () => {
 
 const styles = StyleSheet.create({
   labelText: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#000',
     width: '40%',
   },
   valueText: {
-    fontSize: 16,
+    flex: 1,
+    
+    fontSize: 13,
     color: '#000',
     width: '60%',
   },

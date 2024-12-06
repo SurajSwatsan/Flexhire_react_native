@@ -15,12 +15,16 @@ import * as Yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
 import {colors} from '../../Global_CSS/TheamColors';
+import {useDispatch} from 'react-redux';
+import AuthViewController from '../../Redux/Action/AuthViewController';
 
 const SignupScreen = () => {
   const navigation = useNavigation();
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
   const [isConfermPasswordVisible, setConfermPasswordVisibility] =
     useState(false);
+  const dispatch = useDispatch();
+  const {register} = AuthViewController();
 
   const signupSchema = Yup.object().shape({
     email: Yup.string()
@@ -30,20 +34,30 @@ const SignupScreen = () => {
       .matches(/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number')
       .required('Phone number is required'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(8, 'password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
-        'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
       )
-      .required('Password is required'),
+      .required('password is required'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Passwords must match')
       .required('Confirm password is required'),
   });
 
   const handleSubmit = values => {
-    Alert.alert('Signup Successful', `Welcome, ${values.email}!`);
-    navigation.navigate('Login');
+    try {
+      const UserData = {
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        password: values.password,
+      };
+      dispatch(register(UserData));
+      // await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      Alert.alert('Error saving credentials');
+    }
   };
 
   return (

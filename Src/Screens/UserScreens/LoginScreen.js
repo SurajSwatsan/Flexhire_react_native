@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -28,20 +27,20 @@ const LoginScreen = () => {
   const {login} = AuthViewController();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    handleLoadingCredentials();
-  }, []);
+  // useEffect(() => {
+  //   handleLoadingCredentials();
+  // }, []);
 
-  const handleLoadingCredentials = async () => {
-    try {
-      const userdata = await AsyncStorage.getItem('UserData');
-      if (userdata) {
-        Alert.alert('Welcome ', userdata);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Unable to load credentials');
-    }
-  };
+  // const handleLoadingCredentials = async () => {
+  //   try {
+  //     const userdata = await AsyncStorage.getItem('UserData');
+  //     if (userdata) {
+  //       Alert.alert('Welcome ', userdata);
+  //     }
+  //   } catch (error) {
+  //     Alert.alert('Error', 'Unable to load credentials');
+  //   }
+  // };
 
   const loginSchema = Yup.object().shape({
     identifier: Yup.string()
@@ -68,8 +67,8 @@ const LoginScreen = () => {
         password: values.password,
       };
       dispatch(login(UserData));
-      await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
-      navigation.navigate('DefaultScreen');
+      // await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
+      // navigation.navigate('DefaultScreen');
     } catch (error) {
       Alert.alert('Error saving credentials');
     }
@@ -125,7 +124,7 @@ const LoginScreen = () => {
             }) => (
               <>
                 <View>
-                  <View style={styles.passwordContainer}>
+                  <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.textarea}
                       mode="outlined"
@@ -254,7 +253,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textarea: {
-    flex: 1,
     marginTop: 12,
     marginBottom: 8,
     backgroundColor: 'white',

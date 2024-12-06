@@ -29,8 +29,63 @@ const AuthViewController = () => {
     }
   };
 
+  const register = requestData => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+    try {
+      const response = await instance.post('/register/user/', requestData);
+      // console.log(
+      //   '****************************Register response***************************',
+      // );
+      // console.log(response);
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+      const {token, user} = data;
+      setAuthToken(token); // Set token in axios headers or AsyncStorage
+      await AsyncStorage.setItem('user_data', JSON.stringify(user));
+      await AsyncStorage.setItem('email', requestData.email);
+
+      dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show('You have Successfully Registered', {
+        type: 'success',
+        placement: 'top',
+        duration: 4000,
+        offset: 100,
+        animationType: 'slide-in',
+      });
+      navigation.navigate('VerifyOtp');
+    } catch (error) {
+      // console.log(error);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data
+          ? error.response?.data
+          : error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'REGISTER_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
   const login = requestData => async dispatch => {
-    dispatch({type: 'LODING', payload: true});
+    dispatch({type: 'LOADING', payload: true});
 
     try {
       const response = await instance.post('/admin/login/', requestData);
@@ -41,28 +96,28 @@ const AuthViewController = () => {
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      console.log(data);
-      const {token, user} = data;
-      console.log('login success');
+      console.log(response);
+      const {access, user_id} = data;
+      // console.log('login data ', token, user);
 
-      setAuthToken(token); // Set token in axios headers or AsyncStorage
-      await AsyncStorage.setItem('user_data', JSON.stringify(user));
+      setAuthToken(access); // Set token in axios headers or AsyncStorage
+      await AsyncStorage.setItem('user_data', JSON.stringify(user_id));
 
-        try {
-          AsyncStorage.getItem('is_logged_first_time').then(token => {
-            // console.log('is_logged_first_time', token);
-            if ((token != '1' && token != '0') || token == null) {
-              AsyncStorage.setItem('is_logged_first_time', '1');
-            } else {
-              AsyncStorage.setItem('is_logged_first_time', '0');
-            }
-          }); // Retrieve the token from storage, e.g., AsyncStorage
-        } catch (error) {
-          console.error('Error checking login status:', error);
-        }
-      dispatch({type: 'LOGIN_SUCCESS', payload: {token, user}});
+      // try {
+      //   AsyncStorage.getItem('is_logged_first_time').then(token => {
+      //     // console.log('is_logged_first_time', token);
+      //     if ((token != '1' && token != '0') || token == null) {
+      //       AsyncStorage.setItem('is_logged_first_time', '1');
+      //     } else {
+      //       AsyncStorage.setItem('is_logged_first_time', '0');
+      //     }
+      //   }); // Retrieve the token from storage, e.g., AsyncStorage
+      // } catch (error) {
+      //   console.error('Error checking login status:', error);
+      // }
+      dispatch({type: 'LOGIN_SUCCESS', payload: {access, user_id}});
 
-      dispatch({type: 'LODING', payload: false});
+      dispatch({type: 'LOADING', payload: false});
       Toast.show('You are successfully logged in', {
         type: 'success',
         placement: 'top',
@@ -70,15 +125,12 @@ const AuthViewController = () => {
         offset: 100,
         animationType: 'slide-in',
       });
-      if (data.user.IsUserActivated) {
-        console.log('user is logined in');
-        navigation.navigate('Home');
-      } else {
-      }
+      navigation.navigate('DefaultScreen');
+
     } catch (error) {
       console.log('error', error.response);
 
-      dispatch({type: 'LODING', payload: false});
+      dispatch({type: 'LOADING', payload: false});
       Toast.show(
         error.response?.data?.non_field_errors[0]
           ? error.response.data.non_field_errors[0]
@@ -91,14 +143,14 @@ const AuthViewController = () => {
           animationType: 'slide-in',
         },
       );
-      //   dispatch({
-      //     type: 'LOGIN_FAILURE',
-      //     payload: {
-      //       error: error.response?.data?.non_field_errors
-      //         ? error.response.data.non_field_errors[0]
-      //         : error?.response?.data,
-      //     },
-      //   });
+      dispatch({
+        type: 'LOGIN_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
     }
   };
 
@@ -106,12 +158,13 @@ const AuthViewController = () => {
     console.log('logout called');
     setAuthToken(null);
     dispatch({type: 'LOGOUT'});
-    navigation.navigate('Login');
+    navigation.navigate('LoginScreen');
   };
 
   return {
     goBackScreen,
     checkLoginStatus,
+    register,
     login,
     logout,
   };
