@@ -84,7 +84,6 @@ const AnalyticsPage = () => {
     color: getColorByRank(item.percentage, index + 1),
     legendFontColor: '#7F7F7F',
     legendFontSize: 10,
-    
   }));
 
   return (
@@ -128,7 +127,7 @@ const AnalyticsPage = () => {
         </View>
       </View> */}
       <View style={styles.chartContainer}>
-      <View style={styles.iconConatiner}>
+        <View style={styles.iconConatiner}>
           <Text style={styles.analyticText}>Weekly Analytics</Text>
           <Ionicons
             name="analytics-outline"
@@ -188,18 +187,18 @@ const AnalyticsPage = () => {
           </View>
         </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardCount}>{commentCount} Comments</Text>
-            <Text style={styles.cardTitle}>Job Comments</Text>
-            <Text style={styles.cardText}>
-              Members who comment once per week on average see up to 3x more
-              profile views.
-            </Text>
-            <TouchableOpacity>
-              <Text style={styles.cardsecondaryText}>Commment on feed</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.card}>
+          <Text style={styles.cardCount}>{commentCount} Comments</Text>
+          <Text style={styles.cardTitle}>Job Comments</Text>
+          <Text style={styles.cardText}>
+            Members who comment once per week on average see up to 3x more
+            profile views.
+          </Text>
+          <TouchableOpacity>
+            <Text style={styles.cardsecondaryText}>Commment on feed</Text>
+          </TouchableOpacity>
         </View>
+      </View>
     </ScrollView>
   );
 };
@@ -247,7 +246,6 @@ const styles = StyleSheet.create({
     color: colors.blackText,
     fontSize: 16,
     fontWeight: 'bold',
-    // marginBottom: 8,
   },
   iconConatiner: {
     flexDirection: 'row',
@@ -288,7 +286,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: '#fff',
     padding: 16,
-    borderRadius: 12,
     marginBottom: 8,
   },
   chartTitle: {
