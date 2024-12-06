@@ -18,11 +18,15 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import GlobalStyle from '../../Global_CSS/GlobalStyle';
 import {colors} from '../../Global_CSS/TheamColors';
+import AuthViewController from '../../Redux/Action/AuthViewController';
+import {useDispatch} from 'react-redux';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
   const [ispasswordVisible, setpasswordVisibility] = useState(false);
+  const {login} = AuthViewController();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     handleLoadingCredentials();
@@ -40,9 +44,9 @@ const LoginScreen = () => {
   };
 
   const loginSchema = Yup.object().shape({
-    emailOrPhone: Yup.string()
+    identifier: Yup.string()
       .test(
-        'emailOrPhone',
+        'identifier',
         'Please enter a valid email or phone number',
         value =>
           Yup.string().email().isValidSync(value) || /^[0-9]{10}$/.test(value),
@@ -60,9 +64,10 @@ const LoginScreen = () => {
   const handleSubmit = async values => {
     try {
       const UserData = {
-        emailOrPhone: values.emailOrPhone,
+        identifier: values.identifier,
         password: values.password,
       };
+      dispatch(login(UserData));
       await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
       navigation.navigate('DefaultScreen');
     } catch (error) {
@@ -107,7 +112,7 @@ const LoginScreen = () => {
           />
           <Text style={styles.heading}>Login</Text>
           <Formik
-            initialValues={{emailOrPhone: '', password: ''}}
+            initialValues={{identifier: '', password: ''}}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}>
             {({
@@ -127,15 +132,15 @@ const LoginScreen = () => {
                       outlineColor="lightgrey"
                       label="Email/Mobile Number"
                       textColor="black"
-                      value={values.emailOrPhone}
-                      onChangeText={handleChange('emailOrPhone')}
-                      onBlur={handleBlur('emailOrPhone')}
+                      value={values.identifier}
+                      onChangeText={handleChange('identifier')}
+                      onBlur={handleBlur('identifier')}
                       activeOutlineColor="lightgrey"
-                      error={!!errors.emailOrPhone}
+                      error={!!errors.identifier}
                     />
-                    {errors.emailOrPhone && touched.emailOrPhone ? (
+                    {errors.identifier && touched.identifier ? (
                       <Text style={GlobalStyle.errorText}>
-                        {errors.emailOrPhone}
+                        {errors.identifier}
                       </Text>
                     ) : null}
                   </View>
