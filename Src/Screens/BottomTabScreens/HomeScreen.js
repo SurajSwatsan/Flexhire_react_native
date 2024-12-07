@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
-  Dimensions,
+
   Image,
   ScrollView,
   StyleSheet,
@@ -21,7 +21,6 @@ import CustomCompanyCard from '../../Constant/CustomCompanyCard';
 import {CircularProgress} from 'react-native-circular-progress'; // Import the CircularProgress component
 import moment from 'moment';
 
-const screenWidth = Dimensions.get('window').width;
 
 const HomeScreen = () => {
   const navigation = useNavigation();

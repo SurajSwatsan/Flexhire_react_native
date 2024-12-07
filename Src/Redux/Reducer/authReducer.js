@@ -1,6 +1,6 @@
 const initialState = {
-  token: null,
-  user: null,
+  access: null,
+  user_id: null,
   IsUserActivated: false,
   error: null,
   isLoding: false,
@@ -16,8 +16,8 @@ const authReducer = (state = initialState, action) => {
     case 'LOGIN_SUCCESS':
       return {
         ...state,
-        token: action.payload.token,
-        user: action.payload.user,
+        access: action.payload.access,
+        user_id: action.payload.user_id,
         error: null,
       };
     case 'LOGIN_FAILURE':
@@ -25,18 +25,18 @@ const authReducer = (state = initialState, action) => {
         ...state,
         error: action.payload.error,
       };
-    // case 'REGISTER_SUCCESS':
-    //   return {
-    //     ...state,
-    //     token: action.payload.token,
-    //     user: action.payload.user,
-    //     error: null,
-    //   };
-    // case 'REGISTER_FAILURE':
-    //   return {
-    //     ...state,
-    //     error: action.payload.error,
-    //   };
+    case 'REGISTER_SUCCESS':
+      return {
+        ...state,
+        access: action.payload.access,
+        user_id: action.payload.user_ids,
+        error: null,
+      };
+    case 'REGISTER_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
     // case 'OTP_VERIFICATION_SUCCESS':
     //   return {
     //     ...state,
