@@ -8,3 +8,9 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+# Time4J - Preserve classes and methods to avoid R8 warnings
+-keep class net.time4j.** { *; }
+-keepclassmembers class net.time4j.** { *; }
+
+# Suppress warnings related to Time4J
+-dontwarn net.time4j.**
