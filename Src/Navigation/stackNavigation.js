@@ -26,6 +26,8 @@ import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
 import CustomBottomTab from './CustomBottomTab.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
+import JobViewPage from '../Components/JobView.js';
+// import JobView from '../Components/jobView.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -162,6 +164,11 @@ const StackNavigation = () => {
       name='AnalyticPage'
       component={AnalyticsPage}
       options={{headerShown:false}}
+      />
+
+      <Stack.Screen
+      name = "JobView"
+      component={JobViewPage}
       />
 
 {/* <Stack.Screen

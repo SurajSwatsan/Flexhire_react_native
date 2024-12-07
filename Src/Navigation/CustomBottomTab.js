@@ -17,6 +17,7 @@ import HomeComponent from '../Screens/BottomTabScreens/HomeScreen';
 import BookmarkScreen from '../Screens/BottomTabScreens/SavedJobList';
 import {colors} from '../Global_CSS/TheamColors';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen';
+import JobViewPage from '../Components/JobView';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
@@ -63,7 +64,7 @@ const CustomBottomTab = () => {
       case 'Profile':
         return <UserProfile />;
       case 'Jobs':
-        return <JobScreen />;
+        return <JobViewPage />;
       default:
         return <HomeComponent />;
     }

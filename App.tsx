@@ -7,6 +7,7 @@ import {Provider} from 'react-redux';
 import store from './src/Redux/store';
 import {colors} from './src/Global_CSS/TheamColors';
 import {ToastProvider} from 'react-native-toast-notifications';
+// import JobView from './src/Components/jobView';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
             // backgroundColor="#4f84c4"
             translucent={false}
           />
+        
           <NavigationContainer>
             <StackNavigation />
           </NavigationContainer>
