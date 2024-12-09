@@ -7,19 +7,20 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import {colors} from '../../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import PersonalInformation from './PersonalInformation';
-import Keyskills from './Keyskills';
-import BasicInformation from './BasicInformation';
-import Languages from './Languages';
+
 import Education from './Education/Education';
 import HigherEducation from './Education/HigherEducation';
 import Employment from './Professional/Employment';
 import Itskills from './Professional/Itskills';
 import Projects from './Professional/Projects';
 import Accomplishments from './Professional/Accomplishments';
+import CareerInformation from './Personal/CareerInformation';
+import Keyskills from './Education/Keyskills';
+import BasicInformation from './Personal/BasicInformation';
+import Languages from './Personal/Languages';
 
 const Index = () => {
   const route = useRoute();
@@ -59,8 +60,7 @@ const Index = () => {
                 </TouchableOpacity>
               </View>
               <BasicInformation />
-              <PersonalInformation />
-              <Keyskills />
+              <CareerInformation />
               <Languages />
               <View style={{height: 100}} />
             </ScrollView>
@@ -71,15 +71,16 @@ const Index = () => {
           <View>
             <Education />
             <HigherEducation />
+            <Keyskills />
           </View>
         );
       case 'Professional':
         return (
           <View>
             <ScrollView style={styles.scrollContainer}>
+              <Projects />
               <Employment />
               <Itskills />
-              <Projects />
               <Accomplishments />
             </ScrollView>
           </View>

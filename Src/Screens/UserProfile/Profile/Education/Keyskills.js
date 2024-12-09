@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {IconButton, TextInput} from 'react-native-paper';
-import profileStyle from '../ProfileStyle';
-import ModalFooter from '../../../Constant/ProfileModalFooter';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../../../Global_CSS/TheamColors';
+import profileStyle from '../../ProfileStyle';
+import ModalFooter from '../../../../Constant/ProfileModalFooter';
+import {colors} from '../../../../Global_CSS/TheamColors';
 
 const Skills = [
   {label: 'JavaScript', value: '1'},

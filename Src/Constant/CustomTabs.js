@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View, TouchableOpacity} from 'react-native';
 import profileStyle from '../Screens/UserProfile/ProfileStyle';
+import {colors} from '../Global_CSS/TheamColors';
 
 const CustomTabs = ({
   label,
@@ -15,7 +16,7 @@ const CustomTabs = ({
     <View style={profileStyle.CustomTabContainer}>
       <Text
         style={[
-          profileStyle.label, // Base label style
+          styles.label, // Base label style
           touched && error ? styles.errorLabel : null, // Apply error styling conditionally
         ]}>
         {label} {/* Always show the label */}
@@ -48,6 +49,10 @@ const CustomTabs = ({
 };
 
 const styles = {
+  label: {
+    fontSize: 12,
+    color: colors.secondary,
+  },
   errorLabel: {
     color: 'red',
   },

@@ -96,7 +96,7 @@ const AuthViewController = () => {
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      console.log(response);
+      // console.log(response);
       const {access, user_id} = data;
       // console.log('login data ', token, user);
 

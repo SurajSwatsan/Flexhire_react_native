@@ -17,15 +17,14 @@ import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
-import BasicInformation from '../Screens/UserProfile/Profile/BasicInformation.js';
 import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
-import CustomBottomTab from './CustomBottomTab.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
+import BasicInformation from '../Screens/UserProfile/Profile/Personal/BasicInformation.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
