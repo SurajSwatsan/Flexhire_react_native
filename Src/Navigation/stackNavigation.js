@@ -27,6 +27,7 @@ import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
 import CustomBottomTab from './CustomBottomTab.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
 import JobViewPage from '../Components/JobView.js';
+import SettingPage from '../DrawerContent/SettingPage.js';
 // import JobView from '../Components/jobView.js';
 
 const StackNavigation = () => {
@@ -169,6 +170,11 @@ const StackNavigation = () => {
       <Stack.Screen
       name = "JobView"
       component={JobViewPage}
+      />
+
+      <Stack.Screen
+      name='SettingPage'
+      component={SettingPage}
       />
 
 {/* <Stack.Screen

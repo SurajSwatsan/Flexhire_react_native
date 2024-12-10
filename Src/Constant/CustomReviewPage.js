@@ -1,8 +1,19 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; 
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  TextInput,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment'; // Import moment
+import {colors} from '../Global_CSS/TheamColors'; // Import colors for theme
 
+// Initial review data
 const reviewsData = [
   {
     id: '1',
@@ -23,38 +34,40 @@ const reviewsData = [
   // Add more reviews as needed
 ];
 
+const userName = 'Alex Doe'; // Default user name (for demonstration)
+const userProfileImage = require('../Assets/Images/Userimage.png'); // Default profile image (can be dynamic)
+
 const ReviewPage = () => {
-  // Calculate average rating
-  const averageRating = reviewsData.reduce((acc, review) => acc + review.rating, 0) / reviewsData.length;
+  const [newComment, setNewComment] = useState('');
+  const [reviews, setReviews] = useState(reviewsData);
+  const [userRating, setUserRating] = useState(5); 
+  // Calculate average rating from reviewsData
+  // const averageRating =
+  //   reviewsData.reduce((acc, review) => acc + review.rating, 0) /
+  //   reviewsData.length;
+  const averageRating =
+  reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+
+
 
   // Render stars for rating
-  const renderStars = (rating) => {
+  const renderStars = rating => {
     const stars = [];
-    const fullStars = Math.floor(rating);  // Number of full stars
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;  // Check if there should be a half star
-    const emptyStars = 5 - fullStars - halfStar; // Remaining empty stars
+    const fullStars = Math.floor(rating); 
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0; 
+    const emptyStars = 5 - fullStars - halfStar; 
 
     // Add full stars
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Ionicons
-          key={`full-${i}`}
-          name="star"
-          size={18}
-          color="#FFD700"
-        />
+        <Ionicons key={`full-${i}`} name="star" size={18} color="#FFD700" />,
       );
     }
 
     // Add half star if needed
     if (halfStar) {
       stars.push(
-        <Ionicons
-          key="half"
-          name="star-half"
-          size={18}
-          color="#FFD700"
-        />
+        <Ionicons key="half" name="star-half" size={18} color="#FFD700" />,
       );
     }
 
@@ -66,49 +79,102 @@ const ReviewPage = () => {
           name="star-outline"
           size={18}
           color="#FFD700"
-        />
+        />,
       );
     }
 
     return stars;
   };
 
+  const handleAddComment = () => {
+    if (newComment && userRating) {
+      const newReview = {
+        id: (reviews.length + 1).toString(), 
+        reviewerName: userName,
+        rating: userRating,
+        reviewText: newComment,
+        date: moment().format('YYYY-MM-DD'), 
+        imageUrl: userProfileImage, 
+      };
+
+      const updatedReviews = [newReview, ...reviews];
+      setReviews(updatedReviews);
+      // setReviews([newReview, ...reviews]);
+      setNewComment(''); 
+      setUserRating(5); 
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      {/* Average Rating Section */}
       <View style={styles.averageRatingContainer}>
         <Text style={styles.averageRatingText}>Average Rating</Text>
         <View style={styles.starsContainer}>
           {renderStars(Math.round(averageRating))}
-          <Text style={styles.averageRatingValue}> ({averageRating.toFixed(1)})</Text>
+          <Text style={styles.averageRatingValue}>
+            {' '}
+            ({averageRating.toFixed(1)})
+          </Text>
         </View>
       </View>
 
-      {/* List of Reviews */}
-      {reviewsData.map((item) => (
-        <View key={item.id} style={styles.reviewContainer}>
-          {/* Reviewer Image, Name, and Date */}
-          <View style={styles.reviewerInfo}>
-            <Image source={item.imageUrl} style={styles.reviewerImage} />
-            <View style={styles.reviewerDetails}>
-              <View style={styles.reviewerNameDateContainer}>
-                <Text style={styles.reviewerName}>{item.reviewerName}</Text>
-                <Text style={styles.reviewDate}>
-                  {moment(item.date).format('D MMM YYYY')}
-                </Text>
-              </View>
-              {/* Review Rating (Stars and Rating Value) */}
-              <View style={styles.starsContainer}>
-                {renderStars(item.rating)}
-                <Text style={styles.ratingValue}> ({item.rating.toFixed(1)})</Text>
+      <View style={styles.commentBoxContainer}>
+        <TextInput
+          style={styles.commentInput}
+          placeholder="Add your comment..."
+          value={newComment}
+          onChangeText={setNewComment}
+          multiline
+        />
+
+        <View style={styles.ratingContainer}>
+          <View style={styles.starContainer}>
+            {[1, 2, 3, 4, 5].map(starValue => (
+              <Ionicons
+                key={starValue}
+                name={starValue <= userRating ? 'star' : 'star-outline'}
+                size={20}
+                color="#FFD700"
+                onPress={() => setUserRating(starValue)}
+              />
+            ))}
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleAddComment}>
+          <Text style={styles.buttonText}>Add Comment</Text>
+        </TouchableOpacity>
+      </View>
+
+      {reviews.map(
+        (
+          item, // Loop through the reviews state (not reviewsData)
+        ) => (
+          <View key={item.id} style={styles.reviewContainer}>
+            <View style={styles.reviewerInfo}>
+              <Image source={item.imageUrl} style={styles.reviewerImage} />
+              <View style={styles.reviewerDetails}>
+                <View style={styles.reviewerNameDateContainer}>
+                  <Text style={styles.reviewerName}>{item.reviewerName}</Text>
+                  <Text style={styles.reviewDate}>
+                    {moment(item.date).format('D MMM YYYY')}
+                  </Text>
+                </View>
+
+                <View style={styles.starsContainer}>
+                  {renderStars(item.rating)}
+                  <Text style={styles.ratingValue}>
+                    {' '}
+                    ({item.rating.toFixed(1)})
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* Review Comment */}
-          <Text style={styles.reviewText}>{item.reviewText}</Text>
-        </View>
-      ))}
+            <Text style={styles.reviewText}>{item.reviewText}</Text>
+          </View>
+        ),
+      )}
     </ScrollView>
   );
 };
@@ -118,7 +184,7 @@ const styles = StyleSheet.create({
     // padding: 20,
   },
   averageRatingContainer: {
-    marginBottom: 16,
+    marginBottom: 8,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -142,7 +208,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     borderRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     borderWidth: 0.5,
     borderColor: '#e6e6e6',
   },
@@ -186,8 +252,42 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 5,
   },
+  commentBoxContainer: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 0.5,
+    borderColor: '#e6e6e6',
+    shadowOffset: {width: 0, height: 2},
+  },
+  commentInput: {
+    height: 48,
+    borderColor: '#e6e6e6',
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  starContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: colors.primary,
+    borderRadius: 5,
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    // marginVertical: 4,
+    width: 100,
+    height: 36,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
 });
 
 export default ReviewPage;
-
-

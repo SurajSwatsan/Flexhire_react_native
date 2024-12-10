@@ -38,6 +38,10 @@ const CompanyOverviewScreen = ({route}) => {
 
   const relatedJobs = jobData.related_jobs;
 
+  const [selectedChip, setSelectedChip] = useState(null);
+
+  const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
+
   const truncatedLength = 50;
 
   if (!jobs || jobs.length === 0) {
@@ -97,6 +101,8 @@ const CompanyOverviewScreen = ({route}) => {
       animatedValue.removeListener(listenerId);
     };
   }, [employeeCount]); // Run effect when employeeCount changes
+
+
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -349,6 +355,30 @@ const CompanyOverviewScreen = ({route}) => {
       case 'Jobs':
         return (
           <View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.jobchipContainer}>
+              {chipLabels.map((label, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.jobchip,
+                    selectedChip === label && styles.jobselectedChip, // Apply selected chip style
+                  ]}
+                  onPress={() => setSelectedChip(label)} // Update selected chip on press
+                >
+                  <Text
+                    style={[
+                      styles.chipjobText,
+                      selectedChip === label && styles.selectedjobChipText, // Apply text color change if selected
+                    ]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
             {relatedJobs && Object.keys(relatedJobs).length > 0 && (
               <View style={styles.relatedjobcontainer}>
                 <ScrollView>
@@ -403,11 +433,9 @@ const CompanyOverviewScreen = ({route}) => {
           />
         </View>
 
-        {/* Information Section (Right side) */}
         <View style={styles.infoContainer}>
           <Text style={styles.companyName}>{jobData.company.company_name}</Text>
 
-          {/* Location and Openings Section */}
           <View style={styles.locationContainer}>
             <View style={styles.location}>
               <Ionicons
@@ -433,7 +461,6 @@ const CompanyOverviewScreen = ({route}) => {
         </View>
       </View>
 
-      {/* Tagline and Services Section */}
       <View style={styles.textInfo}>
         {/* Tagline Section */}
         <Text style={styles.tagLine}>{jobData.company.tagline}</Text>
@@ -853,9 +880,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  
 
   relatedjobcontainer: {
     margin: 12,
+  },
+  jobchipContainer:{
+    paddingVertical: 4,
+    paddingHorizontal:12
+  },
+  jobchip:{
+    backgroundColor: colors.whiteText, 
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  
+  },
+  jobselectedChip:{
+    backgroundColor: colors.lightgaryText, // Darker blue for selected chip
+    color: colors.whiteText,
+  },
+  chipjobText:{
+    color: '#000',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  selectedjobChipText: {
+    color: colors.blackText,
   },
 
   companymainContaner: {

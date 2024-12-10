@@ -187,7 +187,7 @@ const CustomDrawer = ({children}) => {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                navigation.navigate('');
+                navigation.navigate('SettingPage');
                 toggleDrawer();
               }}>
               <Ionicons name="settings" size={18} style={styles.iconStyles} />

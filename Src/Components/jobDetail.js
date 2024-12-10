@@ -79,7 +79,6 @@ const JobDetailScreen = ({route, navigation}) => {
         return (
           <View>
             <View>
-              {/* Directly accessing the properties of jobData */}
               <View style={{marginBottom: 20}}>
                 <View style={styles.jobDetailsContainer}>
                   <Text style={styles.jobDescriptionheader}>
@@ -304,7 +303,6 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.contentContainer}>{renderTabs()}</View>
           </View>
 
-          {/* Related Jobs */}
           {relatedJobs && Object.keys(relatedJobs).length > 0 && (
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
@@ -336,12 +334,11 @@ const JobDetailScreen = ({route, navigation}) => {
         </View>
       </ScrollView>
 
-      {/* Apply Button */}
       <View style={styles.applyButtonContainer}>
         <TouchableOpacity
           style={[styles.applyButton, isApplied && styles.appliedButton]}
           onPress={handleApply}
-          disabled={isApplied} // Disable if already applied
+          disabled={isApplied} 
         >
           <Text style={styles.applyButtonText}>
             {isApplied ? 'Applied' : 'Apply for Job'}
