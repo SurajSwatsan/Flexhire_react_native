@@ -201,6 +201,7 @@ const CustomSelectionModal = ({
 
 const Styles = StyleSheet.create({
   Container: {
+    marginTop: 12,
     borderBottomColor: 'lightgray',
     borderBottomWidth: 0.5,
     paddingBottom: 12,

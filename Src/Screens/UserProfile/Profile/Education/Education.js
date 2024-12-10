@@ -91,10 +91,10 @@ const SchoolMedium = [
   {id: 18, value: 'Other'},
 ];
 const validationSchema = Yup.object().shape({
-  education: Yup.string().required('Education Level is required'),
-  board: Yup.string().required('Board is required'),
-  passout: Yup.string().required('Passout Year is required'),
-  schoolMedium: Yup.string().required('School Medium is required'),
+  course_name: Yup.string().required('Education Level is required'),
+  // board: Yup.string().required('Board is required'),
+  // passout_year: Yup.string().required('Passout Year is required'),
+  // school_medium: Yup.string().required('School Medium is required'),
   marks: Yup.string()
     .required('Marks is required')
     .matches(/^\d+(\.\d{1,2})?$/)
@@ -107,37 +107,14 @@ const validationSchema = Yup.object().shape({
         parseFloat(value) >= 0 &&
         parseFloat(value) <= 100,
     ),
-
-  englishMarks: Yup.string()
-    .matches(/^\d+$/, 'English Marks must be a whole number, eg 85')
-    .test(
-      'is-valid-range',
-      'English Marks must be between 0 and 100',
-      value => {
-        if (!value) return true; // Skip validation if the field is empty (nullable)
-        const num = parseInt(value, 10);
-        return num >= 0 && num <= 100;
-      },
-    )
-    .nullable(),
-  mathMarks: Yup.string()
-    .matches(/^\d+$/, 'Math Marks must be a whole number, eg 85')
-    .test('is-valid-range', 'Math Marks must be between 0 and 100', value => {
-      if (!value) return true; // Skip validation if the field is empty (nullable)
-      const num = parseInt(value, 10);
-      return num >= 0 && num <= 100;
-    })
-    .nullable(),
 });
 
 const getInitialValues = () => ({
-  education: '',
+  course_name: '',
   board: '',
-  passout: '',
-  schoolMedium: '',
+  passout_year: '',
+  school_medium: '',
   marks: '',
-  englishMarks: '',
-  mathMarks: '',
 });
 
 const Education = () => {
@@ -148,6 +125,13 @@ const Education = () => {
   let formikRef = null;
 
   const handleFormSubmit = values => {
+    const formattedData = {
+      course_name: values.course_name,
+      board: values.board,
+      passout_year: values.passout_year,
+      school_medium: values.school_medium,
+      marks: values.marks,
+    };
     if (editingIndex !== null) {
       const updatedData = [...educationData];
       updatedData[editingIndex] = values;
@@ -157,6 +141,10 @@ const Education = () => {
     }
     setModalVisible(false);
     setEditingIndex(null);
+    console.log(
+      'Updated Data:',
+      JSON.stringify([...educationData, formattedData], null, 2),
+    );
   };
 
   const openModal = index => {
@@ -176,7 +164,7 @@ const Education = () => {
   };
 
   const allClassesAdded = EducationClass.every(cls =>
-    educationData.some(edu => edu.education === cls.value),
+    educationData.some(edu => edu.course_name === cls.value),
   );
 
   return (
@@ -206,7 +194,7 @@ const Education = () => {
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
-                    <Text style={styles.ClassText}>{item.education}</Text>
+                    <Text style={styles.ClassText}>{item.course_name}</Text>
                     <IconButton
                       icon="pencil-outline"
                       size={20}
@@ -216,7 +204,7 @@ const Education = () => {
                   </View>
                   <View style={{marginTop: -10}}>
                     <Text style={styles.boardText}>{item.board}</Text>
-                    <Text style={styles.passoutText}>{item.passout}</Text>
+                    <Text style={styles.passoutText}>{item.passout_year}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -262,41 +250,43 @@ const Education = () => {
                   </Text>
                   <View style={profileStyle.formSubHeading}>
                     <Text style={profileStyle.formSubHeading}>
-                      Details like education, Board, Marks, and more, help
+                      Details like course_name, Board, Marks, and more, help
                       recruiters identify your educational background.
                     </Text>
                   </View>
                   <View style={styles.classTabContainer}>
-                    <CustomTabs
-                      label="Education*"
-                      options={EducationClass}
-                      selectedValue={values.education}
-                      setFieldValue={setFieldValue}
-                      fieldName="education"
-                      error={errors.education}
-                      touched={touched.education}
-                    />
-                    {/* <Text style={profileStyle.label}>Class</Text>
+                    <Text
+                      style={[
+                        profileStyle.label,
+                        touched.course_name && errors.course_name
+                          ? {color: 'red'}
+                          : null,
+                      ]}>
+                      Education*
+                    </Text>
+
                     <View style={profileStyle.TabContainer}>
-                      {Class.filter(
+                      {EducationClass.filter(
                         option =>
                           !educationData.some(
-                            saved => saved.education === option.value,
+                            saved => saved.course_name === option.value,
                           ),
                       ).map(option => (
                         <TouchableOpacity
                           key={option.id}
                           style={[
                             profileStyle.tabBtnStyle,
-                            values.education === option.value
+                            values.course_name === option.value
                               ? profileStyle.selectedTab
                               : profileStyle.unselectedTab,
                           ]}
-                          onPress={() => setFieldValue('education', option.value)}>
+                          onPress={() =>
+                            setFieldValue('course_name', option.value)
+                          }>
                           <Text
                             style={[
                               profileStyle.tabBtnText,
-                              values.education === option.value
+                              values.course_name === option.value
                                 ? profileStyle.selectedTabText
                                 : profileStyle.unselectedTabText,
                             ]}>
@@ -304,7 +294,7 @@ const Education = () => {
                           </Text>
                         </TouchableOpacity>
                       ))}
-                    </View> */}
+                    </View>
                   </View>
                   <CustomSelectionModal
                     title="Board"
@@ -323,11 +313,12 @@ const Education = () => {
                     title="Passout Year"
                     data={PassoutYear}
                     selectedItems={
-                      PassoutYear.find(item => item.value === values.passout) ||
-                      null
+                      PassoutYear.find(
+                        item => item.value === values.passout_year,
+                      ) || null
                     }
                     setSelectedItems={item =>
-                      setFieldValue('passout', item?.value || '')
+                      setFieldValue('passout_year', item?.value || '')
                     }
                     placeholder="Select Passout Year"
                   />
@@ -336,11 +327,11 @@ const Education = () => {
                     data={SchoolMedium}
                     selectedItems={
                       SchoolMedium.find(
-                        item => item.value === values.schoolMedium,
+                        item => item.value === values.school_medium,
                       ) || null
                     }
                     setSelectedItems={item =>
-                      setFieldValue('schoolMedium', item?.value || '')
+                      setFieldValue('school_medium', item?.value || '')
                     }
                     placeholder="Select School Medium"
                   />
@@ -352,27 +343,6 @@ const Education = () => {
                     keyboardType="numeric"
                     note="% marks of 100 maximum"
                   />
-                  {/* Show English and Math Marks only for Class 12 */}
-                  {values.education === '12th' && (
-                    <>
-                      <ReusableTextInput
-                        name="englishMarks"
-                        label="English Marks"
-                        value={values.englishMarks}
-                        onChangeText={handleChange('englishMarks')}
-                        keyboardType="numeric"
-                        note="marks out of 100"
-                      />
-                      <ReusableTextInput
-                        name="mathMarks"
-                        label="Math Marks"
-                        value={values.mathMarks}
-                        onChangeText={handleChange('mathMarks')}
-                        keyboardType="numeric"
-                        note="marks out of 100"
-                      />
-                    </>
-                  )}
                 </View>
               )}
             </Formik>

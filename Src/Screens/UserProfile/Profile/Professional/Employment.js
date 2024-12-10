@@ -39,18 +39,6 @@ const NOTICEPERIOD_OPTIONS = [
   {id: 5, value: 'More than 3 months'},
 ];
 
-const YEAR_OPTIONS = Array.from({length: 31}, (_, i) => ({
-  id: i,
-  value: i === 30 ? '30+' : i.toString(),
-  label: i === 30 ? '30+' : i.toString(),
-}));
-
-const MONTH_OPTIONS = Array.from({length: 12}, (_, i) => ({
-  id: i,
-  value: i.toString(),
-  label: i.toString(),
-}));
-
 const CURRENCY_OPTIONS = [
   {id: 1, value: '$', label: '$'},
   {id: 2, value: '₹', label: '₹'},
@@ -281,8 +269,6 @@ const getInitialValues = (editingIndex, submittedDataList) => {
     CompanyName: '',
     JobTitle: '',
     jobProfile: '',
-    updatedExperienceYears: '',
-    updatedExperienceMonths: '',
     joiningDate: null,
     leavingDate: null,
     workedfrom: null,
@@ -316,12 +302,7 @@ const EmploymentValidationSchema = values => {
     schema.joiningDate = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
-    schema.updatedExperienceYears = Yup.string().required(
-      'Experience in years is required',
-    );
-    schema.updatedExperienceMonths = Yup.string().required(
-      'Experience in months is required',
-    );
+
     schema.salary = Yup.string().required('Salary is required');
 
     (schema.salarybreakdown = Yup.string()
@@ -652,46 +633,6 @@ const Employment = () => {
                     {values.currentCompany === 'Yes' &&
                       values.employmentType === 'Full-time' && (
                         <View>
-                          {/* Updated Experience Dropdowns */}
-                          <Text style={styles.subheading}>
-                            Updated Experience
-                          </Text>
-                          <View style={{flexDirection: 'row', gap: 8}}>
-                            <View style={{flex: 1}}>
-                              <ReusableDropdown
-                                options={YEAR_OPTIONS}
-                                placeholder="Select Years*"
-                                selectedValue={values.updatedExperienceYears}
-                                onSelect={selected =>
-                                  setFieldValue(
-                                    'updatedExperienceYears',
-                                    selected.value,
-                                  )
-                                }
-                                error={errors.updatedExperienceYears}
-                                touched={touched.updatedExperienceYears}
-                              />
-                            </View>
-
-                            {values.updatedExperienceYears !== '30+' && (
-                              <View style={{flex: 1}}>
-                                <ReusableDropdown
-                                  options={MONTH_OPTIONS}
-                                  placeholder="Select Months*"
-                                  selectedValue={values.updatedExperienceMonths}
-                                  onSelect={selected =>
-                                    setFieldValue(
-                                      'updatedExperienceMonths',
-                                      selected.value,
-                                    )
-                                  }
-                                  error={errors.updatedExperienceMonths}
-                                  touched={touched.updatedExperienceMonths}
-                                />
-                              </View>
-                            )}
-                          </View>
-
                           <ReusableTextInput
                             name="CompanyName"
                             label="Current Company Name*"

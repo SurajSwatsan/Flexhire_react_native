@@ -53,7 +53,7 @@ const ReusableDatePicker = ({label, value, onChange, error, touched}) => {
 
 const styles = StyleSheet.create({
   dateContainer: {
-    marginVertical: 8,
+    marginTop: 12,
   },
   inputBox: {
     backgroundColor: '#fff',

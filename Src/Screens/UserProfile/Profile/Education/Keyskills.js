@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {IconButton, TextInput} from 'react-native-paper';
-import profileStyle from '../ProfileStyle';
-import ModalFooter from '../../../Constant/ProfileModalFooter';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../../../Global_CSS/TheamColors';
+import profileStyle from '../../ProfileStyle';
+import ModalFooter from '../../../../Constant/ProfileModalFooter';
+import {colors} from '../../../../Global_CSS/TheamColors';
 
 const Skills = [
   {label: 'JavaScript', value: '1'},
@@ -118,6 +119,7 @@ const Skills = [
 const Keyskills = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedSkills, setSubmittedSkills] = useState([]); // Stores selected skills
+  const [tempSkills, setTempSkills] = useState([]); // Stores temporary skills for the modal
   const [searchText, setSearchText] = useState('');
 
   const openModal = () => setModalVisible(true);
@@ -125,24 +127,34 @@ const Keyskills = () => {
     setSearchText('');
     setModalVisible(false);
   };
+  const saveSkills = () => {
+    setSubmittedSkills([...tempSkills]); // Commit temp skills to submittedSkills
+    console.log(
+      'Saved Key Skills:',
+      JSON.stringify({key_skills: tempSkills}, null, 2),
+    );
+    closeModal();
+  };
+  const removeChip = skill => {
+    setTempSkills(prevSkills => {
+      const updatedSkills = prevSkills.filter(s => s !== skill);
+      console.log('Updated tempSkills after removal:', updatedSkills);
+      return updatedSkills;
+    });
+  };
 
-  const toggleSkillSelection = skill => {
-    // Add or remove skill from the list
-    setSubmittedSkills(
+  const toggleSkillSelection = skillLabel => {
+    setTempSkills(
       prevSkills =>
-        prevSkills.includes(skill)
-          ? prevSkills.filter(s => s !== skill) // Remove skill
-          : [...prevSkills, skill], // Add skill
+        prevSkills.includes(skillLabel)
+          ? prevSkills.filter(label => label !== skillLabel) // Remove skill
+          : [...prevSkills, skillLabel], // Add skill
     );
   };
 
   const filteredSkills = Skills.filter(skill =>
     skill.label.toLowerCase().includes(searchText.toLowerCase()),
   );
-
-  const removeChip = skill => {
-    setSubmittedSkills(prevSkills => prevSkills.filter(s => s !== skill));
-  };
 
   return (
     <View style={profileStyle.mainContainer}>
@@ -158,18 +170,23 @@ const Keyskills = () => {
       </View>
 
       <View style={profileStyle.outputData}>
-        {submittedSkills.length > 0 ? (
+        {tempSkills.length > 0 ? (
           <View style={profileStyle.chipContainer}>
-            {submittedSkills.map((skill, index) => (
+            {tempSkills.map((skill, index) => (
               <TouchableOpacity
                 key={index}
                 style={profileStyle.chip}
-                onPress={() => removeChip(skill)}>
+                onPress={() => {
+                  removeChip(skill); // Remove the skill
+                }}>
                 <Text style={profileStyle.chipText}>{skill}</Text>
                 <Ionicons
                   name="close-circle-outline"
                   size={16}
-                  style={styles.iconstyle}
+                  style={{
+                    color: colors.primary, // Ensure the icon color is visible
+                    marginLeft: 4, // Add spacing between text and icon
+                  }}
                 />
               </TouchableOpacity>
             ))}
@@ -210,12 +227,12 @@ const Keyskills = () => {
                     <Text
                       style={[
                         styles.skillList,
-                        submittedSkills.includes(skill.label) &&
+                        tempSkills.includes(skill.label) &&
                           styles.selectedSkill,
                       ]}>
                       {skill.label}
                     </Text>
-                    {submittedSkills.includes(skill.label) && (
+                    {tempSkills.includes(skill.label) && (
                       <Ionicons
                         name="checkmark-sharp"
                         size={18}
@@ -226,7 +243,7 @@ const Keyskills = () => {
                 ))}
               </View>
             </ScrollView>
-            <ModalFooter onPress={closeModal} onCancel={closeModal} />
+            <ModalFooter onPress={saveSkills} onCancel={closeModal} />
           </View>
         </View>
       </Modal>

@@ -88,7 +88,7 @@ const AuthViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.post('/admin/login/', requestData);
+      const response = await instance.post('/user/login/', requestData);
       console.log(
         '****************************login response***************************',
       );
@@ -96,25 +96,14 @@ const AuthViewController = () => {
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      console.log(response);
+      // console.log(response);
       const {access, user_id} = data;
       // console.log('login data ', token, user);
 
       setAuthToken(access); // Set token in axios headers or AsyncStorage
       await AsyncStorage.setItem('user_data', JSON.stringify(user_id));
 
-      // try {
-      //   AsyncStorage.getItem('is_logged_first_time').then(token => {
-      //     // console.log('is_logged_first_time', token);
-      //     if ((token != '1' && token != '0') || token == null) {
-      //       AsyncStorage.setItem('is_logged_first_time', '1');
-      //     } else {
-      //       AsyncStorage.setItem('is_logged_first_time', '0');
-      //     }
-      //   }); // Retrieve the token from storage, e.g., AsyncStorage
-      // } catch (error) {
-      //   console.error('Error checking login status:', error);
-      // }
+  
       dispatch({type: 'LOGIN_SUCCESS', payload: {access, user_id}});
 
       dispatch({type: 'LOADING', payload: false});

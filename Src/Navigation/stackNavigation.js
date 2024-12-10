@@ -17,18 +17,20 @@ import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
-import BasicInformation from '../Screens/UserProfile/Profile/BasicInformation.js';
 import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
-import CustomBottomTab from './CustomBottomTab.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
+<<<<<<< HEAD
 import JobViewPage from '../Components/JobView.js';
 import SettingPage from '../DrawerContent/SettingPage.js';
 // import JobView from '../Components/jobView.js';
+=======
+import BasicInformation from '../Screens/UserProfile/Profile/Personal/BasicInformation.js';
+>>>>>>> 2b58308c04272a0fd082ef826aab7d1b674d1f31
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
