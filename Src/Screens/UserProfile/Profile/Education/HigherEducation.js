@@ -19,11 +19,11 @@ import ReusableDropdown from '../../../../Constant/CustomDropdown';
 import CustomTabs from '../../../../Constant/CustomTabs';
 
 const EducationLevels = [
-  { id: 1, value: 'Doctorate', label: 'Doctorate' },
-  { id: 2, value: 'Post Graduate', label: 'Post Graduate' },
-  { id: 3, value: 'Graduate', label: 'Graduate' },
-  { id: 4, value: 'Diploma', label: 'Diploma' },
-];;
+  {id: 1, value: 'Doctorate', label: 'Doctorate'},
+  {id: 2, value: 'Post Graduate', label: 'Post Graduate'},
+  {id: 3, value: 'Graduate', label: 'Graduate'},
+  {id: 4, value: 'Diploma', label: 'Diploma'},
+];
 
 const startYear = 1980;
 const currentYear = new Date().getFullYear();
@@ -54,23 +54,23 @@ const GRADING_OPTIONS = [
 ];
 
 const validationSchema = Yup.object().shape({
-  educationLevel: Yup.string().required('Education Level is required'),
-  universityName: Yup.string().required('University Name is required'),
-  course: Yup.string().required('Course is required'),
+  education_level: Yup.string().required('Education Level is required'),
+  university_name: Yup.string().required('University Name is required'),
+  course_name: Yup.string().required('Course is required'),
   specialization: Yup.string().required('Specialization is required'),
-  startingYear: Yup.string()
+  start_year: Yup.string()
     .matches(/^\d{4}$/, 'Starting Year must be a valid year')
     .required('Starting Year is required'),
-  endingYear: Yup.string()
+  end_year: Yup.string()
     .matches(/^\d{4}$/, 'Ending Year must be a valid year')
     .required('Ending Year is required'),
-  gradingSystem: Yup.string().required('Grading System is required'),
-  courseType: Yup.string().required('Course Type is required'),
+  grading_system: Yup.string().required('Grading System is required'),
+  course_type: Yup.string().required('Course Type is required'),
   marks: Yup.string().test(
     'Marks must be a percentage (0-100)',
     function (value) {
-      const {gradingSystem} = this.parent; // Access the gradingSystem field
-      if (gradingSystem && gradingSystem !== 'Course Requires a Pass') {
+      const {grading_system} = this.parent; // Access the grading_system field
+      if (grading_system && grading_system !== 'Course Requires a Pass') {
         if (!value) {
           return this.createError({message: 'Marks is required'});
         }
@@ -79,7 +79,7 @@ const validationSchema = Yup.object().shape({
         const isValidRange = parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
         return isValidFormat && isValidRange;
       }
-      return true; // Skip validation when gradingSystem is "Course Requires a Pass"
+      return true; // Skip validation when grading_system is "Course Requires a Pass"
     },
   ),
 });
@@ -93,17 +93,35 @@ const CourseType = [
   },
 ];
 
-const getInitialValues = () => ({
-  educationLevel: '',
-  universityName: '',
-  course: '',
-  specialization: '',
-  courseType: '',
-  startingYear: '',
-  endingYear: '',
-  gradingSystem: '',
-  marks: '',
-});
+const getInitialValues = (educationData = [], editingIndex = null) => {
+  if (editingIndex !== null && educationData[editingIndex]) {
+    const data = educationData[editingIndex];
+    return {
+      education_level: data.education_level || '',
+      university_name: data.university_name || '',
+      course_name: data.course_name || '',
+      specialization: data.specialization || '',
+      course_type: data.course_type || '',
+      start_year: data.duration?.start_year || '',
+      end_year: data.duration?.end_year || '',
+      grading_system: data.grading_system?.name || '',
+      marks: data.grading_system?.marks || '',
+    };
+  }
+
+  // Default values for new entries
+  return {
+    education_level: '',
+    university_name: '',
+    course_name: '',
+    specialization: '',
+    course_type: '',
+    start_year: '',
+    end_year: '',
+    grading_system: '',
+    marks: '',
+  };
+};
 
 const HigherEducation = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -111,15 +129,46 @@ const HigherEducation = () => {
   const [editingIndex, setEditingIndex] = useState(null);
 
   const handleFormSubmit = values => {
+    const formattedValues = {
+      education_level: values.education_level,
+      course_name: values.course_name,
+      specialization: values.specialization,
+      university_name: values.university_name,
+      course_type: values.course_type,
+      duration: {
+        start_year: values.start_year,
+        end_year: values.end_year,
+      },
+      grading_system: {
+        name: values.grading_system,
+        marks:
+          values.grading_system !== 'Course Requires a Pass'
+            ? values.marks
+            : null,
+      },
+    };
+
+    let updatedData;
+
     if (editingIndex !== null) {
-      const updatedData = [...educationData];
-      updatedData[editingIndex] = values;
-      setEducationData(updatedData);
+      // Update the existing entry
+      updatedData = educationData.map((item, index) =>
+        index === editingIndex ? formattedValues : item,
+      );
     } else {
-      setEducationData([...educationData, values]);
+      // Add new entry
+      updatedData = [...educationData, formattedValues];
     }
-    setModalVisible(false);
-    setEditingIndex(null);
+
+    setEducationData(updatedData); // Update state
+    setModalVisible(false); // Close modal
+    setEditingIndex(null); // Reset editing index
+
+    // Log updated data to console
+    console.log(
+      'Updated Education Data:',
+      JSON.stringify(updatedData, null, 2),
+    );
   };
 
   const openModal = index => {
@@ -160,32 +209,21 @@ const HigherEducation = () => {
             <>
               <TouchableOpacity onPress={() => openModal(index)}>
                 <View style={profileStyle.userDataContainer}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <View style={{flex:1}}>
-                      <Text style={styles.ClassText}>
-                        {item.course}/{item.specialization}
-                      </Text>
-                      <Text style={styles.universityName}>
-                        {item.universityName}
-                      </Text>
-                      <Text style={styles.passoutText}>
-                        {item.startingYear}-{item.endingYear} • {item.courseType}
-                      </Text>
-                    </View>
-                    <View>
-                      <IconButton
-                        icon="pencil-outline"
-                        size={20}
-                        onPress={() => openModal(index)}
-                        iconColor={'black'}
-                        style={styles.editIcon}
-                      />
-                    </View>
-                  </View>
+                  <Text style={styles.ClassText}>
+                    {item.course_name}/{item.specialization}
+                  </Text>
+                  <Text style={styles.university_name}>
+                    {item.university_name}
+                  </Text>
+                  <Text style={styles.passoutText}>
+                    {item.duration.start_year}-{item.duration.end_year} •{' '}
+                    {item.course_type}
+                  </Text>
+                  {/* <Text style={styles.passoutText}>
+                    Grading System: {item.grading_system.name}
+                    {item.grading_system.marks &&
+                      ` • Marks: ${item.grading_system.marks}`}
+                  </Text> */}
                 </View>
               </TouchableOpacity>
               {educationData.length > 1 && index < educationData.length - 1 && (
@@ -196,8 +234,8 @@ const HigherEducation = () => {
         />
       ) : (
         <Text style={profileStyle.optionalData}>
-          Details like course, university, and more, help recruiters identify
-          your educational background.
+          Details like course_name, university, and more, help recruiters
+          identify your educational background.
         </Text>
       )}
 
@@ -209,11 +247,7 @@ const HigherEducation = () => {
         <View style={profileStyle.modalContainer}>
           <ScrollView>
             <Formik
-              initialValues={
-                editingIndex !== null
-                  ? educationData[editingIndex]
-                  : getInitialValues()
-              }
+              initialValues={getInitialValues(educationData, editingIndex)}
               validationSchema={validationSchema}
               innerRef={ref => (formikRef = ref)}
               onSubmit={handleFormSubmit}>
@@ -230,37 +264,36 @@ const HigherEducation = () => {
                     HIGHER EDUCATION DETAILS
                   </Text>
                   <Text style={profileStyle.formSubHeading}>
-                    Details like course, university, and more, help recruiters
-                    identify your educational background
+                    Details like course_name, university, and more, help
+                    recruiters identify your educational background
                   </Text>
                   <View style={profileStyle.TabContainer}>
-
-                  <CustomTabs
-                        label="Education*"
-                        options={EducationLevels}
-                        selectedValue={values.educationLevel}
-                        setFieldValue={setFieldValue}
-                        fieldName="educationLevel"
-                        error={errors.educationLevel}
-                        touched={touched.educationLevel}
-                      />
+                    <CustomTabs
+                      label="Education*"
+                      options={EducationLevels}
+                      selectedValue={values.education_level}
+                      setFieldValue={setFieldValue}
+                      fieldName="education_level"
+                      error={errors.education_level}
+                      touched={touched.education_level}
+                    />
 
                     {/* {EducationLevels.map(option => (
                       <TouchableOpacity
                         key={option.id}
                         style={[
                           profileStyle.tabBtnStyle,
-                          values.educationLevel === option.value
+                          values.education_level === option.value
                             ? profileStyle.selectedTab
                             : profileStyle.unselectedTab,
                         ]}
                         onPress={() =>
-                          setFieldValue('educationLevel', option.value)
+                          setFieldValue('education_level', option.value)
                         }>
                         <Text
                           style={[
                             profileStyle.tabBtnText,
-                            values.educationLevel === option.value
+                            values.education_level === option.value
                               ? profileStyle.selectedTabText
                               : profileStyle.unselectedTabText,
                           ]}>
@@ -275,19 +308,19 @@ const HigherEducation = () => {
                     'Post Graduate',
                     'Graduate',
                     'Diploma',
-                  ].includes(values.educationLevel) && (
+                  ].includes(values.education_level) && (
                     <>
                       <ReusableTextInput
-                        name="universityName"
+                        name="university_name"
                         label="University Name*"
-                        value={values.universityName}
-                        onChangeText={handleChange('universityName')}
+                        value={values.university_name}
+                        onChangeText={handleChange('university_name')}
                       />
                       <ReusableTextInput
-                        name="course"
+                        name="course_name"
                         label="Course*"
-                        value={values.course}
-                        onChangeText={handleChange('course')}
+                        value={values.course_name}
+                        onChangeText={handleChange('course_name')}
                       />
                       <ReusableTextInput
                         name="specialization"
@@ -299,35 +332,35 @@ const HigherEducation = () => {
                       <CustomTabs
                         label="Course Type*"
                         options={CourseType}
-                        selectedValue={values.courseType}
+                        selectedValue={values.course_type}
                         setFieldValue={setFieldValue}
-                        fieldName="courseType"
-                        error={errors.courseType}
-                        touched={touched.courseType}
+                        fieldName="course_type"
+                        error={errors.course_type}
+                        touched={touched.course_type}
                       />
                       <View style={styles.YearContainer}>
                         <View style={{width: '48%'}}>
                           <ReusableDropdown
                             options={StartingYear}
                             placeholder="Starting Year*"
-                            selectedValue={values.startingYear}
+                            selectedValue={values.start_year}
                             onSelect={selected =>
-                              setFieldValue('startingYear', selected.value)
+                              setFieldValue('start_year', selected.value)
                             }
-                            error={errors.startingYear}
-                            touched={touched.startingYear}
+                            error={errors.start_year}
+                            touched={touched.start_year}
                           />
                         </View>
                         <View style={{width: '48%'}}>
                           <ReusableDropdown
                             options={EndingYear}
                             placeholder="Ending Year*"
-                            selectedValue={values.endingYear}
+                            selectedValue={values.end_year}
                             onSelect={selected =>
-                              setFieldValue('endingYear', selected.value)
+                              setFieldValue('end_year', selected.value)
                             }
-                            error={errors.endingYear}
-                            touched={touched.endingYear}
+                            error={errors.end_year}
+                            touched={touched.end_year}
                           />
                         </View>
                       </View>
@@ -335,17 +368,17 @@ const HigherEducation = () => {
                       <ReusableDropdown
                         options={GRADING_OPTIONS}
                         placeholder="Grading System*"
-                        selectedValue={values.gradingSystem}
+                        selectedValue={values.grading_system}
                         onSelect={selected =>
-                          setFieldValue('gradingSystem', selected.value)
+                          setFieldValue('grading_system', selected.value)
                         }
-                        error={errors.gradingSystem}
-                        touched={touched.gradingSystem}
+                        error={errors.grading_system}
+                        touched={touched.grading_system}
                       />
 
                       {/* Conditionally render Marks field */}
-                      {values.gradingSystem &&
-                        values.gradingSystem !== 'Course Requires a Pass' && (
+                      {values.grading_system &&
+                        values.grading_system !== 'Course Requires a Pass' && (
                           <ReusableTextInput
                             name="marks"
                             label="Marks*"
@@ -384,7 +417,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.primary,
   },
-  universityName: {
+  university_name: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.primary,

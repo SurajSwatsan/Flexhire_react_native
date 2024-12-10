@@ -41,28 +41,14 @@ const EmploymentNatureOptions = [
   {id: 3, label: 'Contractual', value: 'Contractual'},
 ];
 
-const initialProject = {
-  projecttitle: '',
-  client: '',
-  projectstatus: '',
-  workedFrom: moment().toDate(),
-  workedTill: '',
-  projectDetails: '',
-  projectlocation: '',
-  projectsite: 'Off Site',
-  natureofemployment: 'Full Time',
-  teamsize: '',
-  role: '',
-  roledescription: '',
-  skillsused: '',
-};
+const getInitialValues = data => ({});
 
 // Validation Schema
 const validationSchema = Yup.object().shape({
-  projecttitle: Yup.string().required('Project title is required'),
+  title: Yup.string().required('Project title is required'),
   client: Yup.string().required('Client is required'),
-  projectstatus: Yup.string().required('Project status is required'),
-  projectDetails: Yup.string().required('Project details are required'),
+  status: Yup.string().required('Project status is required'),
+  description: Yup.string().required('Project details are required'),
 });
 
 const Projects = () => {
@@ -84,14 +70,33 @@ const Projects = () => {
   };
 
   const handleFormSubmit = values => {
+    const {worked_duration, ...rest} = values;
+    const formattedValues = {
+      ...rest,
+      worked_duration: {
+        from: worked_duration.from
+          ? moment(worked_duration.from).format('DD-MM-YYYY')
+          : null,
+        till: worked_duration.till
+          ? moment(worked_duration.till).format('DD-MM-YYYY')
+          : null,
+      },
+    };
+
     const updatedProjectList = [...projectList];
     if (selectedProjectIndex !== null) {
-      updatedProjectList[selectedProjectIndex] = values;
+      updatedProjectList[selectedProjectIndex] = formattedValues;
     } else {
-      updatedProjectList.push(values);
+      updatedProjectList.push(formattedValues);
     }
+
     setProjectList(updatedProjectList);
     closeModal();
+
+    console.log(
+      'Updated Project Details:',
+      JSON.stringify({project_details: updatedProjectList}, null, 2),
+    );
   };
 
   const deleteProject = () => {
@@ -103,9 +108,6 @@ const Projects = () => {
       setSelectedProjectIndex(null);
     }
   };
-
-  const formatDate = date => (date ? moment(date).format('MMM YYYY') : '');
-
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
@@ -132,17 +134,18 @@ const Projects = () => {
                 <TouchableOpacity
                   style={[profileStyle.userDataContainer, styles.dataContainer]}
                   onPress={() => openModal(index)}>
-                  <Text style={profileStyle.optionalData}>
-                    {item.projecttitle}
-                  </Text>
+                  <Text style={profileStyle.optionalData}>{item.title}</Text>
                   <Text style={profileStyle.optionalData}>{item.client}</Text>
 
                   <Text style={profileStyle.optionalData}>
-                    {formatDate(item.workedFrom)} -{' '}
-                    {item.projectstatus === 'Finished'
-                      ? formatDate(item.workedTill)
+                    {item.worked_duration?.from
+                      ? item.worked_duration.from
+                      : 'N/A'}{' '}
+                    -{' '}
+                    {item.status === 'Finished' && item.worked_duration?.till
+                      ? item.worked_duration.till
                       : 'Present'}{' '}
-                    • {item.natureofemployment}
+                    • {item.nature_of_employment}
                   </Text>
                 </TouchableOpacity>
                 <IconButton
@@ -182,8 +185,8 @@ const Projects = () => {
               <Formik
                 initialValues={
                   selectedProjectIndex !== null
-                    ? projectList[selectedProjectIndex]
-                    : initialProject
+                    ? getInitialValues(projectList[selectedProjectIndex])
+                    : getInitialValues({})
                 }
                 validationSchema={validationSchema}
                 innerRef={ref => (formikRef = ref)}
@@ -199,10 +202,10 @@ const Projects = () => {
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>PROJECT</Text>
                     <ReusableTextInput
-                      name="projecttitle"
+                      name="title"
                       label="Project Title*"
-                      value={values.projecttitle}
-                      onChangeText={handleChange('projecttitle')}
+                      value={values.title}
+                      onChangeText={handleChange('title')}
                     />
                     <ReusableTextInput
                       name="client"
@@ -213,29 +216,39 @@ const Projects = () => {
                     <CustomTabs
                       label="Project Status*"
                       options={ProjectStatusOptions}
-                      selectedValue={values.projectstatus}
+                      selectedValue={values.status}
                       setFieldValue={setFieldValue}
-                      fieldName="projectstatus"
-                      error={errors.projectstatus}
-                      touched={touched.projectstatus}
+                      fieldName="status"
+                      error={errors.status}
+                      touched={touched.status}
                     />
+
+                    {/* Render Worked From and Till based on project status */}
                     <ReusableDatePicker
                       label="Worked From*"
-                      value={values.workedFrom}
-                      onChange={date => setFieldValue('workedFrom', date)}
+                      value={values.from}
+                      onChange={date => setFieldValue('from', date)}
                     />
-                    {values.projectstatus === 'Finished' && (
-                      <ReusableDatePicker
-                        label="Worked Till*"
-                        value={values.workedTill}
-                        onChange={date => setFieldValue('workedTill', date)}
-                      />
-                    )}
+                    {values.status &&
+                      (values.status === 'In Progress' ? (
+                        <ReusableTextInput
+                          name="till"
+                          label="Till*"
+                          value="Present"
+                          editable={false} // Make it read-only
+                        />
+                      ) : (
+                        <ReusableDatePicker
+                          label="Worked Till*"
+                          value={values.till}
+                          onChange={date => setFieldValue('till', date)}
+                        />
+                      ))}
                     <ReusableTextInput
-                      name="projectDetails"
+                      name="description"
                       label="Project Details*"
-                      value={values.projectDetails}
-                      onChangeText={handleChange('projectDetails')}
+                      value={values.description}
+                      onChangeText={handleChange('description')}
                     />
                     <TouchableOpacity
                       onPress={() => setShowMoreDetails(!showMoreDetails)}>
@@ -245,37 +258,39 @@ const Projects = () => {
                           fontWeight: 'bold',
                           marginVertical: 10,
                         }}>
-                        Add more details +
+                        {showMoreDetails
+                          ? 'Hide more details -'
+                          : 'Add more details +'}
                       </Text>
                     </TouchableOpacity>
                     {showMoreDetails && (
                       <>
                         <ReusableTextInput
-                          name="projectlocation"
+                          name="project_location"
                           label="Project Location"
-                          value={values.projectlocation}
-                          onChangeText={handleChange('projectlocation')}
+                          value={values.project_location}
+                          onChangeText={handleChange('project_location')}
                         />
                         <CustomTabs
                           label="Project Site*"
                           options={ProjectSiteOptions}
-                          selectedValue={values.projectsite}
+                          selectedValue={values.project_site}
                           setFieldValue={setFieldValue}
-                          fieldName="projectsite"
+                          fieldName="project_site"
                         />
                         <CustomTabs
                           label="Nature of Employment*"
                           options={EmploymentNatureOptions}
-                          selectedValue={values.natureofemployment}
+                          selectedValue={values.nature_of_employment}
                           setFieldValue={setFieldValue}
-                          fieldName="natureofemployment"
+                          fieldName="nature_of_employment"
                         />
                         <ReusableDropdown
                           options={TeamSizeOptions}
                           placeholder="Team Size"
-                          selectedValue={values.teamsize}
+                          selectedValue={values.team_size}
                           onSelect={item =>
-                            setFieldValue('teamsize', item.value)
+                            setFieldValue('team_size', item.value)
                           }
                         />
                         <ReusableTextInput
@@ -285,16 +300,16 @@ const Projects = () => {
                           onChangeText={handleChange('role')}
                         />
                         <ReusableTextInput
-                          name="roledescription"
+                          name="role_description"
                           label="Role Description"
-                          value={values.roledescription}
-                          onChangeText={handleChange('roledescription')}
+                          value={values.role_description}
+                          onChangeText={handleChange('role_description')}
                         />
                         <ReusableTextInput
-                          name="skillsused"
+                          name="skills_used"
                           label="Skills Used"
-                          value={values.skillsused}
-                          onChangeText={handleChange('skillsused')}
+                          value={values.skills_used}
+                          onChangeText={handleChange('skills_used')}
                         />
                       </>
                     )}

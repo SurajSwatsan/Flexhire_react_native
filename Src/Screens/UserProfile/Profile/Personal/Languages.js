@@ -1,40 +1,34 @@
-import React, { useCallback, useState } from 'react';
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
-import { IconButton } from 'react-native-paper';
-import { Formik } from 'formik';
+import React, {useCallback, useState} from 'react';
+import {Modal, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {IconButton} from 'react-native-paper';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import profileStyle from '../../ProfileStyle';
-import { colors } from '../../../../Global_CSS/TheamColors';
+import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import CustomTabs from '../../../../Constant/CustomTabs';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 
 const PROFICIENCY_OPTIONS = [
-  { id: 1, value: 'Beginner' },
-  { id: 2, value: 'Medium' },
-  { id: 3, value: 'Expert' },
+  {id: 1, value: 'Beginner'},
+  {id: 2, value: 'Medium'},
+  {id: 3, value: 'Expert'},
 ];
 
 const LANGUAGES = [
-  { id: 1, value: 'English' },
-  { id: 2, value: 'Spanish' },
-  { id: 3, value: 'French' },
-  { id: 4, value: 'German' },
-  { id: 5, value: 'Chinese' },
-  { id: 6, value: 'Japanese' },
-  { id: 7, value: 'Hindi' },
-  { id: 8, value: 'Arabic' },
-  { id: 9, value: 'Portuguese' },
-  { id: 10, value: 'Russian' },
-  { id: 11, value: 'Marathi' },
-  { id: 12, value: 'Telugu' },
+  {id: 1, value: 'English'},
+  {id: 2, value: 'Spanish'},
+  {id: 3, value: 'French'},
+  {id: 4, value: 'German'},
+  {id: 5, value: 'Chinese'},
+  {id: 6, value: 'Japanese'},
+  {id: 7, value: 'Hindi'},
+  {id: 8, value: 'Arabic'},
+  {id: 9, value: 'Portuguese'},
+  {id: 10, value: 'Russian'},
+  {id: 11, value: 'Marathi'},
+  {id: 12, value: 'Telugu'},
 ];
 
 const validationSchema = Yup.object().shape({
@@ -43,7 +37,11 @@ const validationSchema = Yup.object().shape({
   comfortablein: Yup.array().min(1, 'At least one option must be selected'),
 });
 
-const getInitialValues = (name = '', proficiency = '', comfortable_in = []) => ({
+const getInitialValues = (
+  name = '',
+  proficiency = '',
+  comfortable_in = [],
+) => ({
   language: name,
   proficiency,
   comfortablein: comfortable_in,
@@ -56,7 +54,7 @@ const Languages = () => {
 
   let formikRef = null;
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = values => {
     const formattedValues = {
       name: values.language,
       proficiency: values.proficiency,
@@ -65,7 +63,7 @@ const Languages = () => {
 
     if (editIndex !== null) {
       const updatedLanguages = languages.map((lang, index) =>
-        index === editIndex ? formattedValues : lang
+        index === editIndex ? formattedValues : lang,
       );
       setLanguages(updatedLanguages);
     } else {
@@ -76,10 +74,9 @@ const Languages = () => {
     setEditIndex(null);
     setModalVisible(false);
     console.log('Formatted Data:', JSON.stringify(languages, null, 2));
-
   };
 
-  const deleteLanguage = (index) => {
+  const deleteLanguage = index => {
     const updatedLanguages = languages.filter((_, i) => i !== index);
     setLanguages(updatedLanguages);
     setModalVisible(false);
@@ -106,44 +103,47 @@ const Languages = () => {
       <View>
         {languages.length > 0 ? (
           languages.map((lang, index) => (
-            <TouchableOpacity key={index} onPress={() => openModal(index)}>
-              <View style={styles.outpurtData}>
-                <View style={styles.languageDetails}>
-                  <Text style={styles.displayText}>{lang.name}</Text>
-                  <View style={styles.iconsContainer}>
-                    <IconButton
-                      icon="pencil-outline"
-                      iconColor={colors.blackText}
-                      size={18}
-                      onPress={() => openModal(index)}
-                      style={styles.iconButton}
-                    />
+            <>
+              <TouchableOpacity key={index} onPress={() => openModal(index)}>
+                <View style={styles.outpurtData}>
+                  <View style={styles.languageDetails}>
+                    <Text style={styles.displayText}>{lang.name}</Text>
+                    <View style={styles.iconsContainer}>
+                      <IconButton
+                        icon="pencil-outline"
+                        iconColor={colors.blackText}
+                        size={18}
+                        onPress={() => openModal(index)}
+                        style={styles.iconButton}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={styles.iconTextContainer}>
+                    {lang.comfortable_in.map(option => (
+                      <View key={option} style={profileStyle.chip}>
+                        <Ionicons
+                          name={
+                            option === 'Read'
+                              ? 'book-outline'
+                              : option === 'Writing'
+                              ? 'pencil-outline'
+                              : 'mic-outline'
+                          }
+                          size={16}
+                          color="#333"
+                          style={{marginRight: 4}}
+                        />
+                        <Text style={profileStyle.chipText}>{option}</Text>
+                      </View>
+                    ))}
                   </View>
                 </View>
-                <Text style={styles.displayText2}>
-                  Proficiency: {lang.proficiency}
-                </Text>
-                <View style={styles.iconTextContainer}>
-                  {lang.comfortable_in.map((option) => (
-                    <View key={option} style={profileStyle.chip}>
-                      <Ionicons
-                        name={
-                          option === 'Read'
-                            ? 'book-outline'
-                            : option === 'Writing'
-                            ? 'pencil-outline'
-                            : 'mic-outline'
-                        }
-                        size={16}
-                        color="#333"
-                        style={{ marginRight: 4 }}
-                      />
-                      <Text style={profileStyle.chipText}>{option}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+              {languages.length > 1 && index < languages.length - 1 && (
+                <View style={styles.horizontalLine} />
+              )}
+            </>
           ))
         ) : (
           <Text style={profileStyle.optionalData}>
@@ -157,8 +157,7 @@ const Languages = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+        onRequestClose={() => setModalVisible(false)}>
         <View style={profileStyle.modalContainer}>
           <Formik
             initialValues={
@@ -166,15 +165,14 @@ const Languages = () => {
                 ? getInitialValues(
                     languages[editIndex]?.name,
                     languages[editIndex]?.proficiency,
-                    languages[editIndex]?.comfortable_in
+                    languages[editIndex]?.comfortable_in,
                   )
                 : getInitialValues()
             }
             validationSchema={validationSchema}
-            innerRef={(ref) => (formikRef = ref)}
-            onSubmit={handleFormSubmit}
-          >
-            {({ handleSubmit, setFieldValue, values, errors, touched }) => (
+            innerRef={ref => (formikRef = ref)}
+            onSubmit={handleFormSubmit}>
+            {({handleSubmit, setFieldValue, values, errors, touched}) => (
               <View style={profileStyle.formContainer}>
                 <Text style={profileStyle.formHeading}>
                   Add or Edit Language
@@ -183,10 +181,10 @@ const Languages = () => {
                   title="Language"
                   data={LANGUAGES}
                   selectedItems={
-                    LANGUAGES.find((item) => item.value === values.language) ||
+                    LANGUAGES.find(item => item.value === values.language) ||
                     null
                   }
-                  setSelectedItems={(item) =>
+                  setSelectedItems={item =>
                     setFieldValue('language', item?.value || '')
                   }
                   placeholder="Select a language"
@@ -207,7 +205,7 @@ const Languages = () => {
 
                 <Text style={styles.subHeading}>Comfortable In</Text>
                 <View style={styles.comfortableinContainer}>
-                  {['Read', 'Writing', 'Speaking'].map((option) => (
+                  {['Read', 'Writing', 'Speaking'].map(option => (
                     <TouchableOpacity
                       key={option}
                       style={[
@@ -221,12 +219,11 @@ const Languages = () => {
                           'comfortablein',
                           values.comfortablein.includes(option)
                             ? values.comfortablein.filter(
-                                (item) => item !== option
+                                item => item !== option,
                               )
-                            : [...values.comfortablein, option]
+                            : [...values.comfortablein, option],
                         )
-                      }
-                    >
+                      }>
                       <Ionicons
                         name={
                           option === 'Read'
@@ -247,8 +244,7 @@ const Languages = () => {
                           values.comfortablein.includes(option)
                             ? styles.selectedText
                             : styles.unselectedText
-                        }
-                      >
+                        }>
                         {option}
                       </Text>
                     </TouchableOpacity>
@@ -271,8 +267,6 @@ const Languages = () => {
     </View>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -302,8 +296,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'space-between',
     flexDirection: 'column',
-    borderBottomColor: colors.lightgaryText,
-    borderBottomWidth: 1,
+    // borderBottomColor: colors.lightgaryText,
+    // borderBottomWidth: 1,
   },
   languageDetails: {
     flexDirection: 'row',
@@ -358,6 +352,11 @@ const styles = StyleSheet.create({
   },
   unselectedText: {
     color: '#333',
+  },
+  horizontalLine: {
+    borderBottomColor: colors.lightgaryText,
+    borderBottomWidth: 0.5,
+    marginVertical: 10,
   },
 });
 
