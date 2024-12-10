@@ -24,13 +24,9 @@ import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
 import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
-<<<<<<< HEAD
+import BasicInformation from '../Screens/UserProfile/Profile/Personal/BasicInformation.js';
 import JobViewPage from '../Components/JobView.js';
 import SettingPage from '../DrawerContent/SettingPage.js';
-// import JobView from '../Components/jobView.js';
-=======
-import BasicInformation from '../Screens/UserProfile/Profile/Personal/BasicInformation.js';
->>>>>>> 2b58308c04272a0fd082ef826aab7d1b674d1f31
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -107,19 +103,13 @@ const StackNavigation = () => {
         // options={{headerShown: false}}
       />
 
-      <Stack.Screen
-       name="UserApplies" 
-       component={UserApplies} 
-       />
+      <Stack.Screen name="UserApplies" component={UserApplies} />
 
-      <Stack.Screen 
-      name='JobsScreen' 
-      component={JobScreen}
-      />
+      <Stack.Screen name="JobsScreen" component={JobScreen} />
 
       <Stack.Screen
-      name="DisplayPreference"
-      component={DispalyPreferenceScreen}
+        name="DisplayPreference"
+        component={DispalyPreferenceScreen}
       />
 
       <Stack.Screen
@@ -154,38 +144,31 @@ const StackNavigation = () => {
       <Stack.Screen
         name="ApplicationStatus"
         component={ApplicationStatusScreen}
-        options={{headerShown:false}}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
-      name='InterviewPage'
-      component={MyInterviewPage}
-      options={{headerShown:false}}
+        name="InterviewPage"
+        component={MyInterviewPage}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
-      name='AnalyticPage'
-      component={AnalyticsPage}
-      options={{headerShown:false}}
+        name="AnalyticPage"
+        component={AnalyticsPage}
+        options={{headerShown: false}}
       />
 
-      <Stack.Screen
-      name = "JobView"
-      component={JobViewPage}
-      />
+      <Stack.Screen name="JobView" component={JobViewPage} />
 
-      <Stack.Screen
-      name='SettingPage'
-      component={SettingPage}
-      />
+      <Stack.Screen name="SettingPage" component={SettingPage} />
 
-{/* <Stack.Screen
+      {/* <Stack.Screen
         name="CustomBottomTab"
         component={CustomBottomTab}
         options={{ headerShown: false }}
       /> */}
     </Stack.Navigator>
-    
   );
 };
 
