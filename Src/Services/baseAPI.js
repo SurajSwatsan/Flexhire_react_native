@@ -24,7 +24,7 @@ instance.interceptors.request.use(
     // Modify config, such as adding headers
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Token ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

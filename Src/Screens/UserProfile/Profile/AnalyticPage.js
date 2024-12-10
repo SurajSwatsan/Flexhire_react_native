@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -12,13 +12,40 @@ import CustomHeader from '../../../Constant/CustomBackIcon';
 import moment from 'moment'; // Import Moment.js
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {PieChart} from 'react-native-chart-kit';
+import {useDispatch} from 'react-redux';
+import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AnalyticsPage = () => {
   // Get current date and day using Moment.js
+  const [id, setId] = useState();
   const formattedDate = moment().format('dddd, MMM D YYYY');
   const startOfWeek = moment().startOf('week');
   const endOfWeek = moment().endOf('week');
+  const dispatch = useDispatch();
+  const {GetProfileAnalytic} = UserProfileViewController();
+  const isFocus = useIsFocused();
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
 
+    getUserData();
+
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [isFocus]);
+  useEffect(() => {
+    if (id) {
+      dispatch(GetProfileAnalytic(id)); // Dispatch the action when the component mounts
+    }
+  }, [id]);
   const weekDateRange = `${startOfWeek.format('MMM D')} - ${endOfWeek.format(
     'MMM D',
   )}`;

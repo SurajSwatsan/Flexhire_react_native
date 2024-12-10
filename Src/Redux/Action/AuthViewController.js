@@ -2,6 +2,7 @@ import {Toast} from 'react-native-toast-notifications';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import instance, {setAuthToken} from '../../Services/baseAPI';
+import axios from 'axios';
 
 const AuthViewController = () => {
   const navigation = useNavigation();
@@ -32,7 +33,7 @@ const AuthViewController = () => {
   const register = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     try {
-      const response = await instance.post('/register/user/', requestData);
+      const response = await axios.post('/register/user/', requestData);
       // console.log(
       //   '****************************Register response***************************',
       // );
@@ -88,7 +89,9 @@ const AuthViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.post('/user/login/', requestData);
+      const response = await axios.post('http://15.206.149.28/api/user/login/', requestData);
+    
+
       console.log(
         '****************************login response***************************',
       );
@@ -96,7 +99,7 @@ const AuthViewController = () => {
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      // console.log(response);
+      console.log(response);
       const {access, user_id} = data;
       // console.log('login data ', token, user);
 
