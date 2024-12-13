@@ -17,35 +17,15 @@ const CustomJobCard = ({
   showWorkModes = true,
   showRating = false,
   showPostedDate = true,
-  showSalary=false,
+  showSalary = false,
   navigateToApplicationStatus,
+  ApplicationObject
 }) => {
   const navigation = useNavigation();
   const [localSavedJobs, setLocalSavedJobs] = useState(savedJobs);
   const [appliedJobs, setAppliedJobs] = useState([]);
 
-  useEffect(() => {
-    loadSavedJobs();
-    loadAppliedJobs();
-  }, []);
 
-  const loadSavedJobs = async () => {
-    try {
-      const storedJobs = await AsyncStorage.getItem('savedJobs');
-      if (storedJobs) setLocalSavedJobs(JSON.parse(storedJobs));
-    } catch (error) {
-      console.error('Failed to load saved jobs', error);
-    }
-  };
-
-  const loadAppliedJobs = async () => {
-    try {
-      const storedAppliedJobs = await AsyncStorage.getItem('appliedJobs');
-      if (storedAppliedJobs) setAppliedJobs(JSON.parse(storedAppliedJobs));
-    } catch (error) {
-      console.error('Failed to load applied jobs', error);
-    }
-  };
 
   const handleToggleSaveJob = async job => {
     try {
@@ -67,26 +47,25 @@ const CustomJobCard = ({
     }
   };
 
-  // const getPostedDate = postedDate => {
-  //   const daysDifference = moment().diff(moment(postedDate), 'days');
-
-  //   if (daysDifference <= 30) {
-  //     return moment(postedDate).fromNow(); // e.g., "3 days ago"
-  //   } else {
-  //     return moment(postedDate).format('D MMM YYYY'); // e.g., "1 Jan 2024"
-  //   }
-  // };
-
   const getPostedDate = postedDate => {
-    const formattedDate = moment(postedDate, moment.ISO_8601); // Force Moment to interpret as ISO format
-  
+    const formattedDate = moment(postedDate, moment.ISO_8601);
     const daysDifference = moment().diff(formattedDate, 'days');
-  
     if (daysDifference <= 30) {
-      return formattedDate.fromNow(); // e.g., "3 days ago"
+      return formattedDate.fromNow();
     } else {
-      return formattedDate.format('D MMM YYYY'); // e.g., "1 Jan 2024"
+      return formattedDate.format('D MMM YYYY');
     }
+  };
+
+  const getLocation = locations => {
+    return locations.map(location => location.name).join(', ');
+  };
+
+  const getSalary = salary => {
+    if (salary?.yearly?.min && salary?.yearly?.max) {
+      return `${salary.yearly.min} - ${salary.yearly.max} ${salary.yearly.currency}`;
+    }
+    return 'Salary not disclosed';
   };
 
   if (!jobData || typeof jobData !== 'object') {
@@ -95,35 +74,29 @@ const CustomJobCard = ({
 
   const handleCardPress = () => {
     if (navigateToApplicationStatus) {
-      // Navigate to "ApplicationStatus" if the prop is passed
-      navigation.navigate('ApplicationStatus', { jobData });
+      navigation.navigate('ApplicationStatus', {jobData});
     } else {
-      // Navigate to "JobDetailScreen" by default
-      navigation.navigate('JobDetailScreen', { jobData });
+      navigation.navigate('JobDetailScreen', {jobData});
     }
   };
 
   return (
     <View style={styles.companyContainer}>
-      <TouchableOpacity
-        style={{marginHorizontal: 8}}
-        // onPress={() => navigation.navigate('JobDetailScreen', {jobData})}
-        onPress={handleCardPress}
-        >
+      <TouchableOpacity style={{marginHorizontal: 8}} onPress={handleCardPress}>
         <View style={styles.companyHeader}>
           <View style={styles.companyInfo}>
             <Image
               source={
                 jobData.company.logo
-                  ? {uri: jobData.company.logo}
+                  ? {uri: jobData?.company?.logo}
                   : require('../Assets/CompanyLogo/TCS_logo.png')
               }
               style={styles.companyImage}
             />
             <View>
-              <Text style={styles.jobTitle}>{jobData.job_title}</Text>
+              <Text style={styles.jobTitle}>{jobData?.job_title?.title}</Text>
               <Text style={styles.companyName}>
-                {jobData.company.company_name}
+                {jobData?.company_name}
               </Text>
             </View>
           </View>
@@ -133,14 +106,16 @@ const CustomJobCard = ({
               style={styles.saveIcon}
               icon={
                 localSavedJobs.some(
-                  savedJob => savedJob.job_title === jobData.job_title,
+                  savedJob =>
+                    savedJob?.job_title?.title === jobData?.job_title?.title,
                 )
                   ? 'bookmark'
                   : 'bookmark-outline'
               }
               iconColor={
                 localSavedJobs.some(
-                  savedJob => savedJob.job_title === jobData.job_title,
+                  savedJob =>
+                    savedJob?.job_title?.title === jobData?.job_title?.title,
                 )
                   ? colors.primary
                   : 'gray'
@@ -151,7 +126,6 @@ const CustomJobCard = ({
           )}
         </View>
 
-        
         {showLocation && (
           <View style={styles.location}>
             <IconButton
@@ -160,31 +134,31 @@ const CustomJobCard = ({
               size={18}
               style={{padding: 0, marginLeft: -10, height: 20}}
             />
-            <Text style={styles.jobLocation}>{jobData.job_location}</Text>
+            <Text style={styles.jobLocation}>
+              {getLocation(jobData?.job_location)}
+            </Text>
           </View>
         )}
 
-        {showSalary && jobData.salary_min && jobData.salary_max && (
-        <View style={styles.salaryContainer}>
-         
-          <View style={styles.experienceContainer}>
-            <Ionicons name="briefcase" size={14} color={colors.primary} />
-            <Text style={styles.jobDetailsalary}> {jobData.experience}</Text>
+        {showSalary && jobData?.salary && (
+          <View style={styles.salaryContainer}>
+            <View style={styles.experienceContainer}>
+              <Ionicons name="briefcase" size={14} color={colors.primary} />
+              <Text style={styles.jobDetailsalary}>
+                {' '}
+                {jobData?.experience_level?.minYear} -{' '}
+                {jobData?.experience_level?.maxYear} Years
+              </Text>
+            </View>
+            <Ionicons name="cash" size={14} color="#004466" />
+            <Text style={styles.jobDetailsalary}>
+              {getSalary(jobData?.salary)}
+            </Text>
           </View>
-          <Ionicons
-            name="cash"
-            size={14}
-            color="#004466"
-          />
-          <Text style={styles.jobDetailsalary}>
-            {jobData.salary_min} - {jobData.salary_max}
-          </Text>
-          
-        </View>
-      )}
+        )}
 
         {/* Conditionally render rating */}
-        {showRating && jobData.company.rating && (
+        {showRating && jobData?.rating && (
           <View style={styles.ratingContainer}>
             <Ionicons
               name="star"
@@ -192,16 +166,17 @@ const CustomJobCard = ({
               color="#ffd700"
               style={styles.ratingIcon}
             />
-            <Text style={styles.ratingText}>{jobData.company.rating}</Text>
+            <Text style={styles.ratingText}>{jobData?.rating}</Text>
           </View>
         )}
+
         <View style={styles.jobDetailsContainer}>
           {/* Conditionally render the work modes */}
           {showWorkModes &&
-            jobData.work_modes &&
-            jobData.work_modes.length > 0 && (
+            jobData?.work_modes &&
+            jobData?.work_modes?.length > 0 && (
               <View style={styles.chipContainer}>
-                {jobData.work_modes.map((mode, index) => (
+                {jobData?.work_modes?.map((mode, index) => (
                   <Text key={index} style={styles.chip}>
                     {mode}
                   </Text>
@@ -211,12 +186,6 @@ const CustomJobCard = ({
 
           <View style={{height: 0.5, backgroundColor: 'lightgray'}} />
 
-          {/* <Text style={styles.education}>
-            Education: {jobData.education.join(', ')}
-          </Text> */}
-          {/* <Text style={styles.department}>
-            Department: {jobData.department}
-          </Text> */}
           <View
             style={{
               flexDirection: 'row',
@@ -236,13 +205,13 @@ const CustomJobCard = ({
               </View>
             ) : (
               <Text style={styles.jobDetails}>
-                {jobData.salary_min} - {jobData.salary_max}
+                {getSalary(jobData?.salary)}
               </Text>
             )}
             {/* Conditionally render the posted date */}
-            {showPostedDate && jobData.posted_date && (
+            {showPostedDate && jobData?.created_at && (
               <Text style={styles.jobPostedDate}>
-                {getPostedDate(jobData.posted_date)}
+                {getPostedDate(jobData?.created_at)}
               </Text>
             )}
           </View>
@@ -268,7 +237,7 @@ const styles = StyleSheet.create({
   companyInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical:8
+    marginVertical: 8,
   },
   companyImage: {
     width: 42,
@@ -333,22 +302,21 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontWeight: 'bold',
   },
-  jobDetailsalary:{
+  jobDetailsalary: {
     fontSize: 10,
     color: 'gray',
     fontWeight: 'bold',
   },
-  experienceContainer:{
+  experienceContainer: {
     flexDirection: 'row',
-    marginRight:8,
-    gap:6
-   
+    marginRight: 8,
+    gap: 6,
   },
-  salaryContainer:{
-    flexDirection:'row',
-    gap:6,
+  salaryContainer: {
+    flexDirection: 'row',
+    gap: 6,
     alignItems: 'center',
-    marginBottom:10
+    marginBottom: 10,
   },
   location: {
     flexDirection: 'row',

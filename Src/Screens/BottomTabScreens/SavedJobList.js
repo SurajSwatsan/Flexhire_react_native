@@ -10,144 +10,128 @@ import {
 import {colors} from '../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import JobViewController from '../../Redux/Action/jobViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const companies = [
-  {
-    id: 1,
-    company_name: 'Insight Analytics',
-    job_title: 'Software Engineer',
-    about:
-      'Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.',
-    logo: 'https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192',
-    contact_email: 'alex.johnson@insightanalytics.com',
-    phone: '+1234567899',
-    location: 'Chicago, IL',
-    industry: 'Data Science',
-    website: 'https://www.insightanalytics.com',
-    rating: '4.5',
-    tagline: "Make the world's information accessible and useful",
-    services: [
-      'Data Analysis',
-      'Predictive Analytics',
-      'Business Intelligence',
-      'Machine Learning Solutions',
-    ],
-    employee: 100,
-    experience: '2-4 years',
-    salary: '$70,000 - $90,000',
-    posted_date: '2024-11-15',
-    work_modes: 'On-site',
-    job_description:
-      'As a Data Analyst at Insight Analytics, you’ll be responsible for interpreting complex datasets to generate insights that drive business decisions. You will clean, transform, and analyze data to extract meaningful patterns. The role involves building data visualizations, preparing reports, and providing data-driven recommendations. Collaboration with other teams to identify business challenges and develop solutions is key. You’ll help build predictive models and support other analysts. Attention to detail, accuracy, and proficiency with analytical tools are essential for success in this position.',
-    job_info:
-      'any fresh graduate or post graduate with 0-1 years of work experience',
-  },
-  {
-    id: 2,
-    company_name: 'DataPro Solutions',
-    job_title: 'Data Analyst',
-    job_description:
-      'DataPro Solutions specializes in transforming business data into actionable insights to improve operations and optimize decision-making.',
-    about:
-      'DataPro Solutions specializes in transforming business data into actionable insights to improve operations and optimize decision-making.',
-    logo: 'https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192',
-    contact_email: 'contact@datapro.com',
-    phone: '+9876543210',
-    location: 'San Francisco, CA',
-    industry: 'Data Analytics',
-    website: 'https://www.datapro.com',
-    rating: '4.8',
-    tagline: 'Turning data into success',
-    services: [
-      'Big Data Analytics',
-      'Cloud Computing',
-      'Business Intelligence',
-      'Data Visualization',
-    ],
-    employee: 150,
-    experience: '3-5 years',
-    salary: '$80,000 - $100,000',
-    posted_date: '2024-10-15',
-    work_modes: 'On-site',
-    job_info:
-      'any fresh graduate or post graduate with 0-1 years of work experience',
-  },
-];
 const SavedJobScreen = () => {
+  const [id, setId] = useState();
+  const dispatch = useDispatch();
+  const {GetSavedJobs, SaveJob} = JobViewController();
+  const {SavedJobs} = useSelector(state => state.job);
+  const isFocus = useIsFocused();
   const navigation = useNavigation();
   const [bookmarked, setBookmarked] = useState({});
 
-  const toggleBookmark = (id) => {
-    setBookmarked(prev => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        dispatch(GetSavedJobs(id));
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+  }, [isFocus]);
+
+  const toggleBookmark = job_id => {
+    // setBookmarked(prev => ({
+    //   ...prev,
+    //   [id]: !prev[id],
+    // }));
+    const data = {
+      job: job_id,
+      user_id: id,
+    };
+    dispatch(SaveJob(data));
   };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.cardContainer}>
-        {companies.map(company => {
-          const hasCompanyInfo =
-            company.company_name && company.logo && company.rating;
-
-          return (
+        {SavedJobs && SavedJobs.length > 0 ? (
+          SavedJobs?.map(savedJob => (
             <TouchableOpacity
-              key={company.id}
+              key={savedJob.job.id}
               onPress={() =>
-                navigation.navigate('JobDetailScreen', {companyId: company.id})
+                navigation.navigate('JobDetailScreen', {
+                  companyId: savedJob.job.id,
+                })
               }
               style={styles.card}>
               <View style={styles.cardContent}>
                 <View style={styles.jobTitleContainer}>
-                  <Text style={styles.cardTitle}>{company.job_title}</Text>
+                  <Text style={styles.cardTitle}>
+                    {savedJob?.job?.job_title?.title}
+                  </Text>
                   <TouchableOpacity
-                    onPress={() => toggleBookmark(company.id)}
+                    onPress={() => toggleBookmark(savedJob.job.id)}
                     style={styles.bookmarkIconContainer}>
                     <Ionicons
-                      name={bookmarked[company.id] ? 'bookmark' : 'bookmark-outline'}
+                      name={
+                        bookmarked[savedJob?.job.id]
+                          ? 'bookmark'
+                          : 'bookmark-outline'
+                      }
                       size={22}
                       color={colors.primary}
                     />
                   </TouchableOpacity>
                 </View>
-                <View style={styles.locationContainer}>
-                  <Ionicons
-                    name="location" // Icon for location
-                    color={colors.primary} // Icon color
-                    size={14} // Icon size
-                    style={{padding: 0}} // Adjust the style
-                  />
-                  <Text style={styles.detailsText}> {company.location}</Text>
-                </View>
-                <View style={styles.detailsRow}>
-                  <Ionicons name="briefcase" size={14} color={colors.primary} />
-                  <Text style={styles.detailsText}> {company.experience}</Text>
-                  <View style={styles.detailsalary}>
-                    <Ionicons name="cash" size={14} color={colors.primary} />
-                    <Text style={styles.detailsText}> {company.salary}</Text>
+
+                <View style={styles.detailsContainer}>
+                  <View style={styles.detailsRow}>
+                    <Ionicons
+                      name="location"
+                      size={14}
+                      color={colors.primary}
+                    />
+                    <Text style={styles.detailsText}>
+                      {savedJob?.job?.job_location
+                        ?.map(location => location.name)
+                        .join(', ')}
+                    </Text>
+                  </View>
+                  <View style={styles.containerData}>
+                    <View style={styles.detailsRow}>
+                      <Ionicons
+                        name="briefcase"
+                        size={14}
+                        color={colors.primary}
+                      />
+                      <Text style={styles.detailsText}>
+                        {`${savedJob?.job?.experience_level?.minYear} - ${savedJob?.job.experience_level?.maxYear} years`}
+                      </Text>
+                    </View>
+                    <View style={styles.detailsalary}>
+                      <Ionicons name="cash" size={14} color={colors.primary} />
+                      <Text style={styles.detailsText}>
+                        {savedJob?.job?.salary?.yearly?.min} -{' '}
+                        {savedJob?.job?.salary?.yearly?.max} INR
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
 
-              <View style={styles.innerCard}>
-                {/* Conditional Rendering */}
-                {hasCompanyInfo ? (
-                  // If Company Name, Logo, and Rating are available, show this section
+                <View style={styles.innerCard}>
                   <View style={styles.iconMain}>
                     <Image
                       source={
-                        company.logo
-                          ? {uri: company.logo} // Use URI if the logo is a valid URL or path
-                          : require('../../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
+                        savedJob?.job?.company?.logo
+                          ? {uri: savedJob?.job?.company.logo}
+                          : require('../../Assets/CompanyLogo/TCS_logo.png')
                       }
                       style={styles.logo}
                     />
+
                     <View style={styles.companyMaincontainer}>
                       <View style={styles.companyDetail}>
                         <Text style={styles.companyText}>
-                          {company.company_name}
+                          {savedJob?.job.company?.company_name}
                         </Text>
                         <View style={styles.icon}>
                           <Ionicons
@@ -157,43 +141,22 @@ const SavedJobScreen = () => {
                             style={styles.ratingIcon}
                           />
                           <Text style={styles.companyReview}>
-                            {company.rating}
+                            {savedJob?.rating}{' '}
                           </Text>
                         </View>
                       </View>
                     </View>
-                  </View>
-                ) : (
-                  // If the Company Info is missing, show this section (fallback view)
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="person"
-                      size={14}
-                      color={colors.primary}
-                      style={styles.icon}
-                    />
-                  </View>
-                )}
-
-                {/* Text for Hiring position */}
-                {!hasCompanyInfo && (
-                  <View style={styles.techContainer}>
-                    <Text style={styles.companyText}>
-                      Hiring for {company.job_title} position
-                    </Text>
-                    <Text style={styles.detailscompanytext}>
-                      Posted by Swatsan Tech Private Limited
+                    <Text style={styles.companyDate}>
+                      {moment(savedJob?.job?.created_at).format('MMM D')}
                     </Text>
                   </View>
-                )}
-
-                <Text style={styles.companyDate}>
-                  {moment(company.posted_date).format('MMM D')}
-                </Text>
+                </View>
               </View>
             </TouchableOpacity>
-          );
-        })}
+          ))
+        ) : (
+          <Text>No saved jobs found</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -238,10 +201,14 @@ const styles = StyleSheet.create({
   detailsText: {
     fontSize: 12,
     color: colors.blackText,
+    marginLeft: 6,
   },
   detailscompanytext: {
     fontSize: 10,
     color: colors.blackText,
+  },
+  containerData: {
+    flexDirection: 'row',
   },
   detailsRow: {
     flexDirection: 'row',
@@ -291,6 +258,10 @@ const styles = StyleSheet.create({
   techContainer: {
     //  alignItems:'center'
     justifyContent: 'center',
+  },
+  companyMainContainer: {
+    flexDirection: 'row',
+    // alignItems:'center',
   },
   companyText: {
     color: 'gray',

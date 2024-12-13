@@ -46,8 +46,6 @@ const ProfileReducer = (state = initialState, action) => {
         error: action.payload.error,
       };
 
-   
-
     default:
       return state;
   }

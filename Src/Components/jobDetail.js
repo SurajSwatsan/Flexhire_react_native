@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Modal,
+  TextInput,
+  Linking,
 } from 'react-native';
 import CustomHeader from '../Constant/CustomBackIcon';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
@@ -15,61 +18,72 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
 import CustomJobCard from '../Constant/CustomJobCard';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useDispatch, useSelector} from 'react-redux';
+import JobViewController from '../Redux/Action/jobViewController';
+import {useIsFocused} from '@react-navigation/native';
 
 const JobDetailScreen = ({route, navigation}) => {
-  const {jobData} = route.params; // Get company data from params
+  const {job_id} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
+  const [id, setId] = useState();
+  const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
 
   const [isApplied, setIsApplied] = useState(false);
+  const dispatch = useDispatch();
+  const {GetJobDetails, ApplyJob} = JobViewController();
+  const {JobDetails} = useSelector(state => state.job);
+  const isFocus = useIsFocused();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [coverLetter, setCoverLetter] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const relatedJobs = jobData.related_jobs;
-
-  // Check if job is already applied
   useEffect(() => {
-    const checkAppliedStatus = async () => {
+    const getUserData = async () => {
       try {
-        const appliedJobs = await AsyncStorage.getItem('appliedJobs');
-        if (appliedJobs) {
-          const parsedAppliedJobs = JSON.parse(appliedJobs);
-          if (parsedAppliedJobs.some(job => job.id === jobData.id)) {
-            setIsApplied(true); // Set status to applied if found
-          }
-        }
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        dispatch(GetJobDetails(job_id, id));
+
+        console.log(id); // Log the value once it's retrieved
       } catch (error) {
-        console.log('Error checking applied jobs:', error);
+        console.error('Error reading value from AsyncStorage', error);
       }
     };
 
-    checkAppliedStatus();
-  }, [jobData.id]);
+    getUserData();
+  }, [isFocus]);
 
-  const handleApply = async () => {
-    if (isApplied) return; // Prevent applying again if already applied
+  // const relatedJobs = jobData.related_jobs;
+  useEffect(() => {
+    // console.log('******************************************', JobDetails);
+  }, [JobDetails]);
 
-    try {
-      // Get the list of applied jobs from AsyncStorage
-      const appliedJobs = await AsyncStorage.getItem('appliedJobs');
-      const parsedAppliedJobs = appliedJobs ? JSON.parse(appliedJobs) : [];
+  const handleApply = () => {
+    const data = {
+      user_id: id,
+      job: JobDetails.id,
+      cover_letter: coverLetter,
+    };
+    console.log(data);
+    dispatch(ApplyJob(data));
+    setIsModalVisible(false);
+  };
 
-      // Add the current job to the applied jobs list
-      parsedAppliedJobs.push(jobData);
+  const handleShare = platform => {
+    setModalVisible(false); 
 
-      // Save the updated applied jobs list to AsyncStorage
-      await AsyncStorage.setItem(
-        'appliedJobs',
-        JSON.stringify(parsedAppliedJobs),
+    if (platform === 'whatsapp') {
+      Linking.openURL('whatsapp://send?text=Check%20this%20out!');
+    } else if (platform === 'facebook') {
+      Linking.openURL('https://www.facebook.com/sharer/sharer.php?u=yourURL');
+    } else if (platform === 'twitter') {
+      Linking.openURL(
+        'https://twitter.com/intent/tweet?text=Check%20this%20out!',
       );
-
-      // Set the job as applied
-      setIsApplied(true);
-
-      // Optionally, show a success message (Toast or Alert)
-      alert('You have successfully applied for the job!');
-
-      // Navigate to UserApplies Screen
-      navigation.navigate('UserApplies');
-    } catch (error) {
-      console.log('Error applying for job:', error);
+    } else if (platform === 'linkedin') {
+      Linking.openURL(`https://www.linkedin.com/sharing/share-offsite/?url`);
+    } else if (platform === 'instagram') {
+      Linking.openURL('https://www.instagram.com/?url=<YOUR_URL>');
     }
   };
 
@@ -85,50 +99,49 @@ const JobDetailScreen = ({route, navigation}) => {
                     Job Description:
                   </Text>
                   <Text style={styles.jobDescription}>
-                    {jobData.job_description}
+                    {JobDetails?.job_description?.summary}
                   </Text>
                 </View>
+
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Department:</Text>
-                  <Text style={styles.jobDetails1}>{jobData.department}</Text>
+                  <Text style={styles.jobDetails1}>
+                    {' '}
+                    {JobDetails?.department?.[0]?.name}
+                  </Text>
                 </View>
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Employment types:</Text>
                   <Text style={styles.jobDetails1}>
-                    {jobData.employment_types?.join(', ')}
+                    {JobDetails?.employment_types?.join(', ')}
                   </Text>
                 </View>
-                <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Job Role:</Text>
-                  <Text style={styles.jobDetails1}>{jobData.role}</Text>
-                </View>
+
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Education:</Text>
                   <View style={styles.educationItemsContainer}>
-                    {jobData.education?.map((edu, index) => (
-                      <View key={index}>
-                        <Text style={styles.jobDetails1}>{edu}</Text>
-                      </View>
-                    ))}
+                    <Text style={styles.jobDetails1}>
+                      {JobDetails?.education?.course?.name}
+                    </Text>
                   </View>
                 </View>
 
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Working Modes:</Text>
                   <Text style={styles.jobDetails1}>
-                    {jobData.work_modes?.join(', ')}
+                    {JobDetails?.work_modes?.join(', ')}
                   </Text>
                 </View>
-                <View style={styles.jobDepartmentContainer}>
+                {/* <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Role Category:</Text>
                   <Text style={styles.jobDetails1}>
                     {jobData.role_category}
                   </Text>
-                </View>
+                </View> */}
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Industry Type:</Text>
                   <Text style={styles.jobDetails1}>
-                    {jobData.industry_type}
+                    {JobDetails?.industry_type?.industry_name}
                   </Text>
                 </View>
               </View>
@@ -139,46 +152,56 @@ const JobDetailScreen = ({route, navigation}) => {
         return (
           <View>
             <Text style={styles.jobDescriptionheader}>
-              {jobData.company.company_name}
+              {JobDetails?.company?.company_name}
             </Text>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>About:</Text>
-              <Text style={styles.jobDetails1}>{jobData.company.about}</Text>
+              <Text style={styles.jobDetails1}>
+                {JobDetails?.company?.about}
+              </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Industry:</Text>
-              <Text style={styles.jobDetails1}>{jobData.company.industry}</Text>
+              <Text style={styles.jobDetails1}>
+                {JobDetails?.company?.industry_type}
+              </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Location:</Text>
-              <Text style={styles.jobDetails1}>{jobData.company.location}</Text>
+              <Text style={styles.jobDetails1}>
+                {JobDetails?.company?.location}
+              </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Contact Email:</Text>
               <Text style={styles.jobDetails1}>
-                {jobData.company.contact_email}
+                {JobDetails?.company?.contact_email}
               </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Phone:</Text>
-              <Text style={styles.jobDetails1}>{jobData.company.phone}</Text>
+              <Text style={styles.jobDetails1}>
+                {JobDetails?.company?.phone}
+              </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}> Website:</Text>
-              <Text style={styles.jobDetails1}>{jobData.company.website}</Text>
+              <Text style={styles.jobDetails1}>
+                {JobDetails?.company?.website}
+              </Text>
             </View>
           </View>
         );
       case 'Review':
         return (
           <View>
-            <ReviewPage />
+            <ReviewPage JobDetails={JobDetails.reviews} />
           </View>
         );
       default:
@@ -199,7 +222,7 @@ const JobDetailScreen = ({route, navigation}) => {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons
               name="share-social-outline"
               size={24}
@@ -208,6 +231,45 @@ const JobDetailScreen = ({route, navigation}) => {
             />
           </TouchableOpacity>
         </View>
+        {/* Modal for sharing social media icons */}
+        <Modal
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.SharemodalBackground}>
+            <View style={styles.SharemodalContent}>
+              <Text style={styles.SharemodalTitle}>Share this on:</Text>
+
+              {/* Social Media Icons */}
+              <View style={styles.socialIconsContainer}>
+                <TouchableOpacity onPress={() => handleShare('whatsapp')}>
+                  <Ionicons name="logo-whatsapp" size={40} color={'#25D366'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleShare('facebook')}>
+                  <Ionicons name="logo-facebook" size={40} color={'#1877F2'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleShare('twitter')}>
+                  <Ionicons name="logo-twitter" size={40} color={'#1DA1F2'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleShare('linkedin')}>
+                  <Ionicons name="logo-linkedin" size={40} color={'#0077B5'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleShare('instagram')}>
+                  <Ionicons name="logo-instagram" size={40} color={'#E1306C'} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Close Button */}
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Text style={styles.SharecloseButton}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.companyInfoContainer}>
@@ -215,17 +277,15 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.logoContainer}>
               <Image
                 source={
-                  jobData.company.logo
-                    ? {uri: jobData.company.logo} // Use URI if the logo is a valid URL or path
+                  JobDetails?.company?.logo
+                    ? {uri: JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
                     : require('../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
                 }
                 style={styles.logo}
               />
             </View>
-            <Text style={styles.jobTitle}>{jobData.job_title}</Text>
-            <Text style={styles.companyName}>
-              {jobData.company.company_name}
-            </Text>
+            <Text style={styles.jobTitle}>{JobDetails?.job_title?.title}</Text>
+            <Text style={styles.companyName}>{JobDetails?.company_name}</Text>
             <View style={styles.locationContainer}>
               <IconButton
                 icon="map-marker"
@@ -233,7 +293,12 @@ const JobDetailScreen = ({route, navigation}) => {
                 size={18}
                 style={{padding: 0, marginLeft: -10, height: 20}}
               />
-              <Text style={styles.location}>{jobData.job_location}</Text>
+              {JobDetails?.job_location?.map((location, idx) => (
+                <Text key={idx} style={styles.locationText}>
+                  {location.name}
+                  {JobDetails?.job_location?.length - 1 != idx ? ',' : ''}
+                </Text>
+              ))}
             </View>
 
             <View style={styles.mainfildContainer}>
@@ -241,22 +306,22 @@ const JobDetailScreen = ({route, navigation}) => {
                 {
                   icon: 'cash',
                   label: 'Salary Range',
-                  value: `${jobData.salary_min} - ${jobData.salary_max}`,
+                  value: `${JobDetails?.salary?.yearly?.min} - ${JobDetails?.salary?.yearly?.max} ${JobDetails?.salary?.yearly?.currency}`,
                 },
                 {
                   icon: 'signal-cellular-3',
                   label: 'Level',
-                  value: jobData.experience,
+                  value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
                 },
                 {
                   icon: 'account',
                   label: 'Openings',
-                  value: jobData.openings,
+                  value: JobDetails?.openings,
                 },
                 {
                   icon: 'account-group',
                   label: 'Applications',
-                  value: jobData.applications,
+                  value: JobDetails?.applicant_count,
                 },
               ].map((item, index) => (
                 <View key={index} style={styles.fildContainer}>
@@ -303,7 +368,7 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.contentContainer}>{renderTabs()}</View>
           </View>
 
-          {relatedJobs && Object.keys(relatedJobs).length > 0 && (
+          {/* {relatedJobs && Object.keys(relatedJobs).length > 0 && (
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
                 <Text style={styles.contHead}>Related Jobs</Text>
@@ -330,21 +395,80 @@ const JobDetailScreen = ({route, navigation}) => {
                 ))}
               </ScrollView>
             </View>
-          )}
+          )} */}
         </View>
       </ScrollView>
 
       <View style={styles.applyButtonContainer}>
-        <TouchableOpacity
-          style={[styles.applyButton, isApplied && styles.appliedButton]}
-          onPress={handleApply}
-          disabled={isApplied} 
-        >
-          <Text style={styles.applyButtonText}>
-            {isApplied ? 'Applied' : 'Apply for Job'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.applyButtonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.applyButton,
+              {
+                backgroundColor: JobDetails?.is_applied
+                  ? 'green'
+                  : applyButtonColor, // Dynamically set background color
+              },
+            ]}
+            onPress={() => {
+              console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
+
+              if (JobDetails?.is_applied) {
+                Toast.show('Already applied for this job!', {
+                  type: 'warning',
+                  placement: 'top',
+                  duration: 4000,
+                  offset: 100,
+                  animationType: 'slide-in',
+                });
+              } else {
+                setIsModalVisible(true); // Open modal when not applied
+              }
+            }}
+            disabled={JobDetails?.is_applied} // Disable button if already applied
+          >
+            <Text style={styles.applyButtonText}>
+              {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Apply for the Job</Text>
+
+            <Text style={styles.jobTitleModal}>
+              {JobDetails?.job_title?.title}
+            </Text>
+
+            {/* Cover Letter Input */}
+            <TextInput
+              style={[styles.input, styles.coverLetterInput]}
+              placeholder="Cover Letter"
+              multiline
+              value={coverLetter}
+              onChangeText={setCoverLetter}
+            />
+
+            {/* Apply Button in Modal */}
+            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+              <Text style={styles.applyButtonText}>Apply</Text>
+            </TouchableOpacity>
+
+            {/* Close Modal Button */}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -382,7 +506,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
-    marginBottom: 18,
+    marginBottom: 16,
+  },
+  locationText: {
+    fontSize: 12,
+    color: 'gray',
   },
   location: {
     fontSize: 12,
@@ -569,6 +697,76 @@ const styles = StyleSheet.create({
     // marginTop:16,
     // marginBottom: 24,
     backgroundColor: colors.background,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 8,
+    borderRadius: 5,
+    marginTop: 8,
+  },
+  jobTitleModal: {
+    fontSize: 16,
+    color: colors.blackText,
+  },
+  coverLetterInput: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  closeButton: {
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: '#007bff',
+    fontSize: 16,
+  },
+  SharemodalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  SharemodalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  SharemodalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  socialIconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  SharecloseButton: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'blue',
   },
 });
 export default JobDetailScreen;
