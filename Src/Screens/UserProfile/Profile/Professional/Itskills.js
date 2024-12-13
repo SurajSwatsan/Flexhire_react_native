@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -15,116 +15,11 @@ import {colors} from '../../../../Global_CSS/TheamColors';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ReusableDropdown from '../../../../Constant/CustomDropdown';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
-
-// Suggestions for software names
-const SOFTWARE_SUGGESTIONS = [
-  'Java',
-  'Python',
-  'JavaScript',
-  'React',
-  'Node.js',
-  'SQL',
-  'C++',
-  'AWS',
-  'Docker',
-  'Kubernetes',
-  'Ruby',
-  'PHP',
-  'Go',
-  'C#',
-  'Swift',
-  'TypeScript',
-  'HTML',
-  'CSS',
-  'Angular',
-  'Vue.js',
-  'Flutter',
-  'Django',
-  'Flask',
-  'Spring Boot',
-  'Laravel',
-  'Bootstrap',
-  'Tailwind CSS',
-  'SASS',
-  'LESS',
-  'PostgreSQL',
-  'MongoDB',
-  'Redis',
-  'Elasticsearch',
-  'Firebase',
-  'GraphQL',
-  'REST API',
-  'SOAP',
-  'JUnit',
-  'Mockito',
-  'Jenkins',
-  'Git',
-  'GitHub',
-  'GitLab',
-  'Bitbucket',
-  'Terraform',
-  'Ansible',
-  'Puppet',
-  'Chef',
-  'NGINX',
-  'Apache',
-  'Microsoft SQL Server',
-  'Oracle Database',
-  'SQLite',
-  'MariaDB',
-  'Snowflake',
-  'BigQuery',
-  'Hadoop',
-  'Spark',
-  'Tableau',
-  'Power BI',
-  'QlikView',
-  'Excel',
-  'MATLAB',
-  'R',
-  'TensorFlow',
-  'PyTorch',
-  'Keras',
-  'OpenCV',
-  'Scikit-learn',
-  'Pandas',
-  'NumPy',
-  'SciPy',
-  'Jupyter Notebook',
-  'VS Code',
-  'Eclipse',
-  'IntelliJ IDEA',
-  'NetBeans',
-  'Xcode',
-  'Android Studio',
-  'Unity',
-  'Unreal Engine',
-  'Blender',
-  'Maya',
-  'AutoCAD',
-  'SolidWorks',
-  'Tableau',
-  'Salesforce',
-  'Zoho CRM',
-  'HubSpot',
-  'Marketo',
-  'Slack',
-  'Microsoft Teams',
-  'Zoom',
-  'Figma',
-  'Adobe XD',
-  'Adobe Photoshop',
-  'Adobe Illustrator',
-  'Adobe Premiere Pro',
-  'Final Cut Pro',
-  'WordPress',
-  'Shopify',
-  'WooCommerce',
-];
-const SOFTWARE_OPTIONS = [
-  {label: 'Other', value: 'other'},
-  ...SOFTWARE_SUGGESTIONS.map(skill => ({label: skill, value: skill})),
-];
+import {useDispatch, useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 
 // Dropdown Options
 const Years = Array.from({length: 31}, (_, i) => ({
@@ -147,7 +42,7 @@ const LastUsedYears = Array.from(
 
 // Validation Schema
 const validationSchema = Yup.object().shape({
-  softwareName: Yup.string()
+  name: Yup.string()
     .required('Skill / Software name is required')
     .min(2, 'Must be at least 2 characters')
     .max(50, 'Must be at most 50 characters'),
@@ -158,77 +53,187 @@ const getInitialValues = (editingIndex, itSkillList) => {
   if (editingIndex !== null && itSkillList[editingIndex]) {
     const skill = itSkillList[editingIndex];
     return {
-      softwareName: skill.softwareName || '', // Set to 'other' for custom skills
-      othersoftwareName: skill.othersoftwareName || '', // Store custom skill name in othersoftwareName
-      softwareVersion: skill.softwareVersion || '',
-      experianceinYear: skill.experianceinYear || '',
-      experianceinMonths: skill.experianceinMonths || '',
-      lastused: skill.lastused || '',
+      name: skill.name || '', // Set to 'other' for custom skills
+      othername: skill.othername || '', // Store custom skill name in othername
+      version: skill.version || '',
+      years: skill.years || '',
+      months: skill.months || '',
+      last_used: skill.last_used || '',
     };
   }
   return {
-    softwareName: '',
-    othersoftwareName: '',
-    softwareVersion: '',
-    experianceinYear: '',
-    experianceinMonths: '',
-    lastused: '',
+    name: '',
+    othername: '',
+    version: '',
+    years: '',
+    months: '',
+    last_used: '',
   };
 };
 
-const Itskills = () => {
+const Itskills = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [itSkillList, setItSkillList] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [skillList, setSkillList] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [keyskillsMasters, setKeyskillsMasters] = useState([]);
 
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]); // For suggestions dropdown
+  const dispatch = useDispatch();
+  const [id, setId] = useState();
+  const isFocus = useIsFocused();
+
+  const {GetKeyskills} = MasterViewController();
+  const {keyskills} = useSelector(state => state.master);
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the id to be retrieved
+        setId(id);
+        console.log(id); // Log the id once it's retrieved
+      } catch (error) {
+        console.error('Error reading id from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    console.log(
+      '================================',
+      profileDetails?.profileDetails?.it_skills,
+    );
+    setSkillList(profileDetails?.profileDetails?.it_skills);
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [profileDetails]);
+
+  useEffect(() => {
+    const get_keyskills = () => {
+      dispatch(GetKeyskills());
+    };
+
+    get_keyskills();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const keyskills_data = keyskills?.map(skill => ({
+      id: skill.id,
+      value: skill.name,
+      label: skill.name,
+    }));
+    setKeyskillsMasters(keyskills_data);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyskills]);
 
   const handleFormSubmit = values => {
-    const updatedSkillList = [...itSkillList];
-    if (editingIndex !== null) {
-      updatedSkillList[editingIndex] = values;
+    if (selectedItem) {
+      const updateOrAddObject = (array, obj) => {
+        const index = array.findIndex(item => item.name === selectedItem.name);
+
+        if (index !== -1) {
+          // Update the existing object
+          array[index] = {...array[index], ...obj};
+        } else {
+          // Add the new object if not found
+          array.push(obj);
+        }
+      };
+
+      updateOrAddObject(skillList, {
+        name: values.name === 'other' ? values.othername : values.name,
+        version: values.version,
+        last_used: values.last_used,
+        exp: {
+          years: values.years,
+          months: values.months,
+        },
+      });
+      const payload = {
+        id: profileDetails?.profileDetails?.id,
+        it_skills: skillList,
+      };
+      console.log(values);
+
+      dispatch(updateProfileDetails(payload));
+
+      setSkillList(skillList);
+      setModalVisible(false);
+      setSelectedItem(null);
     } else {
-      updatedSkillList.push(values);
+      const formattedValues = {
+        id: profileDetails?.profileDetails?.id
+          ? profileDetails?.profileDetails?.id
+          : '',
+        user_id: id,
+        it_skills: [
+          ...(profileDetails?.profileDetails?.it_skills || []), // Include existing entries
+
+          {
+            name: values.name === 'other' ? values.othername : values.name,
+            version: values.version,
+            last_used: values.last_used,
+            exp: {
+              years: values.years,
+              months: values.months,
+            },
+          },
+        ],
+      };
+
+      setSkillList(prev => {
+        if (selectedItem !== null) {
+          const updatedList = [...prev];
+          updatedList[selectedItem] = formattedValues;
+          return updatedList;
+        }
+        return [...prev, formattedValues];
+      });
+
+      // console.log(formattedValues, values);
+
+      if (profileDetails.profileDetails.id) {
+        dispatch(updateProfileDetails(formattedValues));
+      } else {
+        dispatch(addProfileDetails(formattedValues));
+      }
+      // dispatch(updateProfileDetails(formattedValues));
+
+      closeModal();
     }
-    setItSkillList(updatedSkillList);
-    closeModal();
   };
 
-  const handleSoftwareNameChange = (text, setFieldValue) => {
-    setFieldValue('softwareName', text);
-    // Filter suggestions based on input text
-    if (text.length > 0) {
-      const suggestions = SOFTWARE_SUGGESTIONS.filter(suggestion =>
-        suggestion.toLowerCase().startsWith(text.toLowerCase()),
-      );
-      setFilteredSuggestions(suggestions);
-    } else {
-      setFilteredSuggestions([]);
-    }
-  };
   let formikRef = null;
 
-  const openModal = (index = null) => {
-    setEditingIndex(index);
+  const openModal = item => {
+    setSelectedItem(item);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setEditingIndex(null);
-    setFilteredSuggestions([]);
+    setSelectedItem(null);
     if (formikRef) {
       formikRef.resetForm(); // Reset the form when closing the modal
     }
   };
 
   const deleteSkill = () => {
-    if (editingIndex !== null) {
-      setItSkillList(itSkillList.filter((_, idx) => idx !== editingIndex));
-      closeModal();
-    }
-  };
+    const filteredArray = skillList.filter(
+      item => item.name !== selectedItem.name,
+    );
+    setSkillList(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      it_skills: filteredArray,
+    };
 
+    dispatch(updateProfileDetails(payload));
+
+    // // Reset state and close modal
+    setSelectedItem(null);
+    closeModal();
+  };
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
@@ -237,54 +242,48 @@ const Itskills = () => {
           icon="plus-circle-outline"
           iconColor={colors.blackText}
           size={20}
-          onPress={() => openModal()}
+          onPress={() => openModal(null)}
           style={profileStyle.editButton}
         />
       </View>
 
       {/* Display IT Skills List */}
       <View>
-        {itSkillList.length > 0 ? (
+        {profileDetails?.profileDetails?.it_skills.length > 0 ? (
           <FlatList
             horizontal
-            data={itSkillList}
+            data={profileDetails?.profileDetails?.it_skills}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({item, index}) => (
               <TouchableOpacity
                 style={[profileStyle.userDataContainer, styles.listContainer]}
-                onPress={() => openModal(index)}>
+                onPress={() => openModal(item)}>
                 {/* Display skill name or "Other" skill name */}
                 <View style={styles.userData}>
                   <Text style={profileStyle.optionalData}>
-                    {item.softwareName === 'other'
-                      ? item.othersoftwareName
-                      : item.softwareName}{' '}
-                    - {item.softwareVersion || '-'}
+                    {item.name === 'other' ? item.othername : item.name} -{' '}
+                    {item.version || '-'}
                   </Text>
                   {/* Display experience in years and months */}
                   <Text style={profileStyle.optionalData}>
-                    {item.experianceinYear || item.experianceinMonths
+                    {item?.exp?.years || item?.exp?.months
                       ? `${
-                          item.experianceinYear
-                            ? `${item.experianceinYear} Years`
-                            : ''
+                          item?.exp?.years ? `${item?.exp?.years} Years` : ''
                         } ${
-                          item.experianceinMonths
-                            ? `${item.experianceinMonths} Months`
-                            : ''
+                          item?.exp?.months ? `${item?.exp?.months} Months` : ''
                         }`.trim()
                       : '-'}
                   </Text>
                   {/* Display last used year */}
                   <Text style={profileStyle.optionalData}>
-                    {item.lastused || '-'}
+                    {item.last_used || '-'}
                   </Text>
                 </View>
                 <IconButton
                   icon="pencil-outline"
                   iconColor={'black'}
                   size={20}
-                  onPress={() => openModal(index)}
+                  onPress={() => openModal(item)}
                 />
               </TouchableOpacity>
             )}
@@ -312,7 +311,14 @@ const Itskills = () => {
             data={[{key: 'form'}]}
             renderItem={() => (
               <Formik
-                initialValues={getInitialValues(editingIndex, itSkillList)}
+                initialValues={{
+                  name: selectedItem?.name || '',
+                  othername: selectedItem?.othername || '',
+                  version: selectedItem?.version || '',
+                  years: selectedItem?.exp?.years || '',
+                  months: selectedItem?.exp?.months || '',
+                  last_used: selectedItem?.last_used || '',
+                }}
                 validationSchema={validationSchema}
                 innerRef={ref => (formikRef = ref)}
                 onSubmit={handleFormSubmit}>
@@ -326,29 +332,27 @@ const Itskills = () => {
                     </Text>
 
                     <ReusableDropdown
-                      options={SOFTWARE_OPTIONS} // Ensure the options array matches the structure
+                      options={keyskillsMasters} // Ensure the options array matches the structure
                       placeholder="Select Skill / Software Name*"
-                      selectedValue={values.softwareName} // This must match a `value` in the options array
+                      selectedValue={values.name} // This must match a `value` in the options array
                       onSelect={selected =>
-                        setFieldValue('softwareName', selected.value)
+                        setFieldValue('name', selected.value)
                       }
                     />
-                    {values.softwareName === 'other' && (
+                    {values.name === 'other' && (
                       <ReusableTextInput
-                        name="othersoftwareName"
+                        name="othername"
                         label=" Other Skill/ Software Name*"
-                        value={values.othersoftwareName}
-                        onChangeText={text =>
-                          setFieldValue('othersoftwareName', text)
-                        }
+                        value={values.othername}
+                        onChangeText={text => setFieldValue('othername', text)}
                       />
                     )}
 
                     <ReusableTextInput
-                      name="softwareVersion"
+                      name="version"
                       label="Software Version"
-                      value={values.softwareVersion}
-                      onChangeText={handleChange('softwareVersion')}
+                      value={values.version}
+                      onChangeText={handleChange('version')}
                     />
                     <Text style={{color: '#000'}}>Experiance</Text>
                     <View
@@ -360,26 +364,26 @@ const Itskills = () => {
                       <ReusableDropdown
                         options={Years}
                         placeholder="Years*"
-                        selectedValue={values.experianceinYear}
+                        selectedValue={values.years}
                         onSelect={selected =>
-                          setFieldValue('experianceinYear', selected.value)
+                          setFieldValue('years', selected.value)
                         }
                       />
                       <ReusableDropdown
                         options={Months}
                         placeholder="Months*"
-                        selectedValue={values.experianceinMonths}
+                        selectedValue={values.months}
                         onSelect={selected =>
-                          setFieldValue('experianceinMonths', selected.value)
+                          setFieldValue('months', selected.value)
                         }
                       />
                     </View>
                     <ReusableDropdown
                       options={LastUsedYears}
                       placeholder="Last Used*"
-                      selectedValue={values.lastused}
+                      selectedValue={values.last_used}
                       onSelect={selected =>
-                        setFieldValue('lastused', selected.value)
+                        setFieldValue('last_used', selected.value)
                       }
                     />
                   </View>
@@ -391,10 +395,10 @@ const Itskills = () => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
-            showDelete={editingIndex !== null} // Show delete only if editing
+            showDelete={selectedItem !== null} // Show delete only if editing
             onDelete={() => {
-              if (editingIndex !== null) {
-                deleteSkill(editingIndex); // Call deleteLanguage with the current index
+              if (selectedItem !== null) {
+                deleteSkill(selectedItem); // Call deleteLanguage with the current index
                 closeModal(); // Close the modal after deletion
               }
             }}

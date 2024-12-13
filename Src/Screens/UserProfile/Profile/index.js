@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,7 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {useRoute} from '@react-navigation/native';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import {colors} from '../../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -21,11 +21,36 @@ import CareerInformation from './Personal/CareerInformation';
 import Keyskills from './Education/Keyskills';
 import BasicInformation from './Personal/BasicInformation';
 import Languages from './Personal/Languages';
+import {useDispatch, useSelector} from 'react-redux';
+import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Index = () => {
   const route = useRoute();
   const {selectedImage} = route.params || {};
   const [activeTab, setActiveTab] = useState('Personal');
+  const dispatch = useDispatch();
+  const {GetProfileDetails} = UserProfileViewController();
+  const {profileDetails} = useSelector(state => state.profile);
+  const [id, setId] = useState();
+  const isFocus = useIsFocused();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const storedId = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        if (storedId) {
+          setId(storedId); // Update state
+          dispatch(GetProfileDetails(storedId));
+        }
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocus]);
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -43,7 +68,9 @@ const Index = () => {
                   />
                   <View>
                     <Text style={{color: '#000'}}>Email</Text>
-                    <Text style={{color: '#000'}}>vinodgavade@.com</Text>
+                    <Text style={{color: '#000'}}>
+                      {profileDetails?.user_id?.email}
+                    </Text>
                   </View>
                 </TouchableOpacity>
                 <View style={styles.line} />
@@ -55,13 +82,15 @@ const Index = () => {
                   />
                   <View>
                     <Text style={{color: '#000'}}>Phone Number</Text>
-                    <Text style={{color: '#000'}}>9876543210</Text>
+                    <Text style={{color: '#000'}}>
+                      {profileDetails?.user_id?.mobile_number}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               </View>
-              <BasicInformation />
-              <CareerInformation />
-              <Languages />
+              <BasicInformation profileDetails={profileDetails} />
+              <CareerInformation profileDetails={profileDetails} />
+              <Languages profileDetails={profileDetails} />
               <View style={{height: 100}} />
             </ScrollView>
           </View>
@@ -69,19 +98,19 @@ const Index = () => {
       case 'Education':
         return (
           <View>
-            <Education />
-            <HigherEducation />
-            <Keyskills />
+            <Education profileDetails={profileDetails} />
+            <HigherEducation profileDetails={profileDetails} />
+            <Keyskills profileDetails={profileDetails} />
           </View>
         );
       case 'Professional':
         return (
           <View>
             <ScrollView style={styles.scrollContainer}>
-              <Projects />
-              <Employment />
-              <Itskills />
-              <Accomplishments />
+              <Projects profileDetails={profileDetails} />
+              <Employment profileDetails={profileDetails} />
+              <Itskills profileDetails={profileDetails} />
+              <Accomplishments profileDetails={profileDetails} />
             </ScrollView>
           </View>
         );

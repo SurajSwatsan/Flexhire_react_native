@@ -88,7 +88,7 @@ const profileStyle = StyleSheet.create({
     borderRadius: 5,
   },
   tabBtnText: {
-    color: colors.whiteText,
+    color: colors.blackText,
     fontSize: 13,
   },
   textarea: {

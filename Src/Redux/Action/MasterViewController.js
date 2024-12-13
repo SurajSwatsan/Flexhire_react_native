@@ -1,121 +1,31 @@
 import {Toast} from 'react-native-toast-notifications';
 import {useNavigation} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import instance, {setAuthToken} from '../../Services/baseAPI';
-import axios from 'axios';
+import instance from '../../Services/baseAPI';
 
-const UserProfileViewController = () => {
+const MasterViewController = () => {
   const navigation = useNavigation();
   const goBackScreen = () => {
     navigation.goBack();
   };
 
-  const GetProfileAnalytic = user_id => async dispatch => {
+  const GetCountry = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`http://15.206.149.28/api/job-seeker/profile-analytic/1`);
-      console.log(
-        '****************************profile-analytic response***************************',
-      );
-
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({type: 'PROFILE_ANALYTIC_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_ANALYTIC_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-  const GetProfileDetails = user_id => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/job-seeker-profile/${user_id}/`,
-      );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
-      console.log(response);
-
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-
-      dispatch({type: 'PROFILE_DETAILS_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_DETAILS_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-  const updateProfileDetails = requestData => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/job-seeker-profile/${requestData.id}/`,
-        requestData,
-      );
+      const response = await instance.get(`/countries`);
       // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
+      //   '**************************** get country response***************************',
       // );
+
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);
 
-      dispatch({type: 'UPDATE_PROFILE_DETAILS_SUCCESS', payload: data});
+      dispatch({type: 'COUNTRY_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
-      console.log('error', error.response);
+      // console.log('error', error.response);
 
       dispatch({type: 'LOADING', payload: false});
       Toast.show(
@@ -131,7 +41,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'UPDATE_PROFILE_DETAILS_FAILURE',
+        type: 'COUNTRY_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -141,20 +51,20 @@ const UserProfileViewController = () => {
     }
   };
 
-  const GetProfileBasicInformation = user_id => async dispatch => {
+  const GetState = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
+      const response = await instance.get(`/states`);
+      // console.log(
+      //   '**************************** get state response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
-      dispatch({type: 'PROFILE_BASIC_INFORMATION_SUCCESS', payload: data});
+      dispatch({type: 'STATES_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -174,7 +84,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_BASIC_INFORMATION_FAILURE',
+        type: 'STATES_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -184,23 +94,20 @@ const UserProfileViewController = () => {
     }
   };
 
-  const addProfileDetails = requestData => async dispatch => {
+  const GetCity = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.post(
-        `http://15.206.149.28/api/job-seeker-profile/`,
-        requestData,
-      );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
-      console.log(response);
+      const response = await instance.get(`/city`);
+      // console.log(
+      //   '**************************** get city response***************************',
+      // );
+
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
-      dispatch({type: 'PROFILE_BASIC_INFORMATION_POST_SUCCESS', payload: data});
+      dispatch({type: 'CITY_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -220,7 +127,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_BASIC_INFORMATION_POST_FAILURE',
+        type: 'CITY_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -230,20 +137,20 @@ const UserProfileViewController = () => {
     }
   };
 
-  const GetProfileCareerInformation = user_id => async dispatch => {
+  const GetIndustry = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
+      const response = await instance.get(`/industries`);
+      // console.log(
+      //   '**************************** get Industry response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
-      dispatch({type: 'PROFILE_CAREER_INFORMATION_SUCCESS', payload: data});
+      dispatch({type: 'INDUSTRY_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -263,7 +170,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_CAREER_INFORMATION_FAILURE',
+        type: 'INDUSTRY_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -273,26 +180,20 @@ const UserProfileViewController = () => {
     }
   };
 
-  const updateProfileInformation = requestData => async dispatch => {
+  const GetDepartment = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/job-seeker-profile/1/`,
-        requestData,
-      );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS update response***************************',
-      );
-      console.log(response);
+      const response = await instance.get(`/departments`);
+      // console.log(
+      //   '**************************** get Department response***************************',
+      // );
+
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
-      dispatch({
-        type: 'PROFILE_CAREER_INFORMATION_POST_SUCCESS',
-        payload: data,
-      });
+      dispatch({type: 'DEPARTMENT_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -312,7 +213,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_BASIC_INFORMATION_POST_FAILURE',
+        type: 'DEPARTMENT_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -322,20 +223,17 @@ const UserProfileViewController = () => {
     }
   };
 
-  const GetProfileLanguage = user_id => async dispatch => {
+  const GetCategories = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS RESPONSE***************************',
-      );
+      const response = await instance.get(`/categories`);
+     
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
 
-      dispatch({type: 'PROFILE_LANGUAGE_SUCCESS', payload: data});
+      dispatch({type: 'CATEGORY_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -355,7 +253,7 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_LANGUAGE_FAILURE',
+        type: 'CATEGORY_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -365,23 +263,17 @@ const UserProfileViewController = () => {
     }
   };
 
-  const updateProfileLanguage = requestData => async dispatch => {
+  const GetRoles = () => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/job-seeker-profile/1/`,
-        requestData,
-      );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
-      );
-      console.log(response);
+      const response = await instance.get(`/job_title`);
+    
+
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
 
-      dispatch({type: 'PROFILE_LANGUAGE_POST_SUCCESS', payload: data});
+      dispatch({type: 'ROLE_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -401,7 +293,287 @@ const UserProfileViewController = () => {
         },
       );
       dispatch({
-        type: 'PROFILE_LANGUAGE_POST_FAILURE',
+        type: 'ROLE_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetLaguages = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/languages`);
+      
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'LANGUAGE_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'LANGUAGE_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetBoard = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/education-board`);
+     
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'BOARD_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'BOARD_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetMedium = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/school-medium/`);
+     
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'MEDIUM_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'MEDIUM_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetUniversities = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/universities`);
+     
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'UNIVERSITY_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'UNIVERSITY_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetCourses = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/courses`);
+     
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'COURSE_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'COURSE_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetSpecializations = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/specializations`);
+      
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'SPECIALIZATION_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'SPECIALIZATION_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetKeyskills = () => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await instance.get(`/key_skill`);
+      
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+
+      dispatch({type: 'KEYSKILL_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'KEYSKILL_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -413,16 +585,21 @@ const UserProfileViewController = () => {
 
   return {
     goBackScreen,
-    GetProfileAnalytic,
-    GetProfileDetails,
-    GetProfileBasicInformation,
-    addProfileDetails,
-    GetProfileCareerInformation,
-    updateProfileInformation,
-    GetProfileLanguage,
-    updateProfileLanguage,
-    updateProfileDetails,
+    GetCountry,
+    GetState,
+    GetCity,
+    GetIndustry,
+    GetDepartment,
+    GetCategories,
+    GetRoles,
+    GetLaguages,
+    GetBoard,
+    GetMedium,
+    GetUniversities,
+    GetCourses,
+    GetSpecializations,
+    GetKeyskills,
   };
 };
 
-export default UserProfileViewController;
+export default MasterViewController;

@@ -6,7 +6,7 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Checkbox, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -20,6 +20,11 @@ import CustomTabs from '../../../../Constant/CustomTabs';
 import ReusableDatePicker from '../../../../Constant/CustomDatePicker';
 import ReusableDropdown from '../../../../Constant/CustomDropdown';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
+import {useDispatch, useSelector} from 'react-redux';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useIsFocused} from '@react-navigation/native';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
 
 const Cities = [
   {id: 1, value: 'Bangalore'},
@@ -312,121 +317,283 @@ const validationSchema = Yup.object().shape({
   }).required('Expected Salary is required'), // Top-level validation for the object
 });
 
-const getInitialValues = (editingIndex, submittedData) => ({
-  current_city: submittedData?.current_city || '',
-  pref_locations: submittedData?.pref_locations || [],
-  current_industry: submittedData?.current_industry || '',
-  current_department: submittedData?.current_department || '',
-  current_job_title_category: submittedData?.current_job_title_category || '',
-  currentjob_title: submittedData?.currentjob_title || [],
-  notice_period: submittedData?.notice_period || '',
-  current_total_exp: submittedData?.current_total_exp || '',
-  current_annual_salary: {
-    currency: submittedData?.current_annual_salary?.currency || '₹',
-    amount: submittedData?.current_annual_salary?.amount
-      ? String(submittedData.current_annual_salary.amount)
-      : '', // Ensure it's a string
-  },
-  expected_salary: {
-    currency: submittedData?.expected_salary?.currency || '₹',
-    amount: submittedData?.expected_salary?.amount
-      ? String(submittedData.expected_salary.amount)
-      : '', // Ensure it's a string
-  },
-  is_career_break: submittedData?.is_career_break?.status ? 'Yes' : 'No',
-  reason: submittedData?.is_career_break?.reason || '', // Only used if career break is "Yes"
-  duration: {
-    from: submittedData?.is_career_break?.duration?.from
-      ? moment(submittedData.is_career_break.duration.from).toDate()
-      : null,
-    till:
-      submittedData?.is_career_break?.duration?.till === 'Present'
-        ? null // Use null for "Present" to avoid passing it to ReusableDatePicker
-        : submittedData?.is_career_break?.duration?.till
-        ? moment(submittedData.is_career_break.duration.till).toDate()
-        : null,
-  },
-  currently_working:
-    submittedData?.is_career_break?.duration?.till === 'Present', // Initialize checkbox
-  work_permit: submittedData?.work_permit || [],
-});
-
-const CareerInformation = () => {
+const CareerInformation = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedData, setSubmittedData] = useState(null); // Single entry handlings
   const [editingIndex, setEditingIndex] = useState(null);
+  const [cityMaster, setCityMaster] = useState([]);
+  const [countryMaster, setCountryMaster] = useState([]);
+  const [departmentMaster, setDepartmentMaster] = useState([]);
+  const [industryMaster, setIndustryMaster] = useState([]);
+  const [categoriesMaster, setCategoriesMaster] = useState([]);
+  const [roleMaster, setRoleMaster] = useState([]);
+  const [id, setId] = useState();
+
   let formikRef = null;
+
+  const dispatch = useDispatch();
+  const isFocus = useIsFocused();
+
+  const {
+    GetCity,
+    GetCountry,
+    GetIndustry,
+    GetDepartment,
+    GetCategories,
+    GetRoles,
+  } = MasterViewController();
+  const {cities, industries, departments, categories, roles, countries} =
+    useSelector(state => state.master);
+
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log(
+    //   '================================',
+    //   profileDetails?.profileDetails?.career_preferences,
+    // );
+
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [profileDetails]);
+
+  const getInitialValues = (editingIndex, submittedData) => ({
+    current_city:
+      profileDetails?.profileDetails?.career_preferences[0]?.current_city || '',
+    pref_locations:
+      profileDetails?.profileDetails?.career_preferences[0]?.pref_locations ||
+      [],
+    current_industry:
+      profileDetails?.profileDetails?.career_preferences[0]?.current_industry ||
+      '',
+    current_department:
+      profileDetails?.profileDetails?.career_preferences[0]
+        ?.current_department || '',
+    current_job_title_category:
+      profileDetails?.profileDetails?.career_preferences[0]
+        ?.current_job_title_category || '',
+    current_job_title:
+      profileDetails?.profileDetails?.career_preferences[0]
+        ?.current_job_title || [],
+    notice_period:
+      profileDetails?.profileDetails?.career_preferences[0]?.notice_period ||
+      '',
+    current_total_exp:
+      profileDetails?.profileDetails?.career_preferences[0]
+        ?.current_total_exp || '',
+    current_annual_salary: {
+      currency:
+        profileDetails?.profileDetails?.career_preferences[0]
+          ?.current_annual_salary?.currency || '₹',
+      amount:
+        profileDetails?.profileDetails?.career_preferences[0]
+          ?.current_annual_salary?.amount || '', // Ensure it's a string
+    },
+    expected_salary: {
+      currency:
+        profileDetails?.profileDetails?.career_preferences[0]?.expected_salary
+          ?.currency || '₹',
+      amount:
+        profileDetails?.profileDetails?.career_preferences[0]?.expected_salary
+          ?.amount || '',
+    },
+    is_career_break: profileDetails?.profileDetails?.career_preferences[0]
+      ?.is_career_break?.status
+      ? 'Yes'
+      : 'No',
+    reason:
+      profileDetails?.profileDetails?.career_preferences[0]?.is_career_break
+        ?.reason || '', // Only used if career break is "Yes"
+    duration: {
+      from: profileDetails?.profileDetails?.career_preferences[0]
+        ?.is_career_break?.duration?.from
+        ? moment(
+            profileDetails?.profileDetails?.career_preferences[0]
+              ?.is_career_break.duration.from,
+          ).toDate()
+        : null,
+      till:
+        profileDetails?.profileDetails?.career_preferences[0]?.is_career_break
+          ?.duration?.till === 'Present'
+          ? null // Use null for "Present" to avoid passing it to ReusableDatePicker
+          : profileDetails?.profileDetails?.career_preferences[0]
+              ?.is_career_break?.duration?.till
+          ? moment(
+              profileDetails?.profileDetails?.career_preferences[0]
+                ?.is_career_break.duration.till,
+            ).toDate()
+          : null,
+    },
+    currently_working:
+      profileDetails?.profileDetails?.career_preferences[0]?.is_career_break
+        ?.duration?.till === 'Present', // Initialize checkbox
+    work_permit:
+      profileDetails?.profileDetails?.career_preferences[0]?.work_permit || [],
+  });
+  useEffect(() => {
+    const get_city = () => {
+      dispatch(GetCity());
+    };
+    const get_country = () => {
+      dispatch(GetCountry());
+    };
+    const get_departments = () => {
+      dispatch(GetDepartment());
+    };
+
+    const get_industries = () => {
+      dispatch(GetIndustry());
+    };
+    const get_category = () => {
+      dispatch(GetCategories());
+    };
+    const get_role = () => {
+      dispatch(GetRoles());
+    };
+
+    get_industries();
+    get_country();
+    get_departments();
+    get_category();
+    get_role();
+    get_city();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const cities_data = cities?.map(city => ({
+      id: city.id,
+      value: city.name,
+    }));
+    const countries_data = countries?.map(country => ({
+      id: country.id,
+      value: country.name,
+    }));
+    const departments_data = departments?.map(department => ({
+      id: department.id,
+      value: department.name,
+    }));
+    const industries_data = industries?.map(industry => ({
+      id: industry.id,
+      value: industry.industry_name,
+    }));
+    const categories_data = categories?.map(category => ({
+      id: category.id,
+      value: category.name,
+    }));
+    const roles_data = roles?.map(role => ({
+      id: role.id,
+      value: role.title,
+    }));
+
+    setCityMaster(cities_data);
+    setCountryMaster(countries_data);
+    setDepartmentMaster(departments_data);
+    setIndustryMaster(industries_data);
+    setCategoriesMaster(categories_data);
+    setRoleMaster(roles_data);
+
+    // console.log('roles_data===', roles_data);
+  }, [cities, industries, departments, categories, roles, countries]);
 
   const handleFormSubmit = values => {
     const formattedValues = {
-      current_city: values.current_city,
-      pref_locations: values.pref_locations.map(location =>
-        typeof location === 'string'
-          ? location
-          : Cities.find(city => city.value === location?.value)?.value ||
-            location?.value ||
-            '',
-      ),
-      current_industry:
-        Industries.find(ind => ind.value === values.current_industry)?.value ||
-        '',
-      current_department:
-        Department.find(dep => dep.value === values.current_department)
-          ?.value || '',
-      current_job_title_category:
-        RoleCategory.find(
-          cat => cat.value === values.current_job_title_category,
-        )?.value || '',
-      currentjob_title: values.currentjob_title.map(job =>
-        typeof job === 'string'
-          ? job
-          : JobRole.find(role => role.value === job?.value)?.value ||
-            job?.value ||
-            '',
-      ),
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
+      user_id: id,
+      career_preferences: [
+        {
+          current_city: values.current_city,
+          pref_locations: values.pref_locations.map(location =>
+            typeof location === 'string'
+              ? location
+              : Cities.find(city => city.value === location?.value)?.value ||
+                location?.value ||
+                '',
+          ),
+          current_industry:
+            industryMaster?.find(ind => ind.value === values.current_industry)
+              ?.value || '',
+          current_department:
+            departmentMaster?.find(
+              dep => dep.value === values.current_department,
+            )?.value || '',
+          current_job_title_category:
+            categoriesMaster?.find(
+              cat => cat.value === values.current_job_title_category,
+            )?.value || '',
+          current_job_title: values.current_job_title.map(job =>
+            typeof job === 'string'
+              ? job
+              : roleMaster?.find(role => role.value === job?.value)?.value ||
+                job?.value ||
+                '',
+          ),
 
-      notice_period:
-        NOTICEPERIOD_OPTIONS.find(opt => opt.value === values.notice_period)
-          ?.value || '',
-      current_total_exp: values.current_total_exp,
-      current_annual_salary: {
-        currency: values.current_annual_salary.currency || '₹', // Default to '₹'
-        amount: parseFloat(values.current_annual_salary.amount),
-      },
-      expected_salary: {
-        currency: values.expected_salary.currency || '₹', // Default to '₹'
-        amount: parseFloat(values.expected_salary.amount),
-      },
-      is_career_break:
-        values.is_career_break === 'Yes'
-          ? {
-              status: true,
-              reason: values.reason || null,
-              duration: {
-                from: values.duration?.from
-                  ? moment(values.duration.from).format('YYYY-MM-DD')
-                  : null,
-                till: values.currently_working
-                  ? 'Present' // Submit "Present" when currently working
-                  : values.duration?.till
-                  ? moment(values.duration.till).format('YYYY-MM-DD')
-                  : null,
-              },
-            }
-          : {status: false},
-      work_permit: values.work_permit.map(permit =>
-        typeof permit === 'string'
-          ? permit
-          : WORKPERMIT_OPTIONS.find(
-              workpermit => workpermit.value === permit?.value,
-            )?.value ||
-            permit?.value ||
-            '',
-      ),
+          notice_period:
+            NOTICEPERIOD_OPTIONS.find(
+              opt => opt.value === values?.notice_period,
+            )?.value || '',
+          current_total_exp: values.current_total_exp,
+          current_annual_salary: {
+            currency: values.current_annual_salary?.currency || '₹', // Default to '₹'
+            amount: values.current_annual_salary?.amount || '',
+          },
+          expected_salary: {
+            currency: values.expected_salary?.currency || '₹', // Default to '₹'
+            amount: values.expected_salary?.amount || '',
+          },
+          is_career_break:
+            values.is_career_break === 'Yes'
+              ? {
+                  status: true,
+                  reason: values.reason || null,
+                  duration: {
+                    from: values.duration?.from
+                      ? moment(values.duration?.from).format('YYYY-MM-DD')
+                      : null,
+                    till: values.currently_working
+                      ? 'Present' // Submit "Present" when currently working
+                      : values.duration?.till
+                      ? moment(values.duration?.till).format('YYYY-MM-DD')
+                      : null,
+                  },
+                }
+              : {status: false},
+          work_permit: values.work_permit.map(permit =>
+            typeof permit === 'string'
+              ? permit
+              : WORKPERMIT_OPTIONS.find(
+                  workpermit => workpermit.value === permit?.value,
+                )?.value ||
+                permit?.value ||
+                '',
+          ),
+        },
+      ],
     };
 
-    console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
+    // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
     setSubmittedData(formattedValues);
+
+    if (profileDetails.profileDetails.id) {
+      dispatch(updateProfileDetails(formattedValues));
+    } else {
+      dispatch(addProfileDetails(formattedValues));
+    }
+
     setModalVisible(false);
   };
 
@@ -439,13 +606,19 @@ const CareerInformation = () => {
     setModalVisible(false);
     setEditingIndex(null);
   };
-
+  const getExistingObjects = data => {
+    return cityMaster.filter(obj => data.includes(obj.value));
+  };
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
         <Text style={profileStyle.heading}>CAREER INFORMATION</Text>
         <IconButton
-          icon={submittedData ? 'pencil-outline' : 'plus-circle-outline'}
+          icon={
+            profileDetails?.profileDetails?.career_preferences
+              ? 'pencil-outline'
+              : 'plus-circle-outline'
+          }
           iconColor={colors.blackText}
           size={20}
           onPress={openModal}
@@ -453,52 +626,95 @@ const CareerInformation = () => {
         />
       </View>
 
-      {submittedData ? (
+      {profileDetails?.profileDetails?.career_preferences ? (
         <View style={profileStyle.userDataContainer}>
           <TouchableOpacity onPress={openModal}>
             {[
-              {label: 'Industry', value: submittedData.current_industry},
-              {label: 'Department', value: submittedData.current_department},
+              {
+                label: 'Industry',
+                value:
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_industry,
+              },
+              {
+                label: 'Department',
+                value:
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_department,
+              },
               {
                 label: 'Role Category',
-                value: submittedData.current_job_title_category,
+                value:
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_job_title_category,
               },
               {
                 label: 'Job Role',
                 value:
-                  Array.isArray(submittedData.currentjob_title) &&
-                  submittedData.currentjob_title.length > 0
-                    ? submittedData.currentjob_title.join(', ') // Join array elements into a string
-                    : submittedData.currentjob_title || 'Not provided', // Handle single string or default
+                  Array.isArray(
+                    profileDetails?.profileDetails?.career_preferences[0]
+                      ?.current_job_title,
+                  ) &&
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_job_title.length > 0
+                    ? profileDetails?.profileDetails?.career_preferences[0]?.current_job_title.join(
+                        ', ',
+                      ) // Join array elements into a string
+                    : profileDetails?.profileDetails?.career_preferences[0]
+                        ?.current_job_title || 'Not provided', // Handle single string or default
               },
 
               {
                 label: 'Experience',
-                value: `${submittedData.current_total_exp || 0} Years`,
+                value: `${
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_total_exp || 0
+                } Years`,
               },
               {
                 label: 'Annual Salary',
-                value: submittedData.current_annual_salary
-                  ? `${submittedData.current_annual_salary.currency || ''} ${
-                      submittedData.current_annual_salary.amount || 0
+                value: profileDetails?.profileDetails?.career_preferences[0]
+                  ?.current_annual_salary
+                  ? `${
+                      profileDetails?.profileDetails?.career_preferences[0]
+                        ?.current_annual_salary.currency || ''
+                    } ${
+                      profileDetails?.profileDetails?.career_preferences[0]
+                        ?.current_annual_salary.amount || 0
                     } LPA`
                   : null,
               },
               {
                 label: 'Expected Salary',
-                value: submittedData.expected_salary
-                  ? `${submittedData.expected_salary.currency || ''} ${
-                      submittedData.expected_salary.amount || 0
+                value: profileDetails?.profileDetails?.career_preferences[0]
+                  ?.expected_salary
+                  ? `${
+                      profileDetails?.profileDetails?.career_preferences[0]
+                        ?.expected_salary.currency || ''
+                    } ${
+                      profileDetails?.profileDetails?.career_preferences[0]
+                        ?.expected_salary.amount || 0
                     } LPA`
                   : null,
               },
-              {label: 'Current Location', value: submittedData.current_city},
+              {
+                label: 'Current Location',
+                value:
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.current_city,
+              },
               {
                 label: 'Preferred Locations',
                 value:
-                  Array.isArray(submittedData.pref_locations) &&
-                  submittedData.pref_locations.length
-                    ? submittedData.pref_locations.join(', ')
+                  Array.isArray(
+                    profileDetails?.profileDetails?.career_preferences[0]
+                      ?.pref_locations,
+                  ) &&
+                  profileDetails?.profileDetails?.career_preferences[0]
+                    ?.pref_locations.length
+                    ? profileDetails?.profileDetails?.career_preferences[0]?.pref_locations.join(
+                        ', ',
+                      )
                     : null,
               },
             ].map((field, index) => (
@@ -557,20 +773,20 @@ const CareerInformation = () => {
 
                     <CustomSelectionModal
                       title="Preferred Locations"
-                      data={Cities}
+                      data={cityMaster} //object pass
                       selectedItems={values.pref_locations.map(
-                        location =>
-                          Cities.find(city => city.value === location) || {
+                        skill =>
+                          cityMaster?.find(item => item.value === skill) || {
                             id: null,
-                            value: location,
+                            value: skill,
                           },
                       )}
-                      setSelectedItems={items =>
+                      setSelectedItems={items => {
                         setFieldValue(
                           'pref_locations',
                           items.map(item => item?.value || ''),
-                        )
-                      }
+                        );
+                      }}
                       placeholder="Select Preferred Locations"
                       isMultiSelect
                       maxSelectionLimit={9}
@@ -578,12 +794,10 @@ const CareerInformation = () => {
 
                     <CustomSelectionModal
                       title="Industry"
-                      data={Industries}
-                      selectedItems={
-                        Industries.find(
-                          item => item.value === values.current_industry,
-                        ) || null
-                      }
+                      data={industryMaster}
+                      selectedItems={industryMaster?.find(
+                        item => item.value === values.current_industry,
+                      )}
                       setSelectedItems={item =>
                         setFieldValue('current_industry', item?.value || '')
                       }
@@ -593,12 +807,10 @@ const CareerInformation = () => {
 
                     <CustomSelectionModal
                       title="Department"
-                      data={Department}
-                      selectedItems={
-                        Department.find(
-                          item => item.value === values.current_department,
-                        ) || null
-                      }
+                      data={departmentMaster}
+                      selectedItems={departmentMaster?.find(
+                        item => item.value === values.current_department,
+                      )}
                       setSelectedItems={item =>
                         setFieldValue('current_department', item?.value || '')
                       }
@@ -608,13 +820,11 @@ const CareerInformation = () => {
 
                     <CustomSelectionModal
                       title="Role Category"
-                      data={RoleCategory}
-                      selectedItems={
-                        RoleCategory.find(
-                          item =>
-                            item.value === values.current_job_title_category,
-                        ) || null
-                      }
+                      data={categoriesMaster}
+                      selectedItems={categoriesMaster?.find(
+                        item =>
+                          item.value === values.current_job_title_category,
+                      )}
                       setSelectedItems={item =>
                         setFieldValue(
                           'current_job_title_category',
@@ -627,17 +837,17 @@ const CareerInformation = () => {
 
                     <CustomSelectionModal
                       title="Job Role"
-                      data={JobRole}
-                      selectedItems={values.currentjob_title.map(
-                        job =>
-                          JobRole.find(item => item.value === job) || {
+                      data={roleMaster}
+                      selectedItems={values.current_job_title.map(
+                        role =>
+                          roleMaster?.find(item => item.value === role) || {
                             id: null,
-                            value: job,
+                            value: role,
                           },
                       )}
                       setSelectedItems={items =>
                         setFieldValue(
-                          'currentjob_title',
+                          'current_job_title',
                           items.map(item => item?.value || ''),
                         )
                       }
@@ -736,12 +946,14 @@ const CareerInformation = () => {
                       keyboardType="numeric"
                       onChangeText={handleChange('current_total_exp')}
                     />
+
+                   
                     <View style={styles.salaryContainer}>
                       <View style={{width: '20%'}}>
                         <ReusableDropdown
                           options={CURRENCY_OPTIONS}
                           placeholder={values.currency}
-                          selectedValue={values.current_annual_salary.currency}
+                          selectedValue={values.current_annual_salary?.currency}
                           onSelect={selected =>
                             setFieldValue(
                               'current_annual_salary.currency',
@@ -750,11 +962,15 @@ const CareerInformation = () => {
                           }
                         />
                       </View>
+
                       <View style={{flex: 1, top: -6}}>
                         <ReusableTextInput
                           name="current_annual_salary"
                           label="Annual Salary*"
-                          value={values.current_annual_salary.amount}
+                          value={
+                            values.current_annual_salary?.amount?.toString() ||
+                            ''
+                          }
                           keyboardType="numeric"
                           onChangeText={text =>
                             setFieldValue('current_annual_salary.amount', text)
@@ -767,7 +983,7 @@ const CareerInformation = () => {
                         <ReusableDropdown
                           options={CURRENCY_OPTIONS}
                           placeholder={values.currency}
-                          selectedValue={values.expected_salary.currency}
+                          selectedValue={values.expected_salary?.currency}
                           onSelect={selected =>
                             setFieldValue(
                               'expected_salary.currency',
@@ -780,7 +996,9 @@ const CareerInformation = () => {
                         <ReusableTextInput
                           name="expected_salary"
                           label="Expected Salary*"
-                          value={values.expected_salary.amount}
+                          value={
+                            values.expected_salary?.amount?.toString() || ''
+                          }
                           keyboardType="numeric"
                           onChangeText={text =>
                             setFieldValue('expected_salary.amount', text)
@@ -790,10 +1008,10 @@ const CareerInformation = () => {
                     </View>
                     <CustomSelectionModal
                       title="Work Permit"
-                      data={WORKPERMIT_OPTIONS}
+                      data={countryMaster}
                       selectedItems={values.work_permit.map(
                         permit =>
-                          WORKPERMIT_OPTIONS.find(
+                          countryMaster?.find(
                             option => option.value === permit,
                           ) || {
                             id: null,

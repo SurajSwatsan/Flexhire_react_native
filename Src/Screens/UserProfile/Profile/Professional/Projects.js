@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -8,8 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Formik} from 'formik';
-import * as Yup from 'yup';
-import moment from 'moment'; // Import moment for date formatting
+import moment from 'moment';
 import profileStyle from '../../ProfileStyle';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ReusableDropdown from '../../../../Constant/CustomDropdown';
@@ -18,8 +17,10 @@ import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {IconButton} from 'react-native-paper';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomTabs from '../../../../Constant/CustomTabs';
+import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 
-// Dropdown Options
 const TeamSizeOptions = Array.from({length: 31}, (_, i) => ({
   label: `${i}`,
   value: i,
@@ -41,73 +42,154 @@ const EmploymentNatureOptions = [
   {id: 3, label: 'Contractual', value: 'Contractual'},
 ];
 
-const getInitialValues = data => ({});
-
-// Validation Schema
-const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Project title is required'),
-  client: Yup.string().required('Client is required'),
-  status: Yup.string().required('Project status is required'),
-  description: Yup.string().required('Project details are required'),
-});
-
-const Projects = () => {
+const Projects = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
   const [projectList, setProjectList] = useState([]);
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   let formikRef = null;
 
-  const openModal = (index = null) => {
-    setSelectedProjectIndex(index);
+  const [id, setId] = useState();
+  const dispatch = useDispatch();
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+  // const [selectedStatus, setSelectedStatus] = useState(null); // Track selected tab
+
+  // const handleTabPress = value => {
+  //   setSelectedStatus(value); // Update the selected tab
+  // };
+  useEffect(() => {
+    if (profileDetails?.profileDetails?.project_details) {
+      setProjectList(profileDetails?.profileDetails?.project_details);
+    }
+  }, [profileDetails]);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [profileDetails]);
+
+  const openModal = item => {
+    setSelectedProject(item);
     setModalVisible(true);
     setShowMoreDetails(false);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setSelectedProjectIndex(null);
+    setSelectedProject(null);
   };
 
   const handleFormSubmit = values => {
-    const {worked_duration, ...rest} = values;
-    const formattedValues = {
-      ...rest,
-      worked_duration: {
-        from: worked_duration.from
-          ? moment(worked_duration.from).format('DD-MM-YYYY')
-          : null,
-        till: worked_duration.till
-          ? moment(worked_duration.till).format('DD-MM-YYYY')
-          : null,
-      },
-    };
+    if (selectedProject) {
+      const updateOrAddObject = (array, obj) => {
+        const index = array.findIndex(
+          item => item.title === selectedProject.title,
+        );
 
-    const updatedProjectList = [...projectList];
-    if (selectedProjectIndex !== null) {
-      updatedProjectList[selectedProjectIndex] = formattedValues;
+        if (index !== -1) {
+          // Update the existing object
+          array[index] = {...array[index], ...obj};
+        } else {
+          // Add the new object if not found
+          array.push(obj);
+        }
+      };
+
+      updateOrAddObject(projectList, values);
+      const payload = {
+        id: profileDetails?.profileDetails?.id,
+        project_details: projectList,
+      };
+
+      dispatch(updateProfileDetails(payload));
+
+      setProjectList(projectList);
+      setModalVisible(false);
+      setSelectedProject(null);
     } else {
-      updatedProjectList.push(formattedValues);
+      const formattedValues = {
+        id: profileDetails?.profileDetails?.id
+          ? profileDetails?.profileDetails?.id
+          : '',
+        user_id: id,
+        project_details: [
+          ...(profileDetails?.profileDetails?.project_details || []), // Include existing entries
+
+          {
+            title: values.title,
+            client: values.client,
+            status:
+              values.status === 'In Progress' ? 'In Progress' : 'Finished',
+            description: values.description,
+            worked_duration: {
+              from: values.worked_duration.from
+                ? moment(values.worked_duration.from).format('DD-MM-YYYY')
+                : null,
+              till:
+                values.status === 'In Progress'
+                  ? 'Present'
+                  : values.worked_duration.till
+                  ? moment(values.worked_duration.till).format('DD-MM-YYYY')
+                  : null,
+            },
+            nature_of_employment: values.nature_of_employment,
+            project_location: values.project_location,
+            project_site: values.project_site,
+            team_size: values.team_size,
+            role: values.role,
+            role_description: values.role_description,
+            skills_used: values.skills_used,
+          },
+        ],
+      };
+
+      setProjectList(prev => {
+        if (selectedProject !== null) {
+          const updatedList = [...prev];
+          updatedList[selectedProject] = formattedValues;
+          return updatedList;
+        }
+        return [...prev, formattedValues];
+      });
+
+      if (profileDetails.profileDetails.id) {
+        dispatch(updateProfileDetails(formattedValues));
+      } else {
+        dispatch(addProfileDetails(formattedValues));
+      }
+      // dispatch(updateProfileDetails(formattedValues));
+
+      closeModal();
     }
-
-    setProjectList(updatedProjectList);
-    closeModal();
-
-    console.log(
-      'Updated Project Details:',
-      JSON.stringify({project_details: updatedProjectList}, null, 2),
-    );
   };
 
   const deleteProject = () => {
-    if (selectedProjectIndex !== null) {
-      setProjectList(prevList =>
-        prevList.filter((_, idx) => idx !== selectedProjectIndex),
-      );
-      closeModal();
-      setSelectedProjectIndex(null);
-    }
+    const filteredArray = projectList.filter(
+      item => item.title !== selectedProject.title,
+    );
+    setProjectList(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      project_details: filteredArray,
+    };
+
+    dispatch(updateProfileDetails(payload));
+
+    // // Reset state and close modal
+    setSelectedProject(null);
+    closeModal();
   };
+
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
@@ -116,14 +198,14 @@ const Projects = () => {
           icon={'plus-circle-outline'}
           iconColor={colors.blackText}
           size={20}
-          onPress={() => openModal()}
+          onPress={() => openModal(null)}
           style={profileStyle.editButton}
         />
       </View>
 
       <View>
-        {projectList.length > 0 ? (
-          projectList.map((item, index) => (
+        {profileDetails?.profileDetails?.project_details.length > 0 ? (
+          profileDetails?.profileDetails?.project_details.map((item, index) => (
             <View key={index}>
               <View
                 style={{
@@ -133,37 +215,37 @@ const Projects = () => {
                 }}>
                 <TouchableOpacity
                   style={[profileStyle.userDataContainer, styles.dataContainer]}
-                  onPress={() => openModal(index)}>
-                  <Text style={profileStyle.optionalData}>{item.title}</Text>
-                  <Text style={profileStyle.optionalData}>{item.client}</Text>
-
+                  onPress={() => openModal(item)}>
                   <Text style={profileStyle.optionalData}>
-                    {item.worked_duration?.from
-                      ? item.worked_duration.from
-                      : 'N/A'}{' '}
-                    -{' '}
-                    {item.status === 'Finished' && item.worked_duration?.till
-                      ? item.worked_duration.till
-                      : 'Present'}{' '}
-                    • {item.nature_of_employment}
+                    {item?.title || 'No Title'}
+                  </Text>
+                  <Text style={profileStyle.optionalData}>
+                    {item?.client || 'No Client'}
+                  </Text>
+                  <Text style={profileStyle.optionalData}>
+                    {item?.worked_duration?.from || 'No Start Date'} -{' '}
+                    {item?.status === 'In Progress'
+                      ? 'Present'
+                      : item?.worked_duration?.till || 'No End Date'}{' '}
+                    • {item?.nature_of_employment || 'No Employment Type'}
                   </Text>
                 </TouchableOpacity>
+
                 <IconButton
                   icon="pencil-outline"
-                  iconColor={'black'}
+                  iconColor="black"
                   size={20}
-                  onPress={() => openModal(index)}
+                  onPress={() => openModal(item)}
                 />
               </View>
 
-              {/* Separator */}
-              {projectList.length > 1 && index < projectList.length - 1 && (
-                <View style={styles.horizontalLine} />
-              )}
+              {profileDetails?.profileDetails?.project_details.length > 1 &&
+                index <
+                  profileDetails?.profileDetails?.project_details.length -
+                    1 && <View style={styles.horizontalLine} />}
             </View>
           ))
         ) : (
-          // Render when no data is available
           <View style={styles.noDataContainer}>
             <Text style={profileStyle.optionalData}>
               Stand out to employers by adding details about projects that you
@@ -183,24 +265,36 @@ const Projects = () => {
             data={[{key: 'form'}]}
             renderItem={() => (
               <Formik
-                initialValues={
-                  selectedProjectIndex !== null
-                    ? getInitialValues(projectList[selectedProjectIndex])
-                    : getInitialValues({})
-                }
-                validationSchema={validationSchema}
+                initialValues={{
+                  title: selectedProject?.title || '',
+                  client: selectedProject?.client || '',
+                  status: selectedProject?.status || '',
+                  description: selectedProject?.description || '',
+                  worked_duration: {
+                    from: selectedProject?.worked_duration?.from
+                      ? moment(selectedProject?.worked_duration?.from).format(
+                          'YYYY-MM-DD',
+                        )
+                      : null,
+                    till: selectedProject?.worked_duration?.till
+                      ? moment(selectedProject?.worked_duration?.till).format(
+                          'YYYY-MM-DD',
+                        )
+                      : null,
+                  },
+                  project_location: selectedProject?.project_location || '',
+                  project_site: selectedProject?.project_site || 'Off Site',
+                  nature_of_employment:
+                    selectedProject?.nature_of_employment || 'Full Time',
+                  team_size: selectedProject?.team_size || '',
+                  role: selectedProject?.role || '',
+                  role_description: selectedProject?.role_description || '',
+                  skills_used: selectedProject?.skills_used || '',
+                }}
                 innerRef={ref => (formikRef = ref)}
                 onSubmit={handleFormSubmit}>
-                {({
-                  handleChange,
-                  handleSubmit,
-                  setFieldValue,
-                  values,
-                  errors,
-                  touched,
-                }) => (
+                {({handleChange, handleSubmit, setFieldValue, values}) => (
                   <View style={profileStyle.formContainer}>
-                    <Text style={profileStyle.formHeading}>PROJECT</Text>
                     <ReusableTextInput
                       name="title"
                       label="Project Title*"
@@ -213,37 +307,74 @@ const Projects = () => {
                       value={values.client}
                       onChangeText={handleChange('client')}
                     />
-                    <CustomTabs
+                    {/* <CustomTabs
                       label="Project Status*"
                       options={ProjectStatusOptions}
-                      selectedValue={values.status}
+                      selectedValue={values.status} // Bind to the Formik value
                       setFieldValue={setFieldValue}
                       fieldName="status"
-                      error={errors.status}
-                      touched={touched.status}
-                    />
-
-                    {/* Render Worked From and Till based on project status */}
+                      // error={errors.status}
+                      // touched={touched.status}
+                    /> */}
+                    <View style={profileStyle.TabContainer}>
+                      {ProjectStatusOptions.map(option => (
+                        <TouchableOpacity
+                          key={option.id}
+                          style={[
+                            profileStyle.tabBtnStyle,
+                            values.status === option.value &&
+                              profileStyle.selectedTab, // Apply style if selected
+                          ]}
+                          onPress={() => setFieldValue('status', option.value)}>
+                          <Text
+                            style={[
+                              profileStyle.tabBtnText,
+                              values.status === option.value &&
+                                profileStyle.selectedTabText, // Change text color if selected
+                            ]}>
+                            {option.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
                     <ReusableDatePicker
                       label="Worked From*"
-                      value={values.from}
-                      onChange={date => setFieldValue('from', date)}
+                      value={
+                        values.worked_duration?.from
+                          ? moment(
+                              values.worked_duration.from,
+                              'YYYY-MM-DD',
+                            ).toDate()
+                          : null
+                      }
+                      onChange={date =>
+                        setFieldValue('worked_duration', {
+                          ...values.worked_duration,
+                          from: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
+                        })
+                      }
                     />
-                    {values.status &&
-                      (values.status === 'In Progress' ? (
-                        <ReusableTextInput
-                          name="till"
-                          label="Till*"
-                          value="Present"
-                          editable={false} // Make it read-only
-                        />
-                      ) : (
-                        <ReusableDatePicker
-                          label="Worked Till*"
-                          value={values.till}
-                          onChange={date => setFieldValue('till', date)}
-                        />
-                      ))}
+
+                    {values.status === 'Finished' && (
+                      <ReusableDatePicker
+                        label="Worked Till*"
+                        value={
+                          values.worked_duration?.till
+                            ? moment(
+                                values.worked_duration.till,
+                                'YYYY-MM-DD',
+                              ).toDate()
+                            : null
+                        }
+                        onChange={date =>
+                          setFieldValue('worked_duration', {
+                            ...values.worked_duration,
+                            till: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
+                          })
+                        }
+                      />
+                    )}
+
                     <ReusableTextInput
                       name="description"
                       label="Project Details*"
@@ -258,9 +389,7 @@ const Projects = () => {
                           fontWeight: 'bold',
                           marginVertical: 10,
                         }}>
-                        {showMoreDetails
-                          ? 'Hide more details -'
-                          : 'Add more details +'}
+                        Add more details +
                       </Text>
                     </TouchableOpacity>
                     {showMoreDetails && (
@@ -322,7 +451,7 @@ const Projects = () => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()} // Submits the form
             onCancel={closeModal} // Cancels and closes the modal
-            showDelete={selectedProjectIndex !== null} // Shows the delete button if a project is selected
+            showDelete={selectedProject !== null} // Shows the delete button if a project is selected
             onDelete={deleteProject} // Deletes the project
           />
         </View>

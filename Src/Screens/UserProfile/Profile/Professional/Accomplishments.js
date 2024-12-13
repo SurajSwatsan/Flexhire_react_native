@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -19,6 +19,9 @@ import profileStyle from '../../ProfileStyle';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
 
 const TAB_OPTIONS = [
   {label: 'Research Publication', key: 'research'},
@@ -29,91 +32,187 @@ const TAB_OPTIONS = [
   {label: 'Presentation', key: 'presentation'},
 ];
 
-const initialValues = {
-  title: '',
-  url: '',
-  description: '',
-  publishedDate: null,
-  patentTitle: '',
-  patentURL: '',
-  patentOffice: '',
-  patentdescription: '',
-  applicationNumber: '',
-  status: '',
-  issuedDate: null,
-  certificationName: '',
-  certificationProvider: '',
-  completionID: '',
-  certificationURL: '',
-  validFrom: null,
-  validTill: null,
-  noExpiry: false,
-  workSampleTitle: '',
-  workSampleURL: '',
-  workSampledescription: '',
-  workedFrom: null,
-  workedTill: null,
-  stillWorking: false,
-  profileName: '',
-  profileURL: '',
-  profiledescription: '',
-  presentationTitle: '',
-  presentationURL: '',
-  presentationdescription: '',
-};
-
-const Accomplishments = () => {
+const Accomplishments = profileDetails => {
+  // const [activeTab, setActiveTab] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [savedData, setSavedData] = useState({
-    research: [],
-    patent: [],
-    certification: [],
-    workSample: [],
-    onlineProfile: [],
-    presentation: [],
-  });
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [accomplishmentsData, setAccomplishmentsData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [id, setId] = useState();
+
   let formikRef = null;
+  const dispatch = useDispatch();
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
 
-  const openModal = (key, index = null) => {
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log(
+    //   '================================',
+    //   profileDetails?.profileDetails?.accomplishments,
+    // );
+    console.log(
+      'accomplishments Data:',
+      JSON.stringify(profileDetails?.profileDetails?.accomplishments, null, 2),
+    );
+    setAccomplishmentsData(profileDetails?.profileDetails?.accomplishments);
+  }, [profileDetails]);
+
+  const openModal = (key, item = null) => {
+    console.log('Key Passed to openModal:', key);
+    console.log('Item Passed to openModal:', item);
     setActiveTab(key);
-    setModalVisible(true);
-    setEditingIndex(index);
+    setModalVisible(true); // Show the modal
+    setSelectedItem(item); // Set the index for editing
   };
-
   const closeModal = () => {
     setModalVisible(false);
-    setActiveTab(null);
-    setEditingIndex(null);
+    setActiveTab(null); // Reset activeTab
+    setSelectedItem(null);
   };
-  console.log(savedData);
+  // console.log(savedData);
 
   const handleSubmit = values => {
-    const updatedTabData = [...(savedData[activeTab] || [])];
-    if (editingIndex !== null) {
-      updatedTabData[editingIndex] = values;
+    // Find the selected tab's label
+    const selectedTab = TAB_OPTIONS.find(tab => tab.key === activeTab);
+
+    if (selectedItem) {
+      const updateOrAddObject = (array, obj) => {
+        const index = array.findIndex(item => item.title == selectedItem.title);
+
+        if (index !== -1) {
+          // Update the existing object
+          array[index] = {...array[index], ...obj};
+        } else {
+          // Add the new object if not found
+          array.push(obj);
+        }
+      };
+
+      updateOrAddObject(accomplishmentsData, values);
+      const payload = {
+        id: profileDetails?.profileDetails?.id,
+        accomplishments: accomplishmentsData,
+      };
+      dispatch(updateProfileDetails(payload));
+
+      setAccomplishmentsData(accomplishmentsData);
+      setModalVisible(false);
+      setSelectedItem(null);
     } else {
-      updatedTabData.push(values);
+      const formattedValues = {
+        id: profileDetails?.profileDetails?.id
+          ? profileDetails?.profileDetails?.id
+          : '',
+        user_id: id,
+        accomplishments: [
+          ...(profileDetails?.profileDetails?.accomplishments || []), // Include existing entries
+
+          {
+            name: selectedTab.label,
+            title: values.title || '',
+            url: values.url || '',
+            description: values.description || '',
+            published_date: values.published_date
+              ? moment(values.published_date).format('YYYY-MM-DD')
+              : null,
+            patentOffice: values.patentOffice || '',
+            application_number: values.application_number || '',
+            status: values.status || '',
+            issued_date: values.issued_date
+              ? moment(values.issued_date).format('YYYY-MM-DD')
+              : null,
+            certification_provider: values.certification_provider || '',
+            completion_id: values.completion_id || '',
+            from: values.from ? moment(values.from).format('YYYY-MM-DD') : null,
+            till:
+              values.noExpiry || values.stillWorking
+                ? null
+                : values.till
+                ? moment(values.till).format('YYYY-MM-DD')
+                : null,
+            noExpiry: values.noExpiry || false,
+            stillWorking: values.stillWorking || false,
+          },
+        ],
+      };
+      // console.log('selected tab', selectedTab);
+
+      if (profileDetails.profileDetails.id) {
+        dispatch(updateProfileDetails(formattedValues));
+      } else {
+        dispatch(addProfileDetails(formattedValues));
+      }
+      // dispatch(updateProfileDetails(formattedValues));
+
+      setModalVisible(false);
+      setSelectedItem(null);
     }
-    setSavedData(prevData => ({
-      ...prevData,
-      [activeTab]: updatedTabData,
-    }));
-    closeModal();
+    // Format the new entry
+    // const formattedValues = {
+    //   id: profileDetails?.profileDetails?.id,
+    //   accomplishments: [
+    //     {
+    //       name: selectedTab ? selectedTab.label : '',
+    //       title: values.title || '',
+    //       url: values.url || '',
+    //       description: values.description || '',
+    //       published_date: values.published_date
+    //         ? moment(values.published_date).format('YYYY-MM-DD')
+    //         : null,
+    //       patentOffice: values.patentOffice || '',
+    //       application_number: values.application_number || '',
+    //       status: values.status || '',
+    //       issued_date: values.issued_date
+    //         ? moment(values.issued_date).format('YYYY-MM-DD')
+    //         : null,
+    //       certification_provider: values.certification_provider || '',
+    //       completion_id: values.completion_id || '',
+    //       from: values.from ? moment(values.from).format('YYYY-MM-DD') : null,
+    //       till: values.till ? moment(values.till).format('YYYY-MM-DD') : null,
+    //       noExpiry: values.noExpiry || false,
+    //       stillWorking: values.stillWorking || false,
+    //     },
+    //   ],
+    // };
+
+    // dispatch(updateProfileDetails(formattedValues));
+
+    // // Log the updated data for debugging
+    // console.log(
+    //   'Updated Accomplishments:',
+    //   JSON.stringify(formattedValues, null, 2),
+    // );
+
+    // // Close the modal
+    // closeModal();
   };
+
   const deleteItem = () => {
-    if (editingIndex !== null && activeTab) {
-      // Remove the item from the active tab's data
-      const updatedTabData = savedData[activeTab].filter(
-        (_, idx) => idx !== editingIndex,
-      );
-      setSavedData(prevData => ({
-        ...prevData,
-        [activeTab]: updatedTabData, // Update the specific tab
-      }));
-      closeModal();
-    }
+    const filteredArray = accomplishmentsData.filter(
+      item => item.title !== selectedItem.title,
+    );
+    setAccomplishmentsData(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      accomplishments: filteredArray,
+    };
+
+    dispatch(updateProfileDetails(payload));
+
+    // // Reset state and close modal
+    setSelectedItem(null);
+    closeModal();
   };
   const getValidationSchema = () => {
     switch (activeTab) {
@@ -124,40 +223,34 @@ const Accomplishments = () => {
         });
       case 'patent':
         return Yup.object().shape({
-          patentTitle: Yup.string().required('Patent Title is required'),
-          patentURL: Yup.string()
+          title: Yup.string().required('Patent Title is required'),
+          url: Yup.string()
             .url('Invalid URL')
             .required('Patent URL is required'),
         });
       case 'certification':
         return Yup.object().shape({
-          certificationName: Yup.string().required(
-            'Certification Name is required',
-          ),
-          certificationProvider: Yup.string().required('Provider is required'),
+          title: Yup.string().required('Certification Name is required'),
+          certification_provider: Yup.string().required('Provider is required'),
         });
       case 'workSample':
         return Yup.object().shape({
-          workSampleTitle: Yup.string().required(
-            'Work Sample Title is required',
-          ),
-          workSampleURL: Yup.string()
+          title: Yup.string().required('Work Sample Title is required'),
+          url: Yup.string()
             .url('Invalid URL')
             .required('Work Sample URL is required'),
         });
       case 'onlineProfile':
         return Yup.object().shape({
-          profileName: Yup.string().required('Profile Name is required'),
-          profileURL: Yup.string()
+          title: Yup.string().required('Profile Name is required'),
+          url: Yup.string()
             .url('Invalid URL')
             .required('Profile URL is required'),
         });
       case 'presentation':
         return Yup.object().shape({
-          presentationTitle: Yup.string().required(
-            'Presentation Title is required',
-          ),
-          presentationURL: Yup.string()
+          title: Yup.string().required('Presentation Title is required'),
+          url: Yup.string()
             .url('Invalid URL')
             .required('Presentation URL is required'),
         });
@@ -167,6 +260,7 @@ const Accomplishments = () => {
   };
 
   const renderFields = (values, handleChange, setFieldValue) => {
+    console.log('Active Tab:', activeTab);
     switch (activeTab) {
       case 'research':
         return (
@@ -193,9 +287,9 @@ const Accomplishments = () => {
             <ReusableDatePicker
               label="Published Date"
               value={
-                values.publishedDate ? new Date(values.publishedDate) : null
+                values.published_date ? new Date(values.published_date) : null
               } // Convert to Date object
-              onChange={date => setFieldValue('publishedDate', date)}
+              onChange={date => setFieldValue('published_date', date)}
             />
 
             <ReusableTextInput
@@ -214,16 +308,16 @@ const Accomplishments = () => {
               Add details of patents you have filed
             </Text>
             <ReusableTextInput
-              name="patentTitle"
+              name="title"
               label="Patent Title*"
-              value={values.patentTitle}
-              onChangeText={handleChange('patentTitle')}
+              value={values.title}
+              onChangeText={handleChange('title')}
             />
             <ReusableTextInput
-              name="patentURL"
+              name="url"
               label="Patent URL*"
-              value={values.patentURL}
-              onChangeText={handleChange('patentURL')}
+              value={values.url}
+              onChangeText={handleChange('url')}
             />
             <ReusableTextInput
               name="patentOffice"
@@ -243,23 +337,23 @@ const Accomplishments = () => {
               fieldName="status"
             />
             <ReusableTextInput
-              name="applicationNumber"
+              name="application_number"
               label="Application Number"
-              value={values.applicationNumber}
-              onChangeText={handleChange('applicationNumber')}
+              value={values.application_number}
+              onChangeText={handleChange('application_number')}
             />
             {values.status === 'issued' && (
               <ReusableDatePicker
                 label="Issued Date"
-                value={values.issuedDate}
-                onChange={date => setFieldValue('issuedDate', date)}
+                value={values.issued_date}
+                onChange={date => setFieldValue('issued_date', date)}
               />
             )}
             <ReusableTextInput
-              name="patentdescription"
+              name="description"
               label="Patent description"
-              value={values.patentdescription}
-              onChangeText={handleChange('patentdescription')}
+              value={values.description}
+              onChangeText={handleChange('description')}
             />
           </>
         );
@@ -271,40 +365,40 @@ const Accomplishments = () => {
               Add details of Certifications you have achieved/completed
             </Text>
             <ReusableTextInput
-              name="certificationName"
+              name="title"
               label="Certification Name*"
-              value={values.certificationName}
-              onChangeText={handleChange('certificationName')}
+              value={values.title}
+              onChangeText={handleChange('title')}
             />
             <ReusableTextInput
-              name="certificationProvider"
+              name="certification_provider"
               label="Certification Provider*"
-              value={values.certificationProvider}
-              onChangeText={handleChange('certificationProvider')}
+              value={values.certification_provider}
+              onChangeText={handleChange('certification_provider')}
             />
             <ReusableTextInput
-              name="completionID"
+              name="completion_id"
               label="Certification Completion ID"
-              value={values.completionID}
-              onChangeText={handleChange('completionID')}
+              value={values.completion_id}
+              onChangeText={handleChange('completion_id')}
             />
             <ReusableTextInput
-              name="certificationURL"
+              name="url"
               label="Certification URL (recommended)"
-              value={values.certificationURL}
-              onChangeText={handleChange('certificationURL')}
+              value={values.url}
+              onChangeText={handleChange('url')}
             />
             <ReusableDatePicker
               label="Valid from"
-              value={values.validFrom}
-              onChange={date => setFieldValue('validFrom', date)}
+              value={values.from ? new Date(values.from) : null}
+              onChange={date => setFieldValue('from', date)}
             />
 
             {!values.noExpiry && (
               <ReusableDatePicker
                 label="Valid till"
-                value={values.validTill}
-                onChange={date => setFieldValue('validTill', date)}
+                value={values.till ? new Date(values.till) : null}
+                onChange={date => setFieldValue('till', date)}
               />
             )}
             <Checkbox.Item
@@ -322,29 +416,29 @@ const Accomplishments = () => {
               Link relevant work samples (e.g. Github, Behance)
             </Text>
             <ReusableTextInput
-              name="workSampleTitle"
+              name="title"
               label="Work sample Title*"
-              value={values.workSampleTitle}
-              onChangeText={handleChange('workSampleTitle')}
+              value={values.title}
+              onChangeText={handleChange('title')}
             />
             <ReusableTextInput
-              name="workSampleURL"
+              name="url"
               label="Work sample URL*"
-              value={values.workSampleURL}
-              onChangeText={handleChange('workSampleURL')}
+              value={values.url}
+              onChangeText={handleChange('url')}
             />
 
             <ReusableDatePicker
               label="Worked from"
-              value={values.workedFrom}
-              onChange={date => setFieldValue('workedFrom', date)}
+              value={values.from ? new Date(values?.from) : null}
+              onChange={date => setFieldValue('from', date)}
             />
 
             {!values.stillWorking && (
               <ReusableDatePicker
                 label="Worked till"
-                value={values.workedTill}
-                onChange={date => setFieldValue('workedTill', date)}
+                value={values.till ? new Date(values?.till) : null}
+                onChange={date => setFieldValue('till', date)}
               />
             )}
             <Checkbox.Item
@@ -355,10 +449,10 @@ const Accomplishments = () => {
               }
             />
             <ReusableTextInput
-              name="workSampledescription"
+              name="description"
               label="Work Sample description"
-              value={values.workSampledescription}
-              onChangeText={handleChange('workSampledescription')}
+              value={values.description}
+              onChangeText={handleChange('description')}
             />
           </>
         );
@@ -370,22 +464,22 @@ const Accomplishments = () => {
               Add link to online professional profiles (e.g. LinkedIn, etc.)
             </Text>
             <ReusableTextInput
-              name="profileName"
+              name="title"
               label="Social profile*"
-              value={values.profileName}
-              onChangeText={handleChange('profileName')}
+              value={values.title}
+              onChangeText={handleChange('title')}
             />
             <ReusableTextInput
-              name="profileURL"
+              name="url"
               label="Profile URL*"
-              value={values.profileURL}
-              onChangeText={handleChange('profileURL')}
+              value={values.url}
+              onChangeText={handleChange('url')}
             />
             <ReusableTextInput
-              name="profiledescription"
+              name="description"
               label="Profile description"
-              value={values.profiledescription}
-              onChangeText={handleChange('profiledescription')}
+              value={values.description}
+              onChangeText={handleChange('description')}
             />
           </>
         );
@@ -398,143 +492,28 @@ const Accomplishments = () => {
               presentation links etc.).
             </Text>
             <ReusableTextInput
-              name="presentationTitle"
+              name="title"
               label="Presentation Title*"
-              value={values.presentationTitle}
-              onChangeText={handleChange('presentationTitle')}
+              value={values.title}
+              onChangeText={handleChange('title')}
             />
             <ReusableTextInput
-              name="presentationURL"
+              name="url"
               label="Presentation URL*"
-              value={values.presentationURL}
-              onChangeText={handleChange('presentationURL')}
+              value={values.url}
+              onChangeText={handleChange('url')}
             />
             <ReusableTextInput
-              name="presentationdescription"
+              name="description"
               label="Presentation description"
-              value={values.presentationdescription}
-              onChangeText={handleChange('presentationdescription')}
+              value={values.description}
+              onChangeText={handleChange('description')}
             />
           </>
         );
       default:
         return null;
     }
-  };
-
-  const renderSavedData = () => {
-    const displayFields = [
-      'title',
-      'url',
-      'description',
-      'patentTitle',
-      'patentURL',
-      'patentdescription',
-      'certificationName',
-      'certificationProvider',
-      'completionID',
-      'certificationURL',
-      'validFrom',
-      // 'validTill',
-      'workSampleTitle',
-      'workSampleURL',
-      'workSampledescription',
-      'profileName',
-      'profileURL',
-      'profiledescription',
-      'presentationTitle',
-      'presentationURL',
-      'presentationdescription',
-    ]; // Specify fields to show
-
-    return Object.keys(savedData).map(tabKey => {
-      const tabData = savedData[tabKey];
-      if (tabData.length === 0) {
-        return null; // Skip empty categories
-      }
-
-      return (
-        <View key={tabKey} style={styles.categoryContainer}>
-          <Text style={styles.labelStyle}>
-            {TAB_OPTIONS.find(tab => tab.key === tabKey)?.label}
-          </Text>
-
-          {tabData.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.savedDataContainer}
-              onPress={() => openModal(tabKey, index)}>
-              <View
-                style={{
-                  flexDirection: 'column',
-                  justifyContent: 'flex-start',
-                  flex: 1,
-                }}>
-                {Object.entries(item)
-                  .filter(
-                    ([key, value]) =>
-                      displayFields.includes(key) &&
-                      value !== null &&
-                      value !== undefined &&
-                      value !== '',
-                  ) // Only show specific fields with data
-                  .map(([key, value]) => {
-                    // Check if validFrom and validTill exist
-                    if (key === 'validFrom' && item.validTill) {
-                      return (
-                        <Text
-                          key={`valid-range-${index}`}
-                          style={[styles.fieldValue, styles.dateRange]}>
-                          {item.validFrom && item.validTill
-                            ? `Validity : ${moment(item.validFrom).format(
-                                'YYYY',
-                              )} - ${moment(item.validTill).format('YYYY')}`
-                            : ''}
-                        </Text>
-                      );
-                    }
-
-                    // Render other fields
-                    return (
-                      <View key={key} style={styles.fieldContainer}>
-                        {/* <Text
-                          style={[
-                            styles.fieldLabel,
-                            labelSpecificStyles[key]?.labelStyle,
-                          ]}>
-                          {key}:
-                        </Text> */}
-                        <Text
-                          style={[
-                            styles.fieldValue,
-                            labelSpecificStyles[key]?.valueStyle,
-                          ]}>
-                          {typeof value === 'object' && value.toISOString
-                            ? moment(value).format('YYYY')
-                            : value}
-                        </Text>
-                      </View>
-                    );
-                  })}
-              </View>
-              <IconButton
-                icon="pencil-outline"
-                iconColor={colors.blackText}
-                size={20}
-                onPress={() => openModal(tabKey, index)}
-                style={styles.editButton}
-              />
-              {/* <TouchableOpacity
-                onPress={() => openModal(tabKey, index)}
-                style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit</Text>
-              </TouchableOpacity> */}
-            </TouchableOpacity>
-          ))}
-          <View style={styles.separator} />
-        </View>
-      );
-    });
   };
 
   return (
@@ -548,7 +527,7 @@ const Accomplishments = () => {
           {TAB_OPTIONS.map(item => (
             <TouchableOpacity
               key={item.key}
-              onPress={() => openModal(item.key)}
+              onPress={() => openModal(item.key, item)}
               style={[profileStyle.userDataContainer, styles.tabOption]}>
               <Text style={[profileStyle.optionalData, styles.tabOptionText]}>
                 {item.label}
@@ -562,7 +541,47 @@ const Accomplishments = () => {
           ))}
         </View>
 
-        <View style={styles.savedDataSection}>{renderSavedData()}</View>
+        <View style={styles.savedDataSection}>
+          {accomplishmentsData?.length > 0 ? (
+            accomplishmentsData.map((item, index) => (
+              <View key={index} style={styles.categoryContainer}>
+                <TouchableOpacity
+                  onPress={() =>
+                    openModal(
+                      TAB_OPTIONS.find(tab => tab.label === item.name)?.key ||
+                        null,
+                      item, // Pass the full item
+                    )
+                  }>
+                  <View style={styles.savedDataContainer}>
+                    <Text style={styles.labelStyle}>
+                      {item.name || 'Unknown Category'}
+                    </Text>
+                    {item.title && (
+                      <View style={styles.outputData}>
+                        <Text style={styles.titleText}>{item.title}</Text>
+                      </View>
+                    )}
+                    {item.url && (
+                      <View style={styles.outputData}>
+                        <Text style={styles.urlText}>{item.url}</Text>
+                      </View>
+                    )}
+                    {item.description && (
+                      <View style={styles.outputData}>
+                        <Text style={styles.descriptionText}>
+                          {item.description}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noDataText}>No accomplishments added yet.</Text>
+          )}
+        </View>
 
         <Modal visible={modalVisible} transparent onRequestClose={closeModal}>
           <View style={profileStyle.modalContainer}>
@@ -570,13 +589,31 @@ const Accomplishments = () => {
               data={[{key: 'form'}]}
               renderItem={() => (
                 <Formik
-                  initialValues={
-                    editingIndex !== null &&
-                    savedData[activeTab] &&
-                    savedData[activeTab][editingIndex]
-                      ? savedData[activeTab][editingIndex]
-                      : initialValues
-                  }
+                  initialValues={{
+                    name:
+                      selectedItem?.name ||
+                      TAB_OPTIONS.find(tab => tab.key === activeTab)?.label ||
+                      '', // Fallback to the tab label
+                    title: selectedItem?.title || '',
+
+                    url: selectedItem?.url || '',
+                    description: selectedItem?.description || '',
+                    published_date: selectedItem?.published_date || null,
+                    patentOffice: selectedItem?.patentOffice || '',
+                    application_number: selectedItem?.application_number || '',
+                    status: selectedItem?.status || '',
+                    issued_date: selectedItem?.issued_date || null,
+                    certification_provider:
+                      selectedItem?.certification_provider || '',
+                    completion_id: selectedItem?.completion_id || '',
+                    from: selectedItem?.from || null,
+                    till:
+                      selectedItem?.noExpiry || selectedItem?.stillWorking
+                        ? null
+                        : selectedItem?.till || null,
+                    noExpiry: selectedItem?.noExpiry || false,
+                    stillWorking: selectedItem?.stillWorking || false,
+                  }}
                   validationSchema={getValidationSchema()}
                   innerRef={ref => (formikRef = ref)}
                   onSubmit={handleSubmit}>
@@ -592,7 +629,7 @@ const Accomplishments = () => {
             <ModalFooter
               onPress={() => formikRef?.handleSubmit()} // Submits the form
               onCancel={closeModal} // Cancels and closes the modal
-              showDelete={editingIndex !== null} // Shows the delete button if a project is selected
+              showDelete={selectedItem !== null} // Shows the delete button if a project is selected
               onDelete={deleteItem} // Deletes the project
             />
           </View>
@@ -600,63 +637,6 @@ const Accomplishments = () => {
       </ScrollView>
     </View>
   );
-};
-const labelSpecificStyles = {
-  title: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  url: {
-    valueStyle: {color: 'skyblue', textDecorationLine: 'underline'},
-  },
-  description: {
-    valueStyle: {color: 'gray', fontSize: 13},
-  },
-  publishedDate: {
-    valueStyle: {color: '#D35400', fontSize: 12},
-  },
-  patentTitle: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  patentURL: {
-    valueStyle: {color: 'skyblue', fontSize: 13},
-  },
-  certificationName: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  certificationProvider: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  completionID: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  certificationURL: {
-    valueStyle: {color: 'skyblue', fontSize: 13},
-  },
-  validFrom: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  workSampleTitle: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  workSampleURL: {color: 'skyblue', fontSize: 13},
-  profileName: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  profileURL: {
-    valueStyle: {color: 'skyblue', fontSize: 13},
-  },
-  profiledescription: {
-    valueStyle: {color: 'gray', fontSize: 13},
-  },
-  presentationTitle: {
-    valueStyle: {color: colors.primary, fontSize: 14, fontWeight: 'bold'},
-  },
-  presentationURL: {
-    valueStyle: {color: 'skyblue', fontSize: 13},
-  },
-  presentationdescription: {
-    valueStyle: {color: 'gray', fontSize: 13},
-  },
 };
 
 const styles = StyleSheet.create({
@@ -681,10 +661,7 @@ const styles = StyleSheet.create({
   iconStyles: {
     color: colors.secondary,
   },
-  savedDataSection: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
+
   categoryContainer: {
     marginBottom: 20,
   },
@@ -698,13 +675,25 @@ const styles = StyleSheet.create({
   },
   savedDataContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     backgroundColor: colors.background,
-
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     marginBottom: 10,
+  },
+  titleText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  urlText: {
+    fontSize: 12,
+    color: colors.secondary,
+  },
+  descriptionText: {
+    fontSize: 12,
+    color: colors.blackText,
   },
   fieldContainer: {
     flexDirection: 'row',

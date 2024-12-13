@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -16,7 +16,10 @@ import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
-import CustomTabs from '../../../../Constant/CustomTabs';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import {useDispatch, useSelector} from 'react-redux';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EducationBoards = [
   {id: 1, value: 'CBSE'},
@@ -109,62 +112,157 @@ const validationSchema = Yup.object().shape({
     ),
 });
 
-const getInitialValues = () => ({
-  course_name: '',
-  board: '',
-  passout_year: '',
-  school_medium: '',
-  marks: '',
-});
-
-const Education = () => {
+const Education = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
   const [educationData, setEducationData] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
-
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [boardMasters, setBoardMasters] = useState([]);
+  const [mediumMasters, setMediumMasters] = useState([]);
   let formikRef = null;
+  const dispatch = useDispatch();
+  const [id, setId] = useState();
+
+  const {GetBoard, GetMedium} = MasterViewController();
+  const {boards, mediums} = useSelector(state => state.master);
+  console.log('0-0--0-0-000', boards);
+
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    setEducationData(profileDetails?.profileDetails?.secondary_edu);
+  }, [profileDetails]);
+
+  useEffect(() => {
+    const get_Board = () => {
+      dispatch(GetBoard());
+    };
+    const get_medium = () => {
+      dispatch(GetMedium());
+    };
+
+    get_Board();
+    get_medium();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const Board_data = boards?.map(bo => ({
+      id: bo.id,
+      value: bo.name,
+    }));
+
+    const Medium_data = mediums?.map(md => ({
+      id: md.id,
+      value: md.name,
+    }));
+
+    setBoardMasters(Board_data);
+    setMediumMasters(Medium_data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediums, boards]);
 
   const handleFormSubmit = values => {
-    const formattedData = {
-      course_name: values.course_name,
-      board: values.board,
-      passout_year: values.passout_year,
-      school_medium: values.school_medium,
-      marks: values.marks,
+    // Format the new entry according to your structure
+    const formattedEntry = {
+      id: profileDetails?.profileDetails?.id,
+      secondary_edu: [
+        {
+          course_name: values?.course_name,
+          board:
+          boardMasters?.find(eb => eb.value === values.board)?.value || '',
+          passout_year:
+            PassoutYear?.find(py => py.value === values.passout_year)?.value ||
+            '',
+          school_medium:
+            mediumMasters?.find(sm => sm.value === values.school_medium)
+              ?.value || '',
+          marks: values?.marks,
+        },
+      ],
     };
-    if (editingIndex !== null) {
-      const updatedData = [...educationData];
-      updatedData[editingIndex] = values;
-      setEducationData(updatedData);
-    } else {
-      setEducationData([...educationData, values]);
-    }
-    setModalVisible(false);
-    setEditingIndex(null);
-    console.log(
-      'Updated Data:',
-      JSON.stringify([...educationData, formattedData], null, 2),
+
+    // Clone the current `secondary_edu` data
+    const existingSecondaryEdu =
+      profileDetails?.profileDetails?.secondary_edu || [];
+
+    // Find the index of the entry to update (if it exists)
+    const existingIndex = existingSecondaryEdu.findIndex(
+      item => item.course_name === values.course_name,
     );
+
+    if (existingIndex !== -1) {
+      // Update the existing entry
+      existingSecondaryEdu[existingIndex] = {
+        ...existingSecondaryEdu[existingIndex],
+        ...formattedEntry.secondary_edu[0], // Merge updated values
+      };
+    } else {
+      // Add a new entry
+      existingSecondaryEdu.push(formattedEntry.secondary_edu[0]);
+    }
+
+    // Prepare the final data for submission
+    const formattedData = {
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
+      user_id: id,
+      secondary_edu: existingSecondaryEdu,
+    };
+
+    if (profileDetails.profileDetails.id) {
+      dispatch(updateProfileDetails(formattedData));
+    } else {
+      dispatch(addProfileDetails(formattedData));
+    }
+
+    // Dispatch the updated data to Redux
+    dispatch(updateProfileDetails(formattedData));
+
+    // Reset state and close modal
+    setModalVisible(false);
+    setSelectedItem(null);
   };
 
-  const openModal = index => {
-    setEditingIndex(index);
+  const openModal = item => {
+    setSelectedItem(item);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setEditingIndex(null);
+    setSelectedItem(null);
   };
 
-  const deleteEntry = index => {
-    const updatedData = educationData.filter((_, i) => i !== index);
-    setEducationData(updatedData);
-    closeModal();
+  const deleteEntry = item => {
+    const filteredArray = educationData.filter(
+      item => item.course_name !== selectedItem.course_name,
+    );
+    setEducationData(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      secondary_edu: filteredArray,
+    };
+    dispatch(updateProfileDetails(payload));
+
+    // Reset state and close modal
+    setModalVisible(false);
+    setSelectedItem(null);
   };
 
   const allClassesAdded = EducationClass.every(cls =>
-    educationData.some(edu => edu.course_name === cls.value),
+    profileDetails?.profileDetails?.secondary_edu.some(
+      edu => edu.course_name === cls.value,
+    ),
   );
 
   return (
@@ -181,9 +279,9 @@ const Education = () => {
         )}
       </View>
 
-      {educationData.length > 0 ? (
+      {profileDetails?.profileDetails?.secondary_edu.length > 0 ? (
         <FlatList
-          data={educationData}
+          data={profileDetails?.profileDetails?.secondary_edu}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
             <>
@@ -198,19 +296,21 @@ const Education = () => {
                     <IconButton
                       icon="pencil-outline"
                       size={20}
-                      onPress={() => openModal(index)}
+                      onPress={() => openModal(item)}
                       iconColor={'black'}
                     />
                   </View>
                   <View style={{marginTop: -10}}>
-                    <Text style={styles.boardText}>{item.board}</Text>
-                    <Text style={styles.passoutText}>{item.passout_year}</Text>
+                    <Text style={styles.boardText}>{item?.board}</Text>
+                    <Text style={styles.passoutText}>{item?.passout_year}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
-              {educationData.length > 1 && index < educationData.length - 1 && (
-                <View style={styles.horizontalLine} />
-              )}
+              {profileDetails?.profileDetails?.secondary_edu.length > 1 &&
+                index <
+                  profileDetails?.profileDetails?.secondary_edu.length - 1 && (
+                  <View style={styles.horizontalLine} />
+                )}
             </>
           )}
         />
@@ -228,11 +328,13 @@ const Education = () => {
         <View style={profileStyle.modalContainer}>
           <ScrollView>
             <Formik
-              initialValues={
-                editingIndex !== null
-                  ? educationData[editingIndex]
-                  : getInitialValues()
-              }
+              initialValues={{
+                course_name: selectedItem?.course_name || '',
+                board: selectedItem?.board || '',
+                passout_year: selectedItem?.passout_year || '',
+                school_medium: selectedItem?.school_medium || '',
+                marks: selectedItem?.marks || '',
+              }}
               validationSchema={validationSchema}
               innerRef={ref => (formikRef = ref)}
               onSubmit={handleFormSubmit}>
@@ -262,21 +364,16 @@ const Education = () => {
                           ? {color: 'red'}
                           : null,
                       ]}>
-                      Education*
+                      Education* {values.course_name}
                     </Text>
 
                     <View style={profileStyle.TabContainer}>
-                      {EducationClass.filter(
-                        option =>
-                          !educationData.some(
-                            saved => saved.course_name === option.value,
-                          ),
-                      ).map(option => (
+                      {EducationClass.map(option => (
                         <TouchableOpacity
                           key={option.id}
                           style={[
                             profileStyle.tabBtnStyle,
-                            values.course_name === option.value
+                            values?.course_name === option.value
                               ? profileStyle.selectedTab
                               : profileStyle.unselectedTab,
                           ]}
@@ -285,12 +382,12 @@ const Education = () => {
                           }>
                           <Text
                             style={[
-                              profileStyle.tabBtnText,
-                              values.course_name === option.value
+                              styles.tabBtnText,
+                              values?.course_name === option.value
                                 ? profileStyle.selectedTabText
                                 : profileStyle.unselectedTabText,
                             ]}>
-                            {option.value}
+                            {option.label}
                           </Text>
                         </TouchableOpacity>
                       ))}
@@ -298,10 +395,10 @@ const Education = () => {
                   </View>
                   <CustomSelectionModal
                     title="Board"
-                    data={EducationBoards}
+                    data={boardMasters}
                     selectedItems={
-                      EducationBoards.find(
-                        item => item.value === values.board,
+                      boardMasters?.find(
+                        item => item.value === values?.board,
                       ) || null
                     }
                     setSelectedItems={item =>
@@ -309,12 +406,13 @@ const Education = () => {
                     }
                     placeholder="Select Board"
                   />
+
                   <CustomSelectionModal
                     title="Passout Year"
                     data={PassoutYear}
                     selectedItems={
-                      PassoutYear.find(
-                        item => item.value === values.passout_year,
+                      PassoutYear?.find(
+                        item => item.value === values?.passout_year,
                       ) || null
                     }
                     setSelectedItems={item =>
@@ -324,10 +422,10 @@ const Education = () => {
                   />
                   <CustomSelectionModal
                     title="School Medium"
-                    data={SchoolMedium}
+                    data={mediumMasters}
                     selectedItems={
-                      SchoolMedium.find(
-                        item => item.value === values.school_medium,
+                      mediumMasters?.find(
+                        item => item.value === values?.school_medium,
                       ) || null
                     }
                     setSelectedItems={item =>
@@ -338,7 +436,7 @@ const Education = () => {
                   <ReusableTextInput
                     name="marks"
                     label="Marks"
-                    value={values.marks}
+                    value={values?.marks}
                     onChangeText={handleChange('marks')}
                     keyboardType="numeric"
                     note="% marks of 100 maximum"
@@ -350,8 +448,8 @@ const Education = () => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
-            showDelete={editingIndex !== null}
-            onDelete={() => deleteEntry(editingIndex)}
+            showDelete={selectedItem !== null}
+            onDelete={() => deleteEntry(selectedItem)}
           />
         </View>
       </Modal>
