@@ -1,5 +1,4 @@
 const initialState = {
-  profileDetails: null,
   ProfileAnalytic: null,
   Personaldetails: [],
   error: null,
@@ -47,74 +46,7 @@ const ProfileReducer = (state = initialState, action) => {
         error: action.payload.error,
       };
 
-    case 'PROFILE_BASIC_INFORMATION_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_BASIC_INFORMATION_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-    case 'PROFILE_BASIC_INFORMATION_POST_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_BASIC_INFORMATION_POST_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-
-    case 'PROFILE_CAREER_INFORMATION_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_CAREER_INFORMATION_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-    case 'PROFILE_CAREER_INFORMATION_POST_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_BASIC_INFORMATION_POST_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-
-    case 'PROFILE_LANGUAGE_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_LANGUAGE_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-    case 'PROFILE_LANGUAGE_POST_SUCCESS':
-      return {
-        ...state,
-        Personaldetails: action.payload,
-        error: null,
-      };
-    case 'PROFILE_LANGUAGE_POST_FAILURE':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
+   
 
     default:
       return state;
