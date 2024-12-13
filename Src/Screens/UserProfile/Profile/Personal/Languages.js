@@ -1,5 +1,12 @@
-import React, {useCallback, useState} from 'react';
-import {Modal, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -9,6 +16,8 @@ import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import CustomTabs from '../../../../Constant/CustomTabs';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
+import {useDispatch} from 'react-redux';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 
 const PROFICIENCY_OPTIONS = [
   {id: 1, value: 'Beginner'},
@@ -47,43 +56,84 @@ const getInitialValues = (
   comfortablein: comfortable_in,
 });
 
-const Languages = () => {
+const Languages = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editObject, setEditObject] = useState(null);
   const [languages, setLanguages] = useState([]);
+  const [id, setId] = useState();
 
   let formikRef = null;
 
+  const dispatch = useDispatch();
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+  useEffect(() => {
+    if (profileDetails?.profileDetails?.languages) {
+      setLanguages(profileDetails?.profileDetails?.languages);
+    }
+  }, [profileDetails]);
+
   const handleFormSubmit = values => {
-    const formattedValues = {
-      name: values.language,
-      proficiency: values.proficiency,
-      comfortable_in: values.comfortablein,
+    console.log(values);
+    // Update or Add Logic
+    const existingIndex = languages.findIndex(
+      language => language.name === values.language,
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing language
+      languages[existingIndex] = {
+        ...languages[existingIndex],
+        comfortable_in: values.comfortablein,
+        proficiency: values.proficiency,
+      };
+    } else {
+      // Add new language
+      languages.push({
+        name: values.language,
+        proficiency: values.proficiency,
+        comfortable_in: values.comfortablein,
+      });
+    }
+    // console.log('Updated Data:', languages);
+
+    const payload = {
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
+      user_id: id,
+      languages: languages,
     };
 
-    if (editIndex !== null) {
-      const updatedLanguages = languages.map((lang, index) =>
-        index === editIndex ? formattedValues : lang,
-      );
-      setLanguages(updatedLanguages);
+    // console.log('Languages:', JSON.stringify(payload, null, 2));
+
+    if (profileDetails.profileDetails.id) {
+      dispatch(updateProfileDetails(payload));
     } else {
-      const updatedLanguages = [...languages, formattedValues];
-      setLanguages(updatedLanguages);
+      dispatch(addProfileDetails(payload));
     }
 
-    setEditIndex(null);
+    // dispatch(updateProfileDetails(payload));
+
+    setEditObject(null);
     setModalVisible(false);
-    console.log('Formatted Data:', JSON.stringify(languages, null, 2));
   };
 
   const deleteLanguage = index => {
-    const updatedLanguages = languages.filter((_, i) => i !== index);
-    setLanguages(updatedLanguages);
+    const filteredArray = languages.filter(
+      item => item.name !== editObject.name,
+    );
+    setLanguages(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      languages: filteredArray,
+    };
+
+    dispatch(updateProfileDetails(payload));
     setModalVisible(false);
   };
 
   const openModal = useCallback((index = null) => {
-    setEditIndex(index);
+    setEditObject(index);
     setModalVisible(true);
   }, []);
 
@@ -101,27 +151,29 @@ const Languages = () => {
       </View>
 
       <View>
-        {languages.length > 0 ? (
-          languages.map((lang, index) => (
-            <>
-              <TouchableOpacity key={index} onPress={() => openModal(index)}>
+        {profileDetails?.profileDetails?.languages.length > 0 ? (
+          profileDetails?.profileDetails?.languages.map((item, index) => (
+            <View key={`language-${index}`}>
+              <TouchableOpacity onPress={() => openModal(item)}>
                 <View style={styles.outpurtData}>
                   <View style={styles.languageDetails}>
-                    <Text style={styles.displayText}>{lang.name}</Text>
+                    <Text style={styles.displayText}>{item.name}</Text>
                     <View style={styles.iconsContainer}>
                       <IconButton
                         icon="pencil-outline"
                         iconColor={colors.blackText}
                         size={18}
-                        onPress={() => openModal(index)}
+                        onPress={() => openModal(item)}
                         style={styles.iconButton}
                       />
                     </View>
                   </View>
 
                   <View style={styles.iconTextContainer}>
-                    {lang.comfortable_in.map(option => (
-                      <View key={option} style={profileStyle.chip}>
+                    {(item.comfortable_in || []).map((option, optionIndex) => (
+                      <View
+                        key={`language-comfortable-${index}-${optionIndex}`}
+                        style={profileStyle.chip}>
                         <Ionicons
                           name={
                             option === 'Read'
@@ -140,10 +192,12 @@ const Languages = () => {
                   </View>
                 </View>
               </TouchableOpacity>
-              {languages.length > 1 && index < languages.length - 1 && (
-                <View style={styles.horizontalLine} />
-              )}
-            </>
+              {profileDetails?.profileDetails?.languages.length > 1 &&
+                index <
+                  profileDetails?.profileDetails?.languages.length - 1 && (
+                  <View style={styles.horizontalLine} />
+                )}
+            </View>
           ))
         ) : (
           <Text style={profileStyle.optionalData}>
@@ -159,115 +213,128 @@ const Languages = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
         <View style={profileStyle.modalContainer}>
-          <Formik
-            initialValues={
-              editIndex !== null
-                ? getInitialValues(
-                    languages[editIndex]?.name,
-                    languages[editIndex]?.proficiency,
-                    languages[editIndex]?.comfortable_in,
-                  )
-                : getInitialValues()
-            }
-            validationSchema={validationSchema}
-            innerRef={ref => (formikRef = ref)}
-            onSubmit={handleFormSubmit}>
-            {({handleSubmit, setFieldValue, values, errors, touched}) => (
-              <View style={profileStyle.formContainer}>
-                <Text style={profileStyle.formHeading}>
-                  Add or Edit Language
-                </Text>
-                <CustomSelectionModal
-                  title="Language"
-                  data={LANGUAGES}
-                  selectedItems={
-                    LANGUAGES.find(item => item.value === values.language) ||
-                    null
-                  }
-                  setSelectedItems={item =>
-                    setFieldValue('language', item?.value || '')
-                  }
-                  placeholder="Select a language"
-                />
-                {errors.language && touched.language && (
-                  <Text style={styles.error}>{errors.language}</Text>
-                )}
+          <FlatList
+            data={[{key: 'form'}]}
+            renderItem={() => (
+              <Formik
+                initialValues={
+                  editObject
+                    ? getInitialValues(
+                        editObject?.name,
+                        editObject?.proficiency,
+                        editObject?.comfortable_in,
+                      )
+                    : getInitialValues()
+                }
+                validationSchema={validationSchema}
+                innerRef={ref => (formikRef = ref)}
+                onSubmit={handleFormSubmit}>
+                {({handleSubmit, setFieldValue, values, errors, touched}) => (
+                  <View style={profileStyle.formContainer}>
+                    <Text style={profileStyle.formHeading}>
+                      Add or Edit Language
+                    </Text>
+                    <CustomSelectionModal
+                      title="Language"
+                      data={LANGUAGES}
+                      selectedItems={
+                        LANGUAGES.find(
+                          item => item.value === values.language,
+                        ) || null
+                      }
+                      setSelectedItems={item =>
+                        setFieldValue('language', item?.value || '')
+                      }
+                      placeholder="Select a language"
+                    />
+                    {errors.language && touched.language && (
+                      <Text style={styles.error}>{errors.language}</Text>
+                    )}
 
-                <CustomTabs
-                  label="Proficiency"
-                  options={PROFICIENCY_OPTIONS}
-                  selectedValue={values.proficiency}
-                  setFieldValue={setFieldValue}
-                  fieldName="proficiency"
-                  error={errors.proficiency}
-                  touched={touched.proficiency}
-                />
+                    <CustomTabs
+                      label="Proficiency"
+                      options={PROFICIENCY_OPTIONS}
+                      selectedValue={values.proficiency}
+                      setFieldValue={setFieldValue}
+                      fieldName="proficiency"
+                      error={errors.proficiency}
+                      touched={touched.proficiency}
+                    />
 
-                <Text style={styles.subHeading}>Comfortable In</Text>
-                <View style={styles.comfortableinContainer}>
-                  {['Read', 'Writing', 'Speaking'].map(option => (
-                    <TouchableOpacity
-                      key={option}
-                      style={[
-                        styles.statusButton,
-                        values.comfortablein.includes(option)
-                          ? styles.selectedButton
-                          : styles.unselectedButton,
-                      ]}
-                      onPress={() =>
-                        setFieldValue(
-                          'comfortablein',
-                          values.comfortablein.includes(option)
-                            ? values.comfortablein.filter(
-                                item => item !== option,
-                              )
-                            : [...values.comfortablein, option],
-                        )
-                      }>
-                      <Ionicons
-                        name={
-                          option === 'Read'
-                            ? 'book-outline'
-                            : option === 'Writing'
-                            ? 'pencil-outline'
-                            : 'mic-outline'
-                        }
-                        size={18}
-                        color={
-                          values.comfortablein.includes(option)
-                            ? '#fff'
-                            : '#333'
-                        }
-                      />
-                      <Text
-                        style={
-                          values.comfortablein.includes(option)
-                            ? styles.selectedText
-                            : styles.unselectedText
-                        }>
-                        {option}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                {errors.comfortablein && touched.comfortablein && (
-                  <Text style={styles.error}>{errors.comfortablein}</Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: colors.secondary,
+                        marginTop: 12,
+                      }}>
+                      Comfortable In
+                    </Text>
+                    <View style={styles.comfortableinContainer}>
+                      {['Read', 'Writing', 'Speaking'].map(option => (
+                        <TouchableOpacity
+                          key={option}
+                          style={[
+                            styles.statusButton,
+                            values.comfortablein.includes(option)
+                              ? styles.selectedButton
+                              : styles.unselectedButton,
+                          ]}
+                          onPress={() =>
+                            setFieldValue(
+                              'comfortablein',
+                              values.comfortablein.includes(option)
+                                ? values.comfortablein.filter(
+                                    item => item !== option,
+                                  ) // Remove option if already present
+                                : [...values.comfortablein, option], // Add option if not present
+                            )
+                          }>
+                          <Ionicons
+                            name={
+                              option === 'Read'
+                                ? 'book-outline'
+                                : option === 'Writing'
+                                ? 'pencil-outline'
+                                : 'mic-outline'
+                            }
+                            size={18}
+                            color={
+                              values.comfortablein.includes(option)
+                                ? '#fff'
+                                : '#333'
+                            }
+                          />
+                          <Text
+                            style={
+                              values.comfortablein.includes(option)
+                                ? styles.selectedText
+                                : styles.unselectedText
+                            }>
+                            {option}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                    {errors.comfortablein && touched.comfortablein && (
+                      <Text style={styles.error}>{errors.comfortablein}</Text>
+                    )}
+                  </View>
                 )}
-              </View>
+              </Formik>
             )}
-          </Formik>
+            keyExtractor={item => item.key}
+          />
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={() => setModalVisible(false)}
-            showDelete={editIndex !== null}
-            onDelete={() => deleteLanguage(editIndex)}
+            showDelete={editObject !== null}
+            onDelete={() => deleteLanguage(editObject)}
           />
         </View>
       </Modal>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -17,6 +17,12 @@ import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import ReusableDropdown from '../../../../Constant/CustomDropdown';
 import CustomTabs from '../../../../Constant/CustomTabs';
+import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
+import {useDispatch, useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EducationLevels = [
   {id: 1, value: 'Doctorate', label: 'Doctorate'},
@@ -24,7 +30,11 @@ const EducationLevels = [
   {id: 3, value: 'Graduate', label: 'Graduate'},
   {id: 4, value: 'Diploma', label: 'Diploma'},
 ];
-
+const University_options = [
+  {id: 1, value: 'Shivahi University'},
+  {id: 2, value: 'Public University'},
+  {id: 3, value: 'Mumbai University'},
+];
 const startYear = 1980;
 const currentYear = new Date().getFullYear();
 const endYear = currentYear + 4;
@@ -55,33 +65,33 @@ const GRADING_OPTIONS = [
 
 const validationSchema = Yup.object().shape({
   education_level: Yup.string().required('Education Level is required'),
-  university_name: Yup.string().required('University Name is required'),
-  course_name: Yup.string().required('Course is required'),
-  specialization: Yup.string().required('Specialization is required'),
-  start_year: Yup.string()
-    .matches(/^\d{4}$/, 'Starting Year must be a valid year')
-    .required('Starting Year is required'),
-  end_year: Yup.string()
-    .matches(/^\d{4}$/, 'Ending Year must be a valid year')
-    .required('Ending Year is required'),
-  grading_system: Yup.string().required('Grading System is required'),
+  // university_name: Yup.string().required('University Name is required'),
+  // course_name: Yup.string().required('Course is required'),
+  // specialization: Yup.string().required('Specialization is required'),
+  // start_year: Yup.string()
+  //   .matches(/^\d{4}$/, 'Starting Year must be a valid year')
+  //   .required('Starting Year is required'),
+  // end_year: Yup.string()
+  //   .matches(/^\d{4}$/, 'Ending Year must be a valid year')
+  //   .required('Ending Year is required'),
+  // grading_system: Yup.string().required('Grading System is required'),
   course_type: Yup.string().required('Course Type is required'),
-  marks: Yup.string().test(
-    'Marks must be a percentage (0-100)',
-    function (value) {
-      const {grading_system} = this.parent; // Access the grading_system field
-      if (grading_system && grading_system !== 'Course Requires a Pass') {
-        if (!value) {
-          return this.createError({message: 'Marks is required'});
-        }
-        // Validate numeric format and range (0-100)
-        const isValidFormat = /^\d+(\.\d{1,2})?$/.test(value); // Numeric with up to 2 decimals
-        const isValidRange = parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
-        return isValidFormat && isValidRange;
-      }
-      return true; // Skip validation when grading_system is "Course Requires a Pass"
-    },
-  ),
+  // marks: Yup.string().test(
+  //   'Marks must be a percentage (0-100)',
+  //   function (value) {
+  //     const {grading_system} = this.parent; // Access the grading_system field
+  //     if (grading_system && grading_system !== 'Course Requires a Pass') {
+  //       if (!value) {
+  //         return this.createError({message: 'Marks is required'});
+  //       }
+  //       // Validate numeric format and range (0-100)
+  //       const isValidFormat = /^\d+(\.\d{1,2})?$/.test(value); // Numeric with up to 2 decimals
+  //       const isValidRange = parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
+  //       return isValidFormat && isValidRange;
+  //     }
+  //     return true; // Skip validation when grading_system is "Course Requires a Pass"
+  //   },
+  // ),
 });
 const CourseType = [
   {id: 1, label: 'Full Time', value: 'Full Time'},
@@ -93,102 +103,209 @@ const CourseType = [
   },
 ];
 
-const getInitialValues = (educationData = [], editingIndex = null) => {
-  if (editingIndex !== null && educationData[editingIndex]) {
-    const data = educationData[editingIndex];
-    return {
-      education_level: data.education_level || '',
-      university_name: data.university_name || '',
-      course_name: data.course_name || '',
-      specialization: data.specialization || '',
-      course_type: data.course_type || '',
-      start_year: data.duration?.start_year || '',
-      end_year: data.duration?.end_year || '',
-      grading_system: data.grading_system?.name || '',
-      marks: data.grading_system?.marks || '',
-    };
-  }
-
-  // Default values for new entries
-  return {
-    education_level: '',
-    university_name: '',
-    course_name: '',
-    specialization: '',
-    course_type: '',
-    start_year: '',
-    end_year: '',
-    grading_system: '',
-    marks: '',
-  };
-};
-
-const HigherEducation = () => {
+const HigherEducation = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [submittedData, setSubmittedData] = useState(null); // Single entry handlings
+
   const [educationData, setEducationData] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [universitydata, setUniversityData] = useState([]);
+  const [courseData, setCourseData] = useState([]);
+  const [specializationData, setSpecializationData] = useState([]);
+
+  const dispatch = useDispatch();
+  const [id, setId] = useState();
+  const isFocus = useIsFocused();
+
+  const {GetUniversities, GetCourses, GetSpecializations} =
+    MasterViewController();
+  const {universities, courses, specializations} = useSelector(
+    state => state.master,
+  );
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log(
+    //   '================================',
+    //   // profileDetails?.profileDetails?.higher_edu,
+    // );
+
+    // console.log(
+    //   'Profile Data:',
+    //   JSON.stringify(profileDetails?.profileDetails, null, 2),
+    // );
+    setEducationData(profileDetails?.profileDetails?.higher_edu);
+  }, [profileDetails]);
+
+  useEffect(() => {
+    const get_university = () => {
+      dispatch(GetUniversities());
+    };
+    const get_course = () => {
+      dispatch(GetCourses());
+    };
+    const get_specialization = () => {
+      dispatch(GetSpecializations());
+    };
+    get_university();
+    get_course();
+    get_specialization();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const UNIVERSITIES = universities?.map(uni => ({
+      id: uni.id,
+      value: uni.name,
+    }));
+
+    const COURSES = courses?.map(course => ({
+      id: course.id,
+      value: course.name,
+    }));
+
+    const SPECIALIZATION = specializations?.map(speci => ({
+      id: speci.id,
+      value: speci.specialization_name,
+    }));
+
+    setUniversityData(UNIVERSITIES);
+    setCourseData(COURSES);
+    setSpecializationData(SPECIALIZATION);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [universities, courses, specializations]);
 
   const handleFormSubmit = values => {
-    const formattedValues = {
-      education_level: values.education_level,
-      course_name: values.course_name,
-      specialization: values.specialization,
-      university_name: values.university_name,
-      course_type: values.course_type,
-      duration: {
-        start_year: values.start_year,
-        end_year: values.end_year,
-      },
-      grading_system: {
-        name: values.grading_system,
-        marks:
-          values.grading_system !== 'Course Requires a Pass'
-            ? values.marks
-            : null,
-      },
-    };
+    // Format the data in the higher_edu structure
+    if (selectedItem) {
+      const updateOrAddObject = (array, obj) => {
+        const index = array.findIndex(
+          item =>
+            item.course_name === selectedItem.course_name &&
+            item.university_name === selectedItem.university_name,
+        );
 
-    let updatedData;
+        if (index !== -1) {
+          // Update the existing object
+          array[index] = {...array[index], ...obj};
+        } else {
+          // Add the new object if not found
+          array.push(obj);
+        }
+      };
 
-    if (editingIndex !== null) {
-      // Update the existing entry
-      updatedData = educationData.map((item, index) =>
-        index === editingIndex ? formattedValues : item,
-      );
+      updateOrAddObject(educationData, values);
+      const payload = {
+        id: profileDetails?.profileDetails?.id,
+        higher_edu: educationData,
+      };
+      dispatch(updateProfileDetails(payload));
+
+      setEducationData(educationData);
+      setModalVisible(false);
+      setSelectedItem(null);
     } else {
-      // Add new entry
-      updatedData = [...educationData, formattedValues];
+      const formattedValues = {
+        id: profileDetails?.profileDetails?.id
+          ? profileDetails?.profileDetails?.id
+          : '',
+        user_id: id,
+        higher_edu: [
+          ...(profileDetails?.profileDetails?.higher_edu || []), // Include existing entries
+          {
+            education_level:
+              EducationLevels.find(opt => opt.value === values.education_level)
+                ?.value || '',
+            university_name:
+              University_options?.find(
+                uni => uni.value === values.university_name,
+              )?.value || '',
+            course_name:
+              courseData?.find(cn => cn.value === values.course_name)?.value ||
+              '',
+            specialization:
+              specializationData?.find(sp => sp.value === values.specialization)
+                ?.value || '',
+            course_type:
+              CourseType.find(ct => ct.value === values.course_type)?.value ||
+              '',
+            duration: {
+              start_year: values?.duration?.start_year || '',
+              end_year: values?.duration?.end_year || '',
+            },
+            grading_system: {
+              name: values.grading_system?.name || '',
+              marks:
+                values.grading_system?.name !== 'Course Requires a Pass'
+                  ? values.grading_system?.marks
+                  : null,
+            },
+          },
+        ],
+      };
+
+      // Dispatch the data
+
+      if (profileDetails.profileDetails.id) {
+        dispatch(updateProfileDetails(formattedValues));
+      } else {
+        dispatch(addProfileDetails(formattedValues));
+      }
+
+      // dispatch(updateProfileDetails(formattedValues));
+
+      // Update local state for UI and reset modal
+
+      setEducationData(formattedValues.higher_edu);
+      setModalVisible(false);
+      setSelectedItem(null);
     }
 
-    setEducationData(updatedData); // Update state
-    setModalVisible(false); // Close modal
-    setEditingIndex(null); // Reset editing index
-
-    // Log updated data to console
-    console.log(
-      'Updated Education Data:',
-      JSON.stringify(updatedData, null, 2),
-    );
+    // Debugging
+    // console.log(
+    //   'Updated Education Data:',
+    //   JSON.stringify(formattedValues, null, 2),
+    // );
   };
 
-  const openModal = index => {
-    setEditingIndex(index);
+  const openModal = item => {
+    setSelectedItem(item);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setEditingIndex(null);
+    setSelectedItem(null);
   };
 
   const deleteEntry = index => {
-    const updatedData = educationData.filter((_, i) => i !== index);
-    setEducationData(updatedData);
+    const filteredArray = educationData.filter(
+      item => item.course_name !== selectedItem.course_name,
+    );
+    setEducationData(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      higher_edu: filteredArray,
+    };
+    dispatch(updateProfileDetails(payload));
     closeModal();
   };
 
   let formikRef = null;
-
+  const check_grading_system = name => {
+    if (name == 'Course Requires a Pass') {
+      return {};
+    }
+  };
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
@@ -201,23 +318,23 @@ const HigherEducation = () => {
         />
       </View>
 
-      {educationData.length > 0 ? (
+      {profileDetails?.profileDetails?.higher_edu.length > 0 ? (
         <FlatList
-          data={educationData}
+          data={profileDetails?.profileDetails?.higher_edu}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
             <>
-              <TouchableOpacity onPress={() => openModal(index)}>
+              <TouchableOpacity onPress={() => openModal(item)}>
                 <View style={profileStyle.userDataContainer}>
                   <Text style={styles.ClassText}>
-                    {item.course_name}/{item.specialization}
+                    {item?.course_name}/{item?.specialization}
                   </Text>
                   <Text style={styles.university_name}>
-                    {item.university_name}
+                    {item?.university_name}
                   </Text>
                   <Text style={styles.passoutText}>
-                    {item.duration.start_year}-{item.duration.end_year} •{' '}
-                    {item.course_type}
+                    {item?.duration?.start_year}-{item?.duration?.end_year} •{' '}
+                    {item?.course_type}
                   </Text>
                   {/* <Text style={styles.passoutText}>
                     Grading System: {item.grading_system.name}
@@ -226,9 +343,11 @@ const HigherEducation = () => {
                   </Text> */}
                 </View>
               </TouchableOpacity>
-              {educationData.length > 1 && index < educationData.length - 1 && (
-                <View style={styles.horizontalLine} />
-              )}
+              {profileDetails?.profileDetails?.higher_edu.length > 1 &&
+                index <
+                  profileDetails?.profileDetails?.higher_edu.length - 1 && (
+                  <View style={styles.horizontalLine} />
+                )}
             </>
           )}
         />
@@ -247,7 +366,27 @@ const HigherEducation = () => {
         <View style={profileStyle.modalContainer}>
           <ScrollView>
             <Formik
-              initialValues={getInitialValues(educationData, editingIndex)}
+              initialValues={{
+                education_level: selectedItem?.education_level || '',
+                university_name: selectedItem?.university_name || '',
+                course_name: selectedItem?.course_name || '',
+                specialization: selectedItem?.specialization || '',
+                course_type: selectedItem?.course_type || '',
+                duration: {
+                  start_year: selectedItem?.duration?.start_year || '',
+                  end_year: selectedItem?.duration?.end_year || '',
+                },
+                grading_system: {
+                  name: selectedItem?.grading_system?.name || '',
+                  marks:
+                    selectedItem?.grading_system?.name ===
+                    'Course Requires a Pass'
+                      ? ''
+                      : selectedItem?.grading_system?.marks
+                      ? selectedItem?.grading_system?.marks
+                      : '',
+                },
+              }}
               validationSchema={validationSchema}
               innerRef={ref => (formikRef = ref)}
               onSubmit={handleFormSubmit}>
@@ -277,30 +416,6 @@ const HigherEducation = () => {
                       error={errors.education_level}
                       touched={touched.education_level}
                     />
-
-                    {/* {EducationLevels.map(option => (
-                      <TouchableOpacity
-                        key={option.id}
-                        style={[
-                          profileStyle.tabBtnStyle,
-                          values.education_level === option.value
-                            ? profileStyle.selectedTab
-                            : profileStyle.unselectedTab,
-                        ]}
-                        onPress={() =>
-                          setFieldValue('education_level', option.value)
-                        }>
-                        <Text
-                          style={[
-                            profileStyle.tabBtnText,
-                            values.education_level === option.value
-                              ? profileStyle.selectedTabText
-                              : profileStyle.unselectedTabText,
-                          ]}>
-                          {option.value}
-                        </Text>
-                      </TouchableOpacity>
-                    ))} */}
                   </View>
 
                   {[
@@ -310,23 +425,46 @@ const HigherEducation = () => {
                     'Diploma',
                   ].includes(values.education_level) && (
                     <>
-                      <ReusableTextInput
-                        name="university_name"
-                        label="University Name*"
-                        value={values.university_name}
-                        onChangeText={handleChange('university_name')}
+                      <CustomSelectionModal
+                        title="University Name"
+                        data={University_options}
+                        selectedItems={University_options?.find(
+                          item => item.value === values.university_name,
+                        )}
+                        setSelectedItems={item =>
+                          setFieldValue('university_name', item?.value || '')
+                        }
+                        placeholder="Select University"
+                        // error={errors.country}
+                        // touched={touched.country}
                       />
-                      <ReusableTextInput
-                        name="course_name"
-                        label="Course*"
-                        value={values.course_name}
-                        onChangeText={handleChange('course_name')}
+
+                      <CustomSelectionModal
+                        title="Course Name"
+                        data={courseData}
+                        selectedItems={courseData?.find(
+                          item => item.value === values.course_name,
+                        )}
+                        setSelectedItems={item =>
+                          setFieldValue('course_name', item?.value || '')
+                        }
+                        placeholder="Select Course"
+                        // error={errors.country}
+                        // touched={touched.country}
                       />
-                      <ReusableTextInput
-                        name="specialization"
-                        label="Specialization*"
-                        value={values.specialization}
-                        onChangeText={handleChange('specialization')}
+
+                      <CustomSelectionModal
+                        title="Specialization"
+                        data={specializationData}
+                        selectedItems={specializationData?.find(
+                          item => item.value === values.specialization,
+                        )}
+                        setSelectedItems={item =>
+                          setFieldValue('specialization', item?.value || '')
+                        }
+                        placeholder="Select Specialization"
+                        // error={errors.country}
+                        // touched={touched.country}
                       />
 
                       <CustomTabs
@@ -343,24 +481,27 @@ const HigherEducation = () => {
                           <ReusableDropdown
                             options={StartingYear}
                             placeholder="Starting Year*"
-                            selectedValue={values.start_year}
+                            selectedValue={values.duration?.start_year}
                             onSelect={selected =>
-                              setFieldValue('start_year', selected.value)
+                              setFieldValue(
+                                'duration.start_year',
+                                selected.value,
+                              )
                             }
-                            error={errors.start_year}
-                            touched={touched.start_year}
+                            // error={errors.start_year}
+                            // touched={touched.start_year}
                           />
                         </View>
                         <View style={{width: '48%'}}>
                           <ReusableDropdown
                             options={EndingYear}
                             placeholder="Ending Year*"
-                            selectedValue={values.end_year}
+                            selectedValue={values.duration?.end_year}
                             onSelect={selected =>
-                              setFieldValue('end_year', selected.value)
+                              setFieldValue('duration.end_year', selected.value)
                             }
-                            error={errors.end_year}
-                            touched={touched.end_year}
+                            // error={errors.end_year}
+                            // touched={touched.end_year}
                           />
                         </View>
                       </View>
@@ -368,22 +509,24 @@ const HigherEducation = () => {
                       <ReusableDropdown
                         options={GRADING_OPTIONS}
                         placeholder="Grading System*"
-                        selectedValue={values.grading_system}
-                        onSelect={selected =>
-                          setFieldValue('grading_system', selected.value)
-                        }
+                        selectedValue={values.grading_system?.name}
+                        onSelect={selected => {
+                          setFieldValue('grading_system.name', selected.value);
+                          setFieldValue('grading_system.marks', null);
+                        }}
                         error={errors.grading_system}
                         touched={touched.grading_system}
                       />
 
                       {/* Conditionally render Marks field */}
-                      {values.grading_system &&
-                        values.grading_system !== 'Course Requires a Pass' && (
+                      {values.grading_system?.name &&
+                        values.grading_system?.name !==
+                          'Course Requires a Pass' && (
                           <ReusableTextInput
                             name="marks"
                             label="Marks*"
-                            value={values.marks}
-                            onChangeText={handleChange('marks')}
+                            value={values.grading_system?.marks}
+                            onChangeText={handleChange('grading_system.marks')}
                             keyboardType="numeric"
                             note="Enter percentage marks (out of 100)"
                           />
@@ -397,8 +540,8 @@ const HigherEducation = () => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
-            showDelete={editingIndex !== null}
-            onDelete={() => deleteEntry(editingIndex)}
+            showDelete={selectedItem !== null}
+            onDelete={() => deleteEntry(selectedItem)}
           />
         </View>
       </Modal>

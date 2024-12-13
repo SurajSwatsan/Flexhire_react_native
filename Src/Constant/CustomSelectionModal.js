@@ -26,12 +26,16 @@ const CustomSelectionModal = ({
   error,
   touched,
 }) => {
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState([]);
   const [selected, setSelected] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [validationError, setValidationError] = useState(null);
+  // console.log('********', data);
 
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
   // Sync state when `selectedItems` changes
   useEffect(() => {
     if (Array.isArray(selectedItems)) {

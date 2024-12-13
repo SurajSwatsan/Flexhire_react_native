@@ -1,18 +1,21 @@
 import {Modal, Text, View, StyleSheet, FlatList} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
 import profileStyle from '../../ProfileStyle';
-import { colors } from '../../../../Global_CSS/TheamColors';
+import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import CustomTabs from '../../../../Constant/CustomTabs';
 import ReusableDatePicker from '../../../../Constant/CustomDatePicker';
 import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
-
-
+import {useDispatch, useSelector} from 'react-redux';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import {useIsFocused} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const OPTIONS = {
   GENDER: [
     {id: 1, value: 'Male'},
@@ -34,23 +37,23 @@ const OPTIONS = {
 };
 
 const LOCATIONS = {
-  COUNTRIES: [
-    {id: 1, value: 'United States'},
-    {id: 2, value: 'Canada'},
-    {id: 3, value: 'United Kingdom'},
-    {id: 4, value: 'Australia'},
-    {id: 5, value: 'India'},
-    {id: 6, value: 'Germany'},
-    {id: 7, value: 'France'},
-    {id: 8, value: 'Japan'},
-    {id: 9, value: 'China'},
-    {id: 10, value: 'Brazil'},
-    {id: 11, value: 'South Africa'},
-    {id: 12, value: 'Mexico'},
-    {id: 13, value: 'Italy'},
-    {id: 14, value: 'Russia'},
-    {id: 15, value: 'Spain'},
-  ],
+  // COUNTRIES: [
+  //   {id: 1, value: 'United States'},
+  //   {id: 2, value: 'Canada'},
+  //   {id: 3, value: 'United Kingdom'},
+  //   {id: 4, value: 'Australia'},
+  //   {id: 5, value: 'India'},
+  //   {id: 6, value: 'Germany'},
+  //   {id: 7, value: 'France'},
+  //   {id: 8, value: 'Japan'},
+  //   {id: 9, value: 'China'},
+  //   {id: 10, value: 'Brazil'},
+  //   {id: 11, value: 'South Africa'},
+  //   {id: 12, value: 'Mexico'},
+  //   {id: 13, value: 'Italy'},
+  //   {id: 14, value: 'Russia'},
+  //   {id: 15, value: 'Spain'},
+  // ],
   STATES: [
     {id: 1, value: 'Andhra Pradesh'},
     {id: 2, value: 'Arunachal Pradesh'},
@@ -221,37 +224,157 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const getInitialValues = data => ({
-  DOB: data?.DOB ? moment(data.DOB, 'DD-MM-YYYY').toDate() : null,
-  gender: data?.gender || '',
-  country: data?.country || '',
-  home_state: data?.home_state || '',
-  home_city: data?.home_city || '',
-  marital_status: data?.marital_status || '',
-  is_differently_abled: data?.is_differently_abled?.status ? 'Yes' : 'No',
-  disability_type: data?.is_differently_abled?.disability_type || '',
-  need_assistance: data?.is_differently_abled?.need_assistance || '',
-});
-
-const BasicInformation = () => {
+const BasicInformation = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
   const [basicInfoData, setBasicInfoData] = useState(null);
+  const [countrydata, setCountryData] = useState([]);
+  const [homeStateData, setHomeStateData] = useState([]);
+  const [homeCityData, setHomeCityData] = useState([]);
+  const [renderFields, setRenderFields] = useState([]);
+  const [id, setId] = useState();
   let formikRef = null;
+
+  const dispatch = useDispatch();
+  const isFocus = useIsFocused();
+  const {GetCountry, GetState, GetCity} = MasterViewController();
+  const {countries, states, cities} = useSelector(state => state.master);
+
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log(
+    //   '================================',
+    //   profileDetails?.profileDetails?.basic_details,
+    // );
+
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [profileDetails]);
+
+  useEffect(() => {
+    if (profileDetails?.profileDetails?.basic_details) {
+      const render_Fields = [
+        {
+          label: 'Date of Birth',
+          value: profileDetails?.profileDetails?.basic_details[0]?.DOB,
+        },
+        {
+          label: 'Gender',
+          value: profileDetails?.profileDetails?.basic_details[0]?.gender,
+        },
+        {
+          label: 'Country',
+          value: profileDetails?.profileDetails?.basic_details[0]?.country,
+        },
+        {
+          label: 'State',
+          value: profileDetails?.profileDetails?.basic_details[0]?.home_state,
+        },
+        {
+          label: 'City',
+          value: profileDetails?.profileDetails?.basic_details[0]?.home_city,
+        },
+      ];
+      // console.log(render_Fields);
+
+      setRenderFields(render_Fields);
+    }
+  }, [profileDetails]);
+  useEffect(() => {
+    const get_country = () => {
+      dispatch(GetCountry());
+    };
+    const get_state = () => {
+      dispatch(GetState());
+    };
+    const get_city = () => {
+      dispatch(GetCity());
+    };
+    get_state();
+    get_city();
+    get_country();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const countries_data = countries?.map(country => ({
+      id: country.id,
+      value: country.name,
+    }));
+
+    const states_data = states?.map(state => ({
+      id: state.id,
+      value: state.name,
+    }));
+
+    const cities_data = cities?.map(city => ({
+      id: city.id,
+      value: city.name,
+    }));
+
+    setCountryData(countries_data);
+    setHomeStateData(states_data);
+    setHomeCityData(cities_data);
+
+    // console.log('countrys===', countries_data);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countries, states, cities]);
+
+  const getInitialValues = data => ({
+    DOB: profileDetails?.profileDetails?.basic_details[0]?.DOB
+      ? moment(
+          profileDetails.profileDetails.basic_details[0].DOB,
+          'DD-MM-YYYY',
+        ).toDate()
+      : null,
+    gender: profileDetails?.profileDetails?.basic_details[0]?.gender || '',
+    country: profileDetails?.profileDetails?.basic_details[0]?.country || '',
+    home_state:
+      profileDetails?.profileDetails?.basic_details[0]?.home_state || '',
+    home_city:
+      profileDetails?.profileDetails?.basic_details[0]?.home_city || '',
+    marital_status:
+      profileDetails?.profileDetails?.basic_details[0]?.marital_status || '',
+    is_differently_abled: profileDetails?.profileDetails?.basic_details[0]
+      ?.is_differently_abled?.status
+      ? 'Yes'
+      : 'No',
+    disability_type:
+      profileDetails?.profileDetails?.basic_details[0]?.is_differently_abled
+        ?.disability_type || '',
+    need_assistance:
+      profileDetails?.profileDetails?.basic_details[0]?.is_differently_abled
+        ?.need_assistance || '',
+  });
+
   const handleFormSubmit = values => {
     const formattedValues = {
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
+      user_id: id,
       basic_details: [
         {
           DOB: values.DOB ? moment(values.DOB).format('DD-MM-YYYY') : null, // Format DOB to DD-MM-YYYY
           gender: values.gender,
           country:
-            LOCATIONS.COUNTRIES.find(c => c.value === values.country)?.value ||
-            '',
+            countrydata?.find(c => c.value === values.country)?.value || '',
           home_state:
-            LOCATIONS.STATES.find(s => s.value === values.home_state)?.value ||
+            homeStateData?.find(s => s.value === values.home_state)?.value ||
             '',
           home_city:
-            LOCATIONS.CITIES.find(c => c.value === values.home_city)?.value ||
-            '',
+            homeCityData?.find(c => c.value === values.home_city)?.value || '',
           marital_status: values.marital_status,
           is_differently_abled:
             values.is_differently_abled === 'Yes'
@@ -266,64 +389,37 @@ const BasicInformation = () => {
     };
 
     setBasicInfoData(formattedValues);
+    // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
+
+    if (profileDetails.profileDetails.id) {
+      dispatch(updateProfileDetails(formattedValues));
+    } else {
+      dispatch(addProfileDetails(formattedValues));
+    }
+    // dispatch(updateProfileDetails(formattedValues));
     setModalVisible(false);
-    console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
   };
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
-
-  const renderFields = basicInfoData?.basic_details[0]
-    ? [
-        {label: 'Date of Birth', value: basicInfoData.basic_details[0].DOB},
-        {label: 'Gender', value: basicInfoData.basic_details[0].gender},
-        {label: 'Country', value: basicInfoData.basic_details[0].country},
-        {label: 'State', value: basicInfoData.basic_details[0].home_state},
-        {label: 'City', value: basicInfoData.basic_details[0].home_city},
-        // {
-        //   label: 'Marital Status',
-        //   value: basicInfoData.basic_details[0].marital_status,
-        // },
-        // {
-        //   label: 'Differently Abled',
-        //   value: basicInfoData.basic_details[0].is_differently_abled.status
-        //     ? 'Yes'
-        //     : 'No',
-        // },
-        // ...(basicInfoData.basic_details[0].is_differently_abled.status
-        //   ? [
-        //       {
-        //         label: 'Disability Type',
-        //         value:
-        //           basicInfoData.basic_details[0].is_differently_abled
-        //             .disability_type || '-',
-        //       },
-        //       {
-        //         label: 'Need Assistance',
-        //         value:
-        //           basicInfoData.basic_details[0].is_differently_abled
-        //             .need_assistance || '-',
-        //       },
-        //     ]
-        //   : []),
-      ]
-    : [];
 
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
         <Text style={profileStyle.heading}>BASIC INFORMATION</Text>
         <IconButton
-          icon={basicInfoData ? 'pencil-outline' : 'plus-circle-outline'}
+          icon={
+            profileDetails?.profileDetails?.basic_details
+              ? 'pencil-outline'
+              : 'plus-circle-outline'
+          }
           size={20}
           onPress={openModal}
           iconColor={colors.blackText}
         />
       </View>
 
-      {basicInfoData &&
-      basicInfoData.basic_details &&
-      basicInfoData.basic_details.length > 0 ? (
+      {profileDetails?.profileDetails?.basic_details ? (
         <View style={profileStyle.userDataContainer}>
           {renderFields.map((field, index) => (
             <View key={index} style={styles.outputData}>
@@ -388,10 +484,11 @@ const BasicInformation = () => {
                       error={errors.gender}
                       touched={touched.gender}
                     />
+
                     <CustomSelectionModal
                       title="Country"
-                      data={LOCATIONS.COUNTRIES}
-                      selectedItems={LOCATIONS.COUNTRIES.find(
+                      data={countrydata}
+                      selectedItems={countrydata?.find(
                         item => item.value === values.country,
                       )}
                       setSelectedItems={item =>
@@ -401,10 +498,11 @@ const BasicInformation = () => {
                       // error={errors.country}
                       // touched={touched.country}
                     />
+
                     <CustomSelectionModal
                       title="State"
-                      data={LOCATIONS.STATES}
-                      selectedItems={LOCATIONS.STATES.find(
+                      data={homeStateData}
+                      selectedItems={homeStateData?.find(
                         item => item.value === values.home_state,
                       )}
                       setSelectedItems={item =>
@@ -414,10 +512,11 @@ const BasicInformation = () => {
                       // error={errors.home_state}
                       // touched={touched.home_state}
                     />
+
                     <CustomSelectionModal
                       title="City"
-                      data={LOCATIONS.CITIES}
-                      selectedItems={LOCATIONS.CITIES.find(
+                      data={homeCityData}
+                      selectedItems={homeCityData?.find(
                         item => item.value === values.home_city,
                       )}
                       setSelectedItems={item =>
