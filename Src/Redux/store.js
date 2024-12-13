@@ -4,6 +4,7 @@ import {thunk} from 'redux-thunk';
 import bookmarkReducer from './Reducer/BookmarkReducer';
 import authReducer from './Reducer/authReducer';
 import jobViewReducer from './Reducer/JobViewReducer';
+import profileReducer from './Reducer/userProfileReducer';
 // import jobViewReducer from './Reducer/jobViewReducer';
 
 const rootReducer = combineReducers({
@@ -11,6 +12,8 @@ const rootReducer = combineReducers({
   Jobs: JobReducer, // state.Jobs.jobsData
   bookmark: bookmarkReducer,
   job: jobViewReducer,
+  profile:profileReducer,
+  
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

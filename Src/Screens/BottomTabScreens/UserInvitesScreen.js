@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -10,79 +10,40 @@ import {
 import {colors} from '../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
 import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
-
-export const companies = [
-  {
-    id: 1,
-    company_name: 'Insight Analytics',
-    job_title: 'Software Engineer',
-    about:
-      'Insight Analytics provides advanced data solutions for businesses to enhance decision-making and strategic growth.',
-    logo: 'https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192',
-    contact_email: 'alex.johnson@insightanalytics.com',
-    phone: '+1234567899',
-    location: 'Chicago, IL',
-    industry: 'Data Science',
-    website: 'https://www.insightanalytics.com',
-    rating: '4.5',
-    tagline: "Make the world's information accessible and useful",
-    services: [
-      'Data Analysis',
-      'Predictive Analytics',
-      'Business Intelligence',
-      'Machine Learning Solutions',
-    ],
-    employee: 100,
-    experience: '2-4 years',
-    salary: '$70,000 - $90,000',
-    posted_date: '2024-11-15',
-    work_modes: "On-site",
-    job_description: "As a Data Analyst at Insight Analytics, you’ll be responsible for interpreting complex datasets to generate insights that drive business decisions. You will clean, transform, and analyze data to extract meaningful patterns. The role involves building data visualizations, preparing reports, and providing data-driven recommendations. Collaboration with other teams to identify business challenges and develop solutions is key. You’ll help build predictive models and support other analysts. Attention to detail, accuracy, and proficiency with analytical tools are essential for success in this position.",
-    job_info:"any fresh graduate or post graduate with 0-1 years of work experience"
-  },
-  {
-    id: 2,
-    company_name: 'DataPro Solutions',
-    job_title: 'Data Analyst',
-    job_description: 'DataPro Solutions specializes in transforming business data into actionable insights to improve operations and optimize decision-making.',
-    about:
-      'DataPro Solutions specializes in transforming business data into actionable insights to improve operations and optimize decision-making.',
-    logo: 'https://cdn-icons-png.freepik.com/256/15465/15465679.png?uid=R161939522&ga=GA1.1.583681322.1710754192',
-    contact_email: 'contact@datapro.com',
-    phone: '+9876543210',
-    location: 'San Francisco, CA',
-    industry: 'Data Analytics',
-    website: 'https://www.datapro.com',
-    rating: '4.8',
-    tagline: 'Turning data into success',
-    services: [
-      'Big Data Analytics',
-      'Cloud Computing',
-      'Business Intelligence',
-      'Data Visualization',
-    ],
-    employee: 150,
-    experience: '3-5 years',
-    salary: '$80,000 - $100,000',
-    posted_date: '2024-10-15',
-    work_modes: "On-site",
-    job_info:"any fresh graduate or post graduate with 0-1 years of work experience"
-    
-  
-  },
-];
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import JobViewController from '../../Redux/Action/jobViewController';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserInvitesScreen = () => {
+  const [id, setId] = useState();
+
+  const dispatch = useDispatch();
+  const {GetInvitation, ReadInvitation} = JobViewController();
+  const {JobInvitation} = useSelector(state => state.job);
+  const isFocus = useIsFocused();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        dispatch(GetInvitation(id));
+
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+  }, [isFocus]);
+
   return (
     <View style={styles.inviteContainer}>
       <View style={styles.textContainer}>
-        {/* <Image
-          source={require('../../Assets/invitesImages/Invite.png')}
-          style={styles.image}
-        /> */}
-        <Text style={styles.inviteText}>Nvites:Your invitation to apply</Text>
+        <Text style={styles.inviteText}>Invites: Your invitation to apply</Text>
         <Text style={styles.contentText}>
           Recruiters have chosen you from a large pool of candidates to apply to
           these jobs.
@@ -90,53 +51,79 @@ const UserInvitesScreen = () => {
       </View>
 
       <ScrollView style={styles.cardContainer}>
-        {companies.map(company => {
+        {JobInvitation?.map((invite, index) => {
+          // Directly access job properties using optional chaining
           const hasCompanyInfo =
-            company.company_name && company.logo && company.rating;
+            invite?.job?.company_name &&
+            invite?.job?.logo &&
+            invite?.job?.rating;
 
           return (
             <TouchableOpacity
-              key={company.id}
-              onPress={() => navigation.navigate('Invite', {  companyId: company.id })} 
-              style={styles.card}>
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{company.job_title}</Text>
+              key={invite.id || `invite-${index}`} // Fallback to a unique key if invite.id is missing
+              onPress={() => {
+                if (!invite.is_read) {
+                  dispatch(ReadInvitation(invite.id));
+                }
+                navigation.navigate('Invite', {inviteData: invite});
+              }}
+              style={[
+                styles.card,
+                {backgroundColor: invite.is_read ? '#fff' : '#cde4d8'}, // Conditional background color
+              ]}>
+              <View
+                style={[
+                  styles.cardContent,
+                  {backgroundColor: invite.is_read ? '#fafafa' : '#deede5'}, // Conditional background color
+                ]}>
+                <View style={styles.groupsContainer}>
+                  {invite?.job?.groups?.map((group, index) => (
+                    <Text key={index} style={styles.cardTitle}>
+                      {group?.name}
+                    </Text>
+                  ))}
+                </View>
+
                 <View style={styles.locationContainer}>
                   <Ionicons
-                    name="location" // Icon for location
-                    color={colors.primary} // Icon color
-                    size={14} // Icon size
-                    style={{padding: 0}} // Adjust the style
+                    name="location"
+                    color={colors.primary}
+                    size={14}
+                    style={{padding: 0}}
                   />
-                  <Text style={styles.detailsText}> {company.location}</Text>
+                  <Text style={styles.detailsText}>
+                    {invite?.job?.job_location?.map(loc => loc.name).join(', ')}
+                  </Text>
                 </View>
                 <View style={styles.detailsRow}>
                   <Ionicons name="briefcase" size={14} color={colors.primary} />
-                  <Text style={styles.detailsText}> {company.experience}</Text>
+                  <Text style={styles.detailsText}>
+                    {`${invite?.job?.experience_level?.minYear}-${invite?.job?.experience_level?.maxYear} Years`}
+                  </Text>
                   <View style={styles.detailsalary}>
                     <Ionicons name="cash" size={14} color={colors.primary} />
-                    <Text style={styles.detailsText}> {company.salary}</Text>
+                    <Text style={styles.detailsText}>
+                      {`${invite?.job?.salary?.yearly?.min} - ${invite?.job?.salary?.yearly?.max} ${invite?.job?.salary?.yearly?.currency}`}
+                    </Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.innerCard}>
-                {/* Conditional Rendering */}
                 {hasCompanyInfo ? (
-                  // If Company Name, Logo, and Rating are available, show this section
                   <View style={styles.iconMain}>
                     <Image
                       source={
-                        company.logo
-                          ? {uri: company.logo} // Use URI if the logo is a valid URL or path
-                          : require('../../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
+                        invite?.job?.company?.logo
+                          ? {uri: invite?.job?.company?.logo}
+                          : require('../../Assets/CompanyLogo/TCS_logo.png')
                       }
                       style={styles.logo}
                     />
                     <View style={styles.companyMaincontainer}>
                       <View style={styles.companyDetail}>
                         <Text style={styles.companyText}>
-                          {company.company_name}
+                          {invite?.job?.company_name}
                         </Text>
                         <View style={styles.icon}>
                           <Ionicons
@@ -146,19 +133,21 @@ const UserInvitesScreen = () => {
                             style={styles.ratingIcon}
                           />
                           <Text style={styles.companyReview}>
-                            {company.rating}
+                            {invite?.job?.rating}
                           </Text>
                         </View>
                       </View>
-                      {/* Date Format */}
-                      {/* <Text style={styles.companyDate}>
-                        {moment(company.posted_date).format('MMM D')}{' '}
-                      </Text> */}
+                      <Text style={styles.companyDate}>
+                        {moment(invite?.job?.created_at).format('MMM D')}
+                      </Text>
                     </View>
                   </View>
                 ) : (
-                  // If the Company Info is missing, show this section (fallback view)
-                  <View style={styles.iconContainer}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      {backgroundColor: invite.is_read ? '#fff' : '#deede5'},
+                    ]}>
                     <Ionicons
                       name="person"
                       size={14}
@@ -168,11 +157,10 @@ const UserInvitesScreen = () => {
                   </View>
                 )}
 
-                {/* Text for Hiring position */}
                 {!hasCompanyInfo && (
                   <View style={styles.techContainer}>
                     <Text style={styles.companyText}>
-                      Hiring for {company.job_title} position
+                      Hiring for {invite?.job?.company_name}
                     </Text>
                     <Text style={styles.detailscompanytext}>
                       Posted by Swatsan Tech Private Limited
@@ -181,7 +169,7 @@ const UserInvitesScreen = () => {
                 )}
 
                 <Text style={styles.companyDate}>
-                  {moment(company.posted_date).format('MMM D')}
+                  {moment(invite?.job?.created_at).format('MMM D')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -194,8 +182,6 @@ const UserInvitesScreen = () => {
 
 const styles = StyleSheet.create({
   inviteContainer: {
-    // marginHorizontal: 12,
-    // marginVertical: 12,
     flex: 1,
     backgroundColor: '#f1f1f1',
     width: '100%',
@@ -204,11 +190,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal:12
-  },
-  image: {
-    height: 100,
-    width: 100,
+    marginHorizontal: 12,
   },
   inviteText: {
     fontSize: 24,
@@ -220,13 +202,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
     justifyContent: 'center',
-    color:'gray',
-
+    color: 'gray',
   },
-  cardContainer: {
-    // marginTop: 20,
-    // marginVertical: 8,
-  },
+  cardContainer: {},
   card: {
     backgroundColor: 'white',
     borderRadius: 10,
@@ -234,7 +212,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginHorizontal: 12,
   },
-
   cardContent: {
     flex: 1,
     backgroundColor: '#fafafa',
@@ -250,10 +227,10 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: 'row',
   },
-
   detailsText: {
     fontSize: 12,
     color: colors.blackText,
+    marginLeft: 6,
   },
   detailscompanytext: {
     fontSize: 10,
@@ -273,19 +250,16 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 8,
     gap: 8,
-    // alignItems: 'center',
     marginTop: 6,
   },
   iconContainer: {
-    backgroundColor: '#fafafa', // Set the background color for the icon
-    borderRadius: 4, // Make the background circular (adjust size as needed)
-    padding: 8, // Add some padding around the icon
-    // marginRight: 10,             // Add some space between icon and text
-    borderWidth: 1, // Add border to the background
-    borderColor: '#ddd', // Set the color of the border
-    justifyContent: 'center', // Center the icon inside the background
-    alignItems: 'center', // Center the icon horizontally
-    // marginTop:8
+    backgroundColor: '#fafafa',
+    borderRadius: 4,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconMain: {
     flexDirection: 'row',
@@ -301,22 +275,20 @@ const styles = StyleSheet.create({
   logo: {
     width: 30,
     height: 30,
-    resizeMode: 'contain', // Adjusts the image to cover the container uniformly
+    resizeMode: 'contain',
     marginRight: 8,
   },
   techContainer: {
-    //  alignItems:'center'
     justifyContent: 'center',
   },
   companyText: {
-    color:'gray',
+    color: 'gray',
     fontSize: 12,
     marginBottom: 2,
   },
   companyReview: {
     fontSize: 10,
-    color:'gray',
-
+    color: 'gray',
   },
   icon: {
     flexDirection: 'row',
@@ -328,9 +300,7 @@ const styles = StyleSheet.create({
   companyDate: {
     fontSize: 10,
     alignItems: 'center',
-    color:'gray',
-
-    // textAlign:'right',
+    color: 'gray',
   },
 });
 

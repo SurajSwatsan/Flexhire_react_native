@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {
   Image,
   ScrollView,
@@ -16,69 +16,61 @@ import CustomJobCard from './CustomJobCard';
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 
-
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
-  const {jobData} = route.params;
-  const relatedJobs = jobData.related_jobs;
-
-  if (!jobData) {
-    return (
-      <View style={styles.container}>
-        <Text>No job data available!</Text>
-      </View>
-    );
-  }
+  const {ApplicationObject} = route.params;
 
   // Function to navigate to the JobDescription screen
   const handleViewDescriptionPress = () => {
-    // Navigate to the JobDescription screen with jobData passed as a parameter
-    navigation.navigate('JobDetailScreen', {jobData});
+    navigation.navigate('JobDetailScreen', {job_id: ApplicationObject.job.id});
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.hederText}>
         <CustomHeader />
-        <Text style={styles.companyHeader}>{jobData.company.company_name}</Text>
+        <Text style={styles.companyHeader}>
+          {ApplicationObject?.job?.company_name}
+        </Text>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} marginVertical={18}>
         <View style={styles.jobContainer}>
-          {/* Job Image */}
           <Image
             source={
-              jobData.company?.logo
-                ? {uri: jobData.company?.logo}
+              ApplicationObject?.job?.company?.logo
+                ? {uri: ApplicationObject?.job?.company?.logo}
                 : require('../Assets/CompanyLogo/TCS_logo.png')
             }
             style={styles.image}
           />
 
           <View>
-            <Text style={styles.jobTitle}>{jobData.job_title}</Text>
+            <Text style={styles.jobTitle}>
+              {ApplicationObject?.job?.job_title?.title}
+            </Text>
 
             <Text style={styles.companyName}>
-              {jobData.company?.company_name}
+              {ApplicationObject?.job?.company_name}
             </Text>
-            <View style={styles.ratingContainer}>
+            {/* <View style={styles.ratingContainer}>
               <Ionicons
                 name="star"
                 size={16}
                 color="#ffd700"
                 style={styles.ratingIcon}
               />
-              <Text style={styles.ratingText}>{jobData.company.rating}</Text>
-            </View>
+              <Text style={styles.ratingText}>
+                {ApplicationObject?.job?.rating}
+              </Text>
+            </View> */}
           </View>
         </View>
 
-        {/* Button to view job description */}
         <TouchableOpacity onPress={handleViewDescriptionPress}>
           <Text style={styles.viewDescription}>View Description</Text>
         </TouchableOpacity>
 
         <View style={styles.applicationContainer}>
-          {/* <Text>hello</Text> */}
           <Ionicons
             name="analytics-sharp"
             size={34}
@@ -97,46 +89,9 @@ const ApplicationStatusScreen = ({route}) => {
         <View style={styles.timelineContainer}>
           <Text style={styles.timelineTitle}>Your Application Status</Text>
 
-          {/* <ScrollView horizontal={true} style={styles.timelineWrapper}>
-            <View style={{flex: 1, paddingVertical: 12}}>
-              <Timeline
-                data={applicationTimeline.map(item => ({
-                  time: moment(item.date).format('D MMM YYYY'), // Add time (date) for the timeline
-                  title: item.stage, // Stage as title
-                  description: item.status, // Status as description
-                }))}
-                circleSize={15} // Size of the circle (dot) in the timeline
-                circleColor="#004466" // Color of the circle (dot)
-                lineColor="#acd2be" // Color of the connecting line
-                innerCircle={'dot'}
-                titleStyle={styles.cardTitle} // Title style for the awards
-                
-                descriptionStyle={styles.cardDate} // Date style for the award description (optional)
-                renderTime={rowData => (
-                  <Text style={styles.cardDate}>{rowData.time}</Text>
-                )}
-                renderDetail={rowData => (
-                  <View style={styles.detailContainer}>
-                    <Text style={styles.cardTitle}>{rowData.title}</Text>
-                    <Text style={styles.cardDate}>{rowData.description}</Text>
-                  </View>
-                )}
-                options={{
-                  style: {
-                    marginLeft: 0, 
-                    padding: 0, 
-                    width: '100%',
-                  },
-                }}
-                eventContainerStyle={styles.eventContainer}
-              />
-            </View>
-          </ScrollView> */}
+          <CustomTimelineScreen res={ApplicationObject?.state_of_status} />
 
-          <CustomTimelineScreen/>
-         
-
-          {relatedJobs && Object.keys(relatedJobs).length > 0 && (
+          {ApplicationObject?.job?.related_jobs?.length > 0 && (
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
                 <Text style={styles.contHead}>Similar Jobs</Text>
@@ -145,21 +100,20 @@ const ApplicationStatusScreen = ({route}) => {
                 </TouchableOpacity>
               </View>
 
-              <ScrollView>
-                {Object.entries(relatedJobs).map(([key, jobdata], index) => (
-                  <View key={jobdata.id || index} style={{marginBottom: 14}}>
+              {/* <ScrollView>
+                {ApplicationObject?.job?.related_jobs.map(({item, index}) => (
+                  <View key={item?.id || index} style={{marginBottom: 14}}>
                     <TouchableOpacity
                       onPress={() => {
-                        // Navigate to JobDetailScreen for the related job
                         navigation.navigate('JobDetailScreen', {
-                          jobData: jobdata,
+                          jobData: item,
                         });
                       }}>
-                      <CustomJobCard jobData={jobdata} />
+                      <CustomJobCard jobData={item} />
                     </TouchableOpacity>
                   </View>
                 ))}
-              </ScrollView>
+              </ScrollView> */}
             </View>
           )}
         </View>
@@ -188,9 +142,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     marginBottom: 8,
-    backgroundColor:'#fafafa',
-    padding:8,
-    borderRadius:8
+    backgroundColor: '#fafafa',
+    padding: 8,
+    borderRadius: 8,
   },
 
   image: {
@@ -235,7 +189,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
-  
+
   detailContainer: {
     flexDirection: 'column',
     // paddingLeft: 10,
@@ -248,7 +202,7 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 12,
     color: colors.primary,
-    marginRight:5
+    marginRight: 5,
   },
   timelineTitle: {
     fontSize: 18,
@@ -306,8 +260,8 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fafafa',
     // borderRadius:8,
     // marginBottom: 8,
-    flexDirection: 'row',  // Ensure elements in each event are aligned horizontally
-    justifyContent: 'flex-start',  // Align all items to the left
+    flexDirection: 'row', // Ensure elements in each event are aligned horizontally
+    justifyContent: 'flex-start', // Align all items to the left
     alignItems: 'center', // Keep the items aligned vertically
   },
 });

@@ -12,7 +12,7 @@ import CustomHeader from '../../../Constant/CustomBackIcon';
 import moment from 'moment'; // Import Moment.js
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {PieChart} from 'react-native-chart-kit';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,6 +25,7 @@ const AnalyticsPage = () => {
   const endOfWeek = moment().endOf('week');
   const dispatch = useDispatch();
   const {GetProfileAnalytic} = UserProfileViewController();
+  const {ProfileAnalytic} = useSelector(state => state.profile);
   const isFocus = useIsFocused();
   useEffect(() => {
     const getUserData = async () => {
@@ -41,6 +42,9 @@ const AnalyticsPage = () => {
 
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [isFocus]);
+
+  console.log('$$$$$$$$$$$$$$$$$$$$$$', ProfileAnalytic);
+
   useEffect(() => {
     if (id) {
       dispatch(GetProfileAnalytic(id)); // Dispatch the action when the component mounts
@@ -50,18 +54,14 @@ const AnalyticsPage = () => {
     'MMM D',
   )}`;
 
-  const profileViews = 12;
-  const Invitations = 5;
-  const Applies = 10;
-  const searchAppearances = 15;
-
-  const completedActions = 2;
-  const totalActions = 3;
-  const actionPercentage = (completedActions / totalActions) * 100;
-
-  const commentCount = 0;
-
-  const totalValue = profileViews + Invitations + Applies + searchAppearances;
+  const profileViews = ProfileAnalytic.total_profile_view[0] || 0;
+  const invitations = ProfileAnalytic.total_invited_jobs_count || 0;
+  const applies = ProfileAnalytic.total_applied_jobs_count || 0;
+  const searchAppearances = ProfileAnalytic.total_search_appearance || 0;
+  const totalValue = profileViews + invitations + applies + searchAppearances;
+  const completedActions = ProfileAnalytic.completedActions || 0;
+  const totalActions = 3; 
+  const commentCount = ProfileAnalytic?.commentCount || 0;
 
   const getColorByRank = (percentage, rank) => {
     if (rank === 1) {
@@ -76,9 +76,11 @@ const AnalyticsPage = () => {
   };
 
   const profileViewsPercentage = (profileViews / totalValue) * 100;
-  const invitationsPercentage = (Invitations / totalValue) * 100;
-  const appliesPercentage = (Applies / totalValue) * 100;
+  const invitationsPercentage = (invitations / totalValue) * 100;
+  const appliesPercentage = (applies / totalValue) * 100;
   const searchAppearancesPercentage = (searchAppearances / totalValue) * 100;
+
+  const actionPercentage = (completedActions / totalActions) * 100;
 
   const data = [
     {
@@ -88,12 +90,12 @@ const AnalyticsPage = () => {
     },
     {
       name: 'Invitations',
-      value: Invitations,
+      value: invitations,
       percentage: invitationsPercentage,
     },
     {
       name: 'Applies',
-      value: Applies,
+      value: applies,
       percentage: appliesPercentage,
     },
     {
@@ -201,11 +203,11 @@ const AnalyticsPage = () => {
           <View style={styles.progressBarContainer}>
             <Text style={styles.dateactionText}>{weekDateRange}</Text>
             <Text style={styles.progressText}>
-              {completedActions} of {totalActions} actions completed
+            {ProfileAnalytic.total_applied_jobs_count} of 3 actions completed
             </Text>
             <View style={styles.progressContainer}>
               <View
-                style={[styles.progressBar, {width: `${actionPercentage}%`}]}
+                  style={[styles.progressBar, { width: `${actionPercentage}%` }]}
               />
             </View>
             <Text style={styles.actionText}>

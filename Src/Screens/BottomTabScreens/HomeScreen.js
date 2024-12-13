@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
-
   Image,
   ScrollView,
   StyleSheet,
@@ -11,7 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useIsFocused,
+} from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {jobPost} from '../../Redux/Action/JobAction';
@@ -20,12 +23,25 @@ import {colors} from '../../Global_CSS/TheamColors';
 import CustomCompanyCard from '../../Constant/CustomCompanyCard';
 import {CircularProgress} from 'react-native-circular-progress'; // Import the CircularProgress component
 import moment from 'moment';
-
+import JobViewController from '../../Redux/Action/jobViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [query, setQuery] = useState('');
   const dispatch = useDispatch();
+  const {GetHomeData} = JobViewController();
+  const {CompanyData} = useSelector(state => state.job);
+  const isFocus = useIsFocused();
+
+  const [id, setId] = useState();
+
+  console.log(
+    'CompanyData:',
+    JSON.stringify(CompanyData.top_companies, null, 2),
+  );
+  console.log('.......................', CompanyData.top_companies);
 
   const [selectedChip, setSelectedChip] = useState(null);
 
@@ -33,8 +49,21 @@ const HomeScreen = () => {
 
   // Load jobs data into the Redux store when the component mounts
   useEffect(() => {
-    dispatch(jobPost());
-  }, [dispatch]);
+    // dispatch(jobPost());
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        dispatch(GetHomeData(id));
+
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+  }, [isFocus]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -64,17 +93,82 @@ const HomeScreen = () => {
   };
 
   // Access jobs data from the Redux store
-  const jobs = useSelector(state => state.Jobs.jobsData);
+  // const jobs = useSelector(state => state.Jobs.jobsData);
 
-  if (!jobs || jobs.length === 0) {
-    return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
-  }
+  // if (!jobs || jobs.length === 0) {
+  //   return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
+  // }
 
   const lastUpdatedDate = '2024-11-24';
   const daysSinceUpdate = moment().diff(moment(lastUpdatedDate), 'days');
 
-  const profileCompletion = 75;
+  // const profileCompletion = 75;
+  const renderCard = jobdata => {
+    return (
+      <View key={jobdata.id} style={styles.jobCard}>
+        {/* Job Card Header (Title and Company Name) */}
+        <View style={styles.companyInfo}>
+          <Image
+            source={
+              jobdata.company.logo
+                ? {uri: jobdata?.company?.logo}
+                : require('../../Assets/CompanyLogo/TCS_logo.png')
+            }
+            style={styles.companyImage}
+          />
+          <View>
+            <Text style={styles.jobTitle}>{jobdata?.job_title?.title}</Text>
+            <Text style={styles.companyName}>{jobdata?.company_name}</Text>
+          </View>
+          <IconButton
+            icon="bookmark-outline"
+            iconColor={colors.primary}
+            size={20}
+            style={{padding: 0, marginLeft: -10, height: 20}}
+          />
+        </View>
+        <View style={styles.workModeContainer}>
+          {jobdata.work_modes &&
+            jobdata.work_modes.map((mode, idx) => (
+              <View key={idx} style={styles.workModeChip}>
+                <Text style={styles.chipText}>{mode}</Text>
+              </View>
+            ))}
+        </View>
 
+        <View style={styles.location}>
+          <IconButton
+            icon="map-marker"
+            iconColor={colors.primary}
+            size={18}
+            style={{padding: 0, marginLeft: -10, height: 20}}
+          />
+          {jobdata.job_location.map((location, locIndex) => (
+            <Text key={locIndex} style={styles.jobLocation}>
+              {location.name}
+            </Text>
+          ))}
+        </View>
+
+        {/* Display job locations */}
+
+        <View style={styles.jobFooter}>
+          {jobdata?.salary && jobdata.salary.yearly && (
+            <View style={styles.experienceContainer}>
+              <Ionicons name="cash" size={14} color="#004466" />
+              <Text style={styles.jobDetailsalary}>
+                ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
+                {jobdata.salary.yearly.max.toLocaleString()} INR
+              </Text>
+            </View>
+          )}
+          <Text style={styles.jobPostedDate}>
+            Posted {moment(jobdata.reviews[0]?.review_date).fromNow()}
+          </Text>
+        </View>
+      </View>
+    );
+  };
   return (
     <View style={styles.bodycontainer}>
       <View style={styles.container}>
@@ -105,7 +199,7 @@ const HomeScreen = () => {
               <CircularProgress
                 size={85}
                 width={4}
-                fill={profileCompletion}
+                fill={CompanyData?.profile_filled_percentage}
                 rotation={220}
                 tintColor="#509570" // Color of the progress
                 backgroundColor="lightgray"
@@ -122,15 +216,36 @@ const HomeScreen = () => {
             <View style={styles.profile}>
               <Text style={styles.profileName}>Xyz's Profile</Text>
               <Text style={styles.profileDate}>
-              
-              Updated {daysSinceUpdate}{daysSinceUpdate === 1 ? 'd' : 'd'} ago
+                Updated {daysSinceUpdate}
+                {daysSinceUpdate === 1 ? 'd' : 'd'} ago
               </Text>
               <Text style={styles.profileDetail}>Missing details</Text>
             </View>
           </View>
         </TouchableOpacity>
         <View style={styles.JobsContainer}>
-          <View style={{marginLeft: 18}}>
+          <View style={{marginVertical: 12, marginLeft: 18}}>
+            <View style={styles.displayContainer}>
+              <Text style={styles.contHead}>suggested Jobs</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.contentContainer}>
+              {/* Check if `CompanyData.recent_jobs` exists and is an array */}
+              {(CompanyData?.suggested_jobs &&
+              Array.isArray(CompanyData.suggested_jobs)
+                ? CompanyData.suggested_jobs
+                : []
+              ).map((item, index) => (
+                <>{renderCard(item)}</>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* <View style={{marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Suggested Jobs</Text>
               <Text style={styles.seeAll}>See All</Text>
@@ -146,14 +261,13 @@ const HomeScreen = () => {
                 </View>
               ))}
             </ScrollView>
-          </View>
+          </View> */}
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Recent Jobs</Text>
               <Text style={styles.seeAll}>See All</Text>
             </View>
 
-            {/* Random chips for future use need to place other data */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -184,12 +298,27 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
+              {/* Check if `CompanyData.recent_jobs` exists and is an array */}
+              {(CompanyData?.recent_jobs &&
+              Array.isArray(CompanyData.recent_jobs)
+                ? CompanyData.recent_jobs
+                : []
+              ).map((item, index) => (
+                <>{renderCard(item)}</>
+              ))}
+            </ScrollView>
+
+            {/* <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.contentContainer}>
               {jobs.map((jobdata, index) => (
                 <View key={jobdata.id || index} style={{marginRight: 12}}>
                   <CustomJobCard jobData={jobdata} />
                 </View>
               ))}
-            </ScrollView>
+            </ScrollView> */}
           </View>
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
@@ -201,9 +330,9 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
-              {jobs.map((jobdata, index) => (
-                <View key={jobdata.id || index} style={{marginRight: 12}}>
-                  <CustomCompanyCard jobData={jobdata} />
+              {CompanyData?.top_companies?.map((item, index) => (
+                <View key={item.id || index} style={{marginRight: 12}}>
+                  <CustomCompanyCard companyData={item} />
                 </View>
               ))}
             </ScrollView>
@@ -218,6 +347,7 @@ const styles = StyleSheet.create({
   bodycontainer: {
     backgroundColor: colors.background,
     flex: 1,
+    width: '100%',
   },
   container: {
     backgroundColor: colors.primary,
@@ -287,7 +417,7 @@ const styles = StyleSheet.create({
   profileDetail: {
     color: 'blue',
     fontSize: 12,
-    marginTop:8
+    marginTop: 8,
   },
   JobsContainer: {
     // marginTop: 12,
@@ -338,6 +468,104 @@ const styles = StyleSheet.create({
   },
   selectedChipText: {
     color: colors.whiteText,
+  },
+  jobCard: {
+    backgroundColor: colors.whiteText,
+    borderRadius: 10,
+    marginRight: 12,
+    padding: 12,
+    width: 300, // Adjust width as needed
+
+    marginBottom: 20,
+  },
+  jobCardHeader: {
+    marginBottom: 8,
+  },
+  companyInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  companyImage: {
+    width: 42,
+    height: 42,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  companyName: {
+    fontSize: 12,
+    color: 'gray',
+  },
+  jobTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  jobDescription: {
+    fontSize: 12,
+    color: '#777',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  workModeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    // marginTop: 8,
+    // marginBottom: 8,
+  },
+  workModeChip: {
+    backgroundColor: '#E1F5FE',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginRight: 8,
+    marginBottom: 6,
+  },
+  chipText: {
+    color: '#007BFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  salaryText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 8,
+  },
+  location: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+  },
+  jobLocation: {
+    fontSize: 12,
+    color: '#808080',
+    marginLeft: -12,
+  },
+  experienceContainer: {
+    flexDirection: 'row',
+    marginRight: 8,
+    gap: 6,
+  },
+  jobFooter: {
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  jobDetailsalary: {
+    fontSize: 10,
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  jobLocation: {
+    fontSize: 12,
+    color: '#555',
+  },
+  jobPostedDate: {
+    fontSize: 12,
+    color: '#808080',
+    textAlign: 'right',
   },
 });
 

@@ -4,7 +4,7 @@ const initialState = {
     isLoding: false,
   };
   
-  const authReducer = (state = initialState, action) => {
+  const profileReducer = (state = initialState, action) => {
     switch (action.type) {
       case 'LODING':
         return {
@@ -28,5 +28,5 @@ const initialState = {
     }
   };
   
-  export default authReducer;
+  export default profileReducer;
   

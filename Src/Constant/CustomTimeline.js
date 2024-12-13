@@ -10,7 +10,7 @@ const applicationStatus = [
     icon: 'document-text',
   },
   {
-    name: 'Application Viewed',
+    name: 'APPLICATION VIEWED',
     icon: 'eye',
   },
   {
@@ -31,34 +31,34 @@ const applicationStatus = [
   },
 ];
 
-const res = [
-  {
-    date: '2024-11-01',
-    name: 'Applied',
-    message: 'Application submitted',
-    is_completed: true,
-  },
-  {
-    date: '2024-11-03',
-    name: 'Application Viewed',
-    message: 'Application viewed successfully',
-    is_completed: true,
-  },
-  {
-    date: '2024-11-05',
-    name: 'Accepted',
-    message: 'Application Accepted',
-    is_completed: false,
-  },
-  // {
-  //   date: '2024-11-05',
-  //   name: 'Rejected',
-  //   message: 'Application Rejected',
-  //   is_completed: false,
-  // },
-];
+// const res = [
+//   {
+//     date: '2024-11-01',
+//     name: 'Applied',
+//     message: 'Application submitted',
+//     is_completed: true,
+//   },
+//   {
+//     date: '2024-11-03',
+//     name: 'Application Viewed',
+//     message: 'Application viewed successfully',
+//     is_completed: true,
+//   },
+//   {
+//     date: '2024-11-05',
+//     name: 'Accepted',
+//     message: 'Application Accepted',
+//     is_completed: false,
+//   },
+//   // {
+//   //   date: '2024-11-05',
+//   //   name: 'Rejected',
+//   //   message: 'Application Rejected',
+//   //   is_completed: false,
+//   // },
+// ];
 
-const CustomTimelineScreen = () => {
+const CustomTimelineScreen = ({res}) => {
   const isAcceptedPresent = res.some(entry => entry.name === 'Accepted');
   const isRejectedPresent = res.some(entry => entry.name === 'Rejected');
 

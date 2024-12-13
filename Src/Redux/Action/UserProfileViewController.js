@@ -13,7 +13,7 @@ const UserProfileViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`job/`);
+      const response = await instance.get(`http://15.206.149.28/api/job-seeker/profile-analytic/1`);
       console.log(
         '****************************profile-analytic response***************************',
       );

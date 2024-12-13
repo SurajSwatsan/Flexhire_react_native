@@ -2,34 +2,33 @@ import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import AuthViewController from '../Redux/Action/AuthViewController';
+ 
 const SplashScreen = () => {
   const navigation = useNavigation();
-
+  const {checkLoginStatus} = AuthViewController();
+ 
   useEffect(() => {
-        const checkUserData = async () => {
-          try {
-            const userdata = await AsyncStorage.getItem('userdata');
-            if (userdata !== null) {
-              navigation.navigate('DefaultScreen');
-            } else {
-              navigation.navigate('LoginScreen');
-            }
-          } catch (error) {
-            console.error('Error retrieving user data', error);
-            navigation.navigate('LoginScreen');
-          }
-        };
-        setTimeout(() => {
-          checkUserData();
-        }, 3000);
-      }, [navigation]);
-    // setTimeout(() => {
-    //   navigation.navigate('LoginScreen');
-    //   // navigation.navigate('DfaultScreen');
-    // }, 3000);
-  // }, [navigation]);
-
+    const initializeApp = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token'); // Get token from AsyncStorage
+        if (token) {
+          // Validate the token or proceed to the main screen
+          await checkLoginStatus()(dispatch => {}); // Invoke checkLoginStatus action
+          navigation.replace('DefaultScreen');
+        } else {
+          navigation.replace('LoginScreen');
+        }
+      } catch (error) {
+        console.error('Error during initialization:', error);
+        navigation.replace('LoginScreen'); // Fallback to login on error
+      }
+    };
+ 
+    const timeout = setTimeout(initializeApp, 3000); // Delay for 3 seconds to show splash
+    return () => clearTimeout(timeout); // Clear timeout on unmount
+  }, [checkLoginStatus, navigation]);
+ 
   return (
     <View style={styles.container}>
       <View></View>
@@ -39,12 +38,15 @@ const SplashScreen = () => {
       />
       <View style={styles.textContainer}>
         <Text style={styles.textcintainer1}>Powered by</Text>
-        <Image style={styles.swatsanlogo} source={require('../Assets/CompanyLogo/swatsan_logo.png')}/>
+        <Image
+          style={styles.swatsanlogo}
+          source={require('../Assets/CompanyLogo/swatsan_logo.png')}
+        />
       </View>
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -59,15 +61,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textContainer: {
-    marginBottom:36,
+    marginBottom: 36,
     justifyContent: 'center',
-    flexDirection:'column',
+    flexDirection: 'column',
   },
-  swatsanlogo:{
+  swatsanlogo: {
     height: 36,
     width: 200,
-    maxWidth:200,
-
+    maxWidth: 200,
   },
   imagestyle: {
     justifyContent: 'center',
@@ -75,5 +76,5 @@ const styles = StyleSheet.create({
     width: 240,
   },
 });
-
+ 
 export default SplashScreen;

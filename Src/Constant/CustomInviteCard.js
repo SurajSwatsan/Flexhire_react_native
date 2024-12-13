@@ -1,8 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -10,28 +13,73 @@ import {companies} from '../Screens/BottomTabScreens/UserInvitesScreen';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomHeader from './CustomBackIcon';
+import JobViewController from '../Redux/Action/jobViewController';
+import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useIsFocused} from '@react-navigation/native';
+import {Toast} from 'react-native-toast-notifications';
 
 const CustomInviteScreen = ({route}) => {
-  const {companyId} = route.params;
-
-  const company = companies.find(company => company.id === companyId);
-
-  // console.log(company);
-  if (!company) {
-    return (
-      <View style={styles.container}>
-        <Text>Company not found</Text>
-      </View>
-    );
-  }
-
-  const [buttonStatus, setButtonStatus] = useState('Apply');
+  const dispatch = useDispatch();
+  const {inviteData} = route.params;
+  const {ApplyJob, RejectInvitation} = JobViewController();
+  const isFocus = useIsFocused();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [coverLetter, setCoverLetter] = useState('');
+  const [id, setId] = useState();
   const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log('##########',inviteData);
+  }, [isFocus]);
+
+  const handleInputChange = text => {
+    setCoverLetter(text); // Update the state with the new input value
+  };
+  const openApplyModal = () => {
+    setModalVisible(true);
+  };
 
   const handleApplyPress = () => {
-    setButtonStatus('Applied'); // Change text to 'Applied' when button is clicked
-    setApplyButtonColor('green');
-    console.log('Apply Pressed');
+    const data = {
+      user_id: id,
+      job: inviteData.job.id,
+      cover_letter: coverLetter,
+      is_invited: true,
+    };
+    dispatch(ApplyJob(data));
+    setModalVisible(false);
+  };
+
+  const handlePress = () => {
+    Alert.alert(
+      'Do you want to reject?', // Title of the alert
+      '',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('Rejection canceled'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          // onPress: () => dispatch(RejectInvitation(inviteData.id)),
+        },
+      ],
+      {cancelable: false},
+    );
   };
 
   return (
@@ -41,21 +89,19 @@ const CustomInviteScreen = ({route}) => {
         contentContainerStyle={{paddingBottom: 100}}>
         <View style={styles.headerContainer}>
           <CustomHeader />
-          <Text style={styles.companyHeaderName}>{company.company_name}</Text>
-          <TouchableOpacity>
-            <Ionicons
-              name="trash" // Icon for location
-              color={colors.primary} // Icon color
-              size={26} // Icon size
-              style={{padding: 5}} // Adjust the style
-            />
-          </TouchableOpacity>
+          <Text style={styles.companyHeaderName}>
+            {inviteData?.job?.company_name}
+          </Text>
         </View>
 
         <View style={styles.container}>
-          {/* <Text style={styles.companyName}>{company.company_name}</Text> */}
-
-          <Text style={styles.jobTitle}>{company.job_title}</Text>
+          <View style={styles.groupsContainer}>
+            {inviteData?.job?.groups?.map((group, index) => (
+              <Text key={index} style={styles.detailsText}>
+                {group.name}
+              </Text>
+            ))}
+          </View>
           <View style={styles.locationContainer}>
             <Ionicons
               name="location" // Icon for location
@@ -63,63 +109,175 @@ const CustomInviteScreen = ({route}) => {
               size={14} // Icon size
               style={{padding: 0}} // Adjust the style
             />
-            <Text style={styles.detailsText}> {company.location}</Text>
+            <Text style={styles.detailsText}>
+              {inviteData?.job?.job_location?.map(loc => loc.name).join(', ')}
+            </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="briefcase" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}> {company.experience}</Text>
+            <Text style={styles.detailsText}>
+              {' '}
+              {`${inviteData?.job?.experience_level?.minYear}-${inviteData?.job?.experience_level?.maxYear} Years`}
+            </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="cash" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}> {company.salary}</Text>
+            <Text style={styles.detailsText}>
+              {' '}
+              `{inviteData?.job?.salary?.yearly?.min} -
+              {inviteData?.job?.salary?.yearly?.max}
+              {inviteData?.job?.salary?.yearly?.currency}`
+            </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="pin" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}>{company.work_modes}</Text>
+            <Text style={styles.detailsText}>
+              {inviteData?.job?.work_modes}
+            </Text>
           </View>
         </View>
         <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionText}>Job Description</Text>
-          <Text style={styles.description}>{company.job_description}</Text>
-
-          {company.role_responsibilities ? (
+          {/* Job Description - Only show if summary is available */}
+          {inviteData?.job?.job_description?.summary ? (
             <>
-              <Text style={styles.subdescriptionText}>
-                Role & responsibilities
-              </Text>
+              <Text style={styles.descriptionText}>Job Description</Text>
               <Text style={styles.description}>
-                {company.role_responsibilities}
+                {inviteData?.job?.job_description?.summary}
               </Text>
             </>
           ) : null}
 
-          <Text style={styles.ProfileText}>Preffered candidate profile</Text>
-          <Text style={styles.description}>{company.job_info}</Text>
+          {/* Requirements - Render as Bullet Points, only if there are requirements */}
+          {inviteData?.job?.job_description?.requirements &&
+          inviteData?.job?.job_description?.requirements.length > 0 ? (
+            <>
+              <Text style={styles.subdescriptionText}>Requirements</Text>
+              <View style={styles.bulletPointContainer}>
+                {inviteData?.job?.job_description?.requirements.map(
+                  (item, index) => (
+                    <Text key={index} style={styles.bulletPointText}>
+                      • {item}
+                    </Text>
+                  ),
+                )}
+              </View>
+            </>
+          ) : null}
+
+          {/* Responsibilities - Render as Bullet Points, only if there are responsibilities */}
+          {inviteData?.job?.job_description?.responsibilities &&
+          inviteData?.job?.job_description?.responsibilities.length > 0 ? (
+            <>
+              <Text style={styles.subdescriptionText}>
+                Role & Responsibilities
+              </Text>
+              <View style={styles.bulletPointContainer}>
+                {inviteData?.job?.job_description?.responsibilities.map(
+                  (item, index) => (
+                    <Text key={index} style={styles.bulletPointText}>
+                      • {item}
+                    </Text>
+                  ),
+                )}
+              </View>
+            </>
+          ) : null}
+
+          {/* Preferred Candidate Profile - Only show if job_info exists */}
+          {inviteData?.job_info ? (
+            <>
+              <Text style={styles.ProfileText}>
+                Preferred Candidate Profile
+              </Text>
+              <Text style={styles.description}>{inviteData?.job_info}</Text>
+            </>
+          ) : null}
         </View>
 
         <View style={styles.Industryname}>
           <Text style={styles.industryText}>Industry Type</Text>
-          <Text style={styles.detailsText}>{company.industry}</Text>
+          <Text style={styles.detailsText}>
+            {inviteData?.job?.industry_type?.industry_name}
+          </Text>
         </View>
 
         <View style={styles.Industryname}>
           <Text style={styles.industryText}> Role</Text>
-          <Text style={styles.detailsText}>{company.job_title}</Text>
+          <Text style={styles.detailsText}>
+            {inviteData?.job?.job_title_category?.title}
+          </Text>
         </View>
       </ScrollView>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
-          style={[styles.applyButton, {backgroundColor: applyButtonColor}]} // Dynamically change the background color
-          onPress={handleApplyPress}>
-          <Text style={styles.applybuttonText}>{buttonStatus}</Text>
+          style={[
+            styles.applyButton,
+            {
+              backgroundColor: inviteData?.job?.is_applied
+                ? 'green'
+                : applyButtonColor,
+            },
+          ]} // Dynamically change the background color
+          onPress={() => {
+            if (inviteData?.job?.is_applied) {
+              Toast.show('Already applied for this job!', {
+                type: 'warning',
+                placement: 'top',
+                duration: 4000,
+                offset: 100,
+                animationType: 'slide-in',
+              });
+            } else {
+              openApplyModal();
+            }
+          }}>
+          <Text style={styles.applybuttonText}>
+            {inviteData?.job?.is_applied ? 'Applied' : 'Apply'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.notInterestedButton}
-          onPress={() => console.log('Not Interested Pressed')}>
+          onPress={handlePress}>
           <Text style={styles.notInterestedButtonText}>Not Interested</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Apply for {inviteData?.job?.company_name}
+            </Text>
+
+            <TextInput
+              style={styles.coverLetterInput}
+              placeholder="Write your cover letter here..."
+              multiline={true}
+              numberOfLines={4}
+              value={coverLetter}
+              onChangeText={handleInputChange}
+            />
+
+            <View style={styles.modalButtonsContainer}>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleApplyPress}>
+                <Text style={styles.submitButtonText}>Apply</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -133,12 +291,12 @@ const styles = StyleSheet.create({
   companyHeaderName: {
     color: colors.blackText,
     fontSize: 16,
+    marginLeft: 16,
   },
   headerContainer: {
     marginHorizontal: 12,
     marginVertical: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   container: {
@@ -163,8 +321,7 @@ const styles = StyleSheet.create({
   },
   detailsText: {
     fontSize: 12,
-    color:'gray',
-    marginTop:4
+    color: 'gray',
   },
   Industryname: {
     // color:colors.blackText
@@ -184,9 +341,9 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     color: colors.blackText,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginTop:8
+    marginTop: 8,
   },
   subdescriptionText: {
     color: colors.blackText,
@@ -194,11 +351,21 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: 'bold',
   },
+  bulletPointContainer: {
+    marginTop: 4,
+    // marginLeft: 16,
+    marginBottom: 8,
+  },
+  bulletPointText: {
+    fontSize: 11,
+    color: 'gray',
+    marginBottom: 4,
+  },
+
   description: {
     fontSize: 12,
     marginTop: 4,
-    color:'gray',
-
+    color: 'gray',
   },
   ProfileText: {
     color: colors.blackText,
@@ -214,8 +381,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#f1f1f1', // Added background color for the buttons container
     paddingVertical: 12, // Optional: To add some padding around the buttons
-    // borderTopWidth: 2, // Optional: Add a top border to the container for better distinction
-    // borderTopColor: colors.lightgaryText, // Optional: Color of the top border
+
     backgroundColor: colors.whiteText,
     padding: 10,
   },
@@ -249,6 +415,62 @@ const styles = StyleSheet.create({
   notInterestedButtonText: {
     color: '#000',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dimmed background
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  coverLetterInput: {
+    height: 100,
+    borderColor: colors.lightgaryText,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 20,
+    padding: 10,
+    textAlignVertical: 'top',
+  },
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  submitButton: {
+    flex: 1,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    marginRight: 10,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: 'gray',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  cancelButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
