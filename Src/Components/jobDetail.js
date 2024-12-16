@@ -664,14 +664,14 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   jobDetailsContainer: {
-    marginBottom: 4,
+    marginBottom: 8,
     // alignItems: 'center',
     marginTop:4
   },
   jobDescriptionheader: {
     fontSize: 16,
     fontWeight: 'bold',
-    // marginBottom: 4,
+    marginBottom: 4,
     color: colors.blackText,
   },
   jobDepartmentContainer: {
@@ -693,6 +693,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: '#808080',
+    marginTop:8
   },
   educationItemsContainer: {
     flexWrap: 'wrap', 
