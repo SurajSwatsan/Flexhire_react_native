@@ -36,8 +36,6 @@ const JobDetailScreen = ({route, navigation}) => {
   const [coverLetter, setCoverLetter] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-
-   
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -71,7 +69,7 @@ const JobDetailScreen = ({route, navigation}) => {
   };
 
   const handleShare = platform => {
-    setModalVisible(false); 
+    setModalVisible(false);
 
     if (platform === 'whatsapp') {
       Linking.openURL('whatsapp://send?text=Check%20this%20out!');
@@ -104,6 +102,30 @@ const JobDetailScreen = ({route, navigation}) => {
                   </Text>
                 </View>
 
+                <View style={styles.jobDetailsContainer}>
+                  <Text style={styles.jobDescriptionheader}>Requirements:</Text>
+                  {JobDetails?.job_description?.requirements?.map(
+                    (item, index) => (
+                      <View key={index} style={styles.bulletContainer}>
+                        <Text style={styles.bullet}>●</Text>
+                        <Text style={styles.jobDescription}>{item}</Text>
+                      </View>
+                    ),
+                  )}
+                </View>
+
+                <View style={styles.jobDetailsContainer}>
+                  <Text style={styles.jobDescriptionheader}>Responsibilities:</Text>
+                  {JobDetails?.job_description?.responsibilities?.map(
+                    (item, index) => (
+                      <View key={index} style={styles.bulletContainer}>
+                        <Text style={styles.bullet}>●</Text>
+                        <Text style={styles.jobDescription}>{item}</Text>
+                      </View>
+                    ),
+                  )}
+                </View>
+
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Department:</Text>
                   <Text style={styles.jobDetails1}>
@@ -133,12 +155,7 @@ const JobDetailScreen = ({route, navigation}) => {
                     {JobDetails?.work_modes?.join(', ')}
                   </Text>
                 </View>
-                {/* <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Role Category:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {jobData.role_category}
-                  </Text>
-                </View> */}
+
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Industry Type:</Text>
                   <Text style={styles.jobDetails1}>
@@ -166,14 +183,14 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Industry:</Text>
               <Text style={styles.jobDetails1}>
-              {JobDetails?.company?.industry?.industry_name}
+                {JobDetails?.company?.industry?.industry_name}
               </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Location:</Text>
               <Text style={styles.jobDetails1}>
-              {JobDetails?.company?.headquarters}
+                {JobDetails?.company?.headquarters}
               </Text>
             </View>
 
@@ -649,18 +666,28 @@ const styles = StyleSheet.create({
   jobDetailsContainer: {
     marginBottom: 4,
     // alignItems: 'center',
+    marginTop:4
   },
   jobDescriptionheader: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    // marginBottom: 4,
     color: colors.blackText,
   },
   jobDepartmentContainer: {
     marginBottom: 8,
     gap: 2,
-    // flexDirection: 'row',
-    // // alignItems: 'center',
+  
+  },
+  bulletContainer: {
+    flexDirection: 'row', 
+
+    margin:2
+  },
+  bullet: {
+    fontSize: 12, 
+    color: '#333', 
+    marginRight: 10, 
   },
   jobDetailsheader: {
     fontSize: 12,
@@ -668,7 +695,7 @@ const styles = StyleSheet.create({
     color: '#808080',
   },
   educationItemsContainer: {
-    flexWrap: 'wrap', // Allow items to wrap if there are too many to fit
+    flexWrap: 'wrap', 
   },
   contHead: {
     fontSize: 18,
