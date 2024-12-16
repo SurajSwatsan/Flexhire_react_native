@@ -3,19 +3,11 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthViewController from '../Redux/Action/AuthViewController';
-<<<<<<< HEAD
- 
-const SplashScreen = () => {
-  const navigation = useNavigation();
-  const {checkLoginStatus} = AuthViewController();
- 
-=======
 
 const SplashScreen = () => {
   const navigation = useNavigation();
   const {checkLoginStatus} = AuthViewController();
 
->>>>>>> 0249aea63bdb250b7576622de11771d739fd0d6c
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -32,19 +24,11 @@ const SplashScreen = () => {
         navigation.replace('LoginScreen'); // Fallback to login on error
       }
     };
-<<<<<<< HEAD
- 
-    const timeout = setTimeout(initializeApp, 3000); // Delay for 3 seconds to show splash
-    return () => clearTimeout(timeout); // Clear timeout on unmount
-  }, [checkLoginStatus, navigation]);
- 
-=======
 
     const timeout = setTimeout(initializeApp, 3000); // Delay for 3 seconds to show splash
     return () => clearTimeout(timeout); // Clear timeout on unmount
   }, [checkLoginStatus, navigation]);
 
->>>>>>> 0249aea63bdb250b7576622de11771d739fd0d6c
   return (
     <View style={styles.container}>
       <View></View>
@@ -62,7 +46,7 @@ const SplashScreen = () => {
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,5 +76,5 @@ const styles = StyleSheet.create({
     width: 240,
   },
 });
- 
+
 export default SplashScreen;

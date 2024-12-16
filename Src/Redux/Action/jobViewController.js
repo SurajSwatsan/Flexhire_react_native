@@ -36,7 +36,7 @@ const JobViewController = () => {
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_APPLICATION_SUCCESS', payload: data});
 
@@ -173,7 +173,7 @@ const JobViewController = () => {
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_SAVED_SUCCESS', payload: data});
       dispatch({type: 'LOADING', payload: false});
@@ -260,7 +260,7 @@ const JobViewController = () => {
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_INVITATION_SUCCESS', payload: data});
       dispatch({type: 'LOADING', payload: false});
@@ -298,10 +298,10 @@ const JobViewController = () => {
       const response = await axios.put(
         `http://15.206.149.28/api/read-job-invitation/${invitation_id}/`,
       );
-      console.log(
-        '****************************job-Invitation response***************************',
-      );
-      console.log(response);
+      // console.log(
+      //   '****************************job-Invitation response***************************',
+      // );
+      // console.log(response);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -387,13 +387,13 @@ const JobViewController = () => {
       const response = await axios.get(
         `http://15.206.149.28/api/jobs/homepage/${user_id}`,
       );
-      console.log(
-        '****************************job-GetHomeData response***************************',
-      );
+      // console.log(
+      //   '****************************job-GetHomeData response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_HOMEDATA_SUCCESS', payload: data});
 

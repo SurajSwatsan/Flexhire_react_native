@@ -17,8 +17,6 @@ import {
 } from '@react-navigation/native';
 import {IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import {jobPost} from '../../Redux/Action/JobAction';
-import CustomJobCard from '../../Constant/CustomJobCard';
 import {colors} from '../../Global_CSS/TheamColors';
 import CustomCompanyCard from '../../Constant/CustomCompanyCard';
 import {CircularProgress} from 'react-native-circular-progress'; // Import the CircularProgress component
@@ -37,19 +35,16 @@ const HomeScreen = () => {
 
   const [id, setId] = useState();
 
-  console.log(
-    'CompanyData:',
-    JSON.stringify(CompanyData.top_companies, null, 2),
-  );
-  console.log('.......................', CompanyData.top_companies);
-
   const [selectedChip, setSelectedChip] = useState(null);
 
   const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
+  const [isSaved, setIsSaved] = useState(false);
 
-  // Load jobs data into the Redux store when the component mounts
+  const toggleSaveStatus = () => {
+    setIsSaved(prevState => !prevState);
+  };
+
   useEffect(() => {
-    // dispatch(jobPost());
     const getUserData = async () => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
@@ -92,81 +87,90 @@ const HomeScreen = () => {
     navigation.navigate('searchjob', {query});
   };
 
-  // Access jobs data from the Redux store
-  // const jobs = useSelector(state => state.Jobs.jobsData);
-
-  // if (!jobs || jobs.length === 0) {
-  //   return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
-  // }
-
   const lastUpdatedDate = '2024-11-24';
   const daysSinceUpdate = moment().diff(moment(lastUpdatedDate), 'days');
 
-  // const profileCompletion = 75;
+  const handleCardPress = (jobdata) => {
+    // Navigate to the JobDetailScreen and pass the jobdata (or job ID)
+    navigation.navigate('JobDetailScreen', {job_id: jobdata.id});
+  };
+
   const renderCard = jobdata => {
+    if (!jobdata?.id) {
+      console.warn('Missing job data id');
+      return null;
+    }
     return (
-      <View key={jobdata.id} style={styles.jobCard}>
-        {/* Job Card Header (Title and Company Name) */}
-        <View style={styles.companyInfo}>
-          <Image
-            source={
-              jobdata.company.logo
-                ? {uri: jobdata?.company?.logo}
-                : require('../../Assets/CompanyLogo/TCS_logo.png')
-            }
-            style={styles.companyImage}
-          />
-          <View>
-            <Text style={styles.jobTitle}>{jobdata?.job_title?.title}</Text>
-            <Text style={styles.companyName}>{jobdata?.company_name}</Text>
-          </View>
-          <IconButton
-            icon="bookmark-outline"
-            iconColor={colors.primary}
-            size={20}
-            style={{padding: 0, marginLeft: -10, height: 20}}
-          />
-        </View>
-        <View style={styles.workModeContainer}>
-          {jobdata.work_modes &&
-            jobdata.work_modes.map((mode, idx) => (
-              <View key={idx} style={styles.workModeChip}>
-                <Text style={styles.chipText}>{mode}</Text>
+      <TouchableOpacity key={jobdata.id} onPress={()=>handleCardPress(jobdata)}>
+        <View style={styles.jobCard}>
+          <View style={styles.companyInfo}>
+            <View style={styles.companylogo}>
+              <Image
+                source={
+                  jobdata.company.logo
+                    ? {uri: jobdata?.company?.logo}
+                    : require('../../Assets/CompanyLogo/TCS_logo.png')
+                }
+                style={styles.companyImage}
+              />
+              <View style={styles.textName}>
+                <Text style={styles.jobTitle}>{jobdata?.job_title?.title}</Text>
+                <Text style={styles.companyName}>{jobdata?.company_name}</Text>
               </View>
-            ))}
-        </View>
-
-        <View style={styles.location}>
-          <IconButton
-            icon="map-marker"
-            iconColor={colors.primary}
-            size={18}
-            style={{padding: 0, marginLeft: -10, height: 20}}
-          />
-          {jobdata.job_location.map((location, locIndex) => (
-            <Text key={locIndex} style={styles.jobLocation}>
-              {location.name}
-            </Text>
-          ))}
-        </View>
-
-        {/* Display job locations */}
-
-        <View style={styles.jobFooter}>
-          {jobdata?.salary && jobdata.salary.yearly && (
-            <View style={styles.experienceContainer}>
-              <Ionicons name="cash" size={14} color="#004466" />
-              <Text style={styles.jobDetailsalary}>
-                ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
-                {jobdata.salary.yearly.max.toLocaleString()} INR
-              </Text>
             </View>
-          )}
-          <Text style={styles.jobPostedDate}>
-            Posted {moment(jobdata.reviews[0]?.review_date).fromNow()}
-          </Text>
+            <View>
+              <IconButton
+                icon={isSaved ? 'bookmark' : 'bookmark-outline'}
+                iconColor={colors.primary}
+                size={24}
+                style={styles.saveicon}
+                onPress={toggleSaveStatus}
+              />
+            </View>
+          </View>
+          <View style={styles.workModeContainer}>
+            {jobdata.work_modes &&
+              jobdata.work_modes.map((mode, idx) => (
+                <View key={idx} style={styles.workModeChip}>
+                  <Text style={styles.chipText}>{mode}</Text>
+                </View>
+              ))}
+          </View>
+
+          <View style={styles.location}>
+            <IconButton
+              icon="map-marker"
+              iconColor={colors.primary}
+              size={18}
+              style={{padding: 0, marginLeft: -10, height: 20}}
+            />
+
+            {jobdata.job_location.map((location, locIndex) => (
+              <Text key={locIndex} style={styles.jobCardLocation}>
+                {location.name}
+                {locIndex < jobdata.job_location.length - 1 && ', '}
+              </Text>
+            ))}
+          </View>
+
+          <View style={styles.line}></View>
+
+          <View style={styles.jobFooter}>
+            {jobdata?.salary && jobdata.salary.yearly && (
+              <View style={styles.experienceContainer}>
+                <Ionicons name="cash" size={14} color="#004466" />
+                <Text style={styles.jobDetailsalary}>
+                  ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
+                  {jobdata.salary.yearly.max.toLocaleString()} INR
+                </Text>
+              </View>
+            )}
+            <Text style={styles.jobPostedDate}>
+              {moment(jobdata.reviews[0]?.review_date).fromNow()}
+            </Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
   return (
@@ -190,7 +194,7 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1, marginVertical: 12}}>
         <TouchableOpacity
           onPress={() => navigation.navigate('userProfileScreen')}
           style={styles.profileContainer}>
@@ -199,7 +203,7 @@ const HomeScreen = () => {
               <CircularProgress
                 size={85}
                 width={4}
-                fill={CompanyData?.profile_filled_percentage}
+                fill={CompanyData?.profile_filled_percentage || 0}
                 rotation={220}
                 tintColor="#509570" // Color of the progress
                 backgroundColor="lightgray"
@@ -226,21 +230,31 @@ const HomeScreen = () => {
         <View style={styles.JobsContainer}>
           <View style={{marginVertical: 12, marginLeft: 18}}>
             <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>suggested Jobs</Text>
-              <Text style={styles.seeAll}>See All</Text>
+              <Text style={styles.contHead}>Suggested Jobs</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See All</Text>
+              </TouchableOpacity>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
-              {/* Check if `CompanyData.recent_jobs` exists and is an array */}
+              {/* {(CompanyData?.suggested_jobs &&
+              Array.isArray(CompanyData.suggested_jobs)
+                ? CompanyData.suggested_jobs
+                : []
+              ).map(item => (
+                <>{renderCard(item)}</>
+              ))} */}
               {(CompanyData?.suggested_jobs &&
               Array.isArray(CompanyData.suggested_jobs)
                 ? CompanyData.suggested_jobs
                 : []
-              ).map((item, index) => (
-                <>{renderCard(item)}</>
+              ).map(item => (
+                <View key={item.id || item.job_title} style={{marginRight: 12}}>
+                  {renderCard(item)}
+                </View>
               ))}
             </ScrollView>
           </View>
@@ -262,10 +276,12 @@ const HomeScreen = () => {
               ))}
             </ScrollView>
           </View> */}
-          <View style={{marginVertical: 12, marginLeft: 18}}>
+          <View style={{marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Recent Jobs</Text>
-              <Text style={styles.seeAll}>See All</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See All</Text>
+              </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -298,40 +314,53 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
-              {/* Check if `CompanyData.recent_jobs` exists and is an array */}
+              {/* {(CompanyData?.recent_jobs &&
+              Array.isArray(CompanyData.recent_jobs)
+                ? CompanyData.recent_jobs
+                : []
+              ).map(item => (
+                // <>{renderCard(item)}</>
+                <View key={item.id} style={{marginRight: 12}}>
+                  <CustomJobCard jobData={item} />
+                </View>
+              ))} */}
               {(CompanyData?.recent_jobs &&
               Array.isArray(CompanyData.recent_jobs)
                 ? CompanyData.recent_jobs
                 : []
-              ).map((item, index) => (
-                <>{renderCard(item)}</>
-              ))}
-            </ScrollView>
-
-            {/* <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.contentContainer}>
-              {jobs.map((jobdata, index) => (
-                <View key={jobdata.id || index} style={{marginRight: 12}}>
-                  <CustomJobCard jobData={jobdata} />
+              ).map(item => (
+                <View key={item.id || item.job_title} style={{marginRight: 12}}>
+                  {renderCard(item)}
                 </View>
               ))}
-            </ScrollView> */}
+            </ScrollView>
           </View>
-          <View style={{marginVertical: 12, marginLeft: 18}}>
+          <View style={{marginLeft: 18}}>
             <View style={styles.displayContainer}>
               <Text style={styles.contHead}>Top Companies</Text>
-              <Text style={styles.seeAll}>See All</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See All</Text>
+              </TouchableOpacity>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.scrollContainer}
               contentContainerStyle={styles.contentContainer}>
-              {CompanyData?.top_companies?.map((item, index) => (
-                <View key={item.id || index} style={{marginRight: 12}}>
+              {/* {CompanyData?.top_companies?.map(item => (
+                // <View key={item.id} style={{marginRight: 12}}>
+                //   <CustomCompanyCard companyData={item} />
+                // </View>
+                <View
+                  key={item.id || item.company_name}
+                  style={{marginRight: 12}}>
+                  <CustomCompanyCard companyData={item} />
+                </View>
+              ))} */}
+              {(CompanyData?.top_companies || []).map(item => (
+                <View
+                  key={item.id || item.company_name}
+                  style={{marginRight: 12}}>
                   <CustomCompanyCard companyData={item} />
                 </View>
               ))}
@@ -437,6 +466,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.blackText,
     marginRight: 8,
+    textDecorationLine: 'underline',
   },
   noCompanyText: {
     fontSize: 18,
@@ -445,7 +475,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   chipContainer: {
-    paddingVertical: 4,
+    paddingVertical: 6,
   },
   chip: {
     backgroundColor: colors.whiteText, // Default blue background for each chip
@@ -474,17 +504,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 12,
     padding: 12,
-    width: 300, // Adjust width as needed
-
+    width: '100%',
     marginBottom: 20,
   },
   jobCardHeader: {
     marginBottom: 8,
   },
+  companylogo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   companyInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 8,
+    // marginVertical: 8,
+    justifyContent: 'space-between',
+  },
+  textName: {
+    flexDirection: 'column,',
   },
   companyImage: {
     width: 42,
@@ -510,19 +547,25 @@ const styles = StyleSheet.create({
   workModeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // marginTop: 8,
-    // marginBottom: 8,
+    gap: 4,
   },
   workModeChip: {
-    backgroundColor: '#E1F5FE',
+    fontSize: 12,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 6,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  saveicon: {
+    alignSelf: 'center',
+    right: -14,
+    top: -6,
   },
   chipText: {
-    color: '#007BFF',
+    color: '#000',
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -534,13 +577,13 @@ const styles = StyleSheet.create({
   },
   location: {
     flexDirection: 'row',
-    gap: 5,
+    // gap: 0,
     alignItems: 'center',
   },
   jobLocation: {
     fontSize: 12,
     color: '#808080',
-    marginLeft: -12,
+    // marginLeft: -12,
   },
   experienceContainer: {
     flexDirection: 'row',
@@ -558,14 +601,19 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontWeight: 'bold',
   },
-  jobLocation: {
-    fontSize: 12,
+  jobCardLocation: {
+    fontSize: 11,
     color: '#555',
+    marginLeft: -4,
   },
   jobPostedDate: {
     fontSize: 12,
     color: '#808080',
-    textAlign: 'right',
+    // textAlign: 'right',
+  },
+  line: {
+    color: '#fafafa',
+    borderWidth: 0.5,
   },
 });
 

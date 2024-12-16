@@ -16,7 +16,6 @@ import {colors} from '../Global_CSS/TheamColors';
 import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
-import CustomJobCard from '../Constant/CustomJobCard';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import JobViewController from '../Redux/Action/jobViewController';
@@ -37,6 +36,8 @@ const JobDetailScreen = ({route, navigation}) => {
   const [coverLetter, setCoverLetter] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
+
+   
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -165,14 +166,14 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Industry:</Text>
               <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.industry_type}
+              {JobDetails?.company?.industry?.industry_name}
               </Text>
             </View>
 
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>Location:</Text>
               <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.location}
+              {JobDetails?.company?.headquarters}
               </Text>
             </View>
 

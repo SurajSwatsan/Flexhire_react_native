@@ -9,7 +9,7 @@ import { colors } from '../Global_CSS/TheamColors';
 const CustomCompanyCard = ({ companyData }) => {
   const navigation = useNavigation();
 
-  console.log('//////////////////////////////////////////////////////',companyData);
+
 
 
   if (!companyData || typeof companyData !== 'object') {
@@ -52,7 +52,7 @@ const CustomCompanyCard = ({ companyData }) => {
           style={styles.companyImage}
         />
         <View>
-          <Text style={styles.companyName}>{companyData?.top_companies?.company_name}</Text>
+          <Text style={styles.companyName}>{companyData?.company_name}</Text>
         </View>
 
         {/* Display Company Rating as Stars */}
