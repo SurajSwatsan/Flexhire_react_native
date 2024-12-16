@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  FlatList,
   StyleSheet,
   Text,
   View,
@@ -9,6 +8,8 @@ import {
   Alert,
   TextInput,
   TouchableOpacity,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,17 +23,18 @@ import {useNavigation} from '@react-navigation/native';
 const JobScreen = () => {
   const [id, setId] = useState(null);
   const [query, setQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Spinner for pagination
+  const [isLoading, setIsLoading] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
   const {GetJobList} = JobViewController();
-  const {JobList} = useSelector(state => state.job); // Fetch JobList from Redux state
+  const {JobList} = useSelector(state => state.job);
 
-  // Fetch user data and dispatch job list action
   const handleSearch = () => {
     navigation.navigate('searchjob', {query});
   };
+
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -49,24 +51,20 @@ const JobScreen = () => {
     getUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // Bookmark handling
+
   const handleBookmark = jobId => {
     Alert.alert('Bookmark Clicked', `You bookmarked job ID: ${jobId}`);
-    // Add bookmark logic here (e.g., dispatch an action or call an API)
   };
 
-  // Fetch next page of jobs for pagination
   const loadMoreJobs = () => {
     if (JobList?.next && !isLoading) {
       setIsLoading(true);
-      // Dispatch action to load more jobs using the next page URL
       dispatch(GetJobList(null, JobList.next)).finally(() => {
         setIsLoading(false);
       });
     }
   };
 
-  // Show a loading spinner while data is being fetched
   if (!JobList || !JobList.results) {
     return (
       <View style={styles.loadingContainer}>
@@ -76,92 +74,10 @@ const JobScreen = () => {
     );
   }
 
-  const handlejobdetails = jobdata => {
+  const handleJobDetails = jobData => {
     navigation.navigate('JobDetailScreen', {
-      job_id: jobdata.id,
+      job_id: jobData.id,
     });
-  };
-  // Render individual job items
-  const renderJobCard = ({item: jobdata}) => {
-    return (
-      <TouchableOpacity
-        key={jobdata.id}
-        onPress={() => handlejobdetails(jobdata)}>
-        <View key={jobdata.id} style={styles.jobCard}>
-          {/* Job Card Header (Title and Company Name) */}
-          <View style={styles.companyInfo}>
-            <View style={styles.companylogo}>
-              <Image
-                source={
-                  jobdata.company.logo
-                    ? {uri: jobdata?.company?.logo}
-                    : require('../../Assets/CompanyLogo/Swatsan.png')
-                }
-                style={styles.companyImage}
-              />
-              <View style={styles.textName}>
-                <Text style={styles.jobTitle}>{jobdata?.job_title?.title}</Text>
-                <Text style={styles.companyName}>{jobdata?.company_name}</Text>
-              </View>
-            </View>
-            <View>
-              <IconButton
-                icon="bookmark-outline"
-                iconColor={colors.primary}
-                size={24}
-                style={styles.saveicon}
-                onPress={() => handleBookmark(jobdata.id)}
-              />
-            </View>
-          </View>
-
-          {/* Work Modes */}
-          <View style={styles.workModeContainer}>
-            {jobdata.work_modes &&
-              jobdata.work_modes.map((mode, idx) => (
-                <View key={idx} style={styles.workModeChip}>
-                  <Text style={styles.chipText}>{mode}</Text>
-                </View>
-              ))}
-          </View>
-
-          {/* Job Locations */}
-          <View style={styles.location}>
-            <IconButton
-              icon="map-marker"
-              iconColor={colors.primary}
-              size={18}
-              style={{padding: 0, marginLeft: -10, height: 20}}
-            />
-            {jobdata.job_location.map((location, locIndex) => (
-              <Text key={locIndex} style={styles.jobCardLocation}>
-                {location.name}
-                {locIndex < jobdata.job_location.length - 1 && ', '}
-              </Text>
-            ))}
-          </View>
-
-          {/* Divider */}
-          <View style={styles.line} />
-
-          {/* Footer (Salary and Post Date) */}
-          <View style={styles.jobFooter}>
-            {jobdata?.salary && jobdata.salary.yearly && (
-              <View style={styles.experienceContainer}>
-                <Ionicons name="cash" size={14} color="#004466" />
-                <Text style={styles.jobDetailsalary}>
-                  ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
-                  {jobdata.salary.yearly.max.toLocaleString()} INR
-                </Text>
-              </View>
-            )}
-            <Text style={styles.jobPostedDate}>
-              {moment(jobdata.reviews[0]?.review_date).fromNow()}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
   };
 
   return (
@@ -187,28 +103,104 @@ const JobScreen = () => {
           <Ionicons name="filter-outline" size={32} color={colors.primary} />
         </View>
       </View>
-      <View style={styles.companyContainer}>
-        <FlatList
-          data={JobList.results}
-          keyExtractor={item => item.id}
-          renderItem={renderJobCard}
-          contentContainerStyle={styles.listContainer}
-          onEndReached={loadMoreJobs} // Trigger loadMoreJobs when reaching the bottom
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            isLoading && (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color="#0000ff" />
-                <Text>Loading more jobs...</Text>
+      <ScrollView
+        style={styles.companyContainer}
+        contentContainerStyle={{paddingBottom: 16}}
+        onScrollEndDrag={loadMoreJobs} // Trigger loadMoreJobs on scroll end
+        scrollEventThrottle={16}>
+        {JobList.results.map(jobData => (
+          <TouchableOpacity
+            key={jobData.id}
+            onPress={() => handleJobDetails(jobData)}>
+            <View style={styles.jobCard}>
+              {/* Job Card Header (Title and Company Name) */}
+              <View style={styles.companyInfo}>
+                <View style={styles.companylogo}>
+                  <Image
+                    source={
+                      jobData.company.logo
+                        ? {uri: jobData?.company?.logo}
+                        : require('../../Assets/CompanyLogo/Swatsan.png')
+                    }
+                    style={styles.companyImage}
+                  />
+                  <View style={styles.textName}>
+                    <Text style={styles.jobTitle}>
+                      {jobData?.job_title?.title}
+                    </Text>
+                    <Text style={styles.companyName}>
+                      {jobData?.company_name}
+                    </Text>
+                  </View>
+                </View>
+                <View>
+                  <IconButton
+                    icon="bookmark-outline"
+                    iconColor={colors.primary}
+                    size={24}
+                    style={styles.saveicon}
+                    onPress={() => handleBookmark(jobData.id)}
+                  />
+                </View>
               </View>
-            )
-          }
-        />
-      </View>
+
+              {/* Work Modes */}
+              <View style={styles.workModeContainer}>
+                {jobData.work_modes &&
+                  jobData.work_modes.map((mode, idx) => (
+                    <View key={idx} style={styles.workModeChip}>
+                      <Text style={styles.chipText}>{mode}</Text>
+                    </View>
+                  ))}
+              </View>
+
+              {/* Job Locations */}
+              <View style={styles.location}>
+                <IconButton
+                  icon="map-marker"
+                  iconColor={colors.primary}
+                  size={18}
+                  style={{padding: 0, marginLeft: -10, height: 20}}
+                />
+                {jobData.job_location.map((location, locIndex) => (
+                  <Text key={locIndex} style={styles.jobCardLocation}>
+                    {location.name}
+                    {locIndex < jobData.job_location.length - 1 && ', '}
+                  </Text>
+                ))}
+              </View>
+
+              {/* Divider */}
+              <View style={styles.line} />
+
+              {/* Footer (Salary and Post Date) */}
+              <View style={styles.jobFooter}>
+                {jobData?.salary && jobData.salary.yearly && (
+                  <View style={styles.experienceContainer}>
+                    <Ionicons name="cash" size={14} color="#004466" />
+                    <Text style={styles.jobDetailsalary}>
+                      ₹{jobData.salary.yearly.min.toLocaleString()} - ₹
+                      {jobData.salary.yearly.max.toLocaleString()} INR
+                    </Text>
+                  </View>
+                )}
+                <Text style={styles.jobPostedDate}>
+                  {moment(jobData.reviews[0]?.review_date).fromNow()}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text>Loading more jobs...</Text>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   bodycontainer: {
     backgroundColor: colors.background,
@@ -254,7 +246,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     backgroundColor: colors.background,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingTop: 12,
   },
   loadingContainer: {
     flex: 1,
