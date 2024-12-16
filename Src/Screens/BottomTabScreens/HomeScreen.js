@@ -612,8 +612,8 @@ const styles = StyleSheet.create({
     // textAlign: 'right',
   },
   line: {
-    color: '#fafafa',
-    borderWidth: 0.5,
+    backgroundColor: '#f2f2f2',
+    height:1,
   },
 });
 
