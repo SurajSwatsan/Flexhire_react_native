@@ -75,7 +75,7 @@ const Keyskills = profileDetails => {
       key_skills: selectedSkills,
     };
 
-    if (profileDetails.profileDetails.id) {
+    if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(payload));
     } else {
       dispatch(addProfileDetails(payload));

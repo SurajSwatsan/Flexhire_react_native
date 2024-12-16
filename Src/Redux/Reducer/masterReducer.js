@@ -6,7 +6,7 @@ const initialState = {
   departments: [],
   categories: [],
   roles: [],
-  laguages: [],
+  language: [],
   boards: [],
   mediums: [],
   universities: [],

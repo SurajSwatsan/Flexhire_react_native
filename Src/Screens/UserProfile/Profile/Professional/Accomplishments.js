@@ -61,16 +61,15 @@ const Accomplishments = profileDetails => {
     //   '================================',
     //   profileDetails?.profileDetails?.accomplishments,
     // );
-    console.log(
-      'accomplishments Data:',
-      JSON.stringify(profileDetails?.profileDetails?.accomplishments, null, 2),
-    );
+    // console.log(
+    //   'accomplishments Data:',
+    //   JSON.stringify(profileDetails?.profileDetails?.accomplishments, null, 2),
+    // );
     setAccomplishmentsData(profileDetails?.profileDetails?.accomplishments);
   }, [profileDetails]);
 
   const openModal = (key, item = null) => {
-    console.log('Key Passed to openModal:', key);
-    console.log('Item Passed to openModal:', item);
+
     setActiveTab(key);
     setModalVisible(true); // Show the modal
     setSelectedItem(item); // Set the index for editing
@@ -260,7 +259,7 @@ const Accomplishments = profileDetails => {
   };
 
   const renderFields = (values, handleChange, setFieldValue) => {
-    console.log('Active Tab:', activeTab);
+
     switch (activeTab) {
       case 'research':
         return (

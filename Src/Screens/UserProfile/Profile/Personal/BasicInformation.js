@@ -36,158 +36,6 @@ const OPTIONS = {
   ],
 };
 
-const LOCATIONS = {
-  // COUNTRIES: [
-  //   {id: 1, value: 'United States'},
-  //   {id: 2, value: 'Canada'},
-  //   {id: 3, value: 'United Kingdom'},
-  //   {id: 4, value: 'Australia'},
-  //   {id: 5, value: 'India'},
-  //   {id: 6, value: 'Germany'},
-  //   {id: 7, value: 'France'},
-  //   {id: 8, value: 'Japan'},
-  //   {id: 9, value: 'China'},
-  //   {id: 10, value: 'Brazil'},
-  //   {id: 11, value: 'South Africa'},
-  //   {id: 12, value: 'Mexico'},
-  //   {id: 13, value: 'Italy'},
-  //   {id: 14, value: 'Russia'},
-  //   {id: 15, value: 'Spain'},
-  // ],
-  STATES: [
-    {id: 1, value: 'Andhra Pradesh'},
-    {id: 2, value: 'Arunachal Pradesh'},
-    {id: 3, value: 'Assam'},
-    {id: 4, value: 'Bihar'},
-    {id: 5, value: 'Chhattisgarh'},
-    {id: 6, value: 'Goa'},
-    {id: 7, value: 'Gujarat'},
-    {id: 8, value: 'Haryana'},
-    {id: 9, value: 'Himachal Pradesh'},
-    {id: 10, value: 'Jharkhand'},
-    {id: 11, value: 'Karnataka'},
-    {id: 12, value: 'Kerala'},
-    {id: 13, value: 'Madhya Pradesh'},
-    {id: 14, value: 'Maharashtra'},
-    {id: 15, value: 'Manipur'},
-    {id: 16, value: 'Meghalaya'},
-    {id: 17, value: 'Mizoram'},
-    {id: 18, value: 'Nagaland'},
-    {id: 19, value: 'Odisha'},
-    {id: 20, value: 'Punjab'},
-    {id: 21, value: 'Rajasthan'},
-    {id: 22, value: 'Sikkim'},
-    {id: 23, value: 'Tamil Nadu'},
-    {id: 24, value: 'Telangana'},
-    {id: 25, value: 'Tripura'},
-    {id: 26, value: 'Uttar Pradesh'},
-    {id: 27, value: 'Uttarakhand'},
-    {id: 28, value: 'West Bengal'},
-    {id: 29, value: 'Andaman and Nicobar Islands'},
-    {id: 30, value: 'Chandigarh'},
-    {id: 31, value: 'Dadra and Nagar Haveli and Daman and Diu'},
-    {id: 32, value: 'Lakshadweep'},
-    {id: 33, value: 'Delhi'},
-    {id: 34, value: 'Puducherry'},
-    {id: 35, value: 'Jammu & Kashmir'},
-    {id: 36, value: 'Ladakh'},
-  ],
-  CITIES: [
-    {id: 1, value: 'Mumbai'},
-    {id: 2, value: 'Pune'},
-    {id: 3, value: 'Nagpur'},
-    {id: 4, value: 'Nashik'},
-    {id: 5, value: 'Thane'},
-    {id: 6, value: 'Aurangabad'},
-    {id: 7, value: 'Solapur'},
-    {id: 8, value: 'Satara'},
-    {id: 9, value: 'Kolhapur'},
-    {id: 10, value: 'Navi Mumbai'},
-    {id: 11, value: 'Kalyan-Dombivli'},
-    {id: 12, value: 'Chandrapur'},
-    {id: 13, value: 'Jalgaon'},
-    {id: 14, value: 'Ulhasnagar'},
-    {id: 15, value: 'Ahmednagar'},
-    {id: 16, value: 'Ratnagiri'},
-    {id: 17, value: 'Wardha'},
-    {id: 18, value: 'Beed'},
-    {id: 19, value: 'Shirdi'},
-    {id: 20, value: 'Ichalkaranji'},
-    {id: 21, value: 'Amravati'},
-    {id: 22, value: 'Bhusawal'},
-    {id: 23, value: 'Bhandara'},
-    {id: 24, value: 'Chinchwad'},
-    {id: 25, value: 'Dombivli'},
-    {id: 26, value: 'Ghatkopar'},
-    {id: 27, value: 'Ichalkaranji'},
-    {id: 28, value: 'Jalna'},
-    {id: 29, value: 'Khamgaon'},
-    {id: 30, value: 'Latur'},
-    {id: 31, value: 'Malegaon'},
-    {id: 32, value: 'Matheran'},
-    {id: 33, value: 'Miraj'},
-    {id: 34, value: 'Nagothane'},
-    {id: 35, value: 'Osmanabad'},
-    {id: 36, value: 'Parbhani'},
-    {id: 37, value: 'Raigad'},
-    {id: 38, value: 'Sangli'},
-    {id: 39, value: 'Satara'},
-    {id: 40, value: 'Shivajinagar'},
-    {id: 41, value: 'Solapur'},
-    {id: 42, value: 'Talegaon'},
-    {id: 43, value: 'Tirora'},
-    {id: 44, value: 'Vadgaon'},
-    {id: 45, value: 'Vasai-Virar'},
-    {id: 46, value: 'Wai'},
-    {id: 47, value: 'Worli'},
-    {id: 48, value: 'Yavatmal'},
-    {id: 49, value: 'Pimpalgaon'},
-    {id: 50, value: 'Chopda'},
-    {id: 51, value: 'Dattawadi'},
-    {id: 52, value: 'Devgad'},
-    {id: 53, value: 'Dhule'},
-    {id: 54, value: 'Gadchiroli'},
-    {id: 55, value: 'Gokul'},
-    {id: 56, value: 'Hingoli'},
-    {id: 57, value: 'Junnar'},
-    {id: 58, value: 'Kankavli'},
-    {id: 59, value: 'Karjat'},
-    {id: 60, value: 'Khargone'},
-    {id: 61, value: 'Kundal'},
-    {id: 62, value: 'Lohgaon'},
-    {id: 63, value: 'Malkapur'},
-    {id: 64, value: 'Mhasla'},
-    {id: 65, value: 'Mokhada'},
-    {id: 66, value: 'Mulund'},
-    {id: 67, value: 'Mulshi'},
-    {id: 68, value: 'Nandurbar'},
-    {id: 69, value: 'Ozar'},
-    {id: 70, value: 'Pachora'},
-    {id: 71, value: 'Palghar'},
-    {id: 72, value: 'Panchgani'},
-    {id: 73, value: 'Pandharpur'},
-    {id: 74, value: 'Panvel'},
-    {id: 75, value: 'Pratapgarh'},
-    {id: 76, value: 'Rajapur'},
-    {id: 77, value: 'Rajgurunagar'},
-    {id: 78, value: 'Ranjangaon'},
-    {id: 79, value: 'Sankh'},
-    {id: 80, value: 'Saswad'},
-    {id: 81, value: 'Sawantwadi'},
-    {id: 82, value: 'Shahapur'},
-    {id: 83, value: 'Shindkheda'},
-    {id: 84, value: 'Sinnar'},
-    {id: 85, value: 'Taloja'},
-    {id: 86, value: 'Udgir'},
-    {id: 87, value: 'Vasai'},
-    {id: 88, value: 'Vengurla'},
-    {id: 89, value: 'Vidyanagar'},
-    {id: 90, value: 'Vikhroli'},
-    {id: 91, value: 'Wada'},
-    {id: 92, value: 'Wadi'},
-  ],
-};
-
 const validationSchema = Yup.object().shape({
   DOB: Yup.date()
     .required('Date of Birth is required')
@@ -260,7 +108,7 @@ const BasicInformation = profileDetails => {
 
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
-
+  console.log(id);
   useEffect(() => {
     if (profileDetails?.profileDetails?.basic_details) {
       const render_Fields = [
@@ -389,14 +237,13 @@ const BasicInformation = profileDetails => {
     };
 
     setBasicInfoData(formattedValues);
-    // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
+    console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
 
-    if (profileDetails.profileDetails.id) {
+    if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(formattedValues));
     } else {
       dispatch(addProfileDetails(formattedValues));
     }
-    // dispatch(updateProfileDetails(formattedValues));
     setModalVisible(false);
   };
 

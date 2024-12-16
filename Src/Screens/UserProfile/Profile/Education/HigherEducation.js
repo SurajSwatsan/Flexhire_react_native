@@ -30,11 +30,7 @@ const EducationLevels = [
   {id: 3, value: 'Graduate', label: 'Graduate'},
   {id: 4, value: 'Diploma', label: 'Diploma'},
 ];
-const University_options = [
-  {id: 1, value: 'Shivahi University'},
-  {id: 2, value: 'Public University'},
-  {id: 3, value: 'Mumbai University'},
-];
+
 const startYear = 1980;
 const currentYear = new Date().getFullYear();
 const endYear = currentYear + 4;
@@ -163,7 +159,7 @@ const HigherEducation = profileDetails => {
   }, []);
 
   useEffect(() => {
-    const UNIVERSITIES = universities?.map(uni => ({
+    const university_data = universities?.map(uni => ({
       id: uni.id,
       value: uni.name,
     }));
@@ -178,7 +174,7 @@ const HigherEducation = profileDetails => {
       value: speci.specialization_name,
     }));
 
-    setUniversityData(UNIVERSITIES);
+    setUniversityData(university_data);
     setCourseData(COURSES);
     setSpecializationData(SPECIALIZATION);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,9 +222,8 @@ const HigherEducation = profileDetails => {
               EducationLevels.find(opt => opt.value === values.education_level)
                 ?.value || '',
             university_name:
-              University_options?.find(
-                uni => uni.value === values.university_name,
-              )?.value || '',
+              universitydata?.find(uni => uni.value === values.university_name)
+                ?.value || '',
             course_name:
               courseData?.find(cn => cn.value === values.course_name)?.value ||
               '',
@@ -255,7 +250,7 @@ const HigherEducation = profileDetails => {
 
       // Dispatch the data
 
-      if (profileDetails.profileDetails.id) {
+      if (profileDetails?.profileDetails?.id) {
         dispatch(updateProfileDetails(formattedValues));
       } else {
         dispatch(addProfileDetails(formattedValues));
@@ -427,8 +422,8 @@ const HigherEducation = profileDetails => {
                     <>
                       <CustomSelectionModal
                         title="University Name"
-                        data={University_options}
-                        selectedItems={University_options?.find(
+                        data={universitydata}
+                        selectedItems={universitydata?.find(
                           item => item.value === values.university_name,
                         )}
                         setSelectedItems={item =>

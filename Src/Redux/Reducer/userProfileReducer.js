@@ -4,7 +4,7 @@ const initialState = {
   error: null,
   isLoding: false,
 };
- 
+
 const ProfileReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'LODING':
@@ -45,13 +45,10 @@ const ProfileReducer = (state = initialState, action) => {
         ...state,
         error: action.payload.error,
       };
- 
-   
- 
+
     default:
       return state;
   }
 };
- 
+
 export default ProfileReducer;
- 

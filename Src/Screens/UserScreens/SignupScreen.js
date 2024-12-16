@@ -27,6 +27,10 @@ const SignupScreen = () => {
   const {register} = AuthViewController();
 
   const signupSchema = Yup.object().shape({
+    first_name: Yup.string().required('First name is required'),
+
+    last_name: Yup.string().required('Last name is required'),
+
     email: Yup.string()
       .email('Please enter a valid email address')
       .required('Email is required'),
@@ -48,6 +52,8 @@ const SignupScreen = () => {
   const handleSubmit = values => {
     try {
       const UserData = {
+        first_name: values.first_name,
+        last_name: values.last_name,
         email: values.email,
         phoneNumber: values.phoneNumber,
         password: values.password,
@@ -64,6 +70,8 @@ const SignupScreen = () => {
     <SafeAreaView style={styles.maincontainer}>
       <Formik
         initialValues={{
+          first_name: '',
+          last_name: '',
           email: '',
           phoneNumber: '',
           password: '',
@@ -86,6 +94,34 @@ const SignupScreen = () => {
                 source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
               />
               <Text style={styles.heading}>Signup</Text>
+
+              <TextInput
+                style={styles.textarea}
+                mode="outlined"
+                label="First Name"
+                activeOutlineColor="lightgray"
+                textColor="black"
+                value={values.first_name}
+                onChangeText={handleChange('first_name')}
+                onBlur={handleBlur('first_name')}
+              />
+              {errors.first_name && touched.first_name && (
+                <Text style={GlobalStyle.errorText}>{errors.first_name}</Text>
+              )}
+
+              <TextInput
+                style={styles.textarea}
+                mode="outlined"
+                label="Last Name"
+                activeOutlineColor="lightgray"
+                textColor="black"
+                value={values.last_name}
+                onChangeText={handleChange('last_name')}
+                onBlur={handleBlur('last_name')}
+              />
+              {errors.last_name && touched.last_name && (
+                <Text style={GlobalStyle.errorText}>{errors.last_name}</Text>
+              )}
 
               <TextInput
                 style={styles.textarea}
