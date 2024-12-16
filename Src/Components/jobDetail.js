@@ -280,7 +280,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 source={
                   JobDetails?.company?.logo
                     ? {uri: JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
-                    : require('../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
+                    : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
                 }
                 style={styles.logo}
               />
@@ -580,8 +580,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: 56,
+    height: 56,
     resizeMode: 'contain', // Adjusts the image to cover the container uniformly
   },
   applyButtonContainer: {

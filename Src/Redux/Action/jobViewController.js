@@ -433,12 +433,12 @@ const JobViewController = () => {
 
     try {
       const response = await axios.get(`http://15.206.149.28/api/jobs/`);
-      console.log(
-        '****************************job-GetJobList response***************************',
-      );
+      // console.log(
+      //   '****************************job-GetJobList response***************************',
+      // );
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_LIST_SUCCESS', payload: data});
 

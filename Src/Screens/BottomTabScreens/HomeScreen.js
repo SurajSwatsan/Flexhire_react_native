@@ -109,7 +109,7 @@ const HomeScreen = () => {
                 source={
                   jobdata.company.logo
                     ? {uri: jobdata?.company?.logo}
-                    : require('../../Assets/CompanyLogo/TCS_logo.png')
+                    : require('../../Assets/CompanyLogo/Swatsan.png')
                 }
                 style={styles.companyImage}
               />
@@ -524,8 +524,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column,',
   },
   companyImage: {
-    width: 42,
-    height: 42,
+    width: 38,
+    height: 38,
     borderRadius: 8,
     marginRight: 10,
   },

@@ -47,7 +47,7 @@ const CustomCompanyCard = ({ companyData }) => {
           source={
             companyData?.top_companies?.company?.logo
               ? { uri: companyData?.company?.logo }
-              : require('../Assets/CompanyLogo/TCS_logo.png')
+              : require('../Assets/CompanyLogo/Swatsan.png')
           }
           style={styles.companyImage}
         />
@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   companyImage: {
-    width: 42,
-    height: 42,
+    width: 38,
+    height: 38,
     borderRadius: 8,
     margin: 10,
     alignSelf: 'center',

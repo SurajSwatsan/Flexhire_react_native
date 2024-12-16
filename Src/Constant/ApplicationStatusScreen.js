@@ -39,7 +39,7 @@ const ApplicationStatusScreen = ({route}) => {
             source={
               ApplicationObject?.job?.company?.logo
                 ? {uri: ApplicationObject?.job?.company?.logo}
-                : require('../Assets/CompanyLogo/TCS_logo.png')
+                : require('../Assets/CompanyLogo/Swatsan.png')
             }
             style={styles.image}
           />

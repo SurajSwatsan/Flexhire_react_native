@@ -123,7 +123,7 @@ const SavedJobScreen = () => {
                       source={
                         savedJob?.job?.company?.logo
                           ? {uri: savedJob?.job?.company.logo}
-                          : require('../../Assets/CompanyLogo/TCS_logo.png')
+                          : require('../../Assets/CompanyLogo/Swatsan.png')
                       }
                       style={styles.logo}
                     />
@@ -250,8 +250,8 @@ const styles = StyleSheet.create({
     width: '70%',
   },
   logo: {
-    width: 30,
-    height: 30,
+    width: 38,
+    height: 38,
     resizeMode: 'contain', // Adjusts the image to cover the container uniformly
     marginRight: 8,
   },

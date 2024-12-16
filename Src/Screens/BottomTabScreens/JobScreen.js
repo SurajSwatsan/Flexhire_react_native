@@ -95,7 +95,7 @@ const JobScreen = () => {
                 source={
                   jobdata.company.logo
                     ? {uri: jobdata?.company?.logo}
-                    : require('../../Assets/CompanyLogo/TCS_logo.png')
+                    : require('../../Assets/CompanyLogo/Swatsan.png')
                 }
                 style={styles.companyImage}
               />

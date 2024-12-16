@@ -93,7 +93,7 @@ const UserApplies = () => {
                     source={
                       jobData?.job?.company.logo
                         ? {uri: jobData?.job?.company.logo}
-                        : require('../../Assets/CompanyLogo/TCS_logo.png')
+                        : require('../../Assets/CompanyLogo/Swatsan.png')
                     }
                     style={styles.companyImage}
                   />

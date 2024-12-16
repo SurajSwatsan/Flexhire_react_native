@@ -17,9 +17,9 @@ const UserProfileViewController = () => {
       const response = await instance.get(
         `http://15.206.149.28/api/job-seeker/profile-analytic/1`,
       );
-      console.log(
-        '****************************profile-analytic response***************************',
-      );
+      // console.log(
+      //   '****************************profile-analytic response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -61,10 +61,10 @@ const UserProfileViewController = () => {
       const response = await axios.get(
         `http://15.206.149.28/api/job-seeker-profile/${user_id}/`,
       );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
-      console.log(response);
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
+      // );
+      // console.log(response);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -148,13 +148,13 @@ const UserProfileViewController = () => {
 
     try {
       const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'PROFILE_BASIC_INFORMATION_SUCCESS', payload: data});
 
@@ -188,7 +188,7 @@ const UserProfileViewController = () => {
 
   const addProfileDetails = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
-console.log('--------------------------------',requestData);
+// console.log('--------------------------------',requestData);
 
     try {
       const response = await axios.post(
@@ -201,7 +201,7 @@ console.log('--------------------------------',requestData);
       console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'PROFILE_BASIC_INFORMATION_POST_SUCCESS', payload: data});
 
@@ -238,13 +238,13 @@ console.log('--------------------------------',requestData);
 
     try {
       const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'PROFILE_CAREER_INFORMATION_SUCCESS', payload: data});
 
@@ -284,13 +284,13 @@ console.log('--------------------------------',requestData);
         `http://15.206.149.28/api/job-seeker-profile/1/`,
         requestData,
       );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS update response***************************',
-      );
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS update response***************************',
+      // );
       console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({
         type: 'PROFILE_CAREER_INFORMATION_POST_SUCCESS',
@@ -330,13 +330,13 @@ console.log('--------------------------------',requestData);
 
     try {
       const response = await instance.get(`job-seeker-profile/`);
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS RESPONSE***************************',
-      );
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS RESPONSE***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'PROFILE_LANGUAGE_SUCCESS', payload: data});
 
@@ -376,13 +376,13 @@ console.log('--------------------------------',requestData);
         `http://15.206.149.28/api/job-seeker-profile/1/`,
         requestData,
       );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
-      );
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
+      // );
       console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'PROFILE_LANGUAGE_POST_SUCCESS', payload: data});
 
