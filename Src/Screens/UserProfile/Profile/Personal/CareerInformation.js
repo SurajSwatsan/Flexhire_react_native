@@ -588,7 +588,7 @@ const CareerInformation = profileDetails => {
     // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
     setSubmittedData(formattedValues);
 
-    if (profileDetails.profileDetails.id) {
+    if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(formattedValues));
     } else {
       dispatch(addProfileDetails(formattedValues));

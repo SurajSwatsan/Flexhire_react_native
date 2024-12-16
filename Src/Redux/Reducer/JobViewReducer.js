@@ -1,12 +1,13 @@
 const initialState = {
   JobApplications: [],
-  JobDetails:null, // Add this state to store job details
-  ApplyJob:null,
-  SavedJobs:null,
-  JobInvitation:null,
-  SavedJobData:null,
-  RejectInvitation:null,
-  CompanyData:[],
+  JobDetails: null, // Add this state to store job details
+  ApplyJob: null,
+  SavedJobs: null,
+  JobInvitation: null,
+  SavedJobData: null,
+  RejectInvitation: null,
+  CompanyData: [],
+  JobList: [],
   error: null,
   isLoading: false, // Track loading for any API request
 };
@@ -50,7 +51,7 @@ const jobReducer = (state = initialState, action) => {
         error: action.payload.error, // Store the error message for job details
       };
 
-      case 'JOB_APPLIED_SUCCESSFULLY':
+    case 'JOB_APPLIED_SUCCESSFULLY':
       return {
         ...state,
         error: null,
@@ -63,7 +64,7 @@ const jobReducer = (state = initialState, action) => {
         error: action.payload.error, // Store the error message for job details
       };
 
-      case 'JOB_SAVED_SUCCESS':
+    case 'JOB_SAVED_SUCCESS':
       return {
         ...state,
         SavedJobs: action.payload, // Store job details in the state
@@ -77,76 +78,87 @@ const jobReducer = (state = initialState, action) => {
         error: action.payload.error, // Store the error message for job details
       };
 
-      case 'JOB_SAVED_SUCCESSFULLY':
-        return {
-          ...state,
-          SavedJobData: action.payload, // Store job details in the state
-          error: null,
-        };
-  
-      // Job Details Failure
-      case 'JOB_SAVED_UNSUCCESSFULLY':
-        return {
-          ...state,
-          error: action.payload.error, // Store the error message for job details
-        };
+    case 'JOB_SAVED_SUCCESSFULLY':
+      return {
+        ...state,
+        SavedJobData: action.payload, // Store job details in the state
+        error: null,
+      };
 
-        case 'JOB_INVITATION_SUCCESS':
-          return {
-            ...state,
-            JobInvitation: action.payload, // Store job details in the state
-            error: null,
-          };
-    
-        // Job Details Failure
-        case 'JOB_INVITATION_FAILURE':
-          return {
-            ...state,
-            error: action.payload.error, // Store the error message for job details
-          };
+    // Job Details Failure
+    case 'JOB_SAVED_UNSUCCESSFULLY':
+      return {
+        ...state,
+        error: action.payload.error, // Store the error message for job details
+      };
 
-        case 'READ_INVITATION_SUCCESSFULLY':
-        return {
-          ...state,
-          error: null,
-        };
-  
-      // Job Details Failure
-      case 'READ_INVITATION_FAILURE':
-        return {
-          ...state,
-          error: action.payload.error, // Store the error message for job details
-        };
+    case 'JOB_INVITATION_SUCCESS':
+      return {
+        ...state,
+        JobInvitation: action.payload, // Store job details in the state
+        error: null,
+      };
 
-        case 'JOB_Invitation_REJECT_SUCCESSFULLY':
-          return {
-            ...state,
-            error: null,
-          };
-    
-        // Job Details Failure
-        case 'JOB_INVITATION_REJECT_FAILURE':
-          return {
-            ...state,
-            error: action.payload.error, // Store the error message for job details
-          };
-  
-          case 'JOB_HOMEDATA_SUCCESS':
-            return {
-              ...state,
-              CompanyData: action.payload,
-              error: null,
-            };
-      
-          // Job Details Failure
-          case 'JOB_HOMEDATA_FAILURE':
-            return {
-              ...state,
-              error: action.payload.error, // Store the error message for job details
-            };
-    
-      
+    // Job Details Failure
+    case 'JOB_INVITATION_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error, // Store the error message for job details
+      };
 
+    case 'READ_INVITATION_SUCCESSFULLY':
+      return {
+        ...state,
+        error: null,
+      };
+
+    // Job Details Failure
+    case 'READ_INVITATION_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error, // Store the error message for job details
+      };
+
+    case 'JOB_Invitation_REJECT_SUCCESSFULLY':
+      return {
+        ...state,
+        error: null,
+      };
+
+    // Job Details Failure
+    case 'JOB_INVITATION_REJECT_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error, // Store the error message for job details
+      };
+
+    case 'JOB_HOMEDATA_SUCCESS':
+      return {
+        ...state,
+        CompanyData: action.payload,
+        error: null,
+      };
+
+    // Job Details Failure
+    case 'JOB_HOMEDATA_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error, // Store the error message for job details
+      };
+
+    //Job List
+    case 'JOB_LIST_SUCCESS':
+      return {
+        ...state,
+        JobList: action.payload,
+        error: null,
+      };
+
+    case 'JOB_LIST_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
 
     default:
       return state;

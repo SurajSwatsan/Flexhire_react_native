@@ -162,7 +162,7 @@ const Projects = profileDetails => {
         return [...prev, formattedValues];
       });
 
-      if (profileDetails.profileDetails.id) {
+      if (profileDetails?.profileDetails?.id) {
         dispatch(updateProfileDetails(formattedValues));
       } else {
         dispatch(addProfileDetails(formattedValues));
@@ -295,6 +295,12 @@ const Projects = profileDetails => {
                 onSubmit={handleFormSubmit}>
                 {({handleChange, handleSubmit, setFieldValue, values}) => (
                   <View style={profileStyle.formContainer}>
+                    <Text style={profileStyle.formHeading}>
+                      Project Details
+                    </Text>
+                    <Text style={profileStyle.formSubHeading}>
+                      Add details about your current and preferred job profile.
+                    </Text>
                     <ReusableTextInput
                       name="title"
                       label="Project Title*"

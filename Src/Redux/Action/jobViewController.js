@@ -68,15 +68,18 @@ const JobViewController = () => {
     }
   };
 
-  const GetJobDetails = (job_id,user_id) => async dispatch => {
+  const GetJobDetails = (job_id, user_id) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(`http://15.206.149.28/api/job/${job_id}/`, {
-        params: {
-          user_id: user_id,
-        }
-      });
+      const response = await axios.get(
+        `http://15.206.149.28/api/job/${job_id}/`,
+        {
+          params: {
+            user_id: user_id,
+          },
+        },
+      );
       // console.log(
       //   '****************************job-details response***************************',
       // );
@@ -387,19 +390,19 @@ const JobViewController = () => {
       const response = await axios.get(
         `http://15.206.149.28/api/jobs/homepage/${user_id}`,
       );
-      console.log(
-        '****************************job-GetHomeData response***************************',
-      );
+      // console.log(
+      //   '****************************job-GetHomeData response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_HOMEDATA_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
-      console.log('error', error.response);
+      // console.log('error', error.response);
 
       dispatch({type: 'LOADING', payload: false});
       Toast.show(
@@ -425,6 +428,48 @@ const JobViewController = () => {
     }
   };
 
+  const GetJobList = user_id => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await axios.get(`http://15.206.149.28/api/jobs/`);
+      console.log(
+        '****************************job-GetJobList response***************************',
+      );
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      console.log(data);
+
+      dispatch({type: 'JOB_LIST_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'JOB_LIST_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
   return {
     goBackScreen,
     GetJobApplications,
@@ -436,6 +481,7 @@ const JobViewController = () => {
     ReadInvitation,
     RejectInvitation,
     GetHomeData,
+    GetJobList,
   };
 };
 

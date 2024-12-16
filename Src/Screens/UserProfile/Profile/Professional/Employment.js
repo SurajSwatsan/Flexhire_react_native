@@ -258,7 +258,7 @@ const EmploymentValidationSchema = values => {
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
 
-    schema.ammount = Yup.string().required('Salary is required');
+    // schema.ammount = Yup.string().required('Salary is required');
 
     // (schema.salary_breakdown = Yup.string()
     //   .required('Salary breakdown is required')
@@ -608,12 +608,12 @@ const Employment = profileDetails => {
                         {data.employment_type}
                       </Text>
                       <Text style={styles.otherdata}>
-                        {data.joining_date
-                          ? new Date(data.joining_date).toLocaleDateString()
+                        {data?.joining_date
+                          ? new Date(data?.joining_date).toLocaleDateString()
                           : ''}
                         {' - '}
-                        {data.leaving_date
-                          ? new Date(data.leaving_date).toLocaleDateString()
+                        {data?.leaving_date
+                          ? new Date(data?.leaving_date).toLocaleDateString()
                           : 'Present'}
                       </Text>
                     </View>

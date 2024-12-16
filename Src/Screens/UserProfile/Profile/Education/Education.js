@@ -124,7 +124,7 @@ const Education = profileDetails => {
 
   const {GetBoard, GetMedium} = MasterViewController();
   const {boards, mediums} = useSelector(state => state.master);
-  console.log('0-0--0-0-000', boards);
+  // console.log('0-0--0-0-000', boards);
 
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
   useEffect(() => {
@@ -226,7 +226,7 @@ const Education = profileDetails => {
     }
 
     // Dispatch the updated data to Redux
-    dispatch(updateProfileDetails(formattedData));
+    // dispatch(updateProfileDetails(formattedData));
 
     // Reset state and close modal
     setModalVisible(false);

@@ -97,10 +97,10 @@ const Itskills = profileDetails => {
     };
 
     getUserData();
-    console.log(
-      '================================',
-      profileDetails?.profileDetails?.it_skills,
-    );
+    // console.log(
+    //   '================================',
+    //   profileDetails?.profileDetails?.it_skills,
+    // );
     setSkillList(profileDetails?.profileDetails?.it_skills);
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
@@ -153,7 +153,7 @@ const Itskills = profileDetails => {
         id: profileDetails?.profileDetails?.id,
         it_skills: skillList,
       };
-      console.log(values);
+      // console.log(values);
 
       dispatch(updateProfileDetails(payload));
 

@@ -33,20 +33,20 @@ const AuthViewController = () => {
   const register = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     try {
-      const response = await axios.post('/register/user/', requestData);
+      const response = await instance.post('/register/user/', requestData);
       // console.log(
       //   '****************************Register response***************************',
       // );
-      // console.log(response);
+      console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      // console.log(data);
-      const {token, user} = data;
-      setAuthToken(token); // Set token in axios headers or AsyncStorage
-      await AsyncStorage.setItem('user_data', JSON.stringify(user));
-      await AsyncStorage.setItem('email', requestData.email);
+      console.log(data);
+      // const {token, user} = data;
+      // setAuthToken(token); // Set token in axios headers or AsyncStorage
+      // await AsyncStorage.setItem('user_data', JSON.stringify(user));
+      // await AsyncStorage.setItem('email', requestData.email);
 
-      dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
+      // dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
       dispatch({type: 'LOADING', payload: false});
       Toast.show('You have Successfully Registered', {
         type: 'success',
@@ -55,7 +55,7 @@ const AuthViewController = () => {
         offset: 100,
         animationType: 'slide-in',
       });
-      navigation.navigate('VerifyOtp');
+      // navigation.navigate('VerifyOtp');
     } catch (error) {
       // console.log(error);
 

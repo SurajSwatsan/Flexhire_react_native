@@ -14,10 +14,8 @@ import UserProfile from '../Screens/BottomTabScreens/UserProfileScreen';
 import UserInvites from '../Screens/BottomTabScreens/UserInvitesScreen';
 import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen';
 import HomeComponent from '../Screens/BottomTabScreens/HomeScreen';
-import BookmarkScreen from '../Screens/BottomTabScreens/SavedJobList';
 import {colors} from '../Global_CSS/TheamColors';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen';
-import JobViewPage from '../Components/JobView';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
@@ -64,7 +62,7 @@ const CustomBottomTab = () => {
       case 'Profile':
         return <UserProfile />;
       case 'Jobs':
-        return <JobViewPage />;
+        return <JobScreen />;
       default:
         return <HomeComponent />;
     }
@@ -77,7 +75,7 @@ const CustomBottomTab = () => {
         <View style={styles.tabContainer}>
           {renderTab('Home', 'home', 'Home')}
           {renderTab('Applies', 'send', 'Applies')}
-          {renderTab('Jobs','briefcase','Jobs')}
+          {renderTab('Jobs', 'briefcase', 'Jobs')}
           {renderTab('Invites', 'mail-sharp', 'Invites')}
           {/* {renderTab('Bookmark', 'bookmark', 'Bookmark')} */}
           {renderTab('Profile', 'person-sharp', 'Profile')}

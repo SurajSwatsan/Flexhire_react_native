@@ -14,7 +14,9 @@ const UserProfileViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(`http://15.206.149.28/api/job-seeker/profile-analytic/1`);
+      const response = await instance.get(
+        `http://15.206.149.28/api/job-seeker/profile-analytic/1`,
+      );
       console.log(
         '****************************profile-analytic response***************************',
       );
@@ -186,6 +188,7 @@ const UserProfileViewController = () => {
 
   const addProfileDetails = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
+console.log('--------------------------------',requestData);
 
     try {
       const response = await axios.post(
