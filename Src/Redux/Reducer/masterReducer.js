@@ -6,7 +6,7 @@ const initialState = {
   departments: [],
   categories: [],
   roles: [],
-  language: [],
+  languageList: [],
   boards: [],
   mediums: [],
   universities: [],
@@ -112,7 +112,7 @@ const MasterReducer = (state = initialState, action) => {
     case 'LANGUAGE_SUCCESS':
       return {
         ...state,
-        languages: action.payload,
+        languageList: action.payload,
         error: null,
       };
     case 'LANGUAGE_FAILURE':
