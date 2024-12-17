@@ -43,7 +43,7 @@ const AnalyticsPage = () => {
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [isFocus]);
 
-  console.log('$$$$$$$$$$$$$$$$$$$$$$', ProfileAnalytic);
+  // console.log('$$$$$$$$$$$$$$$$$$$$$$', ProfileAnalytic);
 
   useEffect(() => {
     if (id) {
@@ -54,12 +54,12 @@ const AnalyticsPage = () => {
     'MMM D',
   )}`;
 
-  const profileViews = ProfileAnalytic.total_profile_view[0] || 0;
-  const invitations = ProfileAnalytic.total_invited_jobs_count || 0;
-  const applies = ProfileAnalytic.total_applied_jobs_count || 0;
-  const searchAppearances = ProfileAnalytic.total_search_appearance || 0;
+  const profileViews = ProfileAnalytic?.total_profile_view[0] || 0;
+  const invitations = ProfileAnalytic?.total_invited_jobs_count || 0;
+  const applies = ProfileAnalytic?.total_applied_jobs_count || 0;
+  const searchAppearances = ProfileAnalytic?.total_search_appearance || 0;
   const totalValue = profileViews + invitations + applies + searchAppearances;
-  const completedActions = ProfileAnalytic.completedActions || 0;
+  const completedActions = ProfileAnalytic?.completedActions || 0;
   const totalActions = 3; 
   const commentCount = ProfileAnalytic?.commentCount || 0;
 
@@ -203,8 +203,7 @@ const AnalyticsPage = () => {
           <View style={styles.progressBarContainer}>
             <Text style={styles.dateactionText}>{weekDateRange}</Text>
             <Text style={styles.progressText}>
-            {ProfileAnalytic.total_applied_jobs_count} of 3 actions completed
-            </Text>
+            {completedActions} of {totalActions} actions completed            </Text>
             <View style={styles.progressContainer}>
               <View
                   style={[styles.progressBar, { width: `${actionPercentage}%` }]}

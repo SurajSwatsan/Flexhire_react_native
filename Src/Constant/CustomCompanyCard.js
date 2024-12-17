@@ -1,32 +1,28 @@
-
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { IconButton } from 'react-native-paper';
+import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {IconButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Material Icons for stars
-import { useNavigation } from '@react-navigation/native';
-import { colors } from '../Global_CSS/TheamColors';
+import {useNavigation} from '@react-navigation/native';
+import {colors} from '../Global_CSS/TheamColors';
 
-const CustomCompanyCard = ({ companyData }) => {
+const CustomCompanyCard = ({companyData}) => {
   const navigation = useNavigation();
-
-
-
 
   if (!companyData || typeof companyData !== 'object') {
     return <Text style={styles.errorText}>Invalid job data</Text>;
   }
 
   // Function to render stars based on rating
-  const renderStars = (rating) => {
+  const renderStars = rating => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <Icon
           key={i}
-          name={i <= rating ? 'star' : 'star-border'} // Filled star or empty star
+          name={i <= rating ? 'star' : 'star-border'}
           size={16}
-          color="#FFD700" // Gold color for stars
-        />
+          color="#FFD700"
+        />,
       );
     }
     return stars;
@@ -35,18 +31,17 @@ const CustomCompanyCard = ({ companyData }) => {
   return (
     <View style={styles.companyContainer}>
       <TouchableOpacity
-        style={{ marginHorizontal: 8 }}
+        style={{marginHorizontal: 8}}
         onPress={() => {
           // Navigate to 'CompanyOverview' without passing any data
           // navigation.navigate('CompanyOverview', {
           //   companyData:companyData
           // });
-        }}
-      >
+        }}>
         <Image
           source={
             companyData?.top_companies?.company?.logo
-              ? { uri: companyData?.company?.logo }
+              ? {uri: companyData?.company?.logo}
               : require('../Assets/CompanyLogo/Swatsan.png')
           }
           style={styles.companyImage}
@@ -62,7 +57,7 @@ const CustomCompanyCard = ({ companyData }) => {
 
         <Text style={styles.mnctext}>Foreign MNC</Text>
 
-        <Text style={{ color: 'blue', textAlign: 'center' }}>View jobs</Text>
+        <Text style={{color: 'blue', textAlign: 'center'}}>View jobs</Text>
       </TouchableOpacity>
     </View>
   );

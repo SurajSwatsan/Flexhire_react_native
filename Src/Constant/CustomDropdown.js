@@ -14,8 +14,8 @@ const ReusableDropdown = ({
   placeholder,
   selectedValue,
   onSelect,
-  error, // Validation error from Formik
-  touched, // Touched state from Formik
+  error, 
+  touched, 
 }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -26,7 +26,7 @@ const ReusableDropdown = ({
       const matchedItem = options.find(
         option => option.value === selectedValue,
       );
-      setSelectedItem(matchedItem || null); // Set selectedItem if a match is found
+      setSelectedItem(matchedItem || null); 
     }
   }, [selectedValue, options]);
 
@@ -50,7 +50,7 @@ const ReusableDropdown = ({
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         itemTextStyle={{color: '#000'}}
-        value={selectedItem?.value} // Set the selected value
+        value={selectedItem?.value} 
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => handleSelect(item)}

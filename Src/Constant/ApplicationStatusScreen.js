@@ -12,7 +12,7 @@ import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Timeline from 'react-native-timeline-flatlist';
 import CustomHeader from './CustomBackIcon';
-import CustomJobCard from './CustomJobCard';
+// import CustomJobCard from './CustomJobCard';
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 
@@ -153,12 +153,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: '#fafafa',
     borderRadius: 8,
-    // marginTop: 18,
   },
   jobTitle: {
     fontSize: 16,
     color: colors.blackText,
-    // marginBottom: 4,
   },
   companyName: {
     fontSize: 12,
@@ -180,7 +178,6 @@ const styles = StyleSheet.create({
   viewDescription: {
     color: colors.secondary,
     fontSize: 14,
-    // fontWeight: 'bold',
     marginBottom: 14,
   },
   timelineWrapper: {
@@ -192,7 +189,6 @@ const styles = StyleSheet.create({
 
   detailContainer: {
     flexDirection: 'column',
-    // paddingLeft: 10,
   },
   cardTitle: {
     fontSize: 14,
@@ -231,7 +227,6 @@ const styles = StyleSheet.create({
   },
 
   relatedjobcontainer: {
-    // marginTop:16,
     marginBottom: 12,
     backgroundColor: colors.background,
     marginTop: 12,
@@ -256,13 +251,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   eventContainer: {
-    // marginTop: 16,
-    // backgroundColor: '#fafafa',
-    // borderRadius:8,
-    // marginBottom: 8,
-    flexDirection: 'row', // Ensure elements in each event are aligned horizontally
-    justifyContent: 'flex-start', // Align all items to the left
-    alignItems: 'center', // Keep the items aligned vertically
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    alignItems: 'center', 
   },
 });
 

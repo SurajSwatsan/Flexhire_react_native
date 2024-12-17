@@ -1,6 +1,5 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SearchJobScreen from '../Components/searchResults.js';
 import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen.js';
 
 import SavedJobScreen from '../Screens/BottomTabScreens/SavedJobList.js';
@@ -85,11 +84,7 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen
-        name="searchjob"
-        component={SearchJobScreen}
-        options={{headerShown: false}}
-      />
+      
 
       <Stack.Screen
         name="JobDetailScreen"

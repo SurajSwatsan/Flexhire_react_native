@@ -14,7 +14,7 @@ import {
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
 import {Button} from 'react-native-paper';
-import CustomJobCard from '../Constant/CustomJobCard';
+// import CustomJobCard from '../Constant/CustomJobCard';
 import {useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
