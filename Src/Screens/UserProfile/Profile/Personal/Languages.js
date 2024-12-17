@@ -16,8 +16,9 @@ import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 import CustomTabs from '../../../../Constant/CustomTabs';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
 
 const PROFICIENCY_OPTIONS = [
   {id: 1, value: 'Beginner'},
@@ -60,17 +61,44 @@ const Languages = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editObject, setEditObject] = useState(null);
   const [languages, setLanguages] = useState([]);
+  const [languageData, setLanguageData] = useState([]);
   const [id, setId] = useState();
 
   let formikRef = null;
 
   const dispatch = useDispatch();
+  const {GetLaguages} = MasterViewController();
+  const {languageList} = useSelector(state => state.master);
+  console.log('-------------------', languageList);
+
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
   useEffect(() => {
     if (profileDetails?.profileDetails?.languages) {
       setLanguages(profileDetails?.profileDetails?.languages);
     }
   }, [profileDetails]);
+
+  useEffect(() => {
+    const get_languages = () => {
+      dispatch(GetLaguages());
+    };
+
+    get_languages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const languages_data = languageList?.map(lg => ({
+      id: lg.id,
+      value: lg.name,
+    }));
+
+    setLanguageData(languages_data);
+
+    // console.log('laguages data ===', languageData);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languageList]);
 
   const handleFormSubmit = values => {
     console.log(values);
@@ -236,9 +264,9 @@ const Languages = profileDetails => {
                     </Text>
                     <CustomSelectionModal
                       title="Language"
-                      data={LANGUAGES}
+                      data={languageData}
                       selectedItems={
-                        LANGUAGES.find(
+                        languageData.find(
                           item => item.value === values.language,
                         ) || null
                       }
