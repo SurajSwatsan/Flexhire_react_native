@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
 
   jobCard: {
     backgroundColor: 'white',
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
     shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowRadius: 5,
     shadowOpacity: 0.1,
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   companyInfo: {
     flexDirection: 'row',

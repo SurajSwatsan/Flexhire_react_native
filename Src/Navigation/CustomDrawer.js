@@ -227,7 +227,7 @@ const CustomDrawer = ({children}) => {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => {
-                navigation.navigate('');
+                navigation.navigate('AboutUs');
                 toggleDrawer();
               }}>
               <Ionicons
