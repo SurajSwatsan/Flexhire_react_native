@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-    marginHorizontal: 2, // Spacing between buttons
+    marginHorizontal: 2, 
     backgroundColor: '#ff8000',
   },
   Jobbutton:{

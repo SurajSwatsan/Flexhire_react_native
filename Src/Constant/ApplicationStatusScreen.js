@@ -12,7 +12,7 @@ import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Timeline from 'react-native-timeline-flatlist';
 import CustomHeader from './CustomBackIcon';
-// import CustomJobCard from './CustomJobCard';
+
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 
@@ -52,17 +52,6 @@ const ApplicationStatusScreen = ({route}) => {
             <Text style={styles.companyName}>
               {ApplicationObject?.job?.company_name}
             </Text>
-            {/* <View style={styles.ratingContainer}>
-              <Ionicons
-                name="star"
-                size={16}
-                color="#ffd700"
-                style={styles.ratingIcon}
-              />
-              <Text style={styles.ratingText}>
-                {ApplicationObject?.job?.rating}
-              </Text>
-            </View> */}
           </View>
         </View>
 
@@ -109,11 +98,81 @@ const ApplicationStatusScreen = ({route}) => {
                           jobData: item,
                         });
                       }}>
-                      <CustomJobCard jobData={item} />
                     </TouchableOpacity>
                   </View>
                 ))}
               </ScrollView> */}
+              <ScrollView>
+                {ApplicationObject?.job?.related_jobs?.map((item, index) => (
+                  <View key={item?.id || index} style={{marginBottom: 14}}>
+                    <TouchableOpacity onPress={() => handleJobCardPress(item)}>
+                      <View style={styles.jobCard}>
+                        <View style={styles.companyInfo}>
+                          <View style={styles.companylogo}>
+                            <Image
+                              source={
+                                item?.company?.logo
+                                  ? {uri: item?.company?.logo}
+                                  : require('../Assets/CompanyLogo/Swatsan.png') // Replace with a default logo
+                              }
+                              style={styles.companyImage}
+                            />
+                            <View style={styles.textName}>
+                              <Text style={styles.jobTitle}>
+                                {item?.job_title?.title}
+                              </Text>
+                              <Text style={styles.companyName}>
+                                {item?.company_name}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        <View style={styles.workModeContainer}>
+                          {item?.work_modes?.map((mode, idx) => (
+                            <View key={idx} style={styles.workModeChip}>
+                              <Text style={styles.chipText}>{mode}</Text>
+                            </View>
+                          ))}
+                        </View>
+
+                        <View style={styles.location}>
+                          <Ionicons
+                            name="location-outline"
+                            size={18}
+                            color={colors.primary}
+                          />
+                          {item?.job_location?.map((location, locIndex) => (
+                            <Text key={locIndex} style={styles.jobCardLocation}>
+                              {location.name}
+                              {locIndex < item?.job_location.length - 1 && ', '}
+                            </Text>
+                          ))}
+                        </View>
+
+                        <View style={styles.line}></View>
+
+                        <View style={styles.jobFooter}>
+                          {item?.salary?.yearly && (
+                            <View style={styles.experienceContainer}>
+                              <Ionicons name="cash" size={14} color="#004466" />
+                              <Text style={styles.jobDetailsalary}>
+                                ₹{item.salary.yearly.min.toLocaleString()} - ₹
+                                {item.salary.yearly.max.toLocaleString()} INR
+                              </Text>
+                            </View>
+                          )}
+                          {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
+                          <Text style={styles.jobPostedDate}>
+                            {moment(item?.created_at).fromNow()}{' '}
+                            {/* Format created_at date */}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
             </View>
           )}
         </View>
@@ -251,9 +310,88 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   eventContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'flex-start', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  jobCard: {
+    backgroundColor: colors.whiteText,
+    borderRadius: 10,
+    marginRight: 12,
+    padding: 12,
+    width: '100%',
+  },
+  companyInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  companylogo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  companyImage: {
+    height: 40,
+    width: 40,
+    borderRadius: 8,
+  },
+  textName: {
+    marginLeft: 8,
+  },
+  workModeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  workModeChip: {
+    fontSize: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+    marginTop: 8,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  chipText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  location: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  jobFooter: {
+    // marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  experienceContainer: {
+    flexDirection: 'row',
+    marginRight: 8,
+    gap: 6,
+  },
+  jobDetailsalary: {
+    fontSize: 10,
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  jobCardLocation: {
+    fontSize: 12,
+    color: colors.blackText,
+  },
+  line: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    marginVertical: 10,
+  },
+
+  jobPostedDate: {
+    fontSize: 12,
+    color: 'gray',
   },
 });
 

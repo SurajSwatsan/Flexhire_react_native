@@ -148,7 +148,7 @@ const HomeScreen = () => {
             {jobdata.job_location.map((location, locIndex) => (
               <Text key={locIndex} style={styles.jobCardLocation}>
                 {location.name}
-                {locIndex < jobdata.job_location.length - 1 && ', '}
+                {locIndex < jobdata.job_location.length - 1 && ',  '}
               </Text>
             ))}
           </View>

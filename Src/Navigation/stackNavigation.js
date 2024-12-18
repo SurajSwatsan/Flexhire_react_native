@@ -19,12 +19,16 @@ import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
-import DispalyPreferenceScreen from '../Constant/DisplayPreferenceScreen.js';
+import DispalyPreferenceScreen from '../DrawerContent/DisplayPreferenceScreen.js';
 import MyInterviewPage from '../Screens/UserProfile/Profile/MyInterviewPage.js';
 import AnalyticsPage from '../Screens/UserProfile/Profile/AnalyticPage.js';
 import BasicInformation from '../Screens/UserProfile/Profile/Personal/BasicInformation.js';
-import JobViewPage from '../Components/JobView.js';
 import SettingPage from '../DrawerContent/SettingPage.js';
+import AboutUsPage from '../DrawerContent/AboutUs/AboutUsPage.js';
+import ReportPage from '../DrawerContent/AboutUs/ReportPage.js';
+import PrivacyPolicyScreen from '../DrawerContent/AboutUs/PrivacyPolicyScreen.js';
+import TermsAndConditionsScreen from '../DrawerContent/AboutUs/TermsAndConditionPage.js';
+import CreditPage from '../DrawerContent/AboutUs/CreditPage.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -145,15 +149,40 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen name="JobView" component={JobViewPage} />
+      <Stack.Screen name="SettingPage" 
+      component={SettingPage}
+       />
 
-      <Stack.Screen name="SettingPage" component={SettingPage} />
+       <Stack.Screen
+       name='AboutUs'
+       component={AboutUsPage}
+       options={{headerShown:false}}
+       />
 
-      {/* <Stack.Screen
-        name="CustomBottomTab"
-        component={CustomBottomTab}
-        options={{ headerShown: false }}
-      /> */}
+       <Stack.Screen
+       name='ReportPage'
+       component={ReportPage}
+       options={{headerShown:false}}
+       />
+
+       <Stack.Screen
+       name='PrivacyPolicy'
+       component={PrivacyPolicyScreen}
+       options={{headerShown:false}}
+       />
+
+       <Stack.Screen
+       name='TermsAndCondition'
+       component={TermsAndConditionsScreen}
+       options={{headerShown:false}}
+       />
+
+       <Stack.Screen
+       name='CreditPage'
+       component={CreditPage}
+       options={{headerShown:false}}
+       />
+
     </Stack.Navigator>
   );
 };
