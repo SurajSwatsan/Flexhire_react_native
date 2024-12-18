@@ -26,21 +26,6 @@ const PROFICIENCY_OPTIONS = [
   {id: 3, value: 'Expert'},
 ];
 
-const LANGUAGES = [
-  {id: 1, value: 'English'},
-  {id: 2, value: 'Spanish'},
-  {id: 3, value: 'French'},
-  {id: 4, value: 'German'},
-  {id: 5, value: 'Chinese'},
-  {id: 6, value: 'Japanese'},
-  {id: 7, value: 'Hindi'},
-  {id: 8, value: 'Arabic'},
-  {id: 9, value: 'Portuguese'},
-  {id: 10, value: 'Russian'},
-  {id: 11, value: 'Marathi'},
-  {id: 12, value: 'Telugu'},
-];
-
 const validationSchema = Yup.object().shape({
   language: Yup.string().required('Language is required'),
   proficiency: Yup.string().required('Proficiency is required'),

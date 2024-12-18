@@ -207,12 +207,7 @@ const Projects = profileDetails => {
         {profileDetails?.profileDetails?.project_details.length > 0 ? (
           profileDetails?.profileDetails?.project_details.map((item, index) => (
             <View key={index}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
+              <View style={styles.outputContainer}>
                 <TouchableOpacity
                   style={[profileStyle.userDataContainer, styles.dataContainer]}
                   onPress={() => openModal(item)}>
@@ -474,6 +469,15 @@ const styles = StyleSheet.create({
   },
   dataContainer: {
     flex: 1,
+    paddingHorizontal: 12,
+  },
+  outputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    paddingVertical: 12,
   },
 });
 

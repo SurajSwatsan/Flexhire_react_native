@@ -49,27 +49,6 @@ const validationSchema = Yup.object().shape({
 });
 
 // Initial Values Helper
-const getInitialValues = (editingIndex, itSkillList) => {
-  if (editingIndex !== null && itSkillList[editingIndex]) {
-    const skill = itSkillList[editingIndex];
-    return {
-      name: skill.name || '', // Set to 'other' for custom skills
-      othername: skill.othername || '', // Store custom skill name in othername
-      version: skill.version || '',
-      years: skill.years || '',
-      months: skill.months || '',
-      last_used: skill.last_used || '',
-    };
-  }
-  return {
-    name: '',
-    othername: '',
-    version: '',
-    years: '',
-    months: '',
-    last_used: '',
-  };
-};
 
 const Itskills = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -414,7 +393,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: 'auto',
     padding: 12,
-    backgroundColor: colors.background,
+    backgroundColor:'#fafafa',
     marginRight: 12,
     borderRadius: 8,
   },

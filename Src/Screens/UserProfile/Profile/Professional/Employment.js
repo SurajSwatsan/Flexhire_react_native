@@ -229,19 +229,6 @@ const ROLE_OPTIONS = [
   },
 ];
 
-const SKILLS = [
-  {id: 1, value: 'JavaScript'},
-  {id: 2, value: 'React'},
-  {id: 3, value: 'Node.js'},
-  {id: 4, value: 'Python'},
-  {id: 5, value: 'SQL'},
-  {id: 6, value: 'C++'},
-  {id: 7, value: 'Java'},
-  {id: 8, value: 'AWS'},
-  {id: 9, value: 'Docker'},
-  {id: 10, value: 'Kubernetes'},
-];
-
 const EmploymentValidationSchema = values => {
   const schema = {};
 
@@ -353,7 +340,7 @@ const EmploymentValidationSchema = values => {
     // schema.department = Yup.string().required(
     //   'Department is required for internships',
     // );
-    // schema.roleCategory = Yup.string().required(
+    // schema.job_title_category = Yup.string().required(
     //   'Role category is required for internship',
     // );
     // schema.role = Yup.string().required('Role is required for internship');
@@ -380,13 +367,21 @@ const Employment = profileDetails => {
   const [employmentList, setEmploymentList] = useState([]);
   const [selectedEmployment, setSelectedEmployment] = useState(null); // Track which data is being edited
   const [keyskillsMasters, setKeyskillsMasters] = useState([]);
+  const [departmentsMasters, setDepartmentsMasters] = useState([]);
+  const [jobTitleCategoriesMasters, setJobTitleCategoriesMasters] = useState(
+    [],
+  );
+  const [rolesMasters, setRolesMasters] = useState([]);
   let formikRef = null;
 
   const dispatch = useDispatch();
   const [id, setId] = useState();
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
-  const {GetKeyskills} = MasterViewController();
-  const {keyskills} = useSelector(state => state.master);
+  const {GetKeyskills, GetDepartment, GetRoles, GetCategories} =
+    MasterViewController();
+  const {keyskills, departments, categories, roles} = useSelector(
+    state => state.master,
+  );
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -406,7 +401,19 @@ const Employment = profileDetails => {
     const get_keyskills = () => {
       dispatch(GetKeyskills());
     };
+    const get_departments = () => {
+      dispatch(GetDepartment());
+    };
+    const get_category = () => {
+      dispatch(GetCategories());
+    };
+    const get_role = () => {
+      dispatch(GetRoles());
+    };
 
+    get_departments();
+    get_category();
+    get_role();
     get_keyskills();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -417,10 +424,24 @@ const Employment = profileDetails => {
       id: skill.id,
       value: skill.name,
     }));
+    const department_data = departments?.map(de => ({
+      id: de.id,
+      value: de.name,
+    }));
+    const category_data = categories?.map(cor => ({
+      id: cor.id,
+      value: cor.name,
+    }));
+    const role_data = roles?.map(ro => ({
+      id: ro.id,
+      value: ro.title,
+    }));
     setKeyskillsMasters(keyskills_data);
-
+    setDepartmentsMasters(department_data);
+    setJobTitleCategoriesMasters(category_data);
+    setRolesMasters(role_data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyskills]);
+  }, [keyskills, departments, categories, roles]);
 
   const handleSubmitForm = values => {
     if (selectedEmployment) {
@@ -461,43 +482,44 @@ const Employment = profileDetails => {
 
           {
             is_current_company:
-              values.currentCompany === 'Yes' ? 'true' : 'false',
-            employment_type: values.employment_type || '',
-            job_title: values.job_title || '',
-            job_profile: values.job_profile || '',
-            company_name: values.company_name || '',
-            joining_date: values.joining_date
-              ? moment(values.joining_date).format('DD-MM-YYYY')
+              values?.currentCompany === 'Yes' ? 'true' : 'false',
+            employment_type: values?.employment_type || '',
+            job_title: values?.job_title || '',
+            job_profile: values?.job_profile || '',
+            company_name: values?.company_name || '',
+            joining_date: values?.joining_date
+              ? moment(values?.joining_date).format('DD-MM-YYYY')
               : null,
-            leaving_date: values.leaving_date
-              ? moment(values.leaving_date).format('DD-MM-YYYY')
+            leaving_date: values?.leaving_date
+              ? moment(values?.leaving_date).format('DD-MM-YYYY')
               : null,
-            worked_from: values.workedfrom
-              ? moment(values.workedfrom).format('DD-MM-YYYY')
+            worked_from: values?.workedfrom
+              ? moment(values?.workedfrom).format('DD-MM-YYYY')
               : null,
-            worked_till: values.workedtill
-              ? moment(values.workedtill).format('DD-MM-YYYY')
+            worked_till: values?.workedtill
+              ? moment(values?.workedtill).format('DD-MM-YYYY')
               : null,
-            location: values.location || '',
-            department: values.department || '',
-            role_category: values.roleCategory || '',
-            role: values.role || '',
-            notice_period: values.notice_period || '',
-            annual_salary: { 
+            location: values?.location || '',
+            department: values?.department || '',
+            job_title_category: values?.job_title_category || '',
+            role: values?.role || '',
+            notice_period: values?.notice_period || '',
+            annual_salary: {
               currency: values.annual_salary?.currency || '₹',
               ammount: values.annual_salary?.ammount || '',
             },
-            salary_breakdown: values.salary_breakdown
+            salary_breakdown: values?.salary_breakdown
               ? {
                   name: values.salary_breakdown?.name || '',
-                  fixed_salary: values.fixed_salary || '',
-                  variable_salary: values.variable_salary || '',
+                  fixed_salary: values?.fixed_salary || '',
+                  variable_salary: values?.variable_salary || '',
                 }
               : undefined,
             skills: values.skills.map(skill =>
               typeof skill === 'string'
                 ? skill
-                : SKILLS.find(item => item.value === skill?.value)?.value || '',
+                : keyskillsMasters.find(item => item.value === skill?.value)
+                    ?.value || '',
             ),
           },
         ],
@@ -570,21 +592,8 @@ const Employment = profileDetails => {
               key={index}
               style={styles.outputContainer}
               onPress={() => openModalForEdit(data)}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 18,
-                    marginHorizontal: 18,
-                    gap: 12,
-                  }}>
+              <View style={styles.innerContainer}>
+                <View style={styles.companydataContainer}>
                   <Ionicons
                     name="business" // Match the icon with the option
                     size={42}
@@ -624,7 +633,6 @@ const Employment = profileDetails => {
                   iconColor={'black'}
                   size={20}
                   onPress={() => openModalForEdit(data)}
-                  style={{alignSelf: 'flex-start'}}
                 />
               </View>
               {data.job_profile && (
@@ -687,7 +695,8 @@ const Employment = profileDetails => {
                   : null,
                 location: selectedEmployment?.location || '',
                 department: selectedEmployment?.department || '',
-                role_category: selectedEmployment?.role_category || '',
+                job_title_category:
+                  selectedEmployment?.job_title_category || '',
                 role: selectedEmployment?.role || '',
                 notice_period: selectedEmployment?.notice_period || '',
                 annual_salary: {
@@ -802,7 +811,9 @@ const Employment = profileDetails => {
                                 name="ammount"
                                 label="Current ammount"
                                 value={values.annual_salary?.ammount}
-                                onChangeText={handleChange('annual_salary.ammount')}
+                                onChangeText={handleChange(
+                                  'annual_salary.ammount',
+                                )}
                                 keyboardType="numeric"
                               />
                             </View>
@@ -968,8 +979,8 @@ const Employment = profileDetails => {
                             value={values.location}
                             onChangeText={handleChange('location')}
                           />
-                          {/* <ReusableDropdown
-                            options={DEPARTMENT_OPTIONS}
+                          <ReusableDropdown
+                            options={departmentsMasters}
                             placeholder="Department*"
                             selectedValue={values.department}
                             onSelect={selected =>
@@ -979,25 +990,28 @@ const Employment = profileDetails => {
                             // touched={touched.department}
                           />
                           <ReusableDropdown
-                            options={ROLECATEGORY_OPTIONS}
+                            options={jobTitleCategoriesMasters}
                             placeholder="Role Category*"
-                            selectedValue={values.roleCategory}
+                            selectedValue={values?.job_title_category}
                             onSelect={selected =>
-                              setFieldValue('roleCategory', selected.value)
+                              setFieldValue(
+                                'job_title_category',
+                                selected?.value,
+                              )
                             }
-                            // error={errors.roleCategory}
-                            // touched={touched.roleCategory}
+                            // error={errors.job_title_category}
+                            // touched={touched.job_title_category}
                           />
                           <ReusableDropdown
-                            options={ROLE_OPTIONS}
+                            options={rolesMasters}
                             placeholder="Role*"
-                            selectedValue={values.role}
+                            selectedValue={values?.role}
                             onSelect={selected =>
-                              setFieldValue('role', selected.value)
+                              setFieldValue('role', selected?.value)
                             }
                             // error={errors.role}
                             // touched={touched.role}
-                          /> */}
+                          />
 
                           {/* Currency Dropdown */}
                           <Text style={styles.subheading}>Salary</Text>
@@ -1025,7 +1039,9 @@ const Employment = profileDetails => {
                                 name="ammount"
                                 label="Current ammount"
                                 value={values.annual_salary?.ammount}
-                                onChangeText={handleChange('annual_salary.ammount')}
+                                onChangeText={handleChange(
+                                  'annual_salary.ammount',
+                                )}
                                 keyboardType="numeric"
                               />
                             </View>
@@ -1063,8 +1079,8 @@ const Employment = profileDetails => {
                             value={values.location}
                             onChangeText={handleChange('location')}
                           />
-                          {/* <ReusableDropdown
-                            options={DEPARTMENT_OPTIONS}
+                          <ReusableDropdown
+                            options={departmentsMasters}
                             placeholder="Department*"
                             selectedValue={values.department}
                             onSelect={selected =>
@@ -1074,17 +1090,20 @@ const Employment = profileDetails => {
                             // touched={touched.department}
                           />
                           <ReusableDropdown
-                            options={ROLECATEGORY_OPTIONS}
+                            options={jobTitleCategoriesMasters}
                             placeholder="Role Category*"
-                            selectedValue={values.roleCategory}
+                            selectedValue={values.job_title_category}
                             onSelect={selected =>
-                              setFieldValue('roleCategory', selected.value)
+                              setFieldValue(
+                                'job_title_category',
+                                selected.value,
+                              )
                             }
-                            // error={errors.roleCategory}
-                            // touched={touched.roleCategory}
+                            // error={errors.job_title_category}
+                            // touched={touched.job_title_category}
                           />
                           <ReusableDropdown
-                            options={ROLE_OPTIONS}
+                            options={rolesMasters}
                             placeholder="Role*"
                             selectedValue={values.role}
                             onSelect={selected =>
@@ -1092,7 +1111,7 @@ const Employment = profileDetails => {
                             }
                             // error={errors.role}
                             // touched={touched.role}
-                          /> */}
+                          />
 
                           {/* Currency Dropdown */}
                           <Text style={styles.subheading}>Salary</Text>
@@ -1120,7 +1139,9 @@ const Employment = profileDetails => {
                                 name="ammount"
                                 label="Current ammount"
                                 value={values.annual_salary?.ammount}
-                                onChangeText={handleChange('annual_salary.ammount')}
+                                onChangeText={handleChange(
+                                  'annual_salary.ammount',
+                                )}
                                 keyboardType="numeric"
                               />
                             </View>
@@ -1179,7 +1200,19 @@ const styles = StyleSheet.create({
   outputContainer: {
     marginBottom: 12,
     borderRadius: 8,
-    backgroundColor: colors.background,
+    backgroundColor: '#fafafa',
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  companydataContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    gap: 12,
   },
   company_name: {
     fontSize: 18,

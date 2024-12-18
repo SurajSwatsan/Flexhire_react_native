@@ -21,42 +21,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const EducationBoards = [
-  {id: 1, value: 'CBSE'},
-  {id: 2, value: 'CISCE (ICSE/ISC)'},
-  {id: 3, value: 'Diploma'},
-  {id: 4, value: 'National Open School'},
-  {id: 5, value: 'IB (International Baccalaureate)'},
-  {id: 6, value: 'Andhra Pradesh'},
-  {id: 7, value: 'Arunachal Pradesh'},
-  {id: 8, value: 'Assam'},
-  {id: 9, value: 'Bihar'},
-  {id: 10, value: 'Chhattisgarh'},
-  {id: 11, value: 'Goa'},
-  {id: 12, value: 'Gujarat'},
-  {id: 13, value: 'Haryana'},
-  {id: 14, value: 'Himachal Pradesh'},
-  {id: 15, value: 'J & K'},
-  {id: 16, value: 'Jharkhand'},
-  {id: 17, value: 'Karnataka'},
-  {id: 18, value: 'Kerala'},
-  {id: 19, value: 'Madhya Pradesh'},
-  {id: 20, value: 'Maharashtra'},
-  {id: 21, value: 'Manipur'},
-  {id: 22, value: 'Meghalaya'},
-  {id: 23, value: 'Mizoram'},
-  {id: 24, value: 'Nagaland'},
-  {id: 25, value: 'Odisha'},
-  {id: 26, value: 'Punjab'},
-  {id: 27, value: 'Rajasthan'},
-  {id: 28, value: 'Tamil Nadu'},
-  {id: 29, value: 'Telangana'},
-  {id: 30, value: 'Tripura'},
-  {id: 31, value: 'Uttar Pradesh'},
-  {id: 32, value: 'Uttarakhand'},
-  {id: 33, value: 'West Bengal'},
-  {id: 34, value: 'Other'},
-];
 const EducationClass = [
   {id: 1, value: '10th', label: 'Class 10th'},
   {id: 2, value: '12th', label: 'Class 12th'},
@@ -73,26 +37,6 @@ const PassoutYear = Array.from(
   }),
 );
 
-const SchoolMedium = [
-  {id: 1, value: 'Assamese / Asomiya'},
-  {id: 2, value: 'Bengali / Bangla'},
-  {id: 3, value: 'English'},
-  {id: 4, value: 'Gujarati'},
-  {id: 5, value: 'Hindi'},
-  {id: 6, value: 'Kannada'},
-  {id: 7, value: 'Kashmiri'},
-  {id: 8, value: 'Konkani'},
-  {id: 9, value: 'Malayalam'},
-  {id: 10, value: 'Manipuri'},
-  {id: 11, value: 'Marathi'},
-  {id: 12, value: 'Oriya'},
-  {id: 13, value: 'Punjabi'},
-  {id: 14, value: 'Sanskrit'},
-  {id: 15, value: 'Tamil'},
-  {id: 16, value: 'Telugu'},
-  {id: 17, value: 'Urdu'},
-  {id: 18, value: 'Other'},
-];
 const validationSchema = Yup.object().shape({
   course_name: Yup.string().required('Education Level is required'),
   // board: Yup.string().required('Board is required'),
@@ -178,7 +122,7 @@ const Education = profileDetails => {
         {
           course_name: values?.course_name,
           board:
-          boardMasters?.find(eb => eb.value === values.board)?.value || '',
+            boardMasters?.find(eb => eb.value === values.board)?.value || '',
           passout_year:
             PassoutYear?.find(py => py.value === values.passout_year)?.value ||
             '',

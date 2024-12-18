@@ -470,6 +470,102 @@ const JobViewController = () => {
     }
   };
 
+  const GetSearchJobs = queryParams => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+    const queryString = new URLSearchParams(queryParams).toString();
+    try {
+      const response = await axios.get(
+        `http://15.206.149.28/api/search/?${queryString}`,
+      );
+      console.log(
+        '****************************job-GetSearchJobList response***************************',
+      );
+      // console.log('response', response);
+      // console.log('queryParams', queryParams);
+      console.log(`http://15.206.149.28/api/search/?${queryString}`);
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+
+      dispatch({type: 'SEARCH_JOB_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'SEARCH_JOB_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetFilterdJobs = queryParams => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+    const queryString = new URLSearchParams(queryParams).toString();
+    try {
+      const response = await axios.get(
+        `http://15.206.149.28/api/search/?${queryString}`,
+      );
+      console.log(
+        '****************************job-GetFilterdJobs response***************************',
+      );
+      // console.log('response', response);
+      // console.log('queryParams', queryParams);
+      console.log(`http://15.206.149.28/api/search/?${queryString}`);
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+
+      dispatch({type: 'FILTER_JOB_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'FILTER_JOB_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
   return {
     goBackScreen,
     GetJobApplications,
@@ -482,6 +578,8 @@ const JobViewController = () => {
     RejectInvitation,
     GetHomeData,
     GetJobList,
+    GetSearchJobs,
+    GetFilterdJobs,
   };
 };
 

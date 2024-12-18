@@ -69,7 +69,6 @@ const Accomplishments = profileDetails => {
   }, [profileDetails]);
 
   const openModal = (key, item = null) => {
-
     setActiveTab(key);
     setModalVisible(true); // Show the modal
     setSelectedItem(item); // Set the index for editing
@@ -259,7 +258,6 @@ const Accomplishments = profileDetails => {
   };
 
   const renderFields = (values, handleChange, setFieldValue) => {
-
     switch (activeTab) {
       case 'research':
         return (
@@ -553,26 +551,40 @@ const Accomplishments = profileDetails => {
                     )
                   }>
                   <View style={styles.savedDataContainer}>
-                    <Text style={styles.labelStyle}>
-                      {item.name || 'Unknown Category'}
-                    </Text>
-                    {item.title && (
-                      <View style={styles.outputData}>
-                        <Text style={styles.titleText}>{item.title}</Text>
-                      </View>
-                    )}
-                    {item.url && (
-                      <View style={styles.outputData}>
-                        <Text style={styles.urlText}>{item.url}</Text>
-                      </View>
-                    )}
-                    {item.description && (
-                      <View style={styles.outputData}>
-                        <Text style={styles.descriptionText}>
-                          {item.description}
-                        </Text>
-                      </View>
-                    )}
+                    <View>
+                      <Text style={styles.labelStyle}>
+                        {item.name || 'Unknown Category'}
+                      </Text>
+                      {item.title && (
+                        <View style={styles.outputData}>
+                          <Text style={styles.titleText}>{item.title}</Text>
+                        </View>
+                      )}
+                      {item.url && (
+                        <View style={styles.outputData}>
+                          <Text style={styles.urlText}>{item.url}</Text>
+                        </View>
+                      )}
+                      {item.description && (
+                        <View style={styles.outputData}>
+                          <Text style={styles.descriptionText}>
+                            {item.description}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                    <IconButton
+                      icon="pencil-outline"
+                      iconColor={'black'}
+                      size={20}
+                      onPress={() =>
+                        openModal(
+                          TAB_OPTIONS.find(tab => tab.label === item.name)
+                            ?.key || null,
+                          item, // Pass the full item
+                        )
+                      }
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -664,22 +676,16 @@ const styles = StyleSheet.create({
   categoryContainer: {
     marginBottom: 20,
   },
-  categoryHeading: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-    paddingBottom: 5,
-  },
   savedDataContainer: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: colors.background,
+    backgroundColor: '#fafafa',
     borderRadius: 8,
-    padding: 12,
+    paddingVertical: 12,
     marginBottom: 10,
+    alignItems: 'center',
+    paddingLeft: 12,
   },
   titleText: {
     fontSize: 13,
@@ -694,43 +700,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.blackText,
   },
-  fieldContainer: {
-    flexDirection: 'row',
-    marginVertical: 4,
-  },
-  fieldLabel: {
-    fontWeight: 'bold',
-    marginRight: 10,
-    textTransform: 'capitalize',
-  },
-  fieldValue: {
-    flex: 1,
-    color: colors.primary,
-  },
-  editButton: {
-    alignSelf: 'flex-start',
-  },
-  editButtonText: {
-    color: 'white',
-    fontSize: 14,
-  },
+
   labelStyle: {
     marginBottom: 12,
     color: colors.secondary,
     fontSize: 14,
     fontWeight: 'bold',
-  },
-  dateRange: {
-    fontSize: 12,
-    color: colors.primary,
-    marginTop: 5,
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.primary, // Customize line color
   },
 });
 

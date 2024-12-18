@@ -3,7 +3,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen.js';
 
 import SavedJobScreen from '../Screens/BottomTabScreens/SavedJobList.js';
-import DetailsComponent from '../Trialpages/detailsComponent.js';
 import LoginScreen from '../Screens/UserScreens/LoginScreen.js';
 import SplashScreen from '../Screens/SplashScreen.js';
 import SignupScreen from '../Screens/UserScreens/SignupScreen.js';
@@ -77,14 +76,6 @@ const StackNavigation = () => {
         component={DefaultScreen}
         options={{headerShown: false}}
       />
-
-      <Stack.Screen
-        name="Details"
-        component={DetailsComponent}
-        options={{headerShown: false}}
-      />
-
-      
 
       <Stack.Screen
         name="JobDetailScreen"

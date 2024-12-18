@@ -1,395 +1,507 @@
-JobSeekerProfile Payload: 
-{
-  "career_preferences": {
-    "desired_roles": ["Software Engineer", "Data Scientist"],   //max three role
-    "preferred_cities": ["San Francisco", "New York"],  //max 10 locations
-    "salary_expectation": 120000
-    "job_type": "Permanent",    //Permanent/Contractual
-    "employment_type": "Full-time",     //Full-Time/Part-Time
-    "preferred_shift": "Morning"    //Day / Night /Flexible
-  },
-  "basic_details": {
-    "work_status": "Fresher", // Fresher / Experienced
-    "experience": 5, // Experienced
-    "current_city": "New York", 
-    "annual_salary": "100000.00",// Experienced
-
-    "salary_breakdown":  // Experienced
-                            if -Fixed - no fiild
-                            if Fixed + Variable - Fixed Salary - 90K
-                                                - Variable Salary - 10K
-    "mobile_no": "+1234567890",
-    "email": "johndoe@example.com",
-    "notice_period": "1 Month"
-  },
-  "personal_details": {
-   "gender": "Male",
-    "marital_status": "Single",
-    "dob": "1990-05-15",
-    "category": "General",
-    "differently_abled": false, // if - True = disability_type ,assistance_required
-    "disability_type": null,
-    "assistance_required": false,
-    "career_break": false, // if - True = break_reason ,break_duration
-    "break_reason": null,
-    "break_duration": null,
-    "work_permit": true,
-    "permanent_address": "123 Main St, New York, NY, 10001",
-    "hometown": "Boston",
-    "pincode": "02101"
-  }
-}
-
- 
-
-ResumeVideoProfile Payload:  
-    { 
-        "resume": "resumes/john_doe_resume.pdf",  
-        "video_profile": "video_profiles/john_doe_intro.mp4" 
-    } 
-
- 
- 
-
-ProfessionalDetails Payload: 
-    {  
-        "current_industry": "Software Development",
-        "current_department": "Engineering",
-        "current_role_category": "Developer",
-        "current_job_role": "Backend Developer",
-        "key_skills": ["Python", "Django", "AWS"]
-
-        "it_skills": 
-            [ 
-                {  
-                    "skill_name": "Python",
-                    "software_version": "3.9",
-                    "experience_years": 5,
-                    "last_used_year": 2024
-                }, 
-                {
-                    "skill": "Django", 
-                    "software_version": "3.9", 
-                    "experience_years": 3,
-                    "last_used_year": 2024
-                }  
-            ] 
-    }  
-
- 
-
-EmploymentHistory Payload: 
-[
+const filterData = [
   {
-    "employment_details": {
-      "is_current_company": true,   //true / false
-      "employment_type": "Full-time",   //Full-time / Internship
-      "company_name": "TechCorp",   //if  is_current_company = false  then Previous-company-name
-      "job_title": "Backend Developer",   //if  is_current_company = false then Previous-job-title
-      "location": "New York",    //true 
-      "department": "Engineering",
-      "role_category": "Developer", //No fild in this form
-      "role": "Backend Developer",  //No fild in this form
-      "joining_date": "2019-01-01",
-      "leaving_date": null,
-      "annual_salary": "100000.00", // if is_current_company = true, and Full-time  
-      "skills_used": ["Python", "Java",], 
-      "job_profile": "Responsible for developing and maintaining backend systems." ,
-      "notice_period": "1 Month" ,
-
-    },
-    "project_details": [
+    filter: 'work_modes',
+    data: [
       {
-        "title": "E-commerce Platform",
-        "client": "ShopNow Inc.",
-        "project_status": "Completed",  //Inprogress / Completed
-        "worked_from": "2020-06-01",
-        "worked_till": "2021-06-01",
-        "details": "Developed backend APIs for an e-commerce platform.",
-        "project_location": "New York",
-        "project_site":"Off-Site",  //off-site / On-Site
-        "nature_of_employment": "Contract", //Full-time,Part-time,Contract
-        "team_size": 5,
-        "role_in_project": "Backend Developer",
-        "role_description": "Built the APIs for product management, user authentication, and payments.",
-        "skills_used": ["Django", "PostgreSQL", "Docker"]
+        name: 'Remote',
+        count: 6,
       },
       {
-         "title": "android app",
-        "client": "flexhire Inc.",
-        "project_status": "Inprogress", //Inprogress / Completed
-        "worked_from": "2020-06-01",
-        "details": "Developed backend APIs for an e-commerce platform.",
-        "project_location": "New York",
-        "project_site":"Off-Site",  //off-site / On-Site
-        "nature_of_employment": "Contract", //Full-time,Part-time,Contract
-        "team_size": 5,
-        "role_in_project": "Backend Developer",
-        "role_description": "Built the APIs for product management, user authentication, and payments.",
-        "skills_used": ["Django", "PostgreSQL", "Docker"]
-      }
-    ]
-  },
-  {
-     "employment_details": {
-      "is_current_company": true,   //true / false
-      "employment_type": "Internship",   //Full-time / Internship
-      "company_name": "TechCorp",   //if  is_current_company = false  then Previous-company-name
-      "location": "New York",    //true 
-      "department": "Engineering",
-      "joining_date": "2019-01-01",
-      "leaving_date": "Present",    //if is_current_company = true, and Internship 
-      "monthly_stipend": "5000.00", // if is_current_company = true, and Internship  
-    },
-    "project_details": [
-      {
-       "title": "E-commerce Platform",
-        "client": "ShopNow Inc.",
-        "project_status": "Completed",
-        "worked_from": "2020-06-01",
-        "worked_till": "2021-06-01",
-        "details": "Developed backend APIs for an e-commerce platform.",
-        "project_location": "New York",
-        "project_site":"Off-Site",  //off-site / On-Site
-        "nature_of_employment": "Contract", //Full-time,Part-time,Contract
-        "team_size": 5,
-        "role_in_project": "Backend Developer",
-        "role_description": "Built the APIs for product management, user authentication, and payments.",
-        "skills_used": ["Django", "PostgreSQL", "Docker"]
-      }
-    ]
-  }
-]
-
-
- 
-
-
-Achievements Payload:  
-[
-  {
-    "education": [
-      {
-        "education_option": "Graduate", // options - Graduate,class XII , class X,Doctorate,Post Graduate
-        "university_name": "University of XYZ",
-        "course": "Computer Science", // options - B.com , B.A , B.Tech , B.Ed ,etc
-        "specialization": "Software Engineering",
-        "course_type": "Full-time", //Full-time , Part-time,Distance learning
-        "course_duration_start": 2014,
-        "course_duration_end": 2018,
-        "grading_system": "scale 10 grading system,"    // dropdown options - if -scale 10 grading system,scale 4 grading system,% marks of 100 maximum 
-                                                                                then show input box Marks.
-                                                                            - if Course Required then dont show input box Marks
-        "marks":85,
+        name: 'Onsite',
+        count: 7,
       },
       {
-        "education_option": "XII", // options - Graduate,class XII , class X,Doctorate,Post Graduate
-        "board": "Maharashtra",  // only for ,class XII , class X
-        "passing-out": 2017,     // only for ,class XII , class X
-        "school_medium": "Marathi", //English, marathi,Hindi  // only for ,class XII , class X
-        "marks": 85.00,  // only for ,class XII , class X
-        "english_Marks":70, // if only "education_option": "XII
-        "math_marks":85, // if only "education_option": "XII
-      }
+        name: 'Hybrid',
+        count: 2,
+      },
     ],
-
-    "accomplishments": [
-      {
-        "type": "Certification",
-        "title": "AWS Certified Solutions Architect",
-        "Id":"SHNB4567HY"
-        "url": "http://example.com/certifications/aws-solutions-architect",
-        "date_of_publish": "2021-08-01",
-        "description": "Certified Solutions Architect with expertise in AWS infrastructure.",
-        "patent_office": null,
-        "patent_status": null,
-        "application_number": null,
-        "issued_date": null,
-        "completion_id": "123456",
-        "validity": "2026-08-01"
-      },
-      {"patent": "Smart Home Automation", "year": 2023}
-    ]
   },
   {
-    "education": [
+    filter: 'departments',
+    data: [
       {
-        "education_option": "X", // options - Graduate,class XII , class X,Doctorate,Post Graduate
-        "board": "Maharashtra",  // only for ,class XII , class X
-        "passing-out": 2015,     // only for ,class XII , class X
-        "school_medium": "Marathi", //English, marathi,Hindi  // only for ,class XII , class X
-        "marks": 85.00,  // only for ,class XII , class X
-        "english_Marks":70, // if only "education_option": "XII
-        "math_marks":85, // if only "education_option": "XII
-      }
+        name: 'Sales and Marketing',
+        count: 6,
+      },
+      {
+        name: 'Operations',
+        count: 0,
+      },
+      {
+        name: 'Information Technology',
+        count: 2,
+      },
+      {
+        name: 'Engineering',
+        count: 2,
+      },
+      {
+        name: 'Finance',
+        count: 0,
+      },
+      {
+        name: 'Customer Service',
+        count: 5,
+      },
+      {
+        name: 'Human Resources',
+        count: 0,
+      },
+      {
+        name: 'Administration',
+        count: 1,
+      },
     ],
-
-    "accomplishments": [
-        {
-        "type": "Certification",
-        "title": "AWS Certified Solutions Architect",
-        "Id":"SHNB4567HY"
-        "url": "http://example.com/certifications/aws-solutions-architect",
-        "date_of_publish": "2021-08-01",
-        "description": "Certified Solutions Architect with expertise in AWS infrastructure.",
-        "patent_office": null,
-        "patent_status": null,
-        "application_number": null,
-        "issued_date": null,
-        "completion_id": "123456",
-        "validity": "2026-08-01"
-        }
-    ]
-  }
-]
-
-
-
-Languages Payload:
-[
-  {
-    "name": "English",
-    "proficiency": "Fluent",
-    "comfortable_in": ["Business", "Casual Conversations"]
   },
   {
-    "name": "Spanish",
-    "proficiency": "Intermediate",
-    "comfortable_in": ["Casual Conversations"]
+    filter: 'locations',
+    data: [
+      {
+        name: 'Delhi, India',
+        count: 1,
+      },
+      {
+        name: 'Mumbai, India',
+        count: 2,
+      },
+      {
+        name: 'Pune, India',
+        count: 7,
+      },
+      {
+        name: 'Chennai, India',
+        count: 1,
+      },
+      {
+        name: 'Nagpur, India',
+        count: 5,
+      },
+      {
+        name: 'Bengaluru, India',
+        count: 7,
+      },
+      {
+        name: 'Hyderabad, India',
+        count: 1,
+      },
+    ],
   },
   {
-    "name": "French",
-    "proficiency": "Beginner",
-    "comfortable_in": ["Travel", "Tourism"]
-  }
-]
-
-
-
-Full Payload Example for a JobSeeker with All Related Data:
-{
-  "job_seeker": {
-    "user_id": 1,
-    "full_name": "John Doe",
-    "profile_headline": "Experienced Software Developer",
-    "profile_photo": "profile_photos/john_doe.jpg",
-    "profile": {
-      "career_preferences": {
-        "desired_roles": ["Software Engineer", "Data Scientist"],
-        "preferred_cities": ["San Francisco", "New York"],
-        "salary_expectation": 120000
-      },
-      "basic_details": {
-        "work_status": "Full-time",
-        "experience": 5,
-        "mobile": "+1 123-456-7890",
-        "email": "john.doe@example.com"
-      },
-      "personal_details": {
-        "gender": "Male",
-        "marital_status": "Single",
-        "career_break": false,
-        "work_permit": true
-      }
-    },
-    "resume_video_profile": {
-      "resume": "resumes/john_doe_resume.pdf",
-      "video_profile": "video_profiles/john_doe_intro.mp4"
-    },
-    "professional_details": {
-      "current_role": "Software Developer",
-      "current_industry": "IT",
-      "key_skills": ["Python", "Django", "Machine Learning"],
-      "it_skills": [
-        {"skill": "Python", "level": "Advanced", "years_of_experience": 5},
-        {"skill": "Django", "level": "Intermediate", "years_of_experience": 3}
-      ]
-    },
-    "employment_history": [
+    filter: 'salary',
+    data: [
       {
-        "employment_details": {
-          "role": "Software Developer",
-          "department": "Engineering",
-          "company": "TechCorp",
-          "start_date": "2020-01-01",
-          "end_date": "2023-01-01"
-        },
-        "project_details": [
-          {
-            "client": "ClientX",
-            "role": "Lead Developer",
-            "skills_used": ["Python", "Django"]
-          },
-          {
-            "client": "ClientY",
-            "role": "Backend Developer",
-            "skills_used": ["Python", "AWS"]
-          }
-        ]
+        name: '0-3 Lakhs',
+        count: 8,
       },
       {
-        "employment_details": {
-          "role": "Junior Developer",
-          "department": "Engineering",
-          "company": "DevCo",
-          "start_date": "2018-05-01",
-          "end_date": "2019-12-31"
-        },
-        "project_details": [
-          {
-            "client": "ClientZ",
-            "role": "Developer",
-            "skills_used": ["JavaScript", "Node.js"]
-          }
-        ]
-      }
+        name: '3-6 Lakhs',
+        count: 0,
+      },
+      {
+        name: '6-10 Lakhs',
+        count: 0,
+      },
+      {
+        name: '10-15 Lakhs',
+        count: 0,
+      },
+      {
+        name: '15-25 Lakhs',
+        count: 0,
+      },
+      {
+        name: '25-50 Lakhs',
+        count: 0,
+      },
+      {
+        name: '50-75 Lakhs',
+        count: 0,
+      },
+      {
+        name: '75-100 Lakhs',
+        count: 0,
+      },
+      {
+        name: '1-5 Cr',
+        count: 0,
+      },
+      {
+        name: '5+ Cr',
+        count: 0,
+      },
     ],
-    "achievements": [
+  },
+  {
+    filter: 'company_types',
+    data: [
       {
-        "education": [
-          {
-            "degree": "B.Sc. in Computer Science",
-            "university": "ABC University",
-            "year_of_passing": 2017
-          },
-          {
-            "degree": "M.Sc. in Data Science",
-            "university": "XYZ University",
-            "year_of_passing": 2020
-          }
-        ],
-        "accomplishments": [
-          {"award": "Employee of the Year", "year": 2022},
-          {"patent": "Smart Home Automation", "year": 2023}
-        ]
+        name: 'Freelance',
+        count: 0,
       },
       {
-        "education": [
-          {
-            "degree": "B.A. in Business Administration",
-            "university": "PQR University",
-            "year_of_passing": 2016
-          }
-        ],
-        "accomplishments": [{"publication": "AI in Healthcare", "year": 2021}]
-      }
+        name: 'Government',
+        count: 0,
+      },
+      {
+        name: 'Foregin MNC',
+        count: 0,
+      },
+      {
+        name: 'Others',
+        count: 6,
+      },
+      {
+        name: 'MNC',
+        count: 1,
+      },
+      {
+        name: 'Startup',
+        count: 1,
+      },
     ],
-    "languages": [
+  },
+  {
+    filter: 'industry_types',
+    data: [
       {
-        "name": "English",
-        "proficiency": "Fluent",
-        "comfortable_in": ["Business", "Casual Conversations"]
+        name: 'Finance',
+        count: 0,
       },
       {
-        "name": "Spanish",
-        "proficiency": "Intermediate",
-        "comfortable_in": ["Casual Conversations"]
+        name: 'Retail',
+        count: 6,
       },
       {
-        "name": "French",
-        "proficiency": "Beginner",
-        "comfortable_in": ["Travel", "Tourism"]
+        name: 'Education',
+        count: 0,
+      },
+      {
+        name: 'Healthcare',
+        count: 0,
+      },
+      {
+        name: 'Technology',
+        count: 2,
+      },
+    ],
+  },
+  {
+    filter: 'education',
+    data: [
+      {
+        name: 'M.Tech',
+        count: 8,
+      },
+      {
+        name: 'B.Tech',
+        count: 8,
+      },
+    ],
+  },
+  {
+    filter: 'freshness',
+    data: [
+      {
+        name: 'Last 1 day',
+        count: 0,
+      },
+      {
+        name: 'Last 3 days',
+        count: 0,
+      },
+      {
+        name: 'Last 7 days',
+        count: 0,
+      },
+      {
+        name: 'Last 15 days',
+        count: 0,
+      },
+      {
+        name: 'Last 30 days',
+        count: 5,
+      },
+    ],
+  },
+];
+
+
+
+
+
+
+
+
+ const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null); // Track selected category
+  const [selectedFilters, setSelectedFilters] = useState({}); // Track selected filter values
+
+  // Separate states for each section
+  const [selectedIndustry, setSelectedIndustry] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState([]);
+  const [selectedWorkMode, setSelectedWorkMode] = useState([]);
+  const [selectedCompanyType, setSelectedCompanyType] = useState([]);
+  const [activeSection, setActiveSection] = useState('Industry');
+  const [selectedExperience, setSelectedExperience] = useState([0, 10]); // Min to Max years
+  const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
+  const [selectedEducation, setSelectedEducation] = useState([]);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [salaryRange, setSalaryRange] = useState([0, 1000000]); // Min to Max salary in INR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const openFiltermodal = () => {
+    setFilterModalVisible(true);
+  };
+  const closeFiltermodal = () => {
+    setFilterModalVisible(false);
+  };
+
+  const toggleFilter = (filterCategory, filterValue) => {
+    setSelectedFilters(prev => {
+      const currentSelection = prev[filterCategory] || [];
+      if (currentSelection.includes(filterValue)) {
+        return {
+          ...prev,
+          [filterCategory]: currentSelection.filter(
+            item => item !== filterValue,
+          ),
+        };
+      } else {
+        return {
+          ...prev,
+          [filterCategory]: [...currentSelection, filterValue],
+        };
       }
-    ]
-  }
-}
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedIndustry([]);
+    setSelectedCompanyType([]);
+    setSelectedLocation([]);
+    setSelectedWorkMode([]);
+  };
+
+
+
+
+
+
+  // Filter the job list
+  const filteredJobs = JobList.results.filter(job => {
+    return Object.entries(selectedFilters).every(([category, values]) => {
+      if (values.length === 0) return true;
+      if (category === 'work_modes')
+        return values.some(v => job[category].includes(v));
+      if (category === 'locations')
+        return job.job_location.some(loc => values.includes(loc));
+      if (category === 'departments') return values.includes(job.department);
+      if (category === 'salary') return values.includes(job.salary);
+      return true;
+    });
+  });
+
+  // Render filter options dynamically
+  const renderFilterOptions = filterCategory => {
+    const categoryData = filterData.find(
+      item => item.filter === filterCategory,
+    );
+
+    return categoryData ? (
+      <View style={[styles.optionsContainer, {marginLeft: -24, marginTop: 12}]}>
+        {categoryData.data.map(item => (
+          <View key={item.name} style={styles.filterItem}>
+            <Checkbox
+              status={
+                selectedFilters[filterCategory]?.includes(item.name)
+                  ? 'checked'
+                  : 'unchecked'
+              }
+              color={colors.secondary}
+              onPress={() => toggleFilter(filterCategory, item.name)}
+            />
+            <Text
+              style={{
+                color: selectedFilters[filterCategory]?.includes(item.name)
+                  ? colors.secondary
+                  : '#000',
+                fontSize: 12,
+              }}>
+              {`${item.name} (${item.count})`}
+            </Text>
+          </View>
+        ))}
+      </View>
+    ) : null;
+  };
+
+
+
+
+
+
+
+
+
+
+<Modal
+        visible={filterModalVisible}
+        animationType="slide"
+        transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.headerTitle}>Filters</Text>
+              <TouchableOpacity onPress={closeFiltermodal}>
+                <Ionicons name="close" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={{flexDirection: 'row', flex: 1}}>
+              {/* Filters Section */}
+              <ScrollView style={[styles.categoriesContainer, {flex: 1}]}>
+                {filterData.map(filterCategory => (
+                  <TouchableOpacity
+                    key={filterCategory.filter}
+                    style={[
+                      styles.categoryButton,
+                      {
+                        padding: 12,
+                        backgroundColor: '#fafafa',
+                        borderColor: 'lightgray',
+                        borderWidth: 0.2,
+                        maxWidth: 160,
+                        minWidth: 160,
+                        minHeight: 50,
+                      },
+                      selectedCategory === filterCategory.filter && [
+                        styles.selectedCategoryButton,
+                        {
+                          backgroundColor: '#e6f7ff',
+                          // borderColor: colors.secondary,
+                          // borderLeftWidth: 7,
+                          // borderWidth: 1,
+                        },
+                      ],
+                    ]}
+                    onPress={() =>
+                      setSelectedCategory(
+                        filterCategory.filter === selectedCategory
+                          ? null
+                          : filterCategory.filter,
+                      )
+                    }>
+                    <Text
+                      style={[
+                        styles.categoryButtonText,
+                        {color: colors.primary},
+                        selectedCategory === filterCategory.filter && {
+                          fontWeight: 'bold', // Ensure selected text uses a different color
+                        },
+                      ]}>
+                      {filterCategory.filter.replace('_', ' ').toUpperCase()}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Right-side options for the selected category */}
+              <View style={[styles.optionsContainer, {flex: 1}]}>
+                {selectedCategory && renderFilterOptions(selectedCategory)}
+              </View>
+            </View>
+
+            {/* Footer Buttons */}
+            <View style={styles.footer}>
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={clearAllFilters}>
+                <Text style={styles.clearButtonText}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.applyButton}>
+                <Text style={styles.applyButtonText}>Apply Filters</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
+
+
+
+
+
+
+
+
+      
+  modalContainer: {
+    height: '100%',
+    backgroundColor: '#fff',
+  },
+  modalHeader: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+
+  footer: {
+    padding: 12,
+    // backgroundColor: colors.background,
+    flexDirection: 'row',
+    marginTop: 16,
+    justifyContent: 'flex-end',
+    gap: 12,
+    borderTopColor: 'lightgray',
+    borderTopWidth: 1,
+  },
+  clearButton: {
+    backgroundColor: 'lightgray',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  applyButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearButtonText: {
+    color: '#000',
+  },
+  applyButtonText: {
+    color: '#fff',
+  },
+  filterItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },

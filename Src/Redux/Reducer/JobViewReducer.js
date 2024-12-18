@@ -8,6 +8,8 @@ const initialState = {
   RejectInvitation: null,
   CompanyData: [],
   JobList: [],
+  SearchJobList: [],
+  FilterJobList: [],
   error: null,
   isLoading: false, // Track loading for any API request
 };
@@ -155,6 +157,33 @@ const jobReducer = (state = initialState, action) => {
       };
 
     case 'JOB_LIST_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
+    // Search Job List
+    case 'SEARCH_JOB_SUCCESS':
+      return {
+        ...state,
+        SearchJobList: action.payload,
+        error: null,
+      };
+
+    case 'SEARCH_JOB_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
+
+    // Filter Job List
+    case 'FILTER_JOB_SUCCESS':
+      return {
+        ...state,
+        FilterJobList: action.payload,
+        error: null,
+      };
+
+    case 'FILTER_JOB_FAILURE':
       return {
         ...state,
         error: action.payload.error,
