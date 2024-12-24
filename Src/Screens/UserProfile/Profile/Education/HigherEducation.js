@@ -61,9 +61,9 @@ const GRADING_OPTIONS = [
 
 const validationSchema = Yup.object().shape({
   education_level: Yup.string().required('Education Level is required'),
-  // university_name: Yup.string().required('University Name is required'),
-  // course_name: Yup.string().required('Course is required'),
-  // specialization: Yup.string().required('Specialization is required'),
+  university_name: Yup.string().required('University Name is required'),
+  course_name: Yup.string().required('Course is required'),
+  specialization: Yup.string().required('Specialization is required'),
   // start_year: Yup.string()
   //   .matches(/^\d{4}$/, 'Starting Year must be a valid year')
   //   .required('Starting Year is required'),
@@ -430,8 +430,8 @@ const HigherEducation = profileDetails => {
                           setFieldValue('university_name', item?.value || '')
                         }
                         placeholder="Select University"
-                        // error={errors.country}
-                        // touched={touched.country}
+                        error={errors.university_name}
+                        touched={touched.university_name}
                       />
 
                       <CustomSelectionModal
@@ -444,8 +444,8 @@ const HigherEducation = profileDetails => {
                           setFieldValue('course_name', item?.value || '')
                         }
                         placeholder="Select Course"
-                        // error={errors.country}
-                        // touched={touched.country}
+                        error={errors.course_name}
+                        touched={touched.course_name}
                       />
 
                       <CustomSelectionModal
@@ -458,8 +458,8 @@ const HigherEducation = profileDetails => {
                           setFieldValue('specialization', item?.value || '')
                         }
                         placeholder="Select Specialization"
-                        // error={errors.country}
-                        // touched={touched.country}
+                        error={errors.specialization}
+                        touched={touched.specialization}
                       />
 
                       <CustomTabs

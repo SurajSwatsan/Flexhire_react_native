@@ -534,7 +534,7 @@ const JobViewController = () => {
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'FILTER_JOB_SUCCESS', payload: data});
 

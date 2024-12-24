@@ -39,9 +39,9 @@ const PassoutYear = Array.from(
 
 const validationSchema = Yup.object().shape({
   education_name: Yup.string().required('Education Level is required'),
-  // board: Yup.string().required('Board is required'),
-  // passout_year: Yup.string().required('Passout Year is required'),
-  // school_medium: Yup.string().required('School Medium is required'),
+  board: Yup.string().required('Board is required'),
+  passout_year: Yup.string().required('Passout Year is required'),
+  school_medium: Yup.string().required('School Medium is required'),
   marks: Yup.string()
     .required('Marks is required')
     .matches(/^\d+(\.\d{1,2})?$/)
@@ -308,7 +308,7 @@ const Education = profileDetails => {
                           ? {color: 'red'}
                           : null,
                       ]}>
-                      Education* {values.education_name}
+                      Education*
                     </Text>
 
                     <View style={profileStyle.TabContainer}>
@@ -348,7 +348,9 @@ const Education = profileDetails => {
                     setSelectedItems={item =>
                       setFieldValue('board', item?.value || '')
                     }
-                    placeholder="Select Board"
+                    placeholder="Select Board*"
+                    error={errors.board}
+                    touched={touched.board}
                   />
 
                   <CustomSelectionModal
@@ -362,7 +364,9 @@ const Education = profileDetails => {
                     setSelectedItems={item =>
                       setFieldValue('passout_year', item?.value || '')
                     }
-                    placeholder="Select Passout Year"
+                    placeholder="Select Passout Year*"
+                    error={errors.passout_year}
+                    touched={touched.passout_year}
                   />
                   <CustomSelectionModal
                     title="School Medium"
@@ -375,7 +379,9 @@ const Education = profileDetails => {
                     setSelectedItems={item =>
                       setFieldValue('school_medium', item?.value || '')
                     }
-                    placeholder="Select School Medium"
+                    placeholder="Select School Medium*"
+                    error={errors.school_medium}
+                    touched={touched.school_medium}
                   />
                   <ReusableTextInput
                     name="marks"

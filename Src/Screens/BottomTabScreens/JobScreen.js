@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Dimensions,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,8 +22,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
-import CustomRangeSlider from '../../Constant/CustomRangeSlider';
 import Slider from '@react-native-community/slider';
+const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
   const {searchQuery} = route?.params || '';
   const [id, setId] = useState(null);
@@ -241,7 +242,7 @@ const JobScreen = ({route}) => {
       dispatch(GetFilterdJobs(queryParams)).then(filteredResults => {
         setJobs(filteredResults); // Update the jobs state with filtered results
         closeFiltermodal(); // Close the modal after applying filters
-        console.log('Filtered results:', filteredResults?.results);
+        // console.log('Filtered results:', filteredResults?.results);
       });
     } catch (error) {
       console.error('Error in handleFilter:', error);
@@ -257,24 +258,36 @@ const JobScreen = ({route}) => {
       ? categoryData.data.filter(
           item =>
             item?.name?.toLowerCase().includes(searchoptions.toLowerCase()) ||
-            item?.industry_name
+            item?.industry_name ||
+            item?.company_name
               ?.toLowerCase()
               .includes(searchoptions.toLowerCase()),
         )
       : [];
 
     return (
-      <View style={[styles.optionsContainer, {marginLeft: -24, marginTop: 12}]}>
+      <View style={[styles.optionsContainer]}>
         {/* Experience Filter */}
         {filterCategory === 'experience' ? (
-          <View style={{marginVertical: 16}}>
+          <View style={{marginVertical: 16, alignItems: 'center'}}>
+            <Text
+              style={{
+                color: colors.secondary,
+                fontSize: 18,
+                marginVertical: 12,
+                fontWeight: 'bold',
+              }}>
+              {selectedExperience} years
+            </Text>
             <Text style={{color: '#000', fontSize: 14, marginBottom: 8}}>
               Select Experience Range (Years)
             </Text>
             <Slider
-              style={styles.slider}
+              // style={[styles.slider,{height:20}]}
+              style={{width: width * 0.6, height: 70}}
               minimumValue={0}
               maximumValue={30}
+              vertical={true}
               step={1}
               value={selectedExperience}
               minimumTrackTintColor={colors.primary}
@@ -282,41 +295,34 @@ const JobScreen = ({route}) => {
               thumbTintColor={colors.secondary}
               onValueChange={value => setSelectedExperience(value)}
             />
-            <Text style={{color: '#000', fontSize: 14}}>
-              Selected: {selectedExperience} years
-            </Text>
           </View>
         ) : null}
 
         {/* Dynamic Filter Options */}
         {categoryData && filterCategory !== 'experience' && (
           <>
-            {['locations', 'skills', 'companies'].includes(filterCategory) && (
-              <TextInput
-                style={{
-                  color: '#000',
-                  height: 48,
-                  borderColor: '#ccc',
-                  borderWidth: 1,
-                  borderRadius: 4,
-                  marginBottom: 10,
-                  marginRight: 12,
-                }}
-                placeholderTextColor={'#000'}
-                placeholder={`Search ${filterCategory}`}
-                value={searchoptions}
-                onChangeText={text => setSearchoptions(text)}
-              />
+            {['location', 'skills', 'companies', 'education'].includes(
+              filterCategory,
+            ) && (
+              <View style={styles.searchContainer}>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholderTextColor={'#000'}
+                  placeholder={`Search ${filterCategory}`}
+                  value={searchoptions}
+                  onChangeText={text => setSearchoptions(text)}
+                />
+              </View>
             )}
 
             {filteredData.map(item => (
               <View
-                key={item.name || item.industry_name}
+                key={item.name || item.industry_name || item?.company_name}
                 style={styles.filterItem}>
                 <Checkbox
                   status={
                     selectedFilters[filterCategory]?.includes(
-                      item.name || item.industry_name,
+                      item.name || item.industry_name || item?.company_name,
                     )
                       ? 'checked'
                       : 'unchecked'
@@ -325,20 +331,22 @@ const JobScreen = ({route}) => {
                   onPress={() =>
                     toggleFilter(
                       filterCategory,
-                      item.name || item.industry_name,
+                      item.name || item.industry_name || item?.company_name,
                     )
                   }
                 />
                 <Text
                   style={{
                     color: selectedFilters[filterCategory]?.includes(
-                      item.name || item.industry_name,
+                      item.name || item.industry_name || item?.company_name,
                     )
                       ? colors.secondary
                       : '#000',
                     fontSize: 12,
                   }}>
-                  {`${item.name || item.industry_name} (${item.count})`}
+                  {`${item.name || item.industry_name || item?.company_name} (${
+                    item.count
+                  })`}
                 </Text>
               </View>
             ))}
@@ -487,79 +495,69 @@ const JobScreen = ({route}) => {
                 <Ionicons name="close" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
-
             <View style={{flexDirection: 'row', flex: 1}}>
-              {/* Filters Section */}
-              <ScrollView style={[styles.categoriesContainer, {flex: 1}]}>
-                {[...AggregatedData, {filter: 'experience'}].map(
-                  filterCategory => (
-                    <TouchableOpacity
-                      key={filterCategory.filter}
-                      style={[
-                        styles.categoryButton,
-                        {
-                          paddingVertical: 18,
-                          paddingHorizontal: 8,
-                          backgroundColor: '#fafafa',
-                          borderColor: 'lightgray',
-                          borderWidth: 0.2,
-                          maxWidth: 160,
-                          minWidth: 160,
-                          minHeight: 50,
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        },
-                        selectedCategory === filterCategory.filter && [
-                          styles.selectedCategoryButton,
-                          {
-                            backgroundColor: '#e6f7ff',
-                          },
-                        ],
-                      ]}
-                      onPress={() =>
-                        setSelectedCategory(
-                          filterCategory.filter === selectedCategory
-                            ? null
-                            : filterCategory.filter,
-                        )
-                      }>
-                      <Text
+              <View style={{width: width * 0.35}}>
+                {/* Filters Section */}
+                <ScrollView style={[styles.categoriesContainer]}>
+                  {[...AggregatedData, {filter: 'experience'}].map(
+                    filterCategory => (
+                      <TouchableOpacity
+                        key={filterCategory.filter}
                         style={[
-                          styles.categoryButtonText,
-                          {color: colors.primary, fontSize: 13},
-                          selectedCategory === filterCategory.filter && {
-                            fontWeight: 'bold',
-                          },
-                        ]}>
-                        {/* {filterCategory.filter.replace('_', ' ').toUpperCase()} */}
-                        {
-                          filterCategory.filter
-                            .replace('_', ' ') // Replace underscores with spaces
-                            .toLowerCase() // Convert the entire string to lowercase
-                            .replace(/^\w/, c => c.toUpperCase()) // Capitalize the first letter
-                        }
-                      </Text>
-                      <Text style={{color: 'grey', fontSize: 10}}>
-                        {filterCategory.filter !== 'experience' &&
-                          selectedFilters[filterCategory.filter]?.length > 0 &&
-                          ` (${selectedFilters[filterCategory.filter].length})`}
+                          styles.categoryButton,
+                          selectedCategory === filterCategory.filter && [
+                            styles.selectedCategoryButton,
+                            {
+                              backgroundColor: '#e6f7ff',
+                            },
+                          ],
+                        ]}
+                        onPress={() =>
+                          setSelectedCategory(
+                            filterCategory.filter === selectedCategory
+                              ? null
+                              : filterCategory.filter,
+                          )
+                        }>
+                        <Text
+                          style={[
+                            styles.categoryButtonText,
+                            selectedCategory === filterCategory.filter && {
+                              fontWeight: 'bold',
+                            },
+                          ]}>
+                          {/* {filterCategory.filter.replace('_', ' ').toUpperCase()} */}
+                          {
+                            filterCategory.filter
+                              .replace('_', ' ') // Replace underscores with spaces
+                              .toLowerCase() // Convert the entire string to lowercase
+                              .replace(/^\w/, c => c.toUpperCase()) // Capitalize the first letter
+                          }
+                        </Text>
+                        <Text style={{color: 'grey', fontSize: 10}}>
+                          {filterCategory.filter !== 'experience' &&
+                            selectedFilters[filterCategory.filter]?.length >
+                              0 &&
+                            ` (${
+                              selectedFilters[filterCategory.filter].length
+                            })`}
 
-                        {/* Show selected experience value */}
-                        {filterCategory.filter === 'experience' &&
-                          selectedExperience !== undefined &&
-                          ` (${selectedExperience} years)`}
-                      </Text>
-                    </TouchableOpacity>
-                  ),
-                )}
-              </ScrollView>
+                          {/* Show selected experience value */}
+                          {filterCategory.filter === 'experience' &&
+                            selectedExperience !== undefined &&
+                            ` (${selectedExperience} Y)`}
+                        </Text>
+                      </TouchableOpacity>
+                    ),
+                  )}
+                </ScrollView>
 
-              {/* Right-side options for the selected category */}
-              <View style={[styles.optionsContainer, {flex: 1}]}>
+                {/* Right-side options for the selected category */}
+              </View>
+              <View style={styles.optionsContainer}>
                 {selectedCategory && renderFilterOptions(selectedCategory)}
               </View>
             </View>
-
             {/* Footer Buttons */}
             <View style={styles.footer}>
               <TouchableOpacity
@@ -683,5 +681,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 4,
   },
+  optionsContainer: {
+    flex: 1,
+    marginTop: 12,
+  },
+  searchContainer: {alignSelf: 'center'},
+  searchInput: {
+    color: '#000',
+    width: width * 0.6,
+    height: 48,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 10,
+  },
+  categoryButton: {
+    paddingVertical: 18,
+    paddingHorizontal: 8,
+    backgroundColor: '#fafafa',
+    borderColor: 'lightgray',
+    borderWidth: 0.2,
+    minHeight: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  categoryButtonText: {color: colors.primary, fontSize: 13},
 });
 export default JobScreen;

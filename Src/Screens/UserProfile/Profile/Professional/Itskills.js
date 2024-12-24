@@ -46,6 +46,9 @@ const validationSchema = Yup.object().shape({
     .required('Skill / Software name is required')
     .min(2, 'Must be at least 2 characters')
     .max(50, 'Must be at most 50 characters'),
+  years: Yup.number().required('Years is required'),
+  months: Yup.number().required('Months is required'),
+  last_used: Yup.number().required('Last Used is required'),
 });
 
 // Initial Values Helper
@@ -301,7 +304,14 @@ const Itskills = profileDetails => {
                 validationSchema={validationSchema}
                 innerRef={ref => (formikRef = ref)}
                 onSubmit={handleFormSubmit}>
-                {({handleChange, handleSubmit, values, setFieldValue}) => (
+                {({
+                  handleChange,
+                  handleSubmit,
+                  values,
+                  errors,
+                  touched,
+                  setFieldValue,
+                }) => (
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>IT SKILLS</Text>
                     <Text style={profileStyle.formSubHeading}>
@@ -317,6 +327,8 @@ const Itskills = profileDetails => {
                       onSelect={selected =>
                         setFieldValue('name', selected?.value)
                       }
+                      error={errors.name}
+                      touched={touched.name}
                     />
                     {values.name === 'Other' && (
                       <ReusableTextInput
@@ -347,6 +359,8 @@ const Itskills = profileDetails => {
                         onSelect={selected =>
                           setFieldValue('years', selected.value)
                         }
+                        error={errors.years}
+                        touched={touched.years}
                       />
                       <ReusableDropdown
                         options={Months}
@@ -355,6 +369,8 @@ const Itskills = profileDetails => {
                         onSelect={selected =>
                           setFieldValue('months', selected.value)
                         }
+                        error={errors.months}
+                        touched={touched.months}
                       />
                     </View>
                     <ReusableDropdown
@@ -364,6 +380,8 @@ const Itskills = profileDetails => {
                       onSelect={selected =>
                         setFieldValue('last_used', selected.value)
                       }
+                      error={errors.last_used}
+                      touched={touched.last_used}
                     />
                   </View>
                 )}
@@ -393,7 +411,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: 'auto',
     padding: 12,
-    backgroundColor:'#fafafa',
+    backgroundColor: '#fafafa',
     marginRight: 12,
     borderRadius: 8,
   },

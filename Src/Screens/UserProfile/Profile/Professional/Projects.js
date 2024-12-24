@@ -20,6 +20,7 @@ import CustomTabs from '../../../../Constant/CustomTabs';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import * as Yup from 'yup';
 
 const TeamSizeOptions = Array.from({length: 31}, (_, i) => ({
   label: `${i}`,
@@ -41,6 +42,33 @@ const EmploymentNatureOptions = [
   {id: 2, label: 'Part Time', value: 'Part Time'},
   {id: 3, label: 'Contractual', value: 'Contractual'},
 ];
+const validationSchema = Yup.object().shape({
+  title: Yup.string()
+    .required('Project Title is required')
+    .min(3, 'Title should be at least 3 characters long'),
+  client: Yup.string()
+    .required('Client is required')
+    .min(2, 'Client name should be at least 2 characters long'),
+  status: Yup.string()
+    .required('Project Status is required')
+    .oneOf(['In Progress', 'Finished'], 'Invalid status'),
+  description: Yup.string()
+    .required('Project Details are required')
+    .min(10, 'Description should be at least 10 characters long'),
+  worked_duration: Yup.object().shape({
+    from: Yup.date()
+      .required('Start date is required')
+      .typeError('Invalid date format'),
+    till: Yup.date()
+      .nullable()
+      .when('status', {
+        is: 'Finished',
+        then: Yup.date()
+          .required('End date is required when status is Finished')
+          .min(Yup.ref('from'), 'End date cannot be before start date'),
+      }),
+  }),
+});
 
 const Projects = profileDetails => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -287,8 +315,16 @@ const Projects = profileDetails => {
                   skills_used: selectedProject?.skills_used || '',
                 }}
                 innerRef={ref => (formikRef = ref)}
+                validationSchema={validationSchema}
                 onSubmit={handleFormSubmit}>
-                {({handleChange, handleSubmit, setFieldValue, values}) => (
+                {({
+                  handleChange,
+                  handleSubmit,
+                  setFieldValue,
+                  errors,
+                  touched,
+                  values,
+                }) => (
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>
                       Project Details
@@ -317,6 +353,15 @@ const Projects = profileDetails => {
                       // error={errors.status}
                       // touched={touched.status}
                     /> */}
+                    <Text
+                      style={[
+                        styles.label, // Base label style
+                        touched.status && errors.status
+                          ? styles.errorLabel
+                          : null, // Apply error styling conditionally
+                      ]}>
+                      Project Status*
+                    </Text>
                     <View style={profileStyle.TabContainer}>
                       {ProjectStatusOptions.map(option => (
                         <TouchableOpacity
@@ -338,6 +383,7 @@ const Projects = profileDetails => {
                         </TouchableOpacity>
                       ))}
                     </View>
+
                     <ReusableDatePicker
                       label="Worked From*"
                       value={
@@ -354,6 +400,11 @@ const Projects = profileDetails => {
                           from: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
                         })
                       }
+                      error={
+                        touched.worked_duration?.from &&
+                        errors.worked_duration?.from
+                      } // Show error only if touched and there is an error
+                      touched={touched.worked_duration?.from}
                     />
 
                     {values.status === 'Finished' && (
@@ -373,6 +424,11 @@ const Projects = profileDetails => {
                             till: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
                           })
                         }
+                        error={
+                          touched.worked_duration?.till &&
+                          errors.worked_duration?.till
+                        } // Show error only if touched and there is an error
+                        touched={touched.worked_duration?.till}
                       />
                     )}
 
@@ -478,6 +534,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     borderRadius: 8,
     paddingVertical: 12,
+  },
+  label: {
+    fontSize: 12,
+    color: colors.secondary,
+  },
+  errorLabel: {
+    color: 'red',
   },
 });
 

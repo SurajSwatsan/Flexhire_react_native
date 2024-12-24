@@ -32,7 +32,7 @@ const {width: screenWidth} = Dimensions.get('window');
 
 const CompanyOverviewScreen = ({route}) => {
   const {company_id} = route?.params;
-  console.log('company_id', company_id);
+  // console.log('company_id', company_id);
   const [id, setId] = useState();
   const isFocus = useIsFocused();
 
@@ -65,14 +65,14 @@ const CompanyOverviewScreen = ({route}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log('CompanyDetails', CompanyDetails);
-  console.log(CompanyDetails?.company_size);
+  // console.log('CompanyDetails', CompanyDetails);
+  // console.log(CompanyDetails?.company_size);
 
   const [employeeCount] = useState(
     Number(CompanyDetails?.company_size) || 0, // Default to 0 if conversion fails
   );
 
-  console.log('EmployeeCount', employeeCount);
+  // console.log('EmployeeCount', employeeCount);
 
   const truncatedLength = 50;
   // State to control visibility of all services
@@ -136,12 +136,17 @@ const CompanyOverviewScreen = ({route}) => {
           <View style={styles.containermain}>
             <View style={styles.overviewContainer}>
               <View style={styles.overviewImage}>
+                {console.log(
+                  'CompanyDetails?.about_us[0]?.image',
+                  CompanyDetails?.about_us?.image,
+                )}
+
                 <Image
                   source={
-                    CompanyDetails?.about_us?.image
-                      ? {uri: BASE_URL + CompanyDetails?.about_us?.image}
+                    CompanyDetails?.about_us?.[0]?.image
+                      ? {uri: BASE_URL + CompanyDetails?.about_us?.[0]?.image}
                       : require('../Assets/companyImges/overviewImage.jpg')
-                  } // Add your banner image here
+                  }
                   style={styles.image}
                 />
 
@@ -175,17 +180,17 @@ const CompanyOverviewScreen = ({route}) => {
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {Array.isArray(CompanyDetails?.company_benefits) &&
-                  CompanyDetails?.company_benefits.map((benefit, index) => (
+                  CompanyDetails?.company_benefits?.map((benefit, index) => (
                     <View key={index} style={styles.benefitCard}>
                       <Image
                         source={
-                          benefit?.image
-                            ? {uri: BASE_URL + benefit?.image}
+                          benefit?.icon
+                            ? {uri: BASE_URL + benefit?.icon}
                             : require('../Assets/benifitsImages/Health.png') // Default image
                         }
                         style={styles.icon}
                       />
-                      <Text style={styles.benefitText}>{benefit?.text}</Text>
+                      <Text style={styles.benefitText}>{benefit?.name}</Text>
                     </View>
                   ))}
               </ScrollView>
@@ -428,7 +433,7 @@ const CompanyOverviewScreen = ({route}) => {
                       <Image
                         source={
                           leader?.image
-                            ? {uri: `${BASE_URL}${leader.image}`}
+                            ? {uri: BASE_URL + leader?.image}
                             : require('../Assets/companyImges/person.jpg') // Fallback image
                         }
                         style={styles.textimage}
@@ -445,6 +450,8 @@ const CompanyOverviewScreen = ({route}) => {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {CompanyDetails?.key_highlights?.map((highlight, index) => (
                   <View key={index} style={styles.keyCard}>
+                   { console.log(highlight?.icon)}
+                    
                     <Image
                       source={
                         highlight?.icon
@@ -454,9 +461,8 @@ const CompanyOverviewScreen = ({route}) => {
                       style={styles.icon1}
                     />
                     <Text style={styles.keyText}>
-                      {highlight?.title || 'No Title'}
-                      {console.log(highlight?.title)};
-                      
+                      {highlight?.name || 'No Title'}
+                      {/* {console.log(highlight?.title)}; */}
                     </Text>
                   </View>
                 ))}
@@ -471,17 +477,7 @@ const CompanyOverviewScreen = ({route}) => {
                   style={styles.awardImage}
                 />
                 <View style={styles.awardInfo}>
-                  {/* Awards List */}
-                  {/* {CompanyDetails?.company_awards?.map((award, index) => (
-                    <View key={index} style={styles.awardtext}>
-                      <Text style={styles.cardTitle}>
-                        {award?.title || 'No Title'}
-                      </Text>
-                      <Text style={styles.cardDate}>
-                        {award?.date || 'No Date'}
-                      </Text>
-                    </View>
-                  ))} */}
+                  
 
                   {/* Horizontal ScrollView for Timeline */}
                   <ScrollView
@@ -657,7 +653,7 @@ const CompanyOverviewScreen = ({route}) => {
                 .slice(0, 2)
                 .map((service, index) => (
                   <TouchableOpacity key={index} style={styles.chip}>
-                    <Text style={styles.chipText}>{service?.name}</Text>
+                    <Text style={styles.chipText}>{service?.service_name}</Text>
                   </TouchableOpacity>
                 ))}
 
@@ -678,7 +674,9 @@ const CompanyOverviewScreen = ({route}) => {
                   .slice(2)
                   .map((service, index) => (
                     <TouchableOpacity key={index + 2} style={styles.chip}>
-                      <Text style={styles.chipText}>{service?.name}</Text>
+                      <Text style={styles.chipText}>
+                        {service?.service_name}
+                      </Text>
                     </TouchableOpacity>
                   ))}
             </>
