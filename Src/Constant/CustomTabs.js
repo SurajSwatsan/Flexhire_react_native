@@ -11,7 +11,8 @@ const CustomTabs = ({
   fieldName,
   error, // Validation error from Formik
   touched, // Touched state from Formik
-}) => {console.log(setFieldValue);
+}) => {
+  // console.log(setFieldValue);
 
   return (
     <View style={profileStyle.CustomTabContainer}>

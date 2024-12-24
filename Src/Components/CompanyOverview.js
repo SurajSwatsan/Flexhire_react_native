@@ -13,43 +13,69 @@ import {
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
-import {Button} from 'react-native-paper';
+import {Button, IconButton} from 'react-native-paper';
 // import CustomJobCard from '../Constant/CustomJobCard';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
 import Swiper from 'react-native-swiper';
 import Timeline from 'react-native-timeline-flatlist';
+import JobViewController from '../Redux/Action/jobViewController';
+import {useIsFocused} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../Services/baseAPI';
+import moment from 'moment';
 
 const {width, height} = Dimensions.get('window'); // Get the screen width
 
 const {width: screenWidth} = Dimensions.get('window');
 
 const CompanyOverviewScreen = ({route}) => {
-  const {jobData} = route.params;
+  const {company_id} = route?.params;
+  console.log('company_id', company_id);
+  const [id, setId] = useState();
+  const isFocus = useIsFocused();
+
   const [activeTab, setActiveTab] = useState('Overview');
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const [employeeCount] = useState(jobData.company.employee);
+  const [showAllServices, setShowAllServices] = useState(false);
   const animatedValue = new Animated.Value(0); // Initialize animated value
   const [currentCount, setCurrentCount] = useState(0); // Track the live counter value
+  const [selectedChip, setSelectedChip] = useState('All');
 
-  const jobs = useSelector(state => state.Jobs.jobsData);
+  const dispatch = useDispatch();
+  const {GetCompanyDetails} = JobViewController();
+  const {CompanyDetails} = useSelector(state => state?.job);
 
-  const relatedJobs = jobData.related_jobs;
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+        dispatch(GetCompanyDetails(company_id, id));
 
-  const [selectedChip, setSelectedChip] = useState(null);
+        console.log(id); // Log the value once it's retrieved
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
 
-  const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
+    getUserData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  console.log('CompanyDetails', CompanyDetails);
+  console.log(CompanyDetails?.company_size);
+
+  const [employeeCount] = useState(
+    Number(CompanyDetails?.company_size) || 0, // Default to 0 if conversion fails
+  );
+
+  console.log('EmployeeCount', employeeCount);
 
   const truncatedLength = 50;
-
-  if (!jobs || jobs.length === 0) {
-    return <Text style={styles.noCompanyText}>No jobs to display.</Text>;
-  }
-
   // State to control visibility of all services
-  const [showAllServices, setShowAllServices] = useState(false);
 
   // Function to toggle visibility of all services
   const toggleServices = () => setShowAllServices(prev => !prev);
@@ -61,6 +87,7 @@ const CompanyOverviewScreen = ({route}) => {
     require('../Assets/sliderImages/slider2.jpg'),
     require('../Assets/sliderImages/slider3.jpg'),
   ];
+  const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
 
   // Function to animate the counter incrementally
   // const animateCounter = () => {
@@ -92,17 +119,15 @@ const CompanyOverviewScreen = ({route}) => {
   useEffect(() => {
     animateCounter();
 
-    const listenerId = animatedValue.addListener(({value}) => {
-      setCurrentCount(Math.floor(value)); // Use Math.floor to avoid fractional values
+    const listenerId = animatedValue?.addListener(({value}) => {
+      setCurrentCount(Math?.floor(value)); // Use Math.floor to avoid fractional values
     });
 
     // Cleanup listener on unmount
     return () => {
-      animatedValue.removeListener(listenerId);
+      animatedValue?.removeListener(listenerId);
     };
   }, [employeeCount]); // Run effect when employeeCount changes
-
-
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -112,7 +137,11 @@ const CompanyOverviewScreen = ({route}) => {
             <View style={styles.overviewContainer}>
               <View style={styles.overviewImage}>
                 <Image
-                  source={require('../Assets/companyImges/overviewImage.jpg')} // Add your banner image here
+                  source={
+                    CompanyDetails?.about_us?.image
+                      ? {uri: BASE_URL + CompanyDetails?.about_us?.image}
+                      : require('../Assets/companyImges/overviewImage.jpg')
+                  } // Add your banner image here
                   style={styles.image}
                 />
 
@@ -120,13 +149,14 @@ const CompanyOverviewScreen = ({route}) => {
                   <Text style={styles.jobDetailsheader}>About Us:</Text>
                   <Text style={styles.jobDetails1}>
                     {isExpanded
-                      ? jobData.company.about // Show full description when expanded
-                      : jobData.company.about.length > truncatedLength
-                      ? `${jobData.company.about.substring(
+                      ? CompanyDetails?.company_description // Show full description when expanded
+                      : CompanyDetails?.company_description?.length >
+                        truncatedLength
+                      ? `${CompanyDetails?.company_description?.substring(
                           0,
                           truncatedLength,
                         )}...` // Truncate if not expanded
-                      : jobData.company.about}
+                      : CompanyDetails?.company_description}
                   </Text>
                   <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
                     <Text style={styles.readMoreText}>
@@ -144,15 +174,20 @@ const CompanyOverviewScreen = ({route}) => {
               <Text style={styles.textBenefits}>Benefits</Text>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {jobData?.benefits.map((benefit, index) => (
-                  <View key={index} style={styles.benefitCard}>
-                    <Image
-                      source={require('../Assets/benifitsImages/Health.png')}
-                      style={styles.icon}
-                    />
-                    <Text style={styles.benefitText}>{benefit.name}</Text>
-                  </View>
-                ))}
+                {Array.isArray(CompanyDetails?.company_benefits) &&
+                  CompanyDetails?.company_benefits.map((benefit, index) => (
+                    <View key={index} style={styles.benefitCard}>
+                      <Image
+                        source={
+                          benefit?.image
+                            ? {uri: BASE_URL + benefit?.image}
+                            : require('../Assets/benifitsImages/Health.png') // Default image
+                        }
+                        style={styles.icon}
+                      />
+                      <Text style={styles.benefitText}>{benefit?.text}</Text>
+                    </View>
+                  ))}
               </ScrollView>
             </View>
 
@@ -162,16 +197,126 @@ const CompanyOverviewScreen = ({route}) => {
                   <Text style={styles.contHead}>Recent Jobs</Text>
                   <Text style={styles.seeAll}>See All</Text>
                 </View>
-                <ScrollView
+                {/* <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.contentContainer}>
-                  {jobs.map((jobdata, index) => (
+                  {CompanyDetails?.map((jobdata, index) => (
                     <View key={jobdata.id || index} style={{marginRight: 12}}>
-                      <CustomJobCard jobData={jobdata} />
+                      <ScrollView
+                        style={styles.companyContainer}
+                        contentContainerStyle={{paddingBottom: 16}}
+                        scrollEventThrottle={16}>
+                        {CompanyDetails && CompanyDetails.length > 0 ? (
+                          CompanyDetails.map(jobData => (
+                            <TouchableOpacity
+                              key={jobData.id}
+                              // onPress={() => handleJobDetails(jobData)}
+                            >
+                              <View style={styles.jobCard}>
+                                <View style={styles.companyInfo}>
+                                  <View style={styles.companylogo}>
+                                    <Image
+                                      source={
+                                        jobData?.company?.logo
+                                          ? {
+                                              uri: `${BASE_URL}${jobData?.company?.logo}`,
+                                            }
+                                          : require('../Assets/CompanyLogo/Swatsan.png')
+                                      }
+                                      style={styles.companyImage}
+                                    />
+                                    <View style={styles.textName}>
+                                      <Text style={styles.jobTitle}>
+                                        {jobData?.job_title?.title}
+                                      </Text>
+                                      <Text style={styles.companyName}>
+                                        {jobData?.company_name}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  <IconButton
+                                    icon="bookmark-outline"
+                                    iconColor={colors.primary}
+                                    size={24}
+                                    style={styles.saveicon}
+                                    // onPress={() => handleBookmark(jobData.id)}
+                                  />
+                                </View>
+                                <View style={styles.workModeContainer}>
+                                  {jobData.work_modes &&
+                                    jobData.work_modes.map((mode, idx) => (
+                                      <View
+                                        key={idx}
+                                        style={styles.workModeChip}>
+                                        <Text style={styles.chipText}>
+                                          {mode}
+                                        </Text>
+                                      </View>
+                                    ))}
+                                </View>
+                                <View style={styles.location}>
+                                  <IconButton
+                                    icon="map-marker"
+                                    iconColor={colors.primary}
+                                    size={18}
+                                    style={{
+                                      padding: 0,
+                                      marginLeft: -10,
+                                      height: 20,
+                                    }}
+                                  />
+                                  {jobData.job_location.map(
+                                    (location, locIndex) => (
+                                      <Text
+                                        key={locIndex}
+                                        style={styles.jobCardLocation}>
+                                        {location.name}
+                                        {locIndex <
+                                          jobData.job_location.length - 1 &&
+                                          ', '}
+                                      </Text>
+                                    ),
+                                  )}
+                                </View>
+                                <View style={styles.line} />
+                                <View style={styles.jobFooter}>
+                                  {jobData?.salary?.yearly && (
+                                    <View style={styles.experienceContainer}>
+                                      <Ionicons
+                                        name="cash"
+                                        size={14}
+                                        color="#004466"
+                                      />
+                                      <Text style={styles.jobDetailsalary}>
+                                        ₹
+                                        {jobData.salary.yearly.min.toLocaleString()}{' '}
+                                        - ₹
+                                        {jobData.salary.yearly.max.toLocaleString()}{' '}
+                                        INR
+                                      </Text>
+                                    </View>
+                                  )}
+                                  <Text style={styles.jobPostedDate}>
+                                    {moment(
+                                      jobData.reviews[0]?.review_date,
+                                    ).fromNow()}
+                                  </Text>
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          ))
+                        ) : (
+                          <View style={[styles.noJobsContainer]}>
+                            <Text style={[styles.noJobsText]}>
+                              No jobs found.....
+                            </Text>
+                          </View>
+                        )}
+                      </ScrollView>
                     </View>
                   ))}
-                </ScrollView>
+                </ScrollView> */}
               </View>
             </View>
 
@@ -181,10 +326,9 @@ const CompanyOverviewScreen = ({route}) => {
                 marginTop: 12,
                 marginBottom: 12,
                 flex: 1,
-                // backgroundColor: colors.whiteText,
                 width: '100%',
               }}>
-              <CustomCarousel />
+              <CustomCarousel companyDetails={CompanyDetails} />
             </View>
 
             <View style={styles.review}>
@@ -211,12 +355,12 @@ const CompanyOverviewScreen = ({route}) => {
         return (
           <View style={styles.companymainContaner}>
             <View style={styles.videoContainer}>
-              {jobData.youtubeVideos.map((video, index) => (
+              {CompanyDetails?.youtubeVideos?.map((video, index) => (
                 <View key={index} style={styles.videoCard}>
                   {/* Left side: Image & Video Thumbnail */}
                   <TouchableOpacity
                     style={styles.imageContainer}
-                    onPress={() => openVideo(video.url)} // Handle the click to open the video
+                    // onPress={() => openVideo(video.url)} // Handle the click to open the video
                   >
                     <ImageBackground
                       source={require('../Assets/sliderImages/slider5.jpg')} // Replace with your actual thumbnail URL
@@ -253,7 +397,7 @@ const CompanyOverviewScreen = ({route}) => {
                   dot={<View style={styles.dot} />} // Customize the inactive dot
                   activeDot={<View style={styles.activeDot} />} // Customize the active dot
                 >
-                  {images.map((image, index) => (
+                  {images?.map((image, index) => (
                     <View key={index} style={styles.slide}>
                       <Image source={image} style={styles.sliderimage} />
                     </View>
@@ -263,41 +407,57 @@ const CompanyOverviewScreen = ({route}) => {
             </View>
             <View style={styles.testimonialmainContainer}>
               <View style={styles.testimonialMain}>
-                {jobData?.testimonials.map((testimonial, index) => (
-                  <View key={index} style={styles.testimonialcard}>
-                    {/* Left side: Text */}
-                    <View style={styles.testimonialContainer}>
-                      <Text style={styles.testimonialText}>
-                        "{testimonial.text}"
-                      </Text>
-                      <Text style={styles.name}>{testimonial.name}</Text>
-                      <Text style={styles.designation}>
-                        {testimonial.designation}
-                      </Text>
-                    </View>
+                {CompanyDetails?.company_leaders
+                  ?.filter(leader => leader?.quote) // Filter out leaders without a quote
+                  .map((leader, index) => (
+                    <View key={index} style={styles.testimonialcard}>
+                      <View style={styles.testimonialContainer}>
+                        {/* Display the quote */}
+                        <Text style={styles.testimonialText}>
+                          "{leader?.quote}"
+                        </Text>
+                        <Text style={styles.name}>
+                          {leader?.name || 'Unknown'}
+                        </Text>
+                        <Text style={styles.designation}>
+                          {leader?.position || 'No position specified'}
+                        </Text>
+                      </View>
 
-                    {/* Right side: Image */}
-                    <Image
-                      source={require('../Assets/companyImges/person.jpg')}
-                      style={styles.textimage}
-                    />
-                  </View>
-                ))}
+                      {/* Right side: Image */}
+                      <Image
+                        source={
+                          leader?.image
+                            ? {uri: `${BASE_URL}${leader.image}`}
+                            : require('../Assets/companyImges/person.jpg') // Fallback image
+                        }
+                        style={styles.textimage}
+                      />
+                    </View>
+                  ))}
               </View>
             </View>
 
             <View style={styles.keymainContainer}>
               <View style={styles.keyconatiner}>
-                <Text style={styles.textkeyContainer}>Key Highlight's</Text>
+                <Text style={styles.textkeyContainer}>Key Highlights</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {jobData?.key_highlights.map((highlight, index) => (
+                {CompanyDetails?.key_highlights?.map((highlight, index) => (
                   <View key={index} style={styles.keyCard}>
                     <Image
-                      source={require('../Assets/benifitsImages/paid_time.png')} // Using the icon URI directly
+                      source={
+                        highlight?.icon
+                          ? {uri: BASE_URL + highlight?.icon} // Use dynamic icon URI if provided
+                          : require('../Assets/benifitsImages/paid_time.png') // Fallback image
+                      }
                       style={styles.icon1}
                     />
-                    <Text style={styles.keyText}>{highlight.name}</Text>
+                    <Text style={styles.keyText}>
+                      {highlight?.title || 'No Title'}
+                      {console.log(highlight?.title)};
+                      
+                    </Text>
                   </View>
                 ))}
               </ScrollView>
@@ -311,36 +471,51 @@ const CompanyOverviewScreen = ({route}) => {
                   style={styles.awardImage}
                 />
                 <View style={styles.awardInfo}>
-                  {/* {jobData.awards.map((award, index) => (
+                  {/* Awards List */}
+                  {/* {CompanyDetails?.company_awards?.map((award, index) => (
                     <View key={index} style={styles.awardtext}>
-                      <Text style={styles.cardTitle}>{award.title}</Text>
-                      <Text style={styles.cardDate}>{award.date}</Text>
+                      <Text style={styles.cardTitle}>
+                        {award?.title || 'No Title'}
+                      </Text>
+                      <Text style={styles.cardDate}>
+                        {award?.date || 'No Date'}
+                      </Text>
                     </View>
                   ))} */}
-                  <ScrollView horizontal={true}>
+
+                  {/* Horizontal ScrollView for Timeline */}
+                  <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}>
                     <View style={{flex: 1, paddingVertical: 12}}>
                       <Timeline
-                        data={jobData.awards} // Data mapped correctly with 'time' instead of 'date'
-                        circleSize={15} // Size of the circle (dot) in the timeline
-                        circleColor="#004466" // Color of the circle (dot)
-                        lineColor="#acd2be" // Color of the connecting line
-                        innerCircle={'dot'} // Use a simple dot in the inner circle
-                        titleStyle={styles.cardTitle} // Title style for the awards
-                        descriptionStyle={styles.cardDate} // Date style for the award description (optional)
-                        renderTime={() => null} // Disable time (no need to display time)
+                        data={CompanyDetails?.company_awards?.map(award => ({
+                          ...award,
+                          time: '', // Add an empty 'time' field to match Timeline data structure
+                        }))}
+                        circleSize={15} // Circle (dot) size
+                        circleColor="#004466" // Circle (dot) color
+                        lineColor="#acd2be" // Line color connecting circles
+                        innerCircle={'dot'} // Use a simple dot for the inner circle
+                        titleStyle={styles.cardTitle} // Title style
+                        descriptionStyle={styles.cardDate} // Description style
+                        renderTime={() => null} // Disable rendering of the time
                         renderDetail={rowData => (
                           <View style={styles.detailContainer}>
                             <Text style={styles.cardTitle}>
-                              {rowData.title}
+                              {rowData?.title || 'No Title'}
                             </Text>
-
-                            <Text style={styles.cardDate}>{rowData.date}</Text>
+                            <Text style={styles.cardDate}>
+                              {rowData?.date
+                                ? moment(new Date(rowData.date)).format(
+                                    'MMMM D, YYYY',
+                                  )
+                                : 'No Date'}
+                            </Text>
                           </View>
                         )}
                         options={{
-                          style: {
-                            // marginLeft: 10, // Space between circle and content
-                          },
+                          style: {}, // Keep the default styling
                         }}
                         eventContainerStyle={{marginTop: -10}}
                       />
@@ -379,12 +554,12 @@ const CompanyOverviewScreen = ({route}) => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            {relatedJobs && Object.keys(relatedJobs).length > 0 && (
+            {/* {relatedJobs && Object.keys(relatedJobs).length > 0 && (
               <View style={styles.relatedjobcontainer}>
                 <ScrollView>
                   {Object.entries(relatedJobs).map(([key, jobdata], index) => (
                     <View key={jobdata.id || index} style={{marginBottom: 14}}>
-                      <TouchableOpacity
+            <TouchableOpacity
                         onPress={() => {
                           // Navigate to JobDetailScreen for the related job
                           navigation.navigate('JobDetailScreen', {
@@ -393,11 +568,11 @@ const CompanyOverviewScreen = ({route}) => {
                         }}>
                         <CustomJobCard jobData={jobdata} />
                       </TouchableOpacity>
-                    </View>
+            </View>
                   ))}
                 </ScrollView>
               </View>
-            )}
+            )} */}
 
             <View style={styles.review}>
               <ReviewPage />
@@ -414,7 +589,11 @@ const CompanyOverviewScreen = ({route}) => {
       {/* Banner Section */}
       <View style={styles.bannerContainer}>
         <Image
-          source={require('../Assets/companyImges/banerimage.jpg')} // Add your banner image here
+          source={
+            CompanyDetails?.company_banner
+              ? {uri: BASE_URL + CompanyDetails?.company_banner}
+              : require('../Assets/companyImges/banerimage.jpg')
+          } // Add your banner image here
           style={styles.bannerImage}
         />
       </View>
@@ -425,16 +604,16 @@ const CompanyOverviewScreen = ({route}) => {
         <View style={styles.logoContainer}>
           <Image
             source={
-              jobData.company.logo
-                ? {uri: jobData.company.logo} // Use URI if the logo is a valid URL or path
-                : require('../Assets/CompanyLogo/TCS_logo.png') // Fallback to a default image
+              CompanyDetails?.logo
+                ? {uri: BASE_URL + CompanyDetails?.logo} // Use URI if the logo is a valid URL or path
+                : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
             }
             style={styles.logo}
           />
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.companyName}>{jobData.company.company_name}</Text>
+          <Text style={styles.companyName}>{CompanyDetails?.company_name}</Text>
 
           <View style={styles.locationContainer}>
             <View style={styles.location}>
@@ -444,42 +623,49 @@ const CompanyOverviewScreen = ({route}) => {
                 size={16} // Icon size
                 style={{padding: 0, marginLeft: -10, height: 20}} // Adjust the style
               />
-              <Text style={styles.jobLocation}>{jobData.location}</Text>
-            </View>
-            {/* <View style={styles.location}>
-              <Ionicons
-                name="person" // Icon for openings
-                color={colors.primary} // Icon color
-                size={18} // Icon size
-                style={{padding: 0, marginLeft: -10, height: 20}} // Adjust the style
-              />
               <Text style={styles.jobLocation}>
-                {jobData.company.employee} employee
+                {CompanyDetails?.headquarters}
               </Text>
-            </View> */}
+            </View>
+
+            {/* <View style={styles.location}>
+               <Ionicons
+                 name="person" // Icon for openings
+                 color={colors.primary} // Icon color
+                 size={18} // Icon size
+                 style={{padding: 0, marginLeft: -10, height: 20}} // Adjust the style
+               />
+               <Text style={styles.jobLocation}>
+                 {jobData.company.employee} employee
+               </Text>
+             </View> */}
           </View>
         </View>
       </View>
 
       <View style={styles.textInfo}>
         {/* Tagline Section */}
-        <Text style={styles.tagLine}>{jobData.company.tagline}</Text>
+        <Text style={styles.tagLine}>{CompanyDetails?.company_tagline}</Text>
 
         {/* Services Section */}
         <View style={styles.servicesContainer}>
-          {Array.isArray(jobData?.company?.services) &&
-          jobData.company.services.length > 0 ? (
+          {Array.isArray(CompanyDetails?.company_services) &&
+          CompanyDetails?.company_services?.length > 0 ? (
             <>
               {/* Display the first two services */}
-              {jobData.company.services.slice(0, 2).map((service, index) => (
-                <TouchableOpacity key={index} style={styles.chip}>
-                  <Text style={styles.chipText}>{service}</Text>
-                </TouchableOpacity>
-              ))}
+              {CompanyDetails?.company_services
+                .slice(0, 2)
+                .map((service, index) => (
+                  <TouchableOpacity key={index} style={styles.chip}>
+                    <Text style={styles.chipText}>{service?.name}</Text>
+                  </TouchableOpacity>
+                ))}
 
               {/* Display the "See All" button as a chip */}
-              {jobData.company.services.length > 2 && (
-                <TouchableOpacity onPress={toggleServices} style={styles.chip}>
+              {CompanyDetails?.company_services.length > 2 && (
+                <TouchableOpacity
+                  onPress={() => setShowAllServices(!showAllServices)}
+                  style={styles.chip}>
                   <Text style={styles.chipText}>
                     {showAllServices ? 'See Less' : 'See All'}
                   </Text>
@@ -488,11 +674,13 @@ const CompanyOverviewScreen = ({route}) => {
 
               {/* Display all services if "See All" is clicked */}
               {showAllServices &&
-                jobData.company.services.slice(2).map((service, index) => (
-                  <TouchableOpacity key={index + 2} style={styles.chip}>
-                    <Text style={styles.chipText}>{service}</Text>
-                  </TouchableOpacity>
-                ))}
+                CompanyDetails?.company_services
+                  .slice(2)
+                  .map((service, index) => (
+                    <TouchableOpacity key={index + 2} style={styles.chip}>
+                      <Text style={styles.chipText}>{service?.name}</Text>
+                    </TouchableOpacity>
+                  ))}
             </>
           ) : (
             <Text style={styles.noServices}>No services available</Text>
@@ -764,7 +952,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 150, // Increase height to give space for both icon and text
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
@@ -807,7 +995,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.blackText,
     alignSelf: 'center',
-    color: colors.primary,
+    // color: colors.primary,
     backgroundColor: colors.whiteText,
     width: '100%',
     borderRadius: 8,
@@ -880,30 +1068,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
 
   relatedjobcontainer: {
     margin: 12,
   },
-  jobchipContainer:{
+  jobchipContainer: {
     paddingVertical: 4,
-    paddingHorizontal:12
+    paddingHorizontal: 12,
   },
-  jobchip:{
-    backgroundColor: colors.whiteText, 
+  jobchip: {
+    backgroundColor: colors.whiteText,
     paddingVertical: 6,
     paddingHorizontal: 8,
     borderRadius: 8,
     marginRight: 8,
     alignItems: 'center',
     justifyContent: 'center',
-  
   },
-  jobselectedChip:{
+  jobselectedChip: {
     backgroundColor: colors.lightgaryText, // Darker blue for selected chip
     color: colors.whiteText,
   },
-  chipjobText:{
+  chipjobText: {
     color: '#000',
     fontSize: 14,
     fontWeight: 'bold',
@@ -1103,7 +1289,6 @@ const styles = StyleSheet.create({
     width: 120,
     height: 150, // Increase height to give space for both icon and text
     justifyContent: 'center',
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,

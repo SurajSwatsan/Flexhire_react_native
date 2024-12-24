@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,264 +19,49 @@ import {colors} from '../../Global_CSS/TheamColors';
 import {Checkbox, IconButton} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-
-const filterData = [
-  {
-    filter: 'work_modes',
-    data: [
-      {
-        name: 'Remote',
-        count: 6,
-      },
-      {
-        name: 'Onsite',
-        count: 7,
-      },
-      {
-        name: 'Hybrid',
-        count: 2,
-      },
-    ],
-  },
-  {
-    filter: 'departments',
-    data: [
-      {
-        name: 'Sales and Marketing',
-        count: 6,
-      },
-      {
-        name: 'Operations',
-        count: 0,
-      },
-      {
-        name: 'Information Technology',
-        count: 2,
-      },
-      {
-        name: 'Engineering',
-        count: 2,
-      },
-      {
-        name: 'Finance',
-        count: 0,
-      },
-      {
-        name: 'Customer Service',
-        count: 5,
-      },
-      {
-        name: 'Human Resources',
-        count: 0,
-      },
-      {
-        name: 'Administration',
-        count: 1,
-      },
-    ],
-  },
-  {
-    filter: 'locations',
-    data: [
-      {
-        name: 'Delhi, India',
-        count: 1,
-      },
-      {
-        name: 'Mumbai, India',
-        count: 2,
-      },
-      {
-        name: 'Pune, India',
-        count: 7,
-      },
-      {
-        name: 'Chennai, India',
-        count: 1,
-      },
-      {
-        name: 'Nagpur, India',
-        count: 5,
-      },
-      {
-        name: 'Bengaluru, India',
-        count: 7,
-      },
-      {
-        name: 'Hyderabad, India',
-        count: 1,
-      },
-    ],
-  },
-  {
-    filter: 'salary',
-    data: [
-      {
-        name: '0-3 Lakhs',
-        count: 8,
-      },
-      {
-        name: '3-6 Lakhs',
-        count: 0,
-      },
-      {
-        name: '6-10 Lakhs',
-        count: 0,
-      },
-      {
-        name: '10-15 Lakhs',
-        count: 0,
-      },
-      {
-        name: '15-25 Lakhs',
-        count: 0,
-      },
-      {
-        name: '25-50 Lakhs',
-        count: 0,
-      },
-      {
-        name: '50-75 Lakhs',
-        count: 0,
-      },
-      {
-        name: '75-100 Lakhs',
-        count: 0,
-      },
-      {
-        name: '1-5 Cr',
-        count: 0,
-      },
-      {
-        name: '5+ Cr',
-        count: 0,
-      },
-    ],
-  },
-  {
-    filter: 'company_types',
-    data: [
-      {
-        name: 'Freelance',
-        count: 0,
-      },
-      {
-        name: 'Government',
-        count: 0,
-      },
-      {
-        name: 'Foregin MNC',
-        count: 0,
-      },
-      {
-        name: 'Others',
-        count: 6,
-      },
-      {
-        name: 'MNC',
-        count: 1,
-      },
-      {
-        name: 'Startup',
-        count: 1,
-      },
-    ],
-  },
-  {
-    filter: 'industry_types',
-    data: [
-      {
-        name: 'Finance',
-        count: 0,
-      },
-      {
-        name: 'Retail',
-        count: 6,
-      },
-      {
-        name: 'Education',
-        count: 0,
-      },
-      {
-        name: 'Healthcare',
-        count: 0,
-      },
-      {
-        name: 'Technology',
-        count: 2,
-      },
-    ],
-  },
-  {
-    filter: 'education',
-    data: [
-      {
-        name: 'M.Tech',
-        count: 8,
-      },
-      {
-        name: 'B.Tech',
-        count: 8,
-      },
-    ],
-  },
-  {
-    filter: 'freshness',
-    data: [
-      {
-        name: 'Last 1 day',
-        count: 0,
-      },
-      {
-        name: 'Last 3 days',
-        count: 0,
-      },
-      {
-        name: 'Last 7 days',
-        count: 0,
-      },
-      {
-        name: 'Last 15 days',
-        count: 0,
-      },
-      {
-        name: 'Last 30 days',
-        count: 5,
-      },
-    ],
-  },
-];
-
-const JobScreen = () => {
+import {BASE_URL} from '../../Services/baseAPI';
+import JobCardStyle from '../../Global_CSS/JobCardStyle';
+import CustomRangeSlider from '../../Constant/CustomRangeSlider';
+import Slider from '@react-native-community/slider';
+const JobScreen = ({route}) => {
+  const {searchQuery} = route?.params || '';
   const [id, setId] = useState(null);
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [jobs, setJobs] = useState([]); // State to store search results
-  const navigation = useNavigation();
+  const [searchoptions, setSearchoptions] = useState('');
 
+  const navigation = useNavigation();
   //states related to filter
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null); // Track selected category
-  const [selectedFilters, setSelectedFilters] = useState({}); // Track selected filter values
+  const [selectedCategory, setSelectedCategory] = useState('work_modes');
+  const [selectedExperience, setSelectedExperience] = useState();
 
-  // Separate states for each section
-  const [selectedIndustry, setSelectedIndustry] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState([]);
-  const [selectedWorkMode, setSelectedWorkMode] = useState([]);
-  const [selectedCompanyType, setSelectedCompanyType] = useState([]);
-  const [activeSection, setActiveSection] = useState('Industry');
-  const [selectedExperience, setSelectedExperience] = useState([0, 10]); // Min to Max years
-  const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
-  const [selectedEducation, setSelectedEducation] = useState([]);
-  const [selectedSkills, setSelectedSkills] = useState([]);
-  const [salaryRange, setSalaryRange] = useState([0, 1000000]); // Min to Max salary in INR
+  const [selectedFilters, setSelectedFilters] = useState({
+    work_modes: [],
+    department: [],
+    locations: [],
+    skills: [],
+    salary: [],
+    company_types: [],
+    industry_types: [],
+    education: [],
+    freshness: [],
+  });
 
   const dispatch = useDispatch();
-  const {GetJobList, GetSearchJobs, GetFilterdJobs} = JobViewController();
-  const {JobList, SearchJobList, FilterJobList} = useSelector(
-    state => state.job,
-  );
-  console.log('SearchJobList', SearchJobList);
+  const {
+    GetJobList,
+    GetSearchJobs,
+    GetFilterdJobs,
+    GetAggregatedData,
+    SaveJob,
+    GetSavedJobs,
+  } = JobViewController();
+
+  const {JobList, SearchJobList, FilterJobList, AggregatedData, SavedJobs} =
+    useSelector(state => state.job);
+
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -284,6 +69,7 @@ const JobScreen = () => {
         setId(userId);
         if (userId) {
           dispatch(GetJobList(userId));
+          dispatch(GetSavedJobs(userId));
         }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
@@ -291,8 +77,16 @@ const JobScreen = () => {
     };
 
     getUserData();
+    dispatch(GetAggregatedData());
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setQuery(searchQuery);
+    }
+  }, [searchQuery]);
 
   // search jobs code start
 
@@ -310,12 +104,13 @@ const JobScreen = () => {
   // };
 
   const fetchJobs = searchQuery => {
-    if (searchQuery.trim()) {
-      const queryParams = {
-        job_title: searchQuery.trim(), // Dynamically pass the search query
-      };
+    // Normalize the search query: trim spaces and convert to lowercase
+    const normalizedQuery = searchQuery?.trim().toLowerCase();
 
-      // console.log('Fetching jobs with Query Parameters:', queryParams); // Debugging
+    if (normalizedQuery) {
+      const queryParams = {
+        job_title: normalizedQuery, // Use the normalized query
+      };
 
       // Simulate fetching jobs with the action and updating the jobs state
       dispatch(GetSearchJobs(queryParams)).then(results => {
@@ -325,10 +120,42 @@ const JobScreen = () => {
       setJobs([]); // Clear jobs if search query is empty
     }
   };
+  useEffect(() => {
+    fetchJobs(searchQuery);
+  }, [searchQuery]);
   // search jobs code end
 
-  const handleBookmark = jobId => {
-    Alert.alert('Bookmark Clicked', `You bookmarked job ID: ${jobId}`);
+  // Function to create a lookup map from SavedJobs
+  const createSavedJobsMap = () => {
+    const map = {};
+    SavedJobs?.forEach(savedJob => {
+      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
+    });
+    return map;
+  };
+
+  const savedJobsMap = createSavedJobsMap(); // Create the map dynamically
+
+  const toggleSaveJob = jobId => {
+    const requestData = {job: jobId, user_id: id};
+
+    const currentState = savedJobsMap[jobId]; // Use savedJobsMap for lookup
+
+    // Optimistically update global SavedJobs state
+    dispatch({
+      type: 'UPDATE_SAVED_JOBS',
+      payload: {
+        jobId,
+        isSaved: !currentState, // Toggle the saved state
+      },
+    });
+
+    // Call the SaveJob API
+    dispatch(SaveJob(requestData));
+    // .then(() => console.log(`Job ${jobId} saved successfully.`))
+    // .catch(error => {
+    //   console.error(`Failed to update job ${jobId}:`, error);
+    // });
   };
 
   const loadMoreJobs = () => {
@@ -339,9 +166,14 @@ const JobScreen = () => {
       );
     }
   };
-  // console.log('SearchJobList', JSON.stringify(SearchJobList, null, 2));
 
-  const jobsToRender = query.trim() ? SearchJobList : JobList?.results;
+  const jobsToRender = query.trim()
+    ? SearchJobList?.results
+    : selectedFilters &&
+      Object.keys(selectedFilters).length > 0 &&
+      FilterJobList?.results?.length > 0
+    ? FilterJobList.results
+    : JobList?.results || [];
 
   const handleJobDetails = jobData => {
     navigation.navigate('JobDetailScreen', {
@@ -357,78 +189,163 @@ const JobScreen = () => {
     setFilterModalVisible(false);
   };
 
-  const toggleFilter = (filterCategory, filterValue) => {
-    setSelectedFilters(prev => {
-      const currentSelection = prev[filterCategory] || [];
-      if (currentSelection.includes(filterValue)) {
+  const toggleFilter = (category, option) => {
+    if (category === 'experience') {
+      // Special handling for experience
+      setSelectedExperience(option);
+    } else {
+      setSelectedFilters(prevState => {
+        const currentSelections = prevState[category] || [];
+        const isSelected = currentSelections.includes(option);
+
+        // Toggle the selection
+        const updatedSelections = isSelected
+          ? currentSelections.filter(item => item !== option) // Remove if selected
+          : [...currentSelections, option]; // Add if not selected
+
         return {
-          ...prev,
-          [filterCategory]: currentSelection.filter(
-            item => item !== filterValue,
-          ),
+          ...prevState,
+          [category]: updatedSelections,
         };
-      } else {
-        return {
-          ...prev,
-          [filterCategory]: [...currentSelection, filterValue],
-        };
-      }
-    });
+      });
+    }
   };
 
   const clearAllFilters = () => {
-    setSelectedIndustry([]);
-    setSelectedCompanyType([]);
-    setSelectedLocation([]);
-    setSelectedWorkMode([]);
+    setSelectedFilters({});
+    setSelectedExperience();
   };
 
-  // Filter the job list
-  const filteredJobs = JobList.results.filter(job => {
-    return Object.entries(selectedFilters).every(([category, values]) => {
-      if (values.length === 0) return true;
-      if (category === 'work_modes')
-        return values.some(v => job[category].includes(v));
-      if (category === 'locations')
-        return job.job_location.some(loc => values.includes(loc));
-      if (category === 'departments') return values.includes(job.department);
-      if (category === 'salary') return values.includes(job.salary);
-      return true;
-    });
-  });
+  const handleFilter = () => {
+    try {
+      // Include experience filter in query parameters
+      const filteredEntries = Object.entries(selectedFilters).filter(
+        ([, values]) => Array.isArray(values) && values.length > 0,
+      );
 
-  // Render filter options dynamically
+      const queryParams = {
+        ...Object.fromEntries(
+          filteredEntries.map(([key, values]) => [
+            key,
+            values.length === 1 ? values[0] : values.join(','),
+          ]),
+        ),
+        ...(selectedExperience !== undefined && {
+          experience: selectedExperience,
+        }),
+      };
+      // const queryString = new URLSearchParams(queryParams).toString();
+      // console.log(queryString);
+
+      // Dispatch action with queryParams
+      dispatch(GetFilterdJobs(queryParams)).then(filteredResults => {
+        setJobs(filteredResults); // Update the jobs state with filtered results
+        closeFiltermodal(); // Close the modal after applying filters
+        console.log('Filtered results:', filteredResults?.results);
+      });
+    } catch (error) {
+      console.error('Error in handleFilter:', error);
+    }
+  };
+
   const renderFilterOptions = filterCategory => {
-    const categoryData = filterData.find(
+    const categoryData = AggregatedData.find(
       item => item.filter === filterCategory,
     );
+    // Filter options based on the search query
+    const filteredData = categoryData
+      ? categoryData.data.filter(
+          item =>
+            item?.name?.toLowerCase().includes(searchoptions.toLowerCase()) ||
+            item?.industry_name
+              ?.toLowerCase()
+              .includes(searchoptions.toLowerCase()),
+        )
+      : [];
 
-    return categoryData ? (
+    return (
       <View style={[styles.optionsContainer, {marginLeft: -24, marginTop: 12}]}>
-        {categoryData.data.map(item => (
-          <View key={item.name} style={styles.filterItem}>
-            <Checkbox
-              status={
-                selectedFilters[filterCategory]?.includes(item.name)
-                  ? 'checked'
-                  : 'unchecked'
-              }
-              color={colors.secondary}
-              onPress={() => toggleFilter(filterCategory, item.name)}
+        {/* Experience Filter */}
+        {filterCategory === 'experience' ? (
+          <View style={{marginVertical: 16}}>
+            <Text style={{color: '#000', fontSize: 14, marginBottom: 8}}>
+              Select Experience Range (Years)
+            </Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={30}
+              step={1}
+              value={selectedExperience}
+              minimumTrackTintColor={colors.primary}
+              maximumTrackTintColor={colors.secondary}
+              thumbTintColor={colors.secondary}
+              onValueChange={value => setSelectedExperience(value)}
             />
-            <Text
-              style={{
-                color: selectedFilters[filterCategory]?.includes(item.name)
-                  ? colors.secondary
-                  : '#000',
-                fontSize: 12,
-              }}>
-              {`${item.name} (${item.count})`}
+            <Text style={{color: '#000', fontSize: 14}}>
+              Selected: {selectedExperience} years
             </Text>
           </View>
-        ))}
+        ) : null}
+
+        {/* Dynamic Filter Options */}
+        {categoryData && filterCategory !== 'experience' && (
+          <>
+            {['locations', 'skills', 'companies'].includes(filterCategory) && (
+              <TextInput
+                style={{
+                  color: '#000',
+                  height: 48,
+                  borderColor: '#ccc',
+                  borderWidth: 1,
+                  borderRadius: 4,
+                  marginBottom: 10,
+                  marginRight: 12,
+                }}
+                placeholderTextColor={'#000'}
+                placeholder={`Search ${filterCategory}`}
+                value={searchoptions}
+                onChangeText={text => setSearchoptions(text)}
+              />
+            )}
+
+            {filteredData.map(item => (
+              <View
+                key={item.name || item.industry_name}
+                style={styles.filterItem}>
+                <Checkbox
+                  status={
+                    selectedFilters[filterCategory]?.includes(
+                      item.name || item.industry_name,
+                    )
+                      ? 'checked'
+                      : 'unchecked'
+                  }
+                  color={colors.secondary}
+                  onPress={() =>
+                    toggleFilter(
+                      filterCategory,
+                      item.name || item.industry_name,
+                    )
+                  }
+                />
+                <Text
+                  style={{
+                    color: selectedFilters[filterCategory]?.includes(
+                      item.name || item.industry_name,
+                    )
+                      ? colors.secondary
+                      : '#000',
+                    fontSize: 12,
+                  }}>
+                  {`${item.name || item.industry_name} (${item.count})`}
+                </Text>
+              </View>
+            ))}
+          </>
+        )}
       </View>
-    ) : null;
+    );
   };
 
   return (
@@ -461,52 +378,55 @@ const JobScreen = () => {
         </TouchableOpacity>
       </View>
       <ScrollView
-        style={styles.companyContainer}
+        style={JobCardStyle.companyContainer}
         contentContainerStyle={{paddingBottom: 16}}
         onScrollEndDrag={loadMoreJobs}
         scrollEventThrottle={16}>
         {jobsToRender && jobsToRender.length > 0 ? (
-          jobsToRender.map(jobData => (
+          jobsToRender?.map(jobData => (
             <TouchableOpacity
               key={jobData.id}
               onPress={() => handleJobDetails(jobData)}>
-              <View style={styles.jobCard}>
-                <View style={styles.companyInfo}>
-                  <View style={styles.companylogo}>
+              <View style={JobCardStyle.jobCard}>
+                <View style={JobCardStyle.companyInfo}>
+                  <View style={JobCardStyle.companylogo}>
                     <Image
                       source={
-                        jobData.company.logo
-                          ? {uri: jobData?.company?.logo}
+                        jobData?.company?.logo
+                          ? {uri: BASE_URL + jobData?.company?.logo}
                           : require('../../Assets/CompanyLogo/Swatsan.png')
                       }
-                      style={styles.companyImage}
+                      style={JobCardStyle.companyImage}
                     />
-                    <View style={styles.textName}>
-                      <Text style={styles.jobTitle}>
+                    <View style={JobCardStyle.textName}>
+                      <Text style={JobCardStyle.jobTitle}>
                         {jobData?.job_title?.title}
                       </Text>
-                      <Text style={styles.companyName}>
+                      <Text style={JobCardStyle.companyName}>
                         {jobData?.company_name}
                       </Text>
                     </View>
                   </View>
+
                   <IconButton
-                    icon="bookmark-outline"
-                    iconColor={colors.primary}
+                    icon={
+                      savedJobsMap[jobData.id] ? 'bookmark' : 'bookmark-outline'
+                    }
+                    iconColor="#004466"
                     size={24}
-                    style={styles.saveicon}
-                    onPress={() => handleBookmark(jobData.id)}
+                    style={{padding: 0}}
+                    onPress={() => toggleSaveJob(jobData?.id)}
                   />
                 </View>
-                <View style={styles.workModeContainer}>
+                <View style={JobCardStyle.workModeContainer}>
                   {jobData.work_modes &&
                     jobData.work_modes.map((mode, idx) => (
-                      <View key={idx} style={styles.workModeChip}>
-                        <Text style={styles.chipText}>{mode}</Text>
+                      <View key={idx} style={JobCardStyle.workModeChip}>
+                        <Text style={JobCardStyle.chipText}>{mode}</Text>
                       </View>
                     ))}
                 </View>
-                <View style={styles.location}>
+                <View style={JobCardStyle.location}>
                   <IconButton
                     icon="map-marker"
                     iconColor={colors.primary}
@@ -514,41 +434,41 @@ const JobScreen = () => {
                     style={{padding: 0, marginLeft: -10, height: 20}}
                   />
                   {jobData.job_location.map((location, locIndex) => (
-                    <Text key={locIndex} style={styles.jobCardLocation}>
+                    <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
                       {location.name}
                       {locIndex < jobData.job_location.length - 1 && ', '}
                     </Text>
                   ))}
                 </View>
-                <View style={styles.line} />
-                <View style={styles.jobFooter}>
+                <View style={JobCardStyle.line} />
+                <View style={JobCardStyle.jobFooter}>
                   {jobData?.salary && jobData.salary.yearly && (
-                    <View style={styles.experienceContainer}>
+                    <View style={JobCardStyle.experienceContainer}>
                       <Ionicons name="cash" size={14} color="#004466" />
-                      <Text style={styles.jobDetailsalary}>
+                      <Text style={JobCardStyle.jobDetailsalary}>
                         ₹{jobData.salary.yearly.min.toLocaleString()} - ₹
                         {jobData.salary.yearly.max.toLocaleString()} INR
                       </Text>
                     </View>
                   )}
-                  <Text style={styles.jobPostedDate}>
-                    {moment(jobData.reviews[0]?.review_date).fromNow()}
+                  <Text style={JobCardStyle.jobPostedDate}>
+                    {moment(jobData?.created_at).fromNow()}
                   </Text>
                 </View>
               </View>
             </TouchableOpacity>
           ))
         ) : (
-          <View style={[styles.noJobsContainer]}>
+          <View style={[JobCardStyle.noJobsContainer]}>
             <Image
-              style={styles.jobimage}
+              style={JobCardStyle.jobimage}
               source={require('../../Assets/invitesImages/Jobsearch.png')}
             />
-            <Text style={[styles.noJobsText]}>No jobs found.....</Text>
+            <Text style={[JobCardStyle.noJobsText]}>No jobs found.....</Text>
           </View>
         )}
         {isLoading && (
-          <View style={styles.loadingContainer}>
+          <View style={JobCardStyle.loadingContainer}>
             <ActivityIndicator size="small" color="#0000ff" />
             <Text>Loading more jobs...</Text>
           </View>
@@ -571,49 +491,67 @@ const JobScreen = () => {
             <View style={{flexDirection: 'row', flex: 1}}>
               {/* Filters Section */}
               <ScrollView style={[styles.categoriesContainer, {flex: 1}]}>
-                {filterData.map(filterCategory => (
-                  <TouchableOpacity
-                    key={filterCategory.filter}
-                    style={[
-                      styles.categoryButton,
-                      {
-                        padding: 12,
-                        backgroundColor: '#fafafa',
-                        borderColor: 'lightgray',
-                        borderWidth: 0.2,
-                        maxWidth: 160,
-                        minWidth: 160,
-                        minHeight: 50,
-                      },
-                      selectedCategory === filterCategory.filter && [
-                        styles.selectedCategoryButton,
-                        {
-                          backgroundColor: '#e6f7ff',
-                          // borderColor: colors.secondary,
-                          // borderLeftWidth: 7,
-                          // borderWidth: 1,
-                        },
-                      ],
-                    ]}
-                    onPress={() =>
-                      setSelectedCategory(
-                        filterCategory.filter === selectedCategory
-                          ? null
-                          : filterCategory.filter,
-                      )
-                    }>
-                    <Text
+                {[...AggregatedData, {filter: 'experience'}].map(
+                  filterCategory => (
+                    <TouchableOpacity
+                      key={filterCategory.filter}
                       style={[
-                        styles.categoryButtonText,
-                        {color: colors.primary},
-                        selectedCategory === filterCategory.filter && {
-                          fontWeight: 'bold', // Ensure selected text uses a different color
+                        styles.categoryButton,
+                        {
+                          paddingVertical: 18,
+                          paddingHorizontal: 8,
+                          backgroundColor: '#fafafa',
+                          borderColor: 'lightgray',
+                          borderWidth: 0.2,
+                          maxWidth: 160,
+                          minWidth: 160,
+                          minHeight: 50,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         },
-                      ]}>
-                      {filterCategory.filter.replace('_', ' ').toUpperCase()}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                        selectedCategory === filterCategory.filter && [
+                          styles.selectedCategoryButton,
+                          {
+                            backgroundColor: '#e6f7ff',
+                          },
+                        ],
+                      ]}
+                      onPress={() =>
+                        setSelectedCategory(
+                          filterCategory.filter === selectedCategory
+                            ? null
+                            : filterCategory.filter,
+                        )
+                      }>
+                      <Text
+                        style={[
+                          styles.categoryButtonText,
+                          {color: colors.primary, fontSize: 13},
+                          selectedCategory === filterCategory.filter && {
+                            fontWeight: 'bold',
+                          },
+                        ]}>
+                        {/* {filterCategory.filter.replace('_', ' ').toUpperCase()} */}
+                        {
+                          filterCategory.filter
+                            .replace('_', ' ') // Replace underscores with spaces
+                            .toLowerCase() // Convert the entire string to lowercase
+                            .replace(/^\w/, c => c.toUpperCase()) // Capitalize the first letter
+                        }
+                      </Text>
+                      <Text style={{color: 'grey', fontSize: 10}}>
+                        {filterCategory.filter !== 'experience' &&
+                          selectedFilters[filterCategory.filter]?.length > 0 &&
+                          ` (${selectedFilters[filterCategory.filter].length})`}
+
+                        {/* Show selected experience value */}
+                        {filterCategory.filter === 'experience' &&
+                          selectedExperience !== undefined &&
+                          ` (${selectedExperience} years)`}
+                      </Text>
+                    </TouchableOpacity>
+                  ),
+                )}
               </ScrollView>
 
               {/* Right-side options for the selected category */}
@@ -629,7 +567,9 @@ const JobScreen = () => {
                 onPress={clearAllFilters}>
                 <Text style={styles.clearButtonText}>Clear</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.applyButton}>
+              <TouchableOpacity
+                style={styles.applyButton}
+                onPress={() => handleFilter()}>
                 <Text style={styles.applyButtonText}>Apply Filters</Text>
               </TouchableOpacity>
             </View>
@@ -647,7 +587,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: 'row',
-
     backgroundColor: colors.primary,
     height: 70,
     borderBottomRightRadius: 20,
@@ -680,127 +619,14 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 8,
   },
-  companyContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: colors.background,
-    paddingHorizontal: 12,
-    paddingTop: 12,
-  },
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  jobCard: {
-    backgroundColor: colors.whiteText,
-    borderRadius: 8,
-    marginRight: 12,
-    padding: 12,
-    width: '100%',
-    marginBottom: 20,
-  },
-  companylogo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  companyInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // marginVertical: 8,
-    justifyContent: 'space-between',
-  },
-  textName: {
-    flexDirection: 'column,',
-  },
-  companyName: {
-    fontSize: 12,
-    color: 'gray',
-  },
-  companyImage: {
-    width: 42,
-    height: 42,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  jobTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  workModeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
-  workModeChip: {
-    fontSize: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    backgroundColor: '#f2f2f2',
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  chipText: {
-    color: '#000',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  saveicon: {
-    alignSelf: 'center',
-    right: -14,
-    top: -6,
-  },
 
-  experienceContainer: {
-    flexDirection: 'row',
-    marginRight: 8,
-    gap: 6,
-  },
-  jobFooter: {
-    marginTop: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  jobDetailsalary: {
-    fontSize: 10,
-    color: 'gray',
-    fontWeight: 'bold',
-  },
-  jobCardLocation: {
-    fontSize: 11,
-    color: '#555',
-    marginLeft: -4,
-  },
-  jobPostedDate: {
-    fontSize: 12,
-    color: '#808080',
-    // textAlign: 'right',
-  },
-  noJobsContainer: {alignItems: 'center'},
-  jobimage: {
-    width: 200,
-    height: 200,
-    marginTop: 24,
-    // alignSelf: 'center',
-    // alignContent: 'center',
-  },
-  noJobsText: {
-    alignSelf: 'center',
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  line: {
-    height: 1,
-    backgroundColor: '#f1f1f1',
-  },
   //Modal Styles
   modalContainer: {
     height: '100%',

@@ -81,7 +81,7 @@ const JobViewController = () => {
         },
       );
       // console.log(
-      //   '****************************job-details response***************************',
+      //   '****************************job-details response*************************** ',
       // );
 
       const jsonString = JSON.stringify(response.data);
@@ -209,6 +209,7 @@ const JobViewController = () => {
 
   const SaveJob = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
+    // console.log('requestData', requestData);
 
     try {
       const response = await axios.post(
@@ -477,12 +478,12 @@ const JobViewController = () => {
       const response = await axios.get(
         `http://15.206.149.28/api/search/?${queryString}`,
       );
-      console.log(
-        '****************************job-GetSearchJobList response***************************',
-      );
+      // console.log(
+      //   '****************************job-GetSearchJobList response***************************',
+      // );
       // console.log('response', response);
       // console.log('queryParams', queryParams);
-      console.log(`http://15.206.149.28/api/search/?${queryString}`);
+      // console.log(`http://15.206.149.28/api/search/?${queryString}`);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -523,18 +524,17 @@ const JobViewController = () => {
     const queryString = new URLSearchParams(queryParams).toString();
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/search/?${queryString}`,
+        `http://15.206.149.28/api/filter/?${queryString}`,
       );
       console.log(
         '****************************job-GetFilterdJobs response***************************',
       );
-      // console.log('response', response);
       // console.log('queryParams', queryParams);
-      console.log(`http://15.206.149.28/api/search/?${queryString}`);
+      console.log(`http://15.206.149.28/api/filter/?${queryString}`);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      // console.log(data);
+      console.log(data);
 
       dispatch({type: 'FILTER_JOB_SUCCESS', payload: data});
 
@@ -566,6 +566,99 @@ const JobViewController = () => {
     }
   };
 
+  const GetAggregatedData = user_id => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await axios.get(
+        `http://15.206.149.28/api/aggregated-data/`,
+      );
+      // console.log(
+      //   '****************************job-GetAggregatedData response***************************',
+      // );
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+
+      dispatch({type: 'AGGREGATED_DATA_SUCCESS', payload: data});
+
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong,Please Try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'AGGREGATED_DATA_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
+  const GetCompanyDetails = (company_id, user_id) => async dispatch => {
+    dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await axios.get(
+        `http://15.206.149.28/api/companies/${company_id}/`,
+        {
+          params: {
+            user_id: user_id,
+          },
+        },
+      );
+      // console.log(
+      //   '****************************GetCompanyDetails response***************************',
+      // );
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+
+      dispatch({type: 'COMPANY_DETAILS_SUCCESS', payload: data});
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong, Please try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'COMPANY_DETAILS_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
+
   return {
     goBackScreen,
     GetJobApplications,
@@ -580,6 +673,8 @@ const JobViewController = () => {
     GetJobList,
     GetSearchJobs,
     GetFilterdJobs,
+    GetAggregatedData,
+    GetCompanyDetails,
   };
 };
 

@@ -38,7 +38,7 @@ const PassoutYear = Array.from(
 );
 
 const validationSchema = Yup.object().shape({
-  course_name: Yup.string().required('Education Level is required'),
+  education_name: Yup.string().required('Education Level is required'),
   // board: Yup.string().required('Board is required'),
   // passout_year: Yup.string().required('Passout Year is required'),
   // school_medium: Yup.string().required('School Medium is required'),
@@ -120,7 +120,7 @@ const Education = profileDetails => {
       id: profileDetails?.profileDetails?.id,
       secondary_edu: [
         {
-          course_name: values?.course_name,
+          education_name: values?.education_name,
           board:
             boardMasters?.find(eb => eb.value === values.board)?.value || '',
           passout_year:
@@ -140,7 +140,7 @@ const Education = profileDetails => {
 
     // Find the index of the entry to update (if it exists)
     const existingIndex = existingSecondaryEdu.findIndex(
-      item => item.course_name === values.course_name,
+      item => item.education_name === values.education_name,
     );
 
     if (existingIndex !== -1) {
@@ -189,7 +189,7 @@ const Education = profileDetails => {
 
   const deleteEntry = item => {
     const filteredArray = educationData.filter(
-      item => item.course_name !== selectedItem.course_name,
+      item => item.education_name !== selectedItem.education_name,
     );
     setEducationData(filteredArray);
     const payload = {
@@ -205,7 +205,7 @@ const Education = profileDetails => {
 
   const allClassesAdded = EducationClass.every(cls =>
     profileDetails?.profileDetails?.secondary_edu.some(
-      edu => edu.course_name === cls.value,
+      edu => edu.education_name === cls.value,
     ),
   );
 
@@ -236,7 +236,7 @@ const Education = profileDetails => {
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
-                    <Text style={styles.ClassText}>{item.course_name}</Text>
+                    <Text style={styles.ClassText}>{item.education_name}</Text>
                     <IconButton
                       icon="pencil-outline"
                       size={20}
@@ -273,7 +273,7 @@ const Education = profileDetails => {
           <ScrollView>
             <Formik
               initialValues={{
-                course_name: selectedItem?.course_name || '',
+                education_name: selectedItem?.education_name || '',
                 board: selectedItem?.board || '',
                 passout_year: selectedItem?.passout_year || '',
                 school_medium: selectedItem?.school_medium || '',
@@ -296,7 +296,7 @@ const Education = profileDetails => {
                   </Text>
                   <View style={profileStyle.formSubHeading}>
                     <Text style={profileStyle.formSubHeading}>
-                      Details like course_name, Board, Marks, and more, help
+                      Details like education_name, Board, Marks, and more, help
                       recruiters identify your educational background.
                     </Text>
                   </View>
@@ -304,11 +304,11 @@ const Education = profileDetails => {
                     <Text
                       style={[
                         profileStyle.label,
-                        touched.course_name && errors.course_name
+                        touched.education_name && errors.education_name
                           ? {color: 'red'}
                           : null,
                       ]}>
-                      Education* {values.course_name}
+                      Education* {values.education_name}
                     </Text>
 
                     <View style={profileStyle.TabContainer}>
@@ -317,17 +317,17 @@ const Education = profileDetails => {
                           key={option.id}
                           style={[
                             profileStyle.tabBtnStyle,
-                            values?.course_name === option.value
+                            values?.education_name === option.value
                               ? profileStyle.selectedTab
                               : profileStyle.unselectedTab,
                           ]}
                           onPress={() =>
-                            setFieldValue('course_name', option.value)
+                            setFieldValue('education_name', option.value)
                           }>
                           <Text
                             style={[
                               styles.tabBtnText,
-                              values?.course_name === option.value
+                              values?.education_name === option.value
                                 ? profileStyle.selectedTabText
                                 : profileStyle.unselectedTabText,
                             ]}>

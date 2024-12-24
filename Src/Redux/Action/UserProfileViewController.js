@@ -195,10 +195,10 @@ const UserProfileViewController = () => {
         `http://15.206.149.28/api/job-seeker-profile/`,
         requestData,
       );
-      console.log(
-        '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      );
-      console.log(response);
+      // console.log(
+      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
+      // );
+      // console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);
@@ -287,7 +287,7 @@ const UserProfileViewController = () => {
       // console.log(
       //   '****************************PROFILE_PERSONAL_DETAILS update response***************************',
       // );
-      console.log(response);
+      // console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);
@@ -379,7 +379,7 @@ const UserProfileViewController = () => {
       // console.log(
       //   '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
       // );
-      console.log(response);
+      // console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);

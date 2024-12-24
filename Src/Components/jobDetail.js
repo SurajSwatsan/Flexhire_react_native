@@ -20,17 +20,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import JobViewController from '../Redux/Action/jobViewController';
 import {useIsFocused} from '@react-navigation/native';
+import {BASE_URL} from '../Services/baseAPI';
+import {Toast} from 'react-native-toast-notifications';
+import JobCardStyle from '../Global_CSS/JobCardStyle';
 
 const JobDetailScreen = ({route, navigation}) => {
   const {job_id} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
   const [id, setId] = useState();
   const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
+  const [savedJobs, setSavedJobs] = useState({}); // Track saved status per job ID
 
   const [isApplied, setIsApplied] = useState(false);
   const dispatch = useDispatch();
-  const {GetJobDetails, ApplyJob} = JobViewController();
-  const {JobDetails} = useSelector(state => state.job);
+  const {GetJobDetails, GetJobApplications, ApplyJob, SaveJob} =
+    JobViewController();
+  const {JobDetails, SavedJobs, JobApplications} = useSelector(
+    state => state.job,
+  );
   const isFocus = useIsFocused();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -42,6 +49,7 @@ const JobDetailScreen = ({route, navigation}) => {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
         dispatch(GetJobDetails(job_id, id));
+        dispatch(GetJobApplications(id));
 
         console.log(id); // Log the value once it's retrieved
       } catch (error) {
@@ -56,6 +64,20 @@ const JobDetailScreen = ({route, navigation}) => {
   useEffect(() => {
     // console.log('******************************************', JobDetails);
   }, [JobDetails]);
+  const jobIds = JobApplications.map(application => application.job.id);
+  console.log('Job IDs:', jobIds);
+  // console.log('aplied', JSON.stringify(JobApplications, null, 2));
+
+  // const handleApply = () => {
+  //   const data = {
+  //     user_id: id,
+  //     job: JobDetails.id,
+  //     cover_letter: coverLetter,
+  //   };
+  //   console.log(data);
+  //   // dispatch(ApplyJob(data));
+  //   setIsModalVisible(false);
+  // };
 
   const handleApply = () => {
     const data = {
@@ -63,9 +85,37 @@ const JobDetailScreen = ({route, navigation}) => {
       job: JobDetails.id,
       cover_letter: coverLetter,
     };
-    console.log(data);
-    dispatch(ApplyJob(data));
-    setIsModalVisible(false);
+
+    dispatch(ApplyJob(data))
+      .then(() => {
+        // Update local state
+        setIsApplied(true);
+        setApplyButtonColor('green');
+        JobDetails.is_applied = true; // Optionally update JobDetails
+
+        // Show success toast
+        Toast.show('Application submitted successfully!', {
+          type: 'success',
+          placement: 'top',
+          duration: 3000,
+          offset: 50,
+          animationType: 'slide-in',
+        });
+
+        setIsModalVisible(false); // Close the modal
+      })
+      .catch(error => {
+        console.error('Error applying for the job:', error);
+
+        // Show error toast
+        Toast.show('Failed to apply for the job. Please try again.', {
+          type: 'danger',
+          placement: 'top',
+          duration: 3000,
+          offset: 50,
+          animationType: 'slide-in',
+        });
+      });
   };
 
   const handleShare = platform => {
@@ -84,6 +134,34 @@ const JobDetailScreen = ({route, navigation}) => {
     } else if (platform === 'instagram') {
       Linking.openURL('https://www.instagram.com/?url=<YOUR_URL>');
     }
+  };
+
+  // Function to create a lookup map from SavedJobs
+  const createSavedJobsMap = () => {
+    const map = {};
+    SavedJobs?.forEach(savedJob => {
+      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
+    });
+    return map;
+  };
+
+  const savedJobsMap = createSavedJobsMap(); // Create the map dynamically
+
+  const toggleSaveJob = jobId => {
+    const requestData = {job: jobId, user_id: id};
+
+    const currentState = savedJobsMap[jobId]; // Use savedJobsMap for lookup
+
+    // Optimistically update global SavedJobs state
+    dispatch({
+      type: 'UPDATE_SAVED_JOBS',
+      payload: {
+        jobId,
+        isSaved: !currentState, // Toggle the saved state
+      },
+    });
+
+    dispatch(SaveJob(requestData));
   };
 
   const renderTabs = () => {
@@ -115,7 +193,9 @@ const JobDetailScreen = ({route, navigation}) => {
                 </View>
 
                 <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>Responsibilities:</Text>
+                  <Text style={styles.jobDescriptionheader}>
+                    Responsibilities:
+                  </Text>
                   {JobDetails?.job_description?.responsibilities?.map(
                     (item, index) => (
                       <View key={index} style={styles.bulletContainer}>
@@ -176,7 +256,7 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>About:</Text>
               <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.about}
+                {JobDetails?.company?.about_us?.[0]?.description}
               </Text>
             </View>
 
@@ -195,21 +275,7 @@ const JobDetailScreen = ({route, navigation}) => {
             </View>
 
             <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>Contact Email:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.contact_email}
-              </Text>
-            </View>
-
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>Phone:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.phone}
-              </Text>
-            </View>
-
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}> Website:</Text>
+              <Text style={styles.jobDetailsheader}>Website:</Text>
               <Text style={styles.jobDetails1}>
                 {JobDetails?.company?.website}
               </Text>
@@ -232,22 +298,32 @@ const JobDetailScreen = ({route, navigation}) => {
       <View style={GlobalStyle.headerStyle}>
         <CustomHeader />
         <View style={styles.headerRightContainer}>
-          <TouchableOpacity>
-            <Ionicons
-              name="bookmark-outline"
-              size={24}
-              color={colors.primary}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <IconButton
+            icon={
+              savedJobsMap[JobDetails?.id] ? 'bookmark' : 'bookmark-outline'
+            }
+            iconColor={colors.primary}
+            size={32}
+            // style={JobCardStyle.saveicon}
+            onPress={() => toggleSaveJob(JobDetails?.id)}
+          />
+
+          <IconButton
+            icon="share-variant-outline"
+            iconColor={colors.primary}
+            size={32}
+            style={styles.icon}
+            onPress={() => setModalVisible(true)}
+          />
+
+          {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons
               name="share-social-outline"
               size={24}
               color={colors.primary}
               style={styles.icon}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {/* Modal for sharing social media icons */}
         <Modal
@@ -296,7 +372,7 @@ const JobDetailScreen = ({route, navigation}) => {
               <Image
                 source={
                   JobDetails?.company?.logo
-                    ? {uri: JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
+                    ? {uri: BASE_URL + JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
                     : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
                 }
                 style={styles.logo}
@@ -429,7 +505,7 @@ const JobDetailScreen = ({route, navigation}) => {
               },
             ]}
             onPress={() => {
-              console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
+              // console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
 
               if (JobDetails?.is_applied) {
                 Toast.show('Already applied for this job!', {
@@ -466,11 +542,13 @@ const JobDetailScreen = ({route, navigation}) => {
 
             {/* Cover Letter Input */}
             <TextInput
+              placeholderTextColor={colors.primary}
               style={[styles.input, styles.coverLetterInput]}
               placeholder="Cover Letter"
               multiline
               value={coverLetter}
               onChangeText={setCoverLetter}
+              color={colors.primary}
             />
 
             {/* Apply Button in Modal */}
@@ -503,7 +581,7 @@ const styles = StyleSheet.create({
   },
   headerRightContainer: {
     flexDirection: 'row',
-    gap: 18,
+    // gap: 18,
   },
   scrollView: {
     flex: 1,
@@ -666,7 +744,7 @@ const styles = StyleSheet.create({
   jobDetailsContainer: {
     marginBottom: 8,
     // alignItems: 'center',
-    marginTop:4
+    marginTop: 4,
   },
   jobDescriptionheader: {
     fontSize: 16,
@@ -677,26 +755,26 @@ const styles = StyleSheet.create({
   jobDepartmentContainer: {
     marginBottom: 8,
     gap: 2,
-  
   },
   bulletContainer: {
-    flexDirection: 'row', 
+    paddingHorizontal: 12,
+    flexDirection: 'row',
 
-    margin:2
+    margin: 2,
   },
   bullet: {
-    fontSize: 12, 
-    color: '#333', 
-    marginRight: 10, 
+    fontSize: 12,
+    color: '#333',
+    marginRight: 10,
   },
   jobDetailsheader: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#808080',
-    marginTop:8
+    marginTop: 8,
   },
   educationItemsContainer: {
-    flexWrap: 'wrap', 
+    flexWrap: 'wrap',
   },
   contHead: {
     fontSize: 18,

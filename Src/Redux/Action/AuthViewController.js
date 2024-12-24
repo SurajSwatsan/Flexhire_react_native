@@ -37,10 +37,10 @@ const AuthViewController = () => {
       // console.log(
       //   '****************************Register response***************************',
       // );
-      console.log(response);
+      // console.log(response);
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
       // const {token, user} = data;
       // setAuthToken(token); // Set token in axios headers or AsyncStorage
       // await AsyncStorage.setItem('user_data', JSON.stringify(user));
@@ -89,24 +89,25 @@ const AuthViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.post('http://15.206.149.28/api/user/login/', requestData);
-    
-
-      console.log(
-        '****************************login response***************************',
+      const response = await axios.post(
+        'http://15.206.149.28/api/user/login/',
+        requestData,
       );
+
+      // console.log(
+      //   '****************************login response***************************',
+      // );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      console.log(response);
+      // console.log(response);
       const {access, user_id} = data;
       // console.log('login data ', token, user);
 
       setAuthToken(access); // Set token in axios headers or AsyncStorage
       await AsyncStorage.setItem('user_data', JSON.stringify(user_id));
 
-  
       dispatch({type: 'LOGIN_SUCCESS', payload: {access, user_id}});
 
       dispatch({type: 'LOADING', payload: false});
@@ -118,7 +119,6 @@ const AuthViewController = () => {
         animationType: 'slide-in',
       });
       navigation.navigate('DefaultScreen');
-
     } catch (error) {
       console.log('error', error.response);
 
@@ -147,7 +147,7 @@ const AuthViewController = () => {
   };
 
   const logout = () => dispatch => {
-    console.log('logout called');
+    // console.log('logout called');
     setAuthToken(null);
     dispatch({type: 'LOGOUT'});
     navigation.navigate('LoginScreen');

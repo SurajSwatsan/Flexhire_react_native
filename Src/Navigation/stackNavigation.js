@@ -93,9 +93,17 @@ const StackNavigation = () => {
         // options={{headerShown: false}}
       />
 
-      <Stack.Screen name="UserApplies" component={UserApplies} />
+      <Stack.Screen
+        name="UserApplies"
+        component={UserApplies}
+        options={{headerShown: false}}
+      />
 
-      <Stack.Screen name="JobsScreen" component={JobScreen} />
+      <Stack.Screen
+        name="JobsScreen"
+        component={JobScreen}
+        options={{headerShown: false}}
+      />
 
       <Stack.Screen
         name="DisplayPreference"
@@ -149,40 +157,37 @@ const StackNavigation = () => {
         options={{headerShown: false}}
       />
 
-      <Stack.Screen name="SettingPage" 
-      component={SettingPage}
-       />
+      <Stack.Screen name="SettingPage" component={SettingPage} />
 
-       <Stack.Screen
-       name='AboutUs'
-       component={AboutUsPage}
-       options={{headerShown:false}}
-       />
+      <Stack.Screen
+        name="AboutUs"
+        component={AboutUsPage}
+        options={{headerShown: false}}
+      />
 
-       <Stack.Screen
-       name='ReportPage'
-       component={ReportPage}
-       options={{headerShown:false}}
-       />
+      <Stack.Screen
+        name="ReportPage"
+        component={ReportPage}
+        options={{headerShown: false}}
+      />
 
-       <Stack.Screen
-       name='PrivacyPolicy'
-       component={PrivacyPolicyScreen}
-       options={{headerShown:false}}
-       />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{headerShown: false}}
+      />
 
-       <Stack.Screen
-       name='TermsAndCondition'
-       component={TermsAndConditionsScreen}
-       options={{headerShown:false}}
-       />
+      <Stack.Screen
+        name="TermsAndCondition"
+        component={TermsAndConditionsScreen}
+        options={{headerShown: false}}
+      />
 
-       <Stack.Screen
-       name='CreditPage'
-       component={CreditPage}
-       options={{headerShown:false}}
-       />
-
+      <Stack.Screen
+        name="CreditPage"
+        component={CreditPage}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

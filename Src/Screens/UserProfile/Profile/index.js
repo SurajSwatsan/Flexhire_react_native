@@ -6,6 +6,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import {useIsFocused, useRoute} from '@react-navigation/native';
 import {colors} from '../../../Global_CSS/TheamColors';
@@ -98,9 +99,17 @@ const Index = () => {
       case 'Education':
         return (
           <View>
-            <Education profileDetails={profileDetails} />
-            <HigherEducation profileDetails={profileDetails} />
-            <Keyskills profileDetails={profileDetails} />
+            <FlatList
+              data={[1]} // Dummy data to ensure FlatList renders
+              renderItem={() => (
+                <>
+                  <Education profileDetails={profileDetails} />
+                  <HigherEducation profileDetails={profileDetails} />
+                  <Keyskills profileDetails={profileDetails} />
+                </>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
           </View>
         );
       case 'Professional':

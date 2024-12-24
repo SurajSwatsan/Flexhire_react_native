@@ -54,7 +54,7 @@ const Languages = profileDetails => {
   const dispatch = useDispatch();
   const {GetLaguages} = MasterViewController();
   const {languageList} = useSelector(state => state.master);
-  console.log('-------------------', languageList);
+  // console.log('-------------------', languageList);
 
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
   useEffect(() => {
@@ -86,7 +86,7 @@ const Languages = profileDetails => {
   }, [languageList]);
 
   const handleFormSubmit = values => {
-    console.log(values);
+    // console.log(values);
     // Update or Add Logic
     const existingIndex = languages.findIndex(
       language => language.name === values.language,

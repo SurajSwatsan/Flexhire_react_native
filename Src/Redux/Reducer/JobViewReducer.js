@@ -10,6 +10,9 @@ const initialState = {
   JobList: [],
   SearchJobList: [],
   FilterJobList: [],
+  AggregatedData: [],
+  CompanyDetails: null, // Add this state to store job details
+
   error: null,
   isLoading: false, // Track loading for any API request
 };
@@ -59,7 +62,6 @@ const jobReducer = (state = initialState, action) => {
         error: null,
       };
 
-    // Job Details Failure
     case 'JOB_APPLIED_FAILURE':
       return {
         ...state,
@@ -73,7 +75,6 @@ const jobReducer = (state = initialState, action) => {
         error: null,
       };
 
-    // Job Details Failure
     case 'JOB_SAVED_FAILURE':
       return {
         ...state,
@@ -87,7 +88,6 @@ const jobReducer = (state = initialState, action) => {
         error: null,
       };
 
-    // Job Details Failure
     case 'JOB_SAVED_UNSUCCESSFULLY':
       return {
         ...state,
@@ -184,6 +184,34 @@ const jobReducer = (state = initialState, action) => {
       };
 
     case 'FILTER_JOB_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
+
+    // Filter Job List
+    case 'AGGREGATED_DATA_SUCCESS':
+      return {
+        ...state,
+        AggregatedData: action.payload,
+        error: null,
+      };
+
+    case 'AGGREGATED_DATA_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
+
+    // Filter Job List
+    case 'COMPANY_DETAILS_SUCCESS':
+      return {
+        ...state,
+        CompanyDetails: action.payload,
+        error: null,
+      };
+
+    case 'COMPANY_DETAILS_FAILURE':
       return {
         ...state,
         error: action.payload.error,

@@ -24,13 +24,15 @@ import moment from 'moment';
 import JobViewController from '../../Redux/Action/jobViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {BASE_URL} from '../../Services/baseAPI';
+import JobCardStyle from '../../Global_CSS/JobCardStyle';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
-  const {GetHomeData} = JobViewController();
-  const {CompanyData} = useSelector(state => state.job);
+  const {GetHomeData, SaveJob, GetSavedJobs} = JobViewController();
+  const {CompanyData, SavedJobs} = useSelector(state => state.job);
   const isFocus = useIsFocused();
 
   const [id, setId] = useState();
@@ -40,16 +42,13 @@ const HomeScreen = () => {
   const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
   const [isSaved, setIsSaved] = useState(false);
 
-  const toggleSaveStatus = () => {
-    setIsSaved(prevState => !prevState);
-  };
-
   useEffect(() => {
     const getUserData = async () => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
         dispatch(GetHomeData(id));
+        dispatch(GetSavedJobs(id));
 
         console.log(id); // Log the value once it's retrieved
       } catch (error) {
@@ -84,13 +83,54 @@ const HomeScreen = () => {
   );
 
   const handleSearch = () => {
-    navigation.navigate('searchjob', {query});
+    if (!searchQuery || searchQuery.trim() === '') {
+      // Show warning if searchQuery is empty
+      Alert.alert('Warning', 'Please enter a search searchQuery.');
+      return;
+    }
+    // Navigate if searchQuery is not empty
+    navigation.navigate('JobsScreen', {searchQuery});
+    // console.log(searchQuery);
+    setSearchQuery('');
+  };
+
+  // Function to create a lookup map from SavedJobs
+  const createSavedJobsMap = () => {
+    const map = {};
+    SavedJobs?.forEach(savedJob => {
+      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
+    });
+    return map;
+  };
+
+  const savedJobsMap = createSavedJobsMap(); // Create the map dynamically
+
+  const toggleSaveJob = jobId => {
+    const requestData = {job: jobId, user_id: id};
+
+    const currentState = savedJobsMap[jobId]; // Use savedJobsMap for lookup
+
+    // Optimistically update global SavedJobs state
+    dispatch({
+      type: 'UPDATE_SAVED_JOBS',
+      payload: {
+        jobId,
+        isSaved: !currentState, // Toggle the saved state
+      },
+    });
+
+    // Call the SaveJob API
+    dispatch(SaveJob(requestData));
+    // .then(() => console.log(`Job ${jobId} saved successfully.`))
+    // .catch(error => {
+    //   console.error(`Failed to update job ${jobId}:`, error);
+    // });
   };
 
   const lastUpdatedDate = '2024-11-24';
   const daysSinceUpdate = moment().diff(moment(lastUpdatedDate), 'days');
 
-  const handleCardPress = (jobdata) => {
+  const handleCardPress = jobdata => {
     // Navigate to the JobDetailScreen and pass the jobdata (or job ID)
     navigation.navigate('JobDetailScreen', {job_id: jobdata.id});
   };
@@ -101,43 +141,51 @@ const HomeScreen = () => {
       return null;
     }
     return (
-      <TouchableOpacity key={jobdata.id} onPress={()=>handleCardPress(jobdata)}>
-        <View style={styles.jobCard}>
-          <View style={styles.companyInfo}>
-            <View style={styles.companylogo}>
+      <TouchableOpacity
+        key={jobdata.id}
+        onPress={() => handleCardPress(jobdata)}>
+        <View style={JobCardStyle.jobCard}>
+          <View style={JobCardStyle.companyInfo}>
+            <View style={JobCardStyle.companylogo}>
               <Image
                 source={
                   jobdata.company.logo
-                    ? {uri: jobdata?.company?.logo}
+                    ? {uri: BASE_URL + jobdata?.company?.logo}
                     : require('../../Assets/CompanyLogo/Swatsan.png')
                 }
-                style={styles.companyImage}
+                style={JobCardStyle.companyImage}
               />
-              <View style={styles.textName}>
-                <Text style={styles.jobTitle}>{jobdata?.job_title?.title}</Text>
-                <Text style={styles.companyName}>{jobdata?.company_name}</Text>
+              <View style={JobCardStyle.textName}>
+                <Text style={JobCardStyle.jobTitle}>
+                  {jobdata?.job_title?.title}
+                </Text>
+                <Text style={JobCardStyle.companyName}>
+                  {jobdata?.company_name}
+                </Text>
               </View>
             </View>
             <View>
               <IconButton
-                icon={isSaved ? 'bookmark' : 'bookmark-outline'}
+                icon={
+                  savedJobsMap[jobdata?.id] ? 'bookmark' : 'bookmark-outline'
+                }
                 iconColor={colors.primary}
                 size={24}
-                style={styles.saveicon}
-                onPress={toggleSaveStatus}
+                style={JobCardStyle.saveicon}
+                onPress={() => toggleSaveJob(jobdata?.id)}
               />
             </View>
           </View>
-          <View style={styles.workModeContainer}>
+          <View style={JobCardStyle.workModeContainer}>
             {jobdata.work_modes &&
               jobdata.work_modes.map((mode, idx) => (
-                <View key={idx} style={styles.workModeChip}>
-                  <Text style={styles.chipText}>{mode}</Text>
+                <View key={idx} style={JobCardStyle.workModeChip}>
+                  <Text style={JobCardStyle.chipText}>{mode}</Text>
                 </View>
               ))}
           </View>
 
-          <View style={styles.location}>
+          <View style={JobCardStyle.location}>
             <IconButton
               icon="map-marker"
               iconColor={colors.primary}
@@ -146,27 +194,27 @@ const HomeScreen = () => {
             />
 
             {jobdata.job_location.map((location, locIndex) => (
-              <Text key={locIndex} style={styles.jobCardLocation}>
+              <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
                 {location.name}
                 {locIndex < jobdata.job_location.length - 1 && ',  '}
               </Text>
             ))}
           </View>
 
-          <View style={styles.line}></View>
+          <View style={JobCardStyle.line}></View>
 
-          <View style={styles.jobFooter}>
+          <View style={JobCardStyle.jobFooter}>
             {jobdata?.salary && jobdata.salary.yearly && (
-              <View style={styles.experienceContainer}>
+              <View style={JobCardStyle.experienceContainer}>
                 <Ionicons name="cash" size={14} color="#004466" />
-                <Text style={styles.jobDetailsalary}>
+                <Text style={JobCardStyle.jobDetailsalary}>
                   ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
                   {jobdata.salary.yearly.max.toLocaleString()} INR
                 </Text>
               </View>
             )}
-            <Text style={styles.jobPostedDate}>
-              {moment(jobdata.reviews[0]?.review_date).fromNow()}
+            <Text style={JobCardStyle.jobPostedDate}>
+              {moment(jobdata?.created_at).fromNow()}
             </Text>
           </View>
         </View>
@@ -179,8 +227,8 @@ const HomeScreen = () => {
         <View style={styles.searchbarContainer}>
           <TextInput
             placeholder="Search"
-            onChangeText={setQuery}
-            value={query}
+            onChangeText={setSearchQuery}
+            value={searchQuery}
             style={styles.searchbar}
             placeholderTextColor="#000"
           />
@@ -362,6 +410,7 @@ const HomeScreen = () => {
                   key={item.id || item.company_name}
                   style={{marginRight: 12}}>
                   <CustomCompanyCard companyData={item} />
+                  {/* {  console.log('company',JSON.stringify(CompanyData, null, 2))} */}
                 </View>
               ))}
             </ScrollView>
@@ -498,122 +547,6 @@ const styles = StyleSheet.create({
   },
   selectedChipText: {
     color: colors.whiteText,
-  },
-  jobCard: {
-    backgroundColor: colors.whiteText,
-    borderRadius: 10,
-    marginRight: 12,
-    padding: 12,
-    width: '100%',
-    marginBottom: 20,
-  },
-  jobCardHeader: {
-    marginBottom: 8,
-  },
-  companylogo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  companyInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // marginVertical: 8,
-    justifyContent: 'space-between',
-  },
-  textName: {
-    flexDirection: 'column,',
-  },
-  companyImage: {
-    width: 38,
-    height: 38,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  companyName: {
-    fontSize: 12,
-    color: 'gray',
-  },
-  jobTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  jobDescription: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  workModeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
-  workModeChip: {
-    fontSize: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    backgroundColor: '#f2f2f2',
-
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  saveicon: {
-    alignSelf: 'center',
-    right: -14,
-    top: -6,
-  },
-  chipText: {
-    color: '#000',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  salaryText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
-  },
-  location: {
-    flexDirection: 'row',
-    // gap: 0,
-    alignItems: 'center',
-  },
-  jobLocation: {
-    fontSize: 12,
-    color: '#808080',
-    // marginLeft: -12,
-  },
-  experienceContainer: {
-    flexDirection: 'row',
-    marginRight: 8,
-    gap: 6,
-  },
-  jobFooter: {
-    marginTop: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  jobDetailsalary: {
-    fontSize: 10,
-    color: 'gray',
-    fontWeight: 'bold',
-  },
-  jobCardLocation: {
-    fontSize: 11,
-    color: '#555',
-    marginLeft: -4,
-  },
-  jobPostedDate: {
-    fontSize: 12,
-    color: '#808080',
-    // textAlign: 'right',
-  },
-  line: {
-    backgroundColor: '#f2f2f2',
-    height:1,
   },
 });
 

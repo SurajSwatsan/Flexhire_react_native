@@ -108,7 +108,7 @@ const BasicInformation = profileDetails => {
 
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
-  console.log(id);
+  // console.log(id);
   useEffect(() => {
     if (profileDetails?.profileDetails?.basic_details) {
       const render_Fields = [
@@ -237,7 +237,7 @@ const BasicInformation = profileDetails => {
     };
 
     setBasicInfoData(formattedValues);
-    console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
+    // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
 
     if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(formattedValues));

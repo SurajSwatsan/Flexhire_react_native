@@ -4,6 +4,7 @@ import {IconButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Material Icons for stars
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../Global_CSS/TheamColors';
+import {BASE_URL} from '../Services/baseAPI';
 
 const CustomCompanyCard = ({companyData}) => {
   const navigation = useNavigation();
@@ -33,16 +34,16 @@ const CustomCompanyCard = ({companyData}) => {
       <TouchableOpacity
         style={{marginHorizontal: 8}}
         onPress={() => {
-          // Navigate to 'CompanyOverview' without passing any data
-          // navigation.navigate('CompanyOverview', {
-          //   companyData:companyData
-          // });
+          // Navigate to 'CompanyOverview' and pass the company ID
+          navigation.navigate('CompanyOverview', {
+            company_id: companyData?.id, // Pass the id dynamically
+          });
         }}>
         <Image
           source={
-            companyData?.top_companies?.company?.logo
-              ? {uri: companyData?.company?.logo}
-              : require('../Assets/CompanyLogo/Swatsan.png')
+            companyData?.logo
+              ? {uri: BASE_URL + companyData?.logo} // Dynamically load logo
+              : require('../Assets/CompanyLogo/Swatsan.png') // Fallback logo
           }
           style={styles.companyImage}
         />
@@ -52,7 +53,8 @@ const CustomCompanyCard = ({companyData}) => {
 
         {/* Display Company Rating as Stars */}
         <View style={styles.ratingContainer}>
-          {renderStars(Math.round(companyData?.top_companies?.company.rating))}
+          {renderStars(Math.round(companyData?.rating || 0))}
+          {/* Safeguard against undefined rating */}
         </View>
 
         <Text style={styles.mnctext}>Foreign MNC</Text>
@@ -100,5 +102,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-
+ 
 export default CustomCompanyCard;

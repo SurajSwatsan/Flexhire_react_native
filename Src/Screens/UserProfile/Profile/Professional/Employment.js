@@ -52,183 +52,6 @@ const SALARY_OPTIONS = [
   {id: 2, value: 'Fixed + Variable', label: 'Fixed + Variable'},
 ];
 
-const DEPARTMENT_OPTIONS = [
-  {
-    id: 1,
-    value: 'BFSI, Investments & Trading',
-    label: 'BFSI, Investments & Trading',
-  },
-  {
-    id: 2,
-    value: 'Customer Success, Service & Operations',
-    label: 'Customer Success, Service & Operations',
-  },
-  {id: 3, value: 'Data Science & Analytics', label: 'Data Science & Analytics'},
-  {
-    id: 4,
-    value: 'Engineering - Hardware & Networks',
-    label: 'Engineering - Hardware & Networks',
-  },
-  {
-    id: 5,
-    value: 'Engineering - Software & QA',
-    label: 'Engineering - Software & QA',
-  },
-  {id: 6, value: 'Finance & Accounting', label: 'Finance & Accounting'},
-  {id: 7, value: 'Human Resources', label: 'Human Resources'},
-  {
-    id: 8,
-    value: 'IT & Information Security',
-    label: 'IT & Information Security',
-  },
-  {
-    id: 9,
-    value: 'Marketing & Communication',
-    label: 'Marketing & Communication',
-  },
-  {id: 10, value: 'Product Management', label: 'Product Management'},
-  {
-    id: 11,
-    value: 'Production, Manufacturing & Engineering',
-    label: 'Production, Manufacturing & Engineering',
-  },
-  {
-    id: 12,
-    value: 'Project & Program Management',
-    label: 'Project & Program Management',
-  },
-  {id: 13, value: 'Quality Assurance', label: 'Quality Assurance'},
-  {
-    id: 14,
-    value: 'Sales & Business Development',
-    label: 'Sales & Business Development',
-  },
-  {
-    id: 15,
-    value: 'UX, Design & Architecture',
-    label: 'UX, Design & Architecture',
-  },
-  {
-    id: 16,
-    value: 'Administration & Facilities',
-    label: 'Administration & Facilities',
-  },
-  {id: 17, value: 'Aviation & Aerospace', label: 'Aviation & Aerospace'},
-  {
-    id: 18,
-    value: 'Construction & Site Engineering',
-    label: 'Construction & Site Engineering',
-  },
-  {id: 19, value: 'Consulting', label: 'Consulting'},
-  {
-    id: 20,
-    value: 'Content, Editorial & Journalism',
-    label: 'Content, Editorial & Journalism',
-  },
-  {id: 21, value: 'CSR & Social Service', label: 'CSR & Social Service'},
-  {id: 22, value: 'Energy & Mining', label: 'Energy & Mining'},
-  {
-    id: 23,
-    value: 'Environment Health & Safety',
-    label: 'Environment Health & Safety',
-  },
-  {
-    id: 24,
-    value: 'Food, Beverage & Hospitality',
-    label: 'Food, Beverage & Hospitality',
-  },
-  {
-    id: 25,
-    value: 'Healthcare & Life Sciences',
-    label: 'Healthcare & Life Sciences',
-  },
-  {id: 26, value: 'Legal & Regulatory', label: 'Legal & Regulatory'},
-  {
-    id: 27,
-    value: 'Media Production & Entertainment',
-    label: 'Media Production & Entertainment',
-  },
-  {
-    id: 28,
-    value: 'Merchandising, Retail & eCommerce',
-    label: 'Merchandising, Retail & eCommerce',
-  },
-  {
-    id: 29,
-    value: 'Procurement & Supply Chain',
-    label: 'Procurement & Supply Chain',
-  },
-  {id: 30, value: 'Research & Development', label: 'Research & Development'},
-  {
-    id: 31,
-    value: 'Risk Management & Compliance',
-    label: 'Risk Management & Compliance',
-  },
-  {id: 32, value: 'Security Services', label: 'Security Services'},
-  {id: 33, value: 'Shipping & Maritime', label: 'Shipping & Maritime'},
-  {
-    id: 34,
-    value: 'Sports, Fitness & Personal Care',
-    label: 'Sports, Fitness & Personal Care',
-  },
-  {
-    id: 35,
-    value: 'Strategic & Top Management',
-    label: 'Strategic & Top Management',
-  },
-  {id: 36, value: 'Teaching & Training', label: 'Teaching & Training'},
-  {id: 37, value: 'Other', label: 'Other'},
-];
-
-const ROLECATEGORY_OPTIONS = [
-  {id: 1, value: 'DBA / Data Warehousing', label: 'DBA / Data Warehousing'},
-  {id: 2, value: 'DevOps', label: 'DevOps'},
-  {
-    id: 3,
-    value: 'Quality Assurance and Testing',
-    label: 'Quality Assurance and Testing',
-  },
-  {id: 4, value: 'Software Development', label: 'Software Development'},
-];
-
-const ROLE_OPTIONS = [
-  {id: 1, value: 'Automation Architect', label: 'Automation Architect'},
-  {id: 2, value: 'Automation Developer', label: 'Automation Developer'},
-  {id: 3, value: 'Back End Developer', label: 'Back End Developer'},
-  {id: 4, value: 'Big Data Engineer', label: 'Big Data Engineer'},
-  {id: 5, value: 'CRM Architect', label: 'CRM Architect'},
-  {id: 6, value: 'Data Engineer', label: 'Data Engineer'},
-  {id: 7, value: 'Data Platform Engineer', label: 'Data Platform Engineer'},
-  {
-    id: 8,
-    value: 'Embedded Systems Engineer',
-    label: 'Embedded Systems Engineer',
-  },
-  {id: 9, value: 'Engineering Manager', label: 'Engineering Manager'},
-  {id: 10, value: 'ERP Architect', label: 'ERP Architect'},
-  {id: 11, value: 'ERP Developer', label: 'ERP Developer'},
-  {id: 12, value: 'Front End Developer', label: 'Front End Developer'},
-  {id: 13, value: 'Full Stack Developer', label: 'Full Stack Developer'},
-  {
-    id: 14,
-    value: 'Game Developer / Programmer',
-    label: 'Game Developer / Programmer',
-  },
-  {id: 15, value: 'Head - Engineering', label: 'Head - Engineering'},
-  {id: 16, value: 'Mobile / App Developer', label: 'Mobile / App Developer'},
-  {id: 17, value: 'Practice Manager / Head', label: 'Practice Manager / Head'},
-  {id: 18, value: 'Search Engineer', label: 'Search Engineer'},
-  {id: 19, value: 'Solution Architect', label: 'Solution Architect'},
-  {id: 20, value: 'Technical Architect', label: 'Technical Architect'},
-  {id: 21, value: 'Technical Lead', label: 'Technical Lead'},
-  {id: 22, value: 'Webmaster', label: 'Webmaster'},
-  {
-    id: 23,
-    value: 'Software Development - Other',
-    label: 'Software Development - Other',
-  },
-];
-
 const EmploymentValidationSchema = values => {
   const schema = {};
 
@@ -265,7 +88,7 @@ const EmploymentValidationSchema = values => {
           const {salary_breakdown} = this.parent;
           return salary_breakdown !== 'Fixed + Variable' || Boolean(value);
         },
-      )),
+      ))(
       (schema.variableSalary = Yup.string()
         .matches(
           /^\d+(\.\d{1,2})?$/,
@@ -293,6 +116,7 @@ const EmploymentValidationSchema = values => {
             return true;
           },
         )),
+    ),
       (schema.job_profile = Yup.string()
         .nullable() // Allow the field to be null or undefined
         .notRequired() // Explicitly mark it as not required
@@ -427,19 +251,24 @@ const Employment = profileDetails => {
     const department_data = departments?.map(de => ({
       id: de.id,
       value: de.name,
+      label: de.name,
     }));
     const category_data = categories?.map(cor => ({
       id: cor.id,
       value: cor.name,
+      label: cor.name,
     }));
     const role_data = roles?.map(ro => ({
       id: ro.id,
       value: ro.title,
+      label: ro.title,
     }));
     setKeyskillsMasters(keyskills_data);
     setDepartmentsMasters(department_data);
     setJobTitleCategoriesMasters(category_data);
     setRolesMasters(role_data);
+    // console.log('Job Title Category', role_data);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyskills, departments, categories, roles]);
 
@@ -982,7 +811,7 @@ const Employment = profileDetails => {
                           <ReusableDropdown
                             options={departmentsMasters}
                             placeholder="Department*"
-                            selectedValue={values.department}
+                            selectedValue={values?.department}
                             onSelect={selected =>
                               setFieldValue('department', selected.value)
                             }

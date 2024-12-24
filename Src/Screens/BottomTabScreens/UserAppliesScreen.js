@@ -14,16 +14,15 @@ import JobViewController from '../../Redux/Action/jobViewController';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../Services/baseAPI';
 const UserApplies = () => {
   const navigation = useNavigation();
-  const [showBookmarkIcon, setShowBookmarkIcon] = useState(false);
 
   const dispatch = useDispatch();
   const {GetJobApplications} = JobViewController();
   const {JobApplications} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const [userId, set_userId] = useState('');
-
 
   const getSalary = salary => {
     if (salary?.yearly?.min && salary?.yearly?.max) {
@@ -92,7 +91,7 @@ const UserApplies = () => {
                   <Image
                     source={
                       jobData?.job?.company.logo
-                        ? {uri: jobData?.job?.company.logo}
+                        ? {uri: BASE_URL + jobData?.job?.company.logo}
                         : require('../../Assets/CompanyLogo/Swatsan.png')
                     }
                     style={styles.companyImage}
@@ -152,9 +151,11 @@ const UserApplies = () => {
                   </View>
 
                   {/* Conditionally render the posted date */}
-                  {jobData?.job?.created_at && (
+                  {console.log(jobData?.application_date)}
+
+                  {jobData?.application_date && (
                     <Text style={styles.jobPostedDate}>
-                      {getPostedDate(jobData?.job?.created_at)}
+                      {getPostedDate(jobData?.application_date)}
                     </Text>
                   )}
                 </View>
@@ -271,12 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
   },
-  salaryContainer: {
-    flexDirection: 'row',
-    gap: 6,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
+
   location: {
     flexDirection: 'row',
     gap: 5,

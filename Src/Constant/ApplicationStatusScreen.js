@@ -15,6 +15,7 @@ import CustomHeader from './CustomBackIcon';
 
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
+import {BASE_URL} from '../Services/baseAPI';
 
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
@@ -22,7 +23,14 @@ const ApplicationStatusScreen = ({route}) => {
 
   // Function to navigate to the JobDescription screen
   const handleViewDescriptionPress = () => {
-    navigation.navigate('JobDetailScreen', {job_id: ApplicationObject.job.id});
+    navigation.navigate('JobDetailScreen', {
+      job_id: ApplicationObject?.job?.id,
+    });
+  };
+  const handleJobCardPress = () => {
+    navigation.navigate('JobDetailScreen', {
+      job_id: ApplicationObject?.job?.id,
+    });
   };
 
   return (
@@ -38,7 +46,7 @@ const ApplicationStatusScreen = ({route}) => {
           <Image
             source={
               ApplicationObject?.job?.company?.logo
-                ? {uri: ApplicationObject?.job?.company?.logo}
+                ? {uri: BASE_URL + ApplicationObject?.job?.company?.logo}
                 : require('../Assets/CompanyLogo/Swatsan.png')
             }
             style={styles.image}
@@ -112,7 +120,7 @@ const ApplicationStatusScreen = ({route}) => {
                             <Image
                               source={
                                 item?.company?.logo
-                                  ? {uri: item?.company?.logo}
+                                  ? {uri: BASE_URL + item?.company?.logo}
                                   : require('../Assets/CompanyLogo/Swatsan.png') // Replace with a default logo
                               }
                               style={styles.companyImage}

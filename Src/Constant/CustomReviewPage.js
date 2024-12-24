@@ -18,8 +18,8 @@ const ReviewPage = ({JobDetails}) => {
 
   // Calculate the average rating if multiple reviews exist
   const averageRating =
-    JobDetails.reduce((acc, review) => acc + review.rating, 0) /
-    JobDetails.length;
+    JobDetails?.reduce((acc, review) => acc + review.rating, 0) /
+    JobDetails?.length;
 
   const renderStars = rating => {
     const stars = [];
@@ -28,12 +28,12 @@ const ReviewPage = ({JobDetails}) => {
     const emptyStars = 5 - fullStars - halfStar;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(
+      stars?.push(
         <Ionicons key={`full-${i}`} name="star" size={18} color="#FFD700" />,
       );
     }
     if (halfStar) {
-      stars.push(
+      stars?.push(
         <Ionicons key="half" name="star-half" size={18} color="#FFD700" />,
       );
     }
@@ -65,10 +65,10 @@ const ReviewPage = ({JobDetails}) => {
       <View style={styles.averageRatingContainer}>
         <Text style={styles.averageRatingText}>Average Rating</Text>
         <View style={styles.starsContainer}>
-          {renderStars(Math.round(averageRating))}
+          {renderStars(Math?.round(averageRating))}
           <Text style={styles.averageRatingValue}>
             {' '}
-            ({averageRating.toFixed(1)})
+            ({averageRating?.toFixed(1)})
           </Text>
         </View>
       </View>
@@ -101,7 +101,7 @@ const ReviewPage = ({JobDetails}) => {
       </View>
 
       {/* Map Over Reviews */}
-      {JobDetails.map(item => (
+      {JobDetails?.map(item => (
         <View key={item.id} style={styles.reviewContainer}>
           <View style={styles.reviewerInfo}>
             <Image
@@ -111,30 +111,30 @@ const ReviewPage = ({JobDetails}) => {
             <View style={styles.reviewerDetails}>
               <View style={styles.reviewerNameDateContainer}>
                 <Text style={styles.reviewerName}>
-                  {item.is_anonymous ? 'Anonymous' : 'John Doe'}
+                  {item?.is_anonymous ? 'Anonymous' : 'John Doe'}
                 </Text>
                 <Text style={styles.reviewDate}>
-                  {moment(item.review_date).format('D MMM YYYY')}
+                  {moment(item?.review_date).format('D MMM YYYY')}
                 </Text>
               </View>
               <View style={styles.starsContainer}>
-                {renderStars(item.rating)}
+                {renderStars(item?.rating)}
                 <Text style={styles.ratingValue}>
                   {' '}
-                  ({item.rating.toFixed(1)})
+                  ({item?.rating?.toFixed(1)})
                 </Text>
               </View>
             </View>
           </View>
 
-          <Text style={styles.reviewTitle}>{item.review_title}</Text>
+          <Text style={styles.reviewTitle}>{item?.review_title}</Text>
 
           {/* Optional sections for pros and cons */}
           <View style={styles.prosConsContainer}>
             <Text style={styles.prosConsTitle}>Pros:</Text>
-            <Text style={styles.prosConsText}>{item.pros}</Text>
+            <Text style={styles.prosConsText}>{item?.pros}</Text>
             <Text style={styles.prosConsTitle}>Cons:</Text>
-            <Text style={styles.prosConsText}>{item.cons}</Text>
+            <Text style={styles.prosConsText}>{item?.cons}</Text>
           </View>
         </View>
       ))}

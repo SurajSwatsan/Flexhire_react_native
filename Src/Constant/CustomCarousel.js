@@ -1,44 +1,35 @@
-import React, {useState, useRef} from 'react';
+import {useRef, useState} from 'react';
 import {
+  Dimensions,
   FlatList,
-  View,
-  Text,
   Image,
   StyleSheet,
-  Dimensions,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import {Text} from 'react-native-paper';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {BASE_URL} from '../Services/baseAPI';
 // import { Icon } from 'react-native-paper';
 
 const {width} = Dimensions.get('window'); // Get the screen width
 
-const teamData = [
-  {
-    id: '1',
-    image: require('../Assets/companyImges/women.jpg'),
-    name: 'Andhika Sudarman',
-    role: 'Chief Executive Officer',
-  },
-  {
-    id: '2',
-    image: require('../Assets/companyImges/webdesigner.jpg'),
-    name: 'Eleanor Pena',
-    role: 'Chief Manager Officer',
-  },
-  {
-    id: '3',
-    image: require('../Assets/companyImges/person.jpg'),
-    name: 'Jacob Jones',
-    role: 'Web Designer',
-  },
-  // Add more members here...
-];
+const CustomCarousel = ({companyDetails = {}}) => {
+  // Use a fallback for company_leaders to avoid errors
+  const company_leaders = companyDetails?.company_leaders || [];
 
-const CustomCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef(null); // Reference to FlatList
+  const flatListRef = useRef(null);
+
+  // Handle case when no data is available
+  if (!company_leaders.length) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No leaders available to display.</Text>
+      </View>
+    );
+  }
 
   const onViewableItemsChanged = ({viewableItems}) => {
     if (viewableItems.length > 0) {
@@ -47,14 +38,14 @@ const CustomCarousel = () => {
   };
 
   const scrollToIndex = index => {
-    flatListRef.current.scrollToIndex({
+    flatListRef.current?.scrollToIndex({
       index: index,
       animated: true,
     });
   };
 
   const goToNext = () => {
-    if (currentIndex < teamData.length - 1) {
+    if (currentIndex < company_leaders.length - 1) {
       scrollToIndex(currentIndex + 1);
     }
   };
@@ -65,74 +56,58 @@ const CustomCarousel = () => {
     }
   };
 
-  const renderItem = ({item}) => {
-    return (
-      <View style={styles.card}>
-        <Image source={item.image} style={styles.avatar} />
-        <View style={styles.card_content}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.role}>{item.role}</Text>
-        </View>
+  const renderItem = ({item}) => (
+    <View style={styles.card}>
+      <Image
+        source={
+          item.image
+            ? {uri: BASE_URL + item.image}
+            : require('../Assets/CompanyLogo/Swatsan.png') // Fallback image
+        }
+        style={styles.avatar}
+      />
+      <View style={styles.card_content}>
+        <Text style={styles.name}>{item.name || 'Unknown'}</Text>
+        <Text style={styles.role}>{item.position || 'No role specified'}</Text>
       </View>
-    );
-  };
+    </View>
+  );
 
   return (
     <>
       <View style={styles.container}>
-        {/* Left Arrow */}
         <TouchableOpacity
           onPress={goToPrev}
           disabled={currentIndex === 0}
           style={styles.navButtonLeft}>
-          <Text
-            style={[
-              styles.navButton,
-              currentIndex === 0 && styles.disabledButton,
-            ]}>
-            {/* ◁ */}
-            <Ionicons name="chevron-back-outline" size={30} color="#000" />
-          </Text>
+          <Ionicons name="chevron-back-outline" size={30} color="#000" />
         </TouchableOpacity>
 
-        {/* Carousel */}
         <View style={{width: width * 0.7, paddingHorizontal: 18}}>
           <FlatList
-            data={teamData}
+            data={company_leaders}
             renderItem={renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => item.id || index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             ref={flatListRef}
-            snapToInterval={width * 0.7} // Snap to card width
+            snapToInterval={width * 0.7}
             decelerationRate="fast"
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={{viewAreaCoveragePercentThreshold: 50}}
             contentContainerStyle={styles.flatlistContainer}
           />
         </View>
-        {/* Right Arrow */}
+
         <TouchableOpacity
           onPress={goToNext}
-          disabled={currentIndex === teamData.length - 1}
+          disabled={currentIndex === company_leaders.length - 1}
           style={styles.navButtonRight}>
-          <Text
-            style={[
-              styles.navButton,
-              currentIndex === teamData.length - 1 && styles.disabledButton,
-            ]}>
-            {/* ▷ */}
-            <Ionicons
-              name="chevron-forward-outline"
-              size={30}
-              color="#000"
-            />
-          </Text>
+          <Ionicons name="chevron-forward-outline" size={30} color="#000" />
         </TouchableOpacity>
       </View>
-      {/* Optional: Indicator or active state */}
       <View style={styles.indicatorContainer}>
-        {teamData.map((_, index) => (
+        {company_leaders.map((_, index) => (
           <Text
             key={index}
             style={[
@@ -154,7 +129,7 @@ const styles = StyleSheet.create({
     // position: 'relative',
     width: '100%', // Full width of the screen
     justifyContent: 'space-between', // Center the FlatList container between the arrows
-    paddingHorizontal:8
+    paddingHorizontal: 8,
     // backgroundColor: 'grey',
   },
   card: {
@@ -162,11 +137,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
 
-   
     marginRight: 20, // Ensures spacing between cards
     minHeight: 200,
     // marginBottom: 8,
-    marginTop:12
+    marginTop: 12,
   },
   card_content: {
     padding: 12,

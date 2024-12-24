@@ -55,7 +55,7 @@ const CustomSelectionModal = ({
         selected.length >= maxSelectionLimit &&
         !selected.some(selectedItem => selectedItem.id === item.id)
       ) {
-        console.log('Selection limit reached'); // Optional: Log limit breach
+        // console.log('Selection limit reached'); // Optional: Log limit breach
         return;
       }
 

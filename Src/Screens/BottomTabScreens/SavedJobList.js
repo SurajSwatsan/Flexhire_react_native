@@ -14,6 +14,8 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import JobViewController from '../../Redux/Action/jobViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../Services/baseAPI';
+import JobCardStyle from '../../Global_CSS/JobCardStyle';
 
 const SavedJobScreen = () => {
   const [id, setId] = useState();
@@ -38,18 +40,17 @@ const SavedJobScreen = () => {
     getUserData();
   }, [isFocus]);
 
+  const isBookmarked = job_id => {
+    return SavedJobs.some(savedJob => savedJob.job.id === job_id);
+  };
+
   const toggleBookmark = job_id => {
-    // setBookmarked(prev => ({
-    //   ...prev,
-    //   [id]: !prev[id],
-    // }));
     const data = {
       job: job_id,
       user_id: id,
     };
     dispatch(SaveJob(data));
   };
-
   return (
     <View style={styles.container}>
       <ScrollView style={styles.cardContainer}>
@@ -59,7 +60,7 @@ const SavedJobScreen = () => {
               key={savedJob.job.id}
               onPress={() =>
                 navigation.navigate('JobDetailScreen', {
-                  companyId: savedJob.job.id,
+                  job_id: savedJob.job.id,
                 })
               }
               style={styles.card}>
@@ -73,7 +74,7 @@ const SavedJobScreen = () => {
                     style={styles.bookmarkIconContainer}>
                     <Ionicons
                       name={
-                        bookmarked[savedJob?.job.id]
+                        isBookmarked(savedJob?.job?.id)
                           ? 'bookmark'
                           : 'bookmark-outline'
                       }
@@ -122,7 +123,7 @@ const SavedJobScreen = () => {
                     <Image
                       source={
                         savedJob?.job?.company?.logo
-                          ? {uri: savedJob?.job?.company.logo}
+                          ? {uri: BASE_URL + savedJob?.job?.company.logo}
                           : require('../../Assets/CompanyLogo/Swatsan.png')
                       }
                       style={styles.logo}
@@ -155,7 +156,13 @@ const SavedJobScreen = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <Text>No saved jobs found</Text>
+          <View style={[JobCardStyle.noJobsContainer]}>
+            <Image
+              style={JobCardStyle.jobimage}
+              source={require('../../Assets/invitesImages/Jobsearch.png')}
+            />
+            <Text style={[JobCardStyle.noJobsText]}>No Saved jobs.....</Text>
+          </View>
         )}
       </ScrollView>
     </View>

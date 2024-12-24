@@ -149,7 +149,7 @@ const Itskills = profileDetails => {
           ...(profileDetails?.profileDetails?.it_skills || []), // Include existing entries
 
           {
-            name: values.name === 'other' ? values.othername : values.name,
+            name: values.name === 'Other' ? values.othername : values.name,
             version: values.version,
             last_used: values.last_used,
             exp: {
@@ -313,12 +313,12 @@ const Itskills = profileDetails => {
                     <ReusableDropdown
                       options={keyskillsMasters} // Ensure the options array matches the structure
                       placeholder="Select Skill / Software Name*"
-                      selectedValue={values.name} // This must match a `value` in the options array
+                      selectedValue={values?.name} // This must match a `value` in the options array
                       onSelect={selected =>
-                        setFieldValue('name', selected.value)
+                        setFieldValue('name', selected?.value)
                       }
                     />
-                    {values.name === 'other' && (
+                    {values.name === 'Other' && (
                       <ReusableTextInput
                         name="othername"
                         label=" Other Skill/ Software Name*"
