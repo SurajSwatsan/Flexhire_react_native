@@ -58,15 +58,33 @@ const validationSchema = Yup.object().shape({
   worked_duration: Yup.object().shape({
     from: Yup.date()
       .required('Start date is required')
-      .typeError('Invalid date format'),
+      .typeError('Invalid start date format'),
     till: Yup.date()
       .nullable()
-      .when('status', {
-        is: 'Finished',
-        then: Yup.date()
-          .required('End date is required when status is Finished')
-          .min(Yup.ref('from'), 'End date cannot be before start date'),
-      }),
+      .typeError('Invalid end date format')
+      .test(
+        'validate-till-finished',
+        'End date is required and must be after start date when status is Finished',
+        function (value) {
+          const {status, from} = this.parent;
+
+          // Only validate if the project status is 'Finished'
+          if (status === 'Finished') {
+            if (!value) {
+              return this.createError({
+                message: 'End date is required when status is Finished',
+              });
+            }
+            if (value < from) {
+              return this.createError({
+                message: 'End date cannot be before start date',
+              });
+            }
+          }
+
+          return true; // Pass validation if not 'Finished'
+        },
+      ),
   }),
 });
 
@@ -161,13 +179,13 @@ const Projects = profileDetails => {
             description: values.description,
             worked_duration: {
               from: values.worked_duration.from
-                ? moment(values.worked_duration.from).format('DD-MM-YYYY')
+                ? moment(values.worked_duration.from).format('YYYY-MM-DD')
                 : null,
               till:
                 values.status === 'In Progress'
-                  ? 'Present'
+                  ? null // Set till to null when the status is "In Progress"
                   : values.worked_duration.till
-                  ? moment(values.worked_duration.till).format('DD-MM-YYYY')
+                  ? moment(values.worked_duration.till).format('YYYY-MM-DD')
                   : null,
             },
             nature_of_employment: values.nature_of_employment,
@@ -246,10 +264,19 @@ const Projects = profileDetails => {
                     {item?.client || 'No Client'}
                   </Text>
                   <Text style={profileStyle.optionalData}>
-                    {item?.worked_duration?.from || 'No Start Date'} -{' '}
+                    {item?.worked_duration?.from
+                      ? moment(item?.worked_duration?.from).format(
+                          'DD-MMM-YYYY',
+                        )
+                      : 'No Start Date'}
+                    {' - '}
                     {item?.status === 'In Progress'
                       ? 'Present'
-                      : item?.worked_duration?.till || 'No End Date'}{' '}
+                      : item?.worked_duration?.till
+                      ? moment(item?.worked_duration?.till).format(
+                          'DD-MMM-YYYY',
+                        )
+                      : 'No End Date'}{' '}
                     • {item?.nature_of_employment || 'No Employment Type'}
                   </Text>
                 </TouchableOpacity>
@@ -295,14 +322,10 @@ const Projects = profileDetails => {
                   description: selectedProject?.description || '',
                   worked_duration: {
                     from: selectedProject?.worked_duration?.from
-                      ? moment(selectedProject?.worked_duration?.from).format(
-                          'YYYY-MM-DD',
-                        )
+                      ? new Date(selectedProject?.worked_duration?.from)
                       : null,
                     till: selectedProject?.worked_duration?.till
-                      ? moment(selectedProject?.worked_duration?.till).format(
-                          'YYYY-MM-DD',
-                        )
+                      ? new Date(selectedProject?.worked_duration?.till)
                       : null,
                   },
                   project_location: selectedProject?.project_location || '',
@@ -386,48 +409,22 @@ const Projects = profileDetails => {
 
                     <ReusableDatePicker
                       label="Worked From*"
-                      value={
-                        values.worked_duration?.from
-                          ? moment(
-                              values.worked_duration.from,
-                              'YYYY-MM-DD',
-                            ).toDate()
-                          : null
-                      }
+                      value={values.worked_duration?.from || null}
                       onChange={date =>
-                        setFieldValue('worked_duration', {
-                          ...values.worked_duration,
-                          from: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
-                        })
+                        setFieldValue('worked_duration.from', date || null)
                       }
-                      error={
-                        touched.worked_duration?.from &&
-                        errors.worked_duration?.from
-                      } // Show error only if touched and there is an error
+                      error={errors.worked_duration?.from} // Show error only if touched and there is an error
                       touched={touched.worked_duration?.from}
                     />
 
                     {values.status === 'Finished' && (
                       <ReusableDatePicker
                         label="Worked Till*"
-                        value={
-                          values.worked_duration?.till
-                            ? moment(
-                                values.worked_duration.till,
-                                'YYYY-MM-DD',
-                              ).toDate()
-                            : null
-                        }
+                        value={values.worked_duration?.till || null}
                         onChange={date =>
-                          setFieldValue('worked_duration', {
-                            ...values.worked_duration,
-                            till: moment(date).format('YYYY-MM-DD'), // Format date as YYYY-MM-DD
-                          })
+                          setFieldValue('worked_duration.till', date || null)
                         }
-                        error={
-                          touched.worked_duration?.till &&
-                          errors.worked_duration?.till
-                        } // Show error only if touched and there is an error
+                        error={errors.worked_duration?.till} // Show error only if touched and there is an error
                         touched={touched.worked_duration?.till}
                       />
                     )}
@@ -438,17 +435,22 @@ const Projects = profileDetails => {
                       value={values.description}
                       onChangeText={handleChange('description')}
                     />
-                    <TouchableOpacity
-                      onPress={() => setShowMoreDetails(!showMoreDetails)}>
-                      <Text
-                        style={{
-                          color: 'blue',
-                          fontWeight: 'bold',
-                          marginVertical: 10,
-                        }}>
-                        Add more details +
-                      </Text>
-                    </TouchableOpacity>
+                    {showMoreDetails ? (
+                      <View />
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => setShowMoreDetails(!showMoreDetails)}>
+                        <Text
+                          style={{
+                            color: 'blue',
+                            fontWeight: 'bold',
+                            marginVertical: 10,
+                          }}>
+                          Add more details +
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
                     {showMoreDetails && (
                       <>
                         <ReusableTextInput

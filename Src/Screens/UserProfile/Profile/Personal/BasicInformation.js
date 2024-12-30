@@ -53,6 +53,9 @@ const validationSchema = Yup.object().shape({
       'Invalid Marital Status selected',
     )
     .required('Marital Status is required'),
+  country: Yup.string().required('Country is required'),
+  home_state: Yup.string().required('State is required'),
+  home_city: Yup.string().required('City is required'),
   is_differently_abled: Yup.string()
     .oneOf(
       OPTIONS.DIFFERENTLY_ABLED.map(option => option.value),
@@ -108,6 +111,8 @@ const BasicInformation = profileDetails => {
 
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
+  // console.log('BasicDetails', JSON.stringify(profileDetails?.profileDetails?.basic_details, null, 2));
+
   // console.log(id);
   useEffect(() => {
     if (profileDetails?.profileDetails?.basic_details) {
@@ -342,8 +347,8 @@ const BasicInformation = profileDetails => {
                         setFieldValue('country', item?.value || '')
                       }
                       placeholder="Select Country"
-                      // error={errors.country}
-                      // touched={touched.country}
+                      error={errors.country}
+                      touched={touched.country}
                     />
 
                     <CustomSelectionModal
@@ -356,8 +361,8 @@ const BasicInformation = profileDetails => {
                         setFieldValue('home_state', item?.value || '')
                       }
                       placeholder="Select Home State"
-                      // error={errors.home_state}
-                      // touched={touched.home_state}
+                      error={errors.home_state}
+                      touched={touched.home_state}
                     />
 
                     <CustomSelectionModal
@@ -370,8 +375,8 @@ const BasicInformation = profileDetails => {
                         setFieldValue('home_city', item?.value || '')
                       }
                       placeholder="Select Home City"
-                      // error={errors.home_city}
-                      // touched={touched.home_city}
+                      error={errors.home_city}
+                      touched={touched.home_city}
                     />
                     <CustomTabs
                       label="Marital Status*"

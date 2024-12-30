@@ -136,15 +136,15 @@ const CompanyOverviewScreen = ({route}) => {
           <View style={styles.containermain}>
             <View style={styles.overviewContainer}>
               <View style={styles.overviewImage}>
-                {console.log(
-                  'CompanyDetails?.about_us[0]?.image',
-                  CompanyDetails?.about_us?.image,
-                )}
-
                 <Image
                   source={
                     CompanyDetails?.about_us?.[0]?.image
-                      ? {uri: BASE_URL + CompanyDetails?.about_us?.[0]?.image}
+                      ? {
+                          uri:
+                            BASE_URL +
+                            '/' +
+                            CompanyDetails?.about_us?.[0]?.image,
+                        }
                       : require('../Assets/companyImges/overviewImage.jpg')
                   }
                   style={styles.image}
@@ -433,7 +433,7 @@ const CompanyOverviewScreen = ({route}) => {
                       <Image
                         source={
                           leader?.image
-                            ? {uri: BASE_URL + leader?.image}
+                            ? {uri: BASE_URL + '/' + leader?.image}
                             : require('../Assets/companyImges/person.jpg') // Fallback image
                         }
                         style={styles.textimage}
@@ -450,8 +450,8 @@ const CompanyOverviewScreen = ({route}) => {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {CompanyDetails?.key_highlights?.map((highlight, index) => (
                   <View key={index} style={styles.keyCard}>
-                   { console.log(highlight?.icon)}
-                    
+                  
+
                     <Image
                       source={
                         highlight?.icon
@@ -477,8 +477,6 @@ const CompanyOverviewScreen = ({route}) => {
                   style={styles.awardImage}
                 />
                 <View style={styles.awardInfo}>
-                  
-
                   {/* Horizontal ScrollView for Timeline */}
                   <ScrollView
                     horizontal={true}
@@ -624,17 +622,17 @@ const CompanyOverviewScreen = ({route}) => {
               </Text>
             </View>
 
-            {/* <View style={styles.location}>
-               <Ionicons
-                 name="person" // Icon for openings
-                 color={colors.primary} // Icon color
-                 size={18} // Icon size
-                 style={{padding: 0, marginLeft: -10, height: 20}} // Adjust the style
-               />
-               <Text style={styles.jobLocation}>
-                 {jobData.company.employee} employee
-               </Text>
-             </View> */}
+            <View style={styles.location}>
+              <Ionicons
+                name="person" // Icon for openings
+                color={colors.primary} // Icon color
+                size={18} // Icon size
+                style={{padding: 0, marginLeft: -10, height: 20}} // Adjust the style
+              />
+              <Text style={styles.jobLocation}>
+                {CompanyDetails?.company_size} employees
+              </Text>
+            </View>
           </View>
         </View>
       </View>

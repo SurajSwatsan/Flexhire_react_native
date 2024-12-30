@@ -4,6 +4,6 @@ export const colors = {
   background: '#f1f1f1',
   cardBgcolor: '#fff',
   blackText: 'black',
-  whiteText: 'white',
+  whiteText: '#fff',
   lightgaryText: 'lightgray',
 };

@@ -75,6 +75,7 @@ const JobCardStyle = StyleSheet.create({
   },
 
   experienceContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
     marginRight: 8,
     gap: 6,
@@ -86,7 +87,7 @@ const JobCardStyle = StyleSheet.create({
     alignItems: 'center',
   },
   jobDetailsalary: {
-    fontSize: 10,
+    fontSize: 11,
     color: 'gray',
     fontWeight: 'bold',
   },

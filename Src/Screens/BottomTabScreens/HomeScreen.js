@@ -26,6 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
+import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -55,6 +56,7 @@ const HomeScreen = () => {
         console.error('Error reading value from AsyncStorage', error);
       }
     };
+    console.log(CompanyData);
 
     getUserData();
   }, [isFocus]);
@@ -207,10 +209,17 @@ const HomeScreen = () => {
             {jobdata?.salary && jobdata.salary.yearly && (
               <View style={JobCardStyle.experienceContainer}>
                 <Ionicons name="cash" size={14} color="#004466" />
-                <Text style={JobCardStyle.jobDetailsalary}>
-                  ₹{jobdata.salary.yearly.min.toLocaleString()} - ₹
-                  {jobdata.salary.yearly.max.toLocaleString()} INR
-                </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <CustomFormatAmount amount={jobdata.salary?.yearly?.min} />
+                  <Text style={{color: colors.primary}}> - </Text>
+                  <CustomFormatAmount amount={jobdata.salary?.yearly?.max} />
+
+                  <Text
+                    style={{fontSize: 10, fontWeight: 'bold', color: 'gray'}}>
+                    {' '}
+                    {jobdata.salary.yearly.currency}
+                  </Text>
+                </View>
               </View>
             )}
             <Text style={JobCardStyle.jobPostedDate}>

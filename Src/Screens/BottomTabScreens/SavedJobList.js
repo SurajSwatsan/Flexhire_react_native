@@ -16,6 +16,7 @@ import JobViewController from '../../Redux/Action/jobViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
+import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 
 const SavedJobScreen = () => {
   const [id, setId] = useState();
@@ -110,10 +111,27 @@ const SavedJobScreen = () => {
                     </View>
                     <View style={styles.detailsalary}>
                       <Ionicons name="cash" size={14} color={colors.primary} />
-                      <Text style={styles.detailsText}>
-                        {savedJob?.job?.salary?.yearly?.min} -{' '}
-                        {savedJob?.job?.salary?.yearly?.max} INR
-                      </Text>
+                      <View
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <CustomFormatAmount
+                          amount={savedJob?.job?.salary?.yearly?.min}
+                        />
+
+                        <Text style={{color: colors.primary}}> - </Text>
+                        <CustomFormatAmount
+                          amount={savedJob?.job?.salary?.yearly?.max}
+                        />
+
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            color: 'gray',
+                          }}>
+                          {' '}
+                          {savedJob?.job?.salary.yearly.currency}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -222,6 +240,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailsalary: {
+    gap: 8,
     flexDirection: 'row',
     marginLeft: 12,
     alignItems: 'center',

@@ -41,12 +41,12 @@ const AuthViewController = () => {
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);
-      // const {token, user} = data;
+      const {token, user} = data;
       // setAuthToken(token); // Set token in axios headers or AsyncStorage
       // await AsyncStorage.setItem('user_data', JSON.stringify(user));
       // await AsyncStorage.setItem('email', requestData.email);
 
-      // dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
+      dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
       dispatch({type: 'LOADING', payload: false});
       Toast.show('You have Successfully Registered', {
         type: 'success',

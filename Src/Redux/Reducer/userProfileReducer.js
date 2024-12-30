@@ -1,6 +1,6 @@
 const initialState = {
   ProfileAnalytic: null,
-  Personaldetails: [],
+  profileDetails: [],
   error: null,
   isLoding: false,
 };

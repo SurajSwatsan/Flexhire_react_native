@@ -23,6 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import Slider from '@react-native-community/slider';
+import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
   const {searchQuery} = route?.params || '';
@@ -231,12 +232,12 @@ const JobScreen = ({route}) => {
             values.length === 1 ? values[0] : values.join(','),
           ]),
         ),
-        ...(selectedExperience !== undefined && {
-          experience: selectedExperience,
-        }),
+        ...(selectedExperience !== undefined
+          ? {experience: selectedExperience}
+          : {}),
       };
       // const queryString = new URLSearchParams(queryParams).toString();
-      // console.log(queryString);
+      // console.log('selected experience', selectedExperience);
 
       // Dispatch action with queryParams
       dispatch(GetFilterdJobs(queryParams)).then(filteredResults => {
@@ -453,10 +454,26 @@ const JobScreen = ({route}) => {
                   {jobData?.salary && jobData.salary.yearly && (
                     <View style={JobCardStyle.experienceContainer}>
                       <Ionicons name="cash" size={14} color="#004466" />
-                      <Text style={JobCardStyle.jobDetailsalary}>
-                        ₹{jobData.salary.yearly.min.toLocaleString()} - ₹
-                        {jobData.salary.yearly.max.toLocaleString()} INR
-                      </Text>
+                      <View
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <CustomFormatAmount
+                          amount={jobData.salary?.yearly?.min}
+                        />
+                        <Text style={{color: colors.primary}}> - </Text>
+                        <CustomFormatAmount
+                          amount={jobData.salary?.yearly?.max}
+                        />
+
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            color: 'gray',
+                          }}>
+                          {' '}
+                          {jobData.salary.yearly.currency}
+                        </Text>
+                      </View>
                     </View>
                   )}
                   <Text style={JobCardStyle.jobPostedDate}>
@@ -513,11 +530,7 @@ const JobScreen = ({route}) => {
                           ],
                         ]}
                         onPress={() =>
-                          setSelectedCategory(
-                            filterCategory.filter === selectedCategory
-                              ? null
-                              : filterCategory.filter,
-                          )
+                          setSelectedCategory(filterCategory.filter)
                         }>
                         <Text
                           style={[

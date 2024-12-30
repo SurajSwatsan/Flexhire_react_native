@@ -16,6 +16,7 @@ import CustomHeader from './CustomBackIcon';
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 import {BASE_URL} from '../Services/baseAPI';
+import CustomFormatAmount from './CustomFormatAmount';
 
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
@@ -164,10 +165,30 @@ const ApplicationStatusScreen = ({route}) => {
                           {item?.salary?.yearly && (
                             <View style={styles.experienceContainer}>
                               <Ionicons name="cash" size={14} color="#004466" />
-                              <Text style={styles.jobDetailsalary}>
-                                ₹{item.salary.yearly.min.toLocaleString()} - ₹
-                                {item.salary.yearly.max.toLocaleString()} INR
-                              </Text>
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                }}>
+                                <CustomFormatAmount
+                                  amount={item.salary?.yearly?.min}
+                                />
+
+                                <Text style={{color: colors.primary}}> - </Text>
+                                <CustomFormatAmount
+                                  amount={item?.salary?.yearly?.max}
+                                />
+
+                                <Text
+                                  style={{
+                                    fontSize: 10,
+                                    fontWeight: 'bold',
+                                    color: 'gray',
+                                  }}>
+                                  {' '}
+                                  {item.salary.yearly.currency}
+                                </Text>
+                              </View>
                             </View>
                           )}
                           {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
@@ -378,6 +399,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   experienceContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
     marginRight: 8,
     gap: 6,

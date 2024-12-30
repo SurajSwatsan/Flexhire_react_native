@@ -50,7 +50,6 @@ const CURRENCY_OPTIONS = [
   {id: 2, value: '₹', label: '₹'},
 ];
 
-
 const validationSchema = Yup.object().shape({
   current_city: Yup.string().required('Current Location is required'),
   notice_period: Yup.string()
@@ -155,7 +154,7 @@ const CareerInformation = profileDetails => {
           ?.current_annual_salary?.currency || '₹',
       amount:
         profileDetails?.profileDetails?.career_preferences[0]
-          ?.current_annual_salary?.amount || '', // Ensure it's a string
+          ?.current_annual_salary?.amount || '', // Defaults to empty string
     },
     expected_salary: {
       currency:
@@ -163,7 +162,7 @@ const CareerInformation = profileDetails => {
           ?.currency || '₹',
       amount:
         profileDetails?.profileDetails?.career_preferences[0]?.expected_salary
-          ?.amount || '',
+          ?.amount || '', // Defaults to empty string
     },
     is_career_break: profileDetails?.profileDetails?.career_preferences[0]
       ?.is_career_break?.status
@@ -198,6 +197,7 @@ const CareerInformation = profileDetails => {
     work_permit:
       profileDetails?.profileDetails?.career_preferences[0]?.work_permit || [],
   });
+
   useEffect(() => {
     const get_city = () => {
       dispatch(GetCity());
@@ -264,6 +264,19 @@ const CareerInformation = profileDetails => {
 
     // console.log('roles_data===', roles_data);
   }, [cities, industries, departments, categories, roles, countries]);
+
+  function formatAmount(value) {
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(1) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(1) + ' Lac';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(1) + ' K';
+    } else {
+      return value.toString();
+    }
+  }
+
   const handleFormSubmit = values => {
     const formattedValues = {
       id: profileDetails?.profileDetails?.id
@@ -276,7 +289,8 @@ const CareerInformation = profileDetails => {
           pref_locations: values.pref_locations.map(location =>
             typeof location === 'string'
               ? location
-              : cityMaster.find(city => city.value === location?.value)?.value ||
+              : cityMaster.find(city => city.value === location?.value)
+                  ?.value ||
                 location?.value ||
                 '',
           ),
@@ -306,11 +320,11 @@ const CareerInformation = profileDetails => {
           current_total_exp: values.current_total_exp,
           current_annual_salary: {
             currency: values.current_annual_salary?.currency || '₹', // Default to '₹'
-            amount: values.current_annual_salary?.amount || '',
+            amount: values.current_annual_salary?.amount || '', // Ensure amount is present
           },
           expected_salary: {
             currency: values.expected_salary?.currency || '₹', // Default to '₹'
-            amount: values.expected_salary?.amount || '',
+            amount: values.expected_salary?.amount || '', // Ensure amount is present
           },
           is_career_break:
             values.is_career_break === 'Yes'
@@ -343,7 +357,7 @@ const CareerInformation = profileDetails => {
     };
 
     // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
-    setSubmittedData(formattedValues);
+    // setSubmittedData(formattedValues);
 
     if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(formattedValues));
@@ -435,10 +449,10 @@ const CareerInformation = profileDetails => {
                   ? `${
                       profileDetails?.profileDetails?.career_preferences[0]
                         ?.current_annual_salary.currency || ''
-                    } ${
+                    } ${formatAmount(
                       profileDetails?.profileDetails?.career_preferences[0]
-                        ?.current_annual_salary.amount || 0
-                    } LPA`
+                        ?.current_annual_salary.amount || 0,
+                    )} `
                   : null,
               },
               {
@@ -448,10 +462,10 @@ const CareerInformation = profileDetails => {
                   ? `${
                       profileDetails?.profileDetails?.career_preferences[0]
                         ?.expected_salary.currency || ''
-                    } ${
+                    } ${formatAmount(
                       profileDetails?.profileDetails?.career_preferences[0]
-                        ?.expected_salary.amount || 0
-                    } LPA`
+                        ?.expected_salary.amount || 0,
+                    )}`
                   : null,
               },
               {
@@ -704,12 +718,12 @@ const CareerInformation = profileDetails => {
                       onChangeText={handleChange('current_total_exp')}
                     />
 
-                   
                     <View style={styles.salaryContainer}>
+                      {/* Current Annual Salary */}
                       <View style={{width: '20%'}}>
                         <ReusableDropdown
                           options={CURRENCY_OPTIONS}
-                          placeholder={values.currency}
+                          placeholder="Select Currency" // Clear placeholder
                           selectedValue={values.current_annual_salary?.currency}
                           onSelect={selected =>
                             setFieldValue(
@@ -719,15 +733,11 @@ const CareerInformation = profileDetails => {
                           }
                         />
                       </View>
-
                       <View style={{flex: 1, top: -6}}>
                         <ReusableTextInput
-                          name="current_annual_salary"
+                          name="current_annual_salary.amount"
                           label="Annual Salary*"
-                          value={
-                            values.current_annual_salary?.amount?.toString() ||
-                            ''
-                          }
+                          value={values.current_annual_salary?.amount}
                           keyboardType="numeric"
                           onChangeText={text =>
                             setFieldValue('current_annual_salary.amount', text)
@@ -735,11 +745,13 @@ const CareerInformation = profileDetails => {
                         />
                       </View>
                     </View>
+
                     <View style={styles.salaryContainer}>
+                      {/* Expected Salary */}
                       <View style={{width: '20%'}}>
                         <ReusableDropdown
                           options={CURRENCY_OPTIONS}
-                          placeholder={values.currency}
+                          placeholder="Select Currency" // Clear placeholder
                           selectedValue={values.expected_salary?.currency}
                           onSelect={selected =>
                             setFieldValue(
@@ -751,11 +763,9 @@ const CareerInformation = profileDetails => {
                       </View>
                       <View style={{flex: 1, top: -6}}>
                         <ReusableTextInput
-                          name="expected_salary"
+                          name="expected_salary.amount"
                           label="Expected Salary*"
-                          value={
-                            values.expected_salary?.amount?.toString() || ''
-                          }
+                          value={values.expected_salary?.amount}
                           keyboardType="numeric"
                           onChangeText={text =>
                             setFieldValue('expected_salary.amount', text)
@@ -763,6 +773,7 @@ const CareerInformation = profileDetails => {
                         />
                       </View>
                     </View>
+
                     <CustomSelectionModal
                       title="Work Permit"
                       data={countryMaster}

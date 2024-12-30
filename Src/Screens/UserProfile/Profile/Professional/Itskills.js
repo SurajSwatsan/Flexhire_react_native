@@ -33,7 +33,7 @@ const Months = Array.from({length: 12}, (_, i) => ({
 }));
 
 const LastUsedYears = Array.from(
-  {length: new Date().getFullYear() - 1940 + 1},
+  {length: new Date().getFullYear() - 1990 + 1},
   (_, i) => ({
     label: `${new Date().getFullYear() - i}`,
     value: new Date().getFullYear() - i,
@@ -46,8 +46,19 @@ const validationSchema = Yup.object().shape({
     .required('Skill / Software name is required')
     .min(2, 'Must be at least 2 characters')
     .max(50, 'Must be at most 50 characters'),
-  years: Yup.number().required('Years is required'),
-  months: Yup.number().required('Months is required'),
+  othername: Yup.string().test('othername-required', function (value) {
+    const {name} = this.parent; // Access the value of `name`
+    if (name === 'Other') {
+      return value && value.length >= 2 && value.length <= 50;
+    }
+    return true; // If `name` is not "Other", validation passes
+  }),
+  years: Yup.number()
+    .min(0, 'Years must be 0 or more')
+    .required('Years is required'),
+  months: Yup.number()
+    .min(0, 'Months must be 0 or more')
+    .required('Months is required'),
   last_used: Yup.number().required('Last Used is required'),
 });
 
@@ -123,7 +134,8 @@ const Itskills = profileDetails => {
       };
 
       updateOrAddObject(skillList, {
-        name: values.name === 'other' ? values.othername : values.name,
+        name: values.name,
+        othername: values.othername,
         version: values.version,
         last_used: values.last_used,
         exp: {
@@ -152,7 +164,8 @@ const Itskills = profileDetails => {
           ...(profileDetails?.profileDetails?.it_skills || []), // Include existing entries
 
           {
-            name: values.name === 'Other' ? values.othername : values.name,
+            name: values.name,
+            othername: values.othername,
             version: values.version,
             last_used: values.last_used,
             exp: {
@@ -243,8 +256,8 @@ const Itskills = profileDetails => {
                 {/* Display skill name or "Other" skill name */}
                 <View style={styles.userData}>
                   <Text style={profileStyle.optionalData}>
-                    {item.name === 'other' ? item.othername : item.name} -{' '}
-                    {item.version || '-'}
+                    {item.name === 'Other' ? item.othername : item.name} -{' '}
+                    {`(v${item.version})` || '(v)'}
                   </Text>
                   {/* Display experience in years and months */}
                   <Text style={profileStyle.optionalData}>
@@ -324,13 +337,14 @@ const Itskills = profileDetails => {
                       options={keyskillsMasters} // Ensure the options array matches the structure
                       placeholder="Select Skill / Software Name*"
                       selectedValue={values?.name} // This must match a `value` in the options array
-                      onSelect={selected =>
-                        setFieldValue('name', selected?.value)
-                      }
+                      onSelect={selected => {
+                        setFieldValue('name', selected?.value);
+                        setFieldValue('othername', '');
+                      }}
                       error={errors.name}
                       touched={touched.name}
                     />
-                    {values.name === 'Other' && (
+                    {values?.name === 'Other' && (
                       <ReusableTextInput
                         name="othername"
                         label=" Other Skill/ Software Name*"
@@ -352,12 +366,20 @@ const Itskills = profileDetails => {
                         justifyContent: 'space-between',
                         gap: 8,
                       }}>
+                      {console.log('Formik Initial Values:', {
+                        years: selectedItem?.exp?.years ?? '',
+                        months: selectedItem?.exp?.months ?? '',
+                      })}
+                      {console.log(
+                        'geting in ReusableDropdown values:',
+                        values?.years,
+                      )}
                       <ReusableDropdown
                         options={Years}
                         placeholder="Years*"
-                        selectedValue={values.years}
+                        selectedValue={values?.years || 0} // Fallback to 0 if null or blank
                         onSelect={selected =>
-                          setFieldValue('years', selected.value)
+                          setFieldValue('years', selected?.value)
                         }
                         error={errors.years}
                         touched={touched.years}
@@ -365,7 +387,7 @@ const Itskills = profileDetails => {
                       <ReusableDropdown
                         options={Months}
                         placeholder="Months*"
-                        selectedValue={values.months}
+                        selectedValue={values.months || 0}
                         onSelect={selected =>
                           setFieldValue('months', selected.value)
                         }

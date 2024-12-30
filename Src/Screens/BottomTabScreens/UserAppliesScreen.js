@@ -15,6 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
+import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 const UserApplies = () => {
   const navigation = useNavigation();
 
@@ -26,7 +27,22 @@ const UserApplies = () => {
 
   const getSalary = salary => {
     if (salary?.yearly?.min && salary?.yearly?.max) {
-      return `${salary.yearly.min} - ${salary.yearly.max} ${salary.yearly.currency}`;
+      return (
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CustomFormatAmount amount={salary?.yearly?.min} />
+          <Text style={{color: colors.primary}}> - </Text>
+          <CustomFormatAmount amount={salary?.yearly?.max} />
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: 'bold',
+              color: 'gray',
+            }}>
+            {' '}
+            {salary.yearly.currency}
+          </Text>
+        </View>
+      );
     }
     return 'Salary not disclosed';
   };
@@ -128,6 +144,7 @@ const UserApplies = () => {
                       size={14}
                       color={colors.primary}
                     />
+
                     <Text style={styles.jobDetailsalary}>
                       {' '}
                       {jobData?.job?.experience_level?.minYear} -{' '}

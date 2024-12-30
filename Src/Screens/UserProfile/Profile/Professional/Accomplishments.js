@@ -218,6 +218,15 @@ const Accomplishments = profileDetails => {
         return Yup.object().shape({
           title: Yup.string().required('Title is required'),
           url: Yup.string().url('Invalid URL').required('URL is required'),
+          published_date: Yup.string()
+            .required('Published Date is required')
+            .test(
+              'not-future-date',
+              'published_date cannot be in the future',
+              function (value) {
+                return value ? new Date(value) <= new Date() : true; // Ensure from is not in the future
+              },
+            ),
         });
       case 'patent':
         return Yup.object().shape({
@@ -230,13 +239,114 @@ const Accomplishments = profileDetails => {
         return Yup.object().shape({
           title: Yup.string().required('Certification Name is required'),
           certification_provider: Yup.string().required('Provider is required'),
+          from: Yup.date()
+            .required('From date is required')
+            .test(
+              'not-future-date',
+              'Valid From date cannot be in the future',
+              function (value) {
+                return value ? new Date(value) <= new Date() : true; // Ensure from is not in the future
+              },
+            ),
+          till: Yup.date().test(
+            'till-validation',
+            'Valid Till date must be after From date',
+            function (value) {
+              const {from, noExpiry} = this.parent;
+
+              // Skip validation if noExpiry is true
+              if (noExpiry) {
+                return true;
+              }
+
+              // Till date is required if noExpiry is false
+              if (!value) {
+                return this.createError({message: 'Till date is required'});
+              }
+              // Ensure Till date is after From date
+              if (from && new Date(value) <= new Date(from)) {
+                if (
+                  new Date(value).toISOString().split('T')[0] ===
+                  new Date(from).toISOString().split('T')[0]
+                ) {
+                  return this.createError({
+                    message: 'Till date cannot be the same as From date',
+                  });
+                }
+                return this.createError({
+                  message: 'Till date must be after From date',
+                });
+              }
+
+              // Ensure Till date is not a future date
+              if (new Date(value) > new Date()) {
+                return this.createError({
+                  message: 'Till date cannot be in the future',
+                });
+              }
+
+              return true;
+            },
+          ),
+          noExpiry: Yup.boolean(),
         });
+
       case 'workSample':
         return Yup.object().shape({
           title: Yup.string().required('Work Sample Title is required'),
           url: Yup.string()
             .url('Invalid URL')
             .required('Work Sample URL is required'),
+          from: Yup.date()
+            .required('From date is required')
+            .test(
+              'not-future-date',
+              'Valid From date cannot be in the future',
+              function (value) {
+                return value ? new Date(value) <= new Date() : true; // Ensure from is not in the future
+              },
+            ),
+          till: Yup.date().test(
+            'till-validation',
+            'Valid Till date must be after From date',
+            function (value) {
+              const {from, stillWorking} = this.parent;
+
+              // Skip validation if noExpiry is true
+              if (stillWorking) {
+                return true;
+              }
+
+              // Till date is required if noExpiry is false
+              if (!value) {
+                return this.createError({message: 'Till date is required'});
+              }
+              // Ensure Till date is after From date
+              if (from && new Date(value) <= new Date(from)) {
+                if (
+                  new Date(value).toISOString().split('T')[0] ===
+                  new Date(from).toISOString().split('T')[0]
+                ) {
+                  return this.createError({
+                    message: 'Till date cannot be the same as From date',
+                  });
+                }
+                return this.createError({
+                  message: 'Till date must be after From date',
+                });
+              }
+
+              // Ensure Till date is not a future date
+              if (new Date(value) > new Date()) {
+                return this.createError({
+                  message: 'Till date cannot be in the future',
+                });
+              }
+
+              return true;
+            },
+          ),
+          noExpiry: Yup.boolean(),
         });
       case 'onlineProfile':
         return Yup.object().shape({
@@ -257,7 +367,13 @@ const Accomplishments = profileDetails => {
     }
   };
 
-  const renderFields = (values, handleChange, setFieldValue) => {
+  const renderFields = (
+    values,
+    handleChange,
+    errors,
+    touched,
+    setFieldValue,
+  ) => {
     switch (activeTab) {
       case 'research':
         return (
@@ -287,6 +403,8 @@ const Accomplishments = profileDetails => {
                 values.published_date ? new Date(values.published_date) : null
               } // Convert to Date object
               onChange={date => setFieldValue('published_date', date)}
+              error={errors.published_date}
+              touched={touched.published_date}
             />
 
             <ReusableTextInput
@@ -389,6 +507,8 @@ const Accomplishments = profileDetails => {
               label="Valid from"
               value={values.from ? new Date(values.from) : null}
               onChange={date => setFieldValue('from', date)}
+              error={errors.from}
+              touched={touched.from}
             />
 
             {!values.noExpiry && (
@@ -396,13 +516,24 @@ const Accomplishments = profileDetails => {
                 label="Valid till"
                 value={values.till ? new Date(values.till) : null}
                 onChange={date => setFieldValue('till', date)}
+                error={errors.till}
+                touched={touched.till}
               />
             )}
-            <Checkbox.Item
-              label="This certification does not expire"
-              status={values.noExpiry ? 'checked' : 'unchecked'}
-              onPress={() => setFieldValue('noExpiry', !values.noExpiry)}
-            />
+            <View style={styles.checkboxContainer}>
+              <Checkbox.Item
+                labelStyle={styles.checkboxLabel}
+                status={values.noExpiry ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setFieldValue('noExpiry', !values.noExpiry);
+                  setFieldValue('till', '');
+                }}
+                color={colors.primary}
+              />
+              <Text style={styles.checkboxLabel}>
+                This certification does not expire
+              </Text>
+            </View>
           </>
         );
       case 'workSample':
@@ -429,6 +560,8 @@ const Accomplishments = profileDetails => {
               label="Worked from"
               value={values.from ? new Date(values?.from) : null}
               onChange={date => setFieldValue('from', date)}
+              error={errors.from}
+              touched={touched.from}
             />
 
             {!values.stillWorking && (
@@ -436,15 +569,21 @@ const Accomplishments = profileDetails => {
                 label="Worked till"
                 value={values.till ? new Date(values?.till) : null}
                 onChange={date => setFieldValue('till', date)}
+                error={errors.till}
+                touched={touched.till}
               />
             )}
-            <Checkbox.Item
-              label="Still Working"
-              status={values.stillWorking ? 'checked' : 'unchecked'}
-              onPress={() =>
-                setFieldValue('stillWorking', !values.stillWorking)
-              }
-            />
+            <View style={styles.checkboxContainer}>
+              <Checkbox.Item
+                status={values.stillWorking ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setFieldValue('stillWorking', !values.stillWorking);
+                  setFieldValue('till', '');
+                }}
+                color={colors.primary}
+              />
+              <Text style={styles.checkboxLabel}>Still Working </Text>
+            </View>
             <ReusableTextInput
               name="description"
               label="Work Sample description"
@@ -628,9 +767,22 @@ const Accomplishments = profileDetails => {
                   validationSchema={getValidationSchema()}
                   innerRef={ref => (formikRef = ref)}
                   onSubmit={handleSubmit}>
-                  {({values, handleChange, handleSubmit, setFieldValue}) => (
+                  {({
+                    values,
+                    handleChange,
+                    handleSubmit,
+                    errors,
+                    touched,
+                    setFieldValue,
+                  }) => (
                     <View style={profileStyle.modalContainer}>
-                      {renderFields(values, handleChange, setFieldValue)}
+                      {renderFields(
+                        values,
+                        handleChange,
+                        errors,
+                        touched,
+                        setFieldValue,
+                      )}
                     </View>
                   )}
                 </Formik>
@@ -640,7 +792,7 @@ const Accomplishments = profileDetails => {
             <ModalFooter
               onPress={() => formikRef?.handleSubmit()} // Submits the form
               onCancel={closeModal} // Cancels and closes the modal
-              showDelete={selectedItem !== null} // Shows the delete button if a project is selected
+              showDelete={selectedItem !== null}
               onDelete={deleteItem} // Deletes the project
             />
           </View>
@@ -706,6 +858,15 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  checkboxContainer: {
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkboxLabel: {
+    fontSize: 12,
+    color: colors.primary,
   },
 });
 

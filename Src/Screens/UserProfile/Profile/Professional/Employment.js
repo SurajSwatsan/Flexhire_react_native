@@ -52,196 +52,6 @@ const SALARY_OPTIONS = [
   {id: 2, value: 'Fixed + Variable', label: 'Fixed + Variable'},
 ];
 
-const DEPARTMENT_OPTIONS = [
-  {
-    id: 1,
-    value: 'BFSI, Investments & Trading',
-    label: 'BFSI, Investments & Trading',
-  },
-  {
-    id: 2,
-    value: 'Customer Success, Service & Operations',
-    label: 'Customer Success, Service & Operations',
-  },
-  {id: 3, value: 'Data Science & Analytics', label: 'Data Science & Analytics'},
-  {
-    id: 4,
-    value: 'Engineering - Hardware & Networks',
-    label: 'Engineering - Hardware & Networks',
-  },
-  {
-    id: 5,
-    value: 'Engineering - Software & QA',
-    label: 'Engineering - Software & QA',
-  },
-  {id: 6, value: 'Finance & Accounting', label: 'Finance & Accounting'},
-  {id: 7, value: 'Human Resources', label: 'Human Resources'},
-  {
-    id: 8,
-    value: 'IT & Information Security',
-    label: 'IT & Information Security',
-  },
-  {
-    id: 9,
-    value: 'Marketing & Communication',
-    label: 'Marketing & Communication',
-  },
-  {id: 10, value: 'Product Management', label: 'Product Management'},
-  {
-    id: 11,
-    value: 'Production, Manufacturing & Engineering',
-    label: 'Production, Manufacturing & Engineering',
-  },
-  {
-    id: 12,
-    value: 'Project & Program Management',
-    label: 'Project & Program Management',
-  },
-  {id: 13, value: 'Quality Assurance', label: 'Quality Assurance'},
-  {
-    id: 14,
-    value: 'Sales & Business Development',
-    label: 'Sales & Business Development',
-  },
-  {
-    id: 15,
-    value: 'UX, Design & Architecture',
-    label: 'UX, Design & Architecture',
-  },
-  {
-    id: 16,
-    value: 'Administration & Facilities',
-    label: 'Administration & Facilities',
-  },
-  {id: 17, value: 'Aviation & Aerospace', label: 'Aviation & Aerospace'},
-  {
-    id: 18,
-    value: 'Construction & Site Engineering',
-    label: 'Construction & Site Engineering',
-  },
-  {id: 19, value: 'Consulting', label: 'Consulting'},
-  {
-    id: 20,
-    value: 'Content, Editorial & Journalism',
-    label: 'Content, Editorial & Journalism',
-  },
-  {id: 21, value: 'CSR & Social Service', label: 'CSR & Social Service'},
-  {id: 22, value: 'Energy & Mining', label: 'Energy & Mining'},
-  {
-    id: 23,
-    value: 'Environment Health & Safety',
-    label: 'Environment Health & Safety',
-  },
-  {
-    id: 24,
-    value: 'Food, Beverage & Hospitality',
-    label: 'Food, Beverage & Hospitality',
-  },
-  {
-    id: 25,
-    value: 'Healthcare & Life Sciences',
-    label: 'Healthcare & Life Sciences',
-  },
-  {id: 26, value: 'Legal & Regulatory', label: 'Legal & Regulatory'},
-  {
-    id: 27,
-    value: 'Media Production & Entertainment',
-    label: 'Media Production & Entertainment',
-  },
-  {
-    id: 28,
-    value: 'Merchandising, Retail & eCommerce',
-    label: 'Merchandising, Retail & eCommerce',
-  },
-  {
-    id: 29,
-    value: 'Procurement & Supply Chain',
-    label: 'Procurement & Supply Chain',
-  },
-  {id: 30, value: 'Research & Development', label: 'Research & Development'},
-  {
-    id: 31,
-    value: 'Risk Management & Compliance',
-    label: 'Risk Management & Compliance',
-  },
-  {id: 32, value: 'Security Services', label: 'Security Services'},
-  {id: 33, value: 'Shipping & Maritime', label: 'Shipping & Maritime'},
-  {
-    id: 34,
-    value: 'Sports, Fitness & Personal Care',
-    label: 'Sports, Fitness & Personal Care',
-  },
-  {
-    id: 35,
-    value: 'Strategic & Top Management',
-    label: 'Strategic & Top Management',
-  },
-  {id: 36, value: 'Teaching & Training', label: 'Teaching & Training'},
-  {id: 37, value: 'Other', label: 'Other'},
-];
-
-const ROLECATEGORY_OPTIONS = [
-  {id: 1, value: 'DBA / Data Warehousing', label: 'DBA / Data Warehousing'},
-  {id: 2, value: 'DevOps', label: 'DevOps'},
-  {
-    id: 3,
-    value: 'Quality Assurance and Testing',
-    label: 'Quality Assurance and Testing',
-  },
-  {id: 4, value: 'Software Development', label: 'Software Development'},
-];
-
-const ROLE_OPTIONS = [
-  {id: 1, value: 'Automation Architect', label: 'Automation Architect'},
-  {id: 2, value: 'Automation Developer', label: 'Automation Developer'},
-  {id: 3, value: 'Back End Developer', label: 'Back End Developer'},
-  {id: 4, value: 'Big Data Engineer', label: 'Big Data Engineer'},
-  {id: 5, value: 'CRM Architect', label: 'CRM Architect'},
-  {id: 6, value: 'Data Engineer', label: 'Data Engineer'},
-  {id: 7, value: 'Data Platform Engineer', label: 'Data Platform Engineer'},
-  {
-    id: 8,
-    value: 'Embedded Systems Engineer',
-    label: 'Embedded Systems Engineer',
-  },
-  {id: 9, value: 'Engineering Manager', label: 'Engineering Manager'},
-  {id: 10, value: 'ERP Architect', label: 'ERP Architect'},
-  {id: 11, value: 'ERP Developer', label: 'ERP Developer'},
-  {id: 12, value: 'Front End Developer', label: 'Front End Developer'},
-  {id: 13, value: 'Full Stack Developer', label: 'Full Stack Developer'},
-  {
-    id: 14,
-    value: 'Game Developer / Programmer',
-    label: 'Game Developer / Programmer',
-  },
-  {id: 15, value: 'Head - Engineering', label: 'Head - Engineering'},
-  {id: 16, value: 'Mobile / App Developer', label: 'Mobile / App Developer'},
-  {id: 17, value: 'Practice Manager / Head', label: 'Practice Manager / Head'},
-  {id: 18, value: 'Search Engineer', label: 'Search Engineer'},
-  {id: 19, value: 'Solution Architect', label: 'Solution Architect'},
-  {id: 20, value: 'Technical Architect', label: 'Technical Architect'},
-  {id: 21, value: 'Technical Lead', label: 'Technical Lead'},
-  {id: 22, value: 'Webmaster', label: 'Webmaster'},
-  {
-    id: 23,
-    value: 'Software Development - Other',
-    label: 'Software Development - Other',
-  },
-];
-
-const SKILLS = [
-  {id: 1, value: 'JavaScript'},
-  {id: 2, value: 'React'},
-  {id: 3, value: 'Node.js'},
-  {id: 4, value: 'Python'},
-  {id: 5, value: 'SQL'},
-  {id: 6, value: 'C++'},
-  {id: 7, value: 'Java'},
-  {id: 8, value: 'AWS'},
-  {id: 9, value: 'Docker'},
-  {id: 10, value: 'Kubernetes'},
-];
-
 const EmploymentValidationSchema = values => {
   const schema = {};
 
@@ -258,62 +68,58 @@ const EmploymentValidationSchema = values => {
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
 
-    // schema.ammount = Yup.string().required('Salary is required');
+    // (schema.annual_salary = Yup.object({
+    //   currency: Yup.string().required('Currency is required'), // Validate the currency
+    //   amm: Yup.string()
+    //     .matches(/^\d+$/, 'Amount must be a valid number') // Ensure it's numeric
+    //     .required('Amount is required'), // Validate the amount
+    // }).required('Annual Salary is required')), // Top-level validation for the object
+    //   // schema.ammount = Yup.string().required('Salary is required');
 
-    // (schema.salary_breakdown = Yup.string()
-    //   .required('Salary breakdown is required')
-    //   .oneOf(
-    //     ['Fixed', 'Fixed + Variable'],
-    //     'Invalid ammount breakdown selection',
-    //   )),
-    (schema.fixedSalary = Yup.string()
-      .matches(
-        /^\d+(\.\d{1,2})?$/,
-        'Fixed ammount must be a valid number with up to two decimals',
-      )
-      .test(
-        'required-if-fixed-variable',
-        'Fixed ammount is required for Fixed + Variable ammount breakdown',
-        function (value) {
-          const {salary_breakdown} = this.parent;
-          return salary_breakdown !== 'Fixed + Variable' || Boolean(value);
-        },
-      )),
-      (schema.variableSalary = Yup.string()
-        .matches(
-          /^\d+(\.\d{1,2})?$/,
-          'Variable ammount must be a valid number with up to two decimals',
-        )
-        .test(
-          'required-if-fixed-variable',
-          'Variable ammount is required for Fixed + Variable ammount breakdown',
-          function (value) {
-            const {salary_breakdown} = this.parent;
-            return salary_breakdown !== 'Fixed + Variable' || Boolean(value);
-          },
-        )
-        .test(
-          'sum-not-greater-than-total',
-          'The sum of Fixed and Variable Salary must not exceed Total Salary',
-          function (value) {
-            const {fixedSalary, ammount, salary_breakdown} = this.parent;
-            if (salary_breakdown === 'Fixed + Variable') {
-              const fixed = parseFloat(fixedSalary || 0);
-              const variable = parseFloat(value || 0);
-              const totalSalary = parseFloat(ammount || 0);
-              return fixed + variable === totalSalary;
-            }
-            return true;
-          },
-        )),
-      (schema.job_profile = Yup.string()
-        .nullable() // Allow the field to be null or undefined
-        .notRequired() // Explicitly mark it as not required
-        .test(
-          'min-length-when-provided',
-          'Job profile must be at least 10 characters when provided',
-          value => !value || value.length >= 10,
-        ));
+    //   (schema.salary_breakdown = Yup.object().shape({
+    //     name: Yup.string()
+    //       .required('Salary breakdown is required')
+    //       .oneOf(
+    //         ['Fixed', 'Fixed + Variable'],
+    //         'Invalid salary breakdown selection',
+    //       ),
+    //     fixed_salary: Yup.string()
+    //       .matches(
+    //         /^\d+(\.\d{1,2})?$/,
+    //         'Fixed salary must be a valid number with up to two decimals',
+    //       )
+    //       .when('name', {
+    //         is: 'Fixed + Variable',
+    //         then: schema =>
+    //           schema.required('Fixed salary is required for breakdown'),
+    //       }),
+    //     variable_salary: Yup.string()
+    //       .matches(
+    //         /^\d+(\.\d{1,2})?$/,
+    //         'Variable salary must be a valid number with up to two decimals',
+    //       )
+    //       .when('name', {
+    //         is: 'Fixed + Variable',
+    //         then: schema =>
+    //           schema.required('Variable salary is required for breakdown'),
+    //       })
+    //       .test(
+    //         'sum-not-greater-than-total',
+    //         'The sum of Fixed and Variable Salary must equal Total Salary',
+    //         function (value) {
+    //           const {fixed_salary, ammount, name} = this.parent;
+    //           if (name === 'Fixed + Variable') {
+    //             const fixed = parseFloat(fixed_salary || 0);
+    //             const variable = parseFloat(value || 0);
+    //             const totalSalary = parseFloat(ammount || 0);
+    //             return fixed + variable === totalSalary;
+    //           }
+    //           return true;
+    //         },
+    //       ),
+    //   }));
+
+    schema.skills = Yup.array().min(1, 'At least one skill is required');
     schema.notice_period = Yup.string().required('Notice period is required');
   }
 
@@ -326,18 +132,11 @@ const EmploymentValidationSchema = values => {
       'Previous company name is required',
     );
     schema.job_title = Yup.string().required('Previous job title is required');
-    schema.job_profile = Yup.string()
-      .nullable() // Allow the field to be null or undefined
-      .notRequired() // Explicitly mark it as not required
-      .test(
-        'min-length-when-provided',
-        'Job profile must be at least 10 characters when provided',
-        value => !value || value.length >= 10,
-      );
+
     schema.joining_date = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
-    schema.leavingDate = Yup.date()
+    schema.leaving_date = Yup.date()
       .required('Leaving date is required')
       .min(Yup.ref('joining_date'), 'Leaving date must be after joining date');
   }
@@ -350,23 +149,23 @@ const EmploymentValidationSchema = values => {
     schema.location = Yup.string().required(
       'Location is required for internships',
     );
-    // schema.department = Yup.string().required(
-    //   'Department is required for internships',
-    // );
-    // schema.roleCategory = Yup.string().required(
-    //   'Role category is required for internship',
-    // );
-    // schema.role = Yup.string().required('Role is required for internship');
-    schema.workedfrom = Yup.date()
+    schema.department = Yup.string().required(
+      'Department is required for internships',
+    );
+    schema.job_title_category = Yup.string().required(
+      'Role category is required for internship',
+    );
+    schema.role = Yup.string().required('Role is required for internship');
+    schema.worked_from = Yup.date()
       .required('Worked from date is required')
       .max(new Date(), 'Worked from date cannot be in the future');
 
-    // Conditional validation for workedtill
+    // Conditional validation for worked_till
     if (values.currentCompany === 'No') {
-      schema.workedtill = Yup.date()
+      schema.worked_till = Yup.date()
         .required('Worked till date is required')
         .min(
-          Yup.ref('workedfrom'),
+          Yup.ref('worked_from'),
           'Worked till date must be after worked from date',
         );
     }
@@ -503,20 +302,21 @@ const Employment = profileDetails => {
             is_current_company:
               values.currentCompany === 'Yes' ? 'true' : 'false',
             employment_type: values.employment_type || '',
-            job_title: values.job_title || '',
-            job_profile: values.job_profile || '',
-            company_name: values.company_name || '',
+            job_title: values?.job_title || '',
+            job_profile: values?.job_profile || '',
+            company_name: values?.company_name || '',
             joining_date: values.joining_date
-              ? moment(values.joining_date).format('DD-MM-YYYY')
+              ? moment(values.joining_date).format('YYYY-MM-DD')
               : null,
-            leaving_date: values.leaving_date
-              ? moment(values.leaving_date).format('DD-MM-YYYY')
+
+            leaving_date: values?.leaving_date
+              ? moment(values?.leaving_date).format('YYYY-MM-DD')
               : null,
-            worked_from: values.workedfrom
-              ? moment(values.workedfrom).format('DD-MM-YYYY')
+            worked_from: values?.worked_from
+              ? moment(values.worked_from).format('YYYY-MM-DD')
               : null,
-            worked_till: values.workedtill
-              ? moment(values.workedtill).format('DD-MM-YYYY')
+            worked_till: values.worked_till
+              ? moment(values.worked_till).format('YYYY-MM-DD')
               : null,
             location: values.location || '',
             department: values?.department || '',
@@ -537,7 +337,8 @@ const Employment = profileDetails => {
             skills: values.skills.map(skill =>
               typeof skill === 'string'
                 ? skill
-                : SKILLS.find(item => item.value === skill?.value)?.value || '',
+                : keyskillsMasters.find(item => item.value === skill?.value)
+                    ?.value || '',
             ),
           },
         ],
@@ -647,15 +448,25 @@ const Employment = profileDetails => {
                       <Text style={styles.otherdata}>
                         {data.employment_type}
                       </Text>
-                      <Text style={styles.otherdata}>
-                        {data?.joining_date
-                          ? new Date(data?.joining_date).toLocaleDateString()
-                          : ''}
-                        {' - '}
-                        {data?.leaving_date
-                          ? new Date(data?.leaving_date).toLocaleDateString()
-                          : 'Present'}
-                      </Text>
+                      {data?.employment_type === 'Full-time' && (
+                        <Text style={styles.otherdata}>
+                          {moment(data?.joining_date).format('DD MMM YYYY')}
+                          {' - '}
+                          {data?.leaving_date
+                            ? moment(data?.leaving_date).format('DD MMM YYYY')
+                            : 'Present'}
+                        </Text>
+                      )}
+                      {data?.employment_type === 'Internship' && (
+                        <Text style={styles.otherdata}>
+                          {moment(data?.worked_from).format('DD MMM YYYY')}
+                          {' - '}
+
+                          {data?.worked_till
+                            ? moment(data?.worked_till).format('DD MMM YYYY')
+                            : 'Present'}
+                        </Text>
+                      )}
                     </View>
                   </View>
                 </View>
@@ -696,38 +507,19 @@ const Employment = profileDetails => {
                     ? 'No'
                     : 'Yes',
                 employment_type:
-                  selectedEmployment?.employment_type || 'Part-time',
+                  selectedEmployment?.employment_type || 'Full-time',
                 skills: selectedEmployment?.skills || [],
                 job_title: selectedEmployment?.job_title || '',
                 job_profile: selectedEmployment?.job_profile || '',
                 company_name: selectedEmployment?.company_name || '',
-                joining_date: selectedEmployment?.joining_date
-                  ? moment(
-                      selectedEmployment?.joining_date,
-                      'DD-MM-YYYY',
-                    ).toDate()
-                  : null,
-                leaving_date: selectedEmployment?.leaving_date
-                  ? moment(
-                      selectedEmployment?.leaving_date,
-                      'DD-MM-YYYY',
-                    ).toDate()
-                  : null,
-                workedfrom: selectedEmployment?.worked_from
-                  ? moment(
-                      selectedEmployment?.worked_from,
-                      'DD-MM-YYYY',
-                    ).toDate()
-                  : null,
-                workedtill: selectedEmployment?.worked_till
-                  ? moment(
-                      selectedEmployment?.worked_till,
-                      'DD-MM-YYYY',
-                    ).toDate()
-                  : null,
+                joining_date: selectedEmployment?.joining_date || null,
+                leaving_date: selectedEmployment?.leaving_date || null,
+                worked_from: selectedEmployment?.worked_from || null,
+                worked_till: selectedEmployment?.worked_till || null,
                 location: selectedEmployment?.location || '',
                 department: selectedEmployment?.department || '',
-                job_title_category: selectedEmployment?.job_title_category || '',
+                job_title_category:
+                  selectedEmployment?.job_title_category || '',
                 role: selectedEmployment?.role || '',
                 notice_period: selectedEmployment?.notice_period || '',
                 annual_salary: {
@@ -762,446 +554,526 @@ const Employment = profileDetails => {
                 values,
                 setFieldValue,
                 handleSubmit,
+                setValues,
                 handleChange,
                 errors,
                 touched,
-              }) => (
-                <ScrollView contentContainerStyle={styles.container}>
-                  <View style={profileStyle.formContainer}>
-                    <Text style={profileStyle.formHeading}>
-                      Dropdown Fields Example with Save
-                    </Text>
-                    <Text style={profileStyle.formSubHeading}>
-                      Details like job title, company name, etc, help employers
-                      understand your work{' '}
-                    </Text>
-                    <CustomTabs
-                      label="Current Company"
-                      options={CURRENT_COMPANY_OPTIONS}
-                      selectedValue={values.currentCompany}
-                      setFieldValue={setFieldValue}
-                      fieldName="currentCompany"
-                    />
-                    <CustomTabs
-                      label="Employment Type"
-                      options={EMPLOYMENT_TYPES}
-                      selectedValue={values.employment_type}
-                      setFieldValue={setFieldValue}
-                      fieldName="employment_type"
-                    />
+              }) => {
+                const handleEmploymentTypeChange = value => {
+                  // Reset fields to initial values when employment type changes
+                  setValues({
+                    ...values,
+                    employment_type: value,
+                    skills: [],
+                    job_title: '',
+                    job_profile: '',
+                    company_name: '',
+                    joining_date: null,
+                    leaving_date: null,
+                    worked_from: null,
+                    worked_till: null,
+                    location: '',
+                    department: '',
+                    job_title_category: '',
+                    role: '',
+                    notice_period: '',
+                    annual_salary: {currency: '₹', ammount: ''},
+                    salary_breakdown: {
+                      name: '',
+                      fixed_salary: '',
+                      variable_salary: '',
+                    },
+                  });
+                };
 
-                    {/* Conditional Fields */}
-                    {values.currentCompany === 'Yes' &&
-                      values.employment_type === 'Full-time' && (
-                        <View>
-                          <ReusableTextInput
-                            name="company_name"
-                            label="Current Company Name*"
-                            value={values.company_name}
-                            onChangeText={handleChange('company_name')}
-                          />
-                          <ReusableTextInput
-                            name="job_title"
-                            label="Current job title*"
-                            value={values.job_title}
-                            onChangeText={handleChange('job_title')}
-                          />
+                return (
+                  <ScrollView contentContainerStyle={styles.container}>
+                    <View style={profileStyle.formContainer}>
+                      <Text style={profileStyle.formHeading}>
+                        Dropdown Fields Example with Save
+                      </Text>
+                      <Text style={profileStyle.formSubHeading}>
+                        Details like job title, company name, etc, help
+                        employers understand your work{' '}
+                      </Text>
+                      <CustomTabs
+                        label="Current Company"
+                        options={CURRENT_COMPANY_OPTIONS}
+                        selectedValue={values.currentCompany}
+                        setFieldValue={setFieldValue}
+                        fieldName="currentCompany"
+                      />
+                      <CustomTabs
+                        label="Employment Type"
+                        options={EMPLOYMENT_TYPES}
+                        selectedValue={values.employment_type}
+                        setFieldValue={(fieldName, value) =>
+                          handleEmploymentTypeChange(value)
+                        }
+                        fieldName="employment_type"
+                      />
 
-                          <ReusableDatePicker
-                            label="Joining Date*"
-                            value={values.joining_date}
-                            onChange={date =>
-                              setFieldValue('joining_date', date)
-                            }
-                            error={errors.joining_date}
-                            touched={touched.joining_date}
-                          />
+                      {/* Conditional Fields */}
+                      {values.currentCompany === 'Yes' &&
+                        values.employment_type === 'Full-time' && (
+                          <View>
+                            <ReusableTextInput
+                              name="company_name"
+                              label="Current Company Name*"
+                              value={values.company_name}
+                              onChangeText={handleChange('company_name')}
+                            />
+                            <ReusableTextInput
+                              name="job_title"
+                              label="Current job title*"
+                              value={values.job_title}
+                              onChangeText={handleChange('job_title')}
+                            />
 
-                          <Text style={styles.subheading}>Salary</Text>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}>
-                            <View style={{width: '20%'}}>
-                              <ReusableDropdown
-                                options={CURRENCY_OPTIONS}
-                                placeholder={values.currency}
-                                selectedValue={values.annual_salary?.currency}
-                                onSelect={selected =>
+                            <ReusableDatePicker
+                              label="Joining Date*"
+                              value={
+                                values.joining_date
+                                  ? new Date(values.joining_date)
+                                  : null
+                              } // Use Formik's value
+                              onChange={date =>
+                                setFieldValue('joining_date', date)
+                              } // Update Formik's state
+                              error={errors.joining_date}
+                              touched={touched.joining_date}
+                            />
+
+                            <Text style={styles.subheading}>Salary</Text>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}>
+                              <View style={{width: '20%'}}>
+                                <ReusableDropdown
+                                  options={CURRENCY_OPTIONS}
+                                  placeholder={values.currency}
+                                  selectedValue={values.annual_salary?.currency}
+                                  onSelect={selected =>
+                                    setFieldValue(
+                                      'annual_salary.currency',
+                                      selected.value,
+                                    )
+                                  }
+                                  // error={errors.annual_salary.currency}
+                                  // touched={touched.annual_salary.currency}
+                                />
+                              </View>
+
+                              <View style={{flex: 1, top: -6}}>
+                                <ReusableTextInput
+                                  name="annual_salary"
+                                  label="Current Annual Salary"
+                                  value={values.annual_salary?.ammount}
+                                  onChangeText={handleChange(
+                                    'annual_salary.ammount',
+                                  )}
+                                  keyboardType="numeric"
+                                  // error={errors.annual_salary?.ammount}
+                                  // touched={touched.annual_salary.ammount}
+                                />
+                              </View>
+                            </View>
+
+                            <ReusableDropdown
+                              options={SALARY_OPTIONS}
+                              placeholder="Salary Breakdown*"
+                              selectedValue={values.salary_breakdown?.name}
+                              onSelect={selected =>
+                                setFieldValue(
+                                  'salary_breakdown.name',
+                                  selected.value,
                                   setFieldValue(
-                                    'annual_salary.currency',
-                                    selected.value,
-                                  )
-                                }
-                              />
-                            </View>
-                            <View style={{flex: 1, top: -6}}>
-                              <ReusableTextInput
-                                name="ammount"
-                                label="Current ammount"
-                                value={values.annual_salary?.ammount}
-                                onChangeText={handleChange(
-                                  'annual_salary.ammount',
-                                )}
-                                keyboardType="numeric"
-                              />
-                            </View>
-                          </View>
+                                    'salary_breakdown.fixed_salary',
+                                    '',
+                                  ),
+                                  setFieldValue(
+                                    'salary_breakdown.variable_salary',
+                                    '',
+                                  ),
+                                )
+                              }
+                              // error={errors.salary_breakdown?.name}
+                              // touched={touched.salary_breakdown?.name}
+                            />
 
-                          <ReusableDropdown
-                            options={SALARY_OPTIONS}
-                            placeholder="Salary Breakdown*"
-                            selectedValue={values.salary_breakdown?.name}
-                            onSelect={selected =>
-                              setFieldValue(
-                                'salary_breakdown.name',
-                                selected.value,
-                              )
-                            }
-                            // error={errors.salary_breakdown}
-                            // touched={touched.salary_breakdown}
-                          />
-
-                          {values.salary_breakdown === 'Fixed' && (
-                            <Text style={styles.noteText}>
-                              Your total ammount has been considered as fixed
-                              component.
-                            </Text>
-                          )}
-
-                          {values.salary_breakdown === 'Fixed + Variable' && (
-                            <View>
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                }}>
-                                {/* Fixed Salary */}
-                                <View style={{flex: 1}}>
-                                  <ReusableTextInput
-                                    name="fixedSalary"
-                                    label="Fixed Salary"
-                                    value={values.fixedSalary}
-                                    onChangeText={handleChange('fixedSalary')}
-                                    keyboardType="numeric"
-                                  />
-                                </View>
-                              </View>
-
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                }}>
-                                {/* Variable Salary */}
-                                <View style={{flex: 1}}>
-                                  <ReusableTextInput
-                                    name="variableSalary"
-                                    label="Variable Salary"
-                                    value={values.variableSalary}
-                                    onChangeText={handleChange(
-                                      'variableSalary',
-                                    )}
-                                    keyboardType="numeric"
-                                  />
-                                </View>
-                              </View>
-                            </View>
-                          )}
-
-                          <Text style={styles.subheading}>Skills Used</Text>
-                          <CustomSelectionModal
-                            title="Skills Used"
-                            data={keyskillsMasters}
-                            selectedItems={values.skills.map(
-                              skill =>
-                                keyskillsMasters.find(
-                                  item => item.value === skill,
-                                ) || {
-                                  id: null,
-                                  value: skill,
-                                },
+                            {values.salary_breakdown.name === 'Fixed' && (
+                              <Text style={styles.noteText}>
+                                Your total ammount has been considered as fixed
+                                component.
+                              </Text>
                             )}
-                            setSelectedItems={items =>
-                              setFieldValue(
-                                'skills',
-                                items.map(item => item?.value || ''),
-                              )
-                            }
-                            placeholder="Select Skills"
-                            isMultiSelect
-                            maxSelectionLimit={5}
-                            error={errors.skills}
-                            touched={touched.skills}
-                          />
 
-                          <ReusableTextInput
-                            name="job_profile"
-                            label="Job profile*"
-                            value={values.job_profile}
-                            onChangeText={handleChange('job_profile')}
-                          />
+                            {values.salary_breakdown.name ===
+                              'Fixed + Variable' && (
+                              <View>
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                  }}>
+                                  {/* Fixed Salary */}
+                                  <View style={{flex: 1}}>
+                                    <ReusableTextInput
+                                      name="fixed_salary"
+                                      label="Fixed Salary"
+                                      value={
+                                        values.salary_breakdown.fixed_salary
+                                      }
+                                      onChangeText={handleChange(
+                                        'salary_breakdown.fixed_salary',
+                                      )}
+                                      keyboardType="numeric"
+                                    />
+                                  </View>
+                                </View>
 
-                          <CustomTabs
-                            label="Notice Period*"
-                            options={NOTICEPERIOD_OPTIONS}
-                            selectedValue={values.notice_period}
-                            setFieldValue={setFieldValue}
-                            fieldName="notice_period"
-                            error={errors.notice_period}
-                            touched={touched.notice_period}
-                          />
-                        </View>
-                      )}
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                  }}>
+                                  {/* Variable Salary */}
+                                  <View style={{flex: 1}}>
+                                    <ReusableTextInput
+                                      name="variable_salary"
+                                      label="Variable Salary"
+                                      value={
+                                        values.salary_breakdown.variable_salary
+                                      }
+                                      onChangeText={handleChange(
+                                        'salary_breakdown.variable_salary',
+                                      )}
+                                      keyboardType="numeric"
+                                    />
+                                  </View>
+                                </View>
+                              </View>
+                            )}
 
-                    {values.currentCompany === 'No' &&
-                      values.employment_type === 'Full-time' && (
-                        <View>
-                          <ReusableTextInput
-                            name="company_name"
-                            label="Previous Company Name*"
-                            value={values.company_name}
-                            onChangeText={handleChange('company_name')}
-                          />
-                          <ReusableTextInput
-                            name="job_title"
-                            label="Previous Job Title*"
-                            value={values.job_title}
-                            onChangeText={handleChange('job_title')}
-                          />
-                          <ReusableTextInput
-                            name="job_profile"
-                            label="Job Profile*"
-                            value={values.job_profile}
-                            onChangeText={handleChange('job_profile')}
-                          />
+                            <Text style={styles.subheading}>Skills Used</Text>
+                            <CustomSelectionModal
+                              title="Skills Used"
+                              data={keyskillsMasters}
+                              selectedItems={values.skills.map(
+                                skill =>
+                                  keyskillsMasters.find(
+                                    item => item.value === skill,
+                                  ) || {
+                                    id: null,
+                                    value: skill,
+                                  },
+                              )}
+                              setSelectedItems={items =>
+                                setFieldValue(
+                                  'skills',
+                                  items.map(item => item?.value || ''),
+                                )
+                              }
+                              placeholder="Select Skills"
+                              isMultiSelect
+                              maxSelectionLimit={5}
+                              error={errors.skills}
+                              touched={touched.skills}
+                            />
 
-                          <ReusableDatePicker
-                            label="Joining Date"
-                            value={values.joining_date}
-                            onChange={date =>
-                              setFieldValue('joining_date', new Date(date))
-                            }
-                          />
-                          <ReusableDatePicker
-                            label="Leaving Date"
-                            value={values.leavingDate}
-                            onChange={date =>
-                              setFieldValue('leavingDate', new Date(date))
-                            }
-                          />
-                        </View>
-                      )}
-                    {/* Yes - Internship Condition */}
-                    {values.currentCompany === 'Yes' &&
-                      values.employment_type === 'Internship' && (
-                        <View>
-                          <ReusableTextInput
-                            name="company_name"
-                            label="Company Name*"
-                            value={values.company_name}
-                            onChangeText={handleChange('company_name')}
-                          />
-                          <ReusableTextInput
-                            name="location"
-                            label="Location"
-                            value={values.location}
-                            onChangeText={handleChange('location')}
-                          />
-                         <ReusableDropdown
-                            options={departmentsMasters}
-                            placeholder="Department*"
-                            selectedValue={values.department}
-                            onSelect={selected =>
-                              setFieldValue('department', selected.value)
-                            }
-                            // error={errors.department}
-                            // touched={touched.department}
-                          />
-                          <ReusableDropdown
-                            options={jobTitleCategoriesMasters}
-                            placeholder="Role Category*"
-                            selectedValue={values.job_title_category}
-                            onSelect={selected =>
-                              setFieldValue(
-                                'job_title_category',
-                                selected.value,
-                              )
-                            }
-                            // error={errors.job_title_category}
-                            // touched={touched.job_title_category}
-                          />
-                          <ReusableDropdown
-                            options={rolesMasters}
-                            placeholder="Role*"
-                            selectedValue={values.role}
-                            onSelect={selected =>
-                              setFieldValue('role', selected.value)
-                            }
-                            // error={errors.role}
-                            // touched={touched.role}
-                          />
+                            <ReusableTextInput
+                              name="job_profile"
+                              label="Job profile"
+                              value={values.job_profile}
+                              onChangeText={handleChange('job_profile')}
+                            />
 
-                          {/* Currency Dropdown */}
-                          <Text style={styles.subheading}>Salary</Text>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}>
-                            <View style={{width: '20%'}}>
-                              <ReusableDropdown
-                                options={CURRENCY_OPTIONS}
-                                placeholder={values.currency}
-                                selectedValue={values.annual_salary?.currency}
-                                onSelect={selected =>
-                                  setFieldValue(
-                                    'annual_salary.currency',
-                                    selected.value,
-                                  )
-                                }
-                              />
-                            </View>
-                            <View style={{flex: 1, marginTop: -7}}>
-                              <ReusableTextInput
-                                name="ammount"
-                                label="Current ammount"
-                                value={values.annual_salary?.ammount}
-                                onChangeText={handleChange(
-                                  'annual_salary.ammount',
-                                )}
-                                keyboardType="numeric"
-                              />
-                            </View>
+                            <CustomTabs
+                              label="Notice Period*"
+                              options={NOTICEPERIOD_OPTIONS}
+                              selectedValue={values.notice_period}
+                              setFieldValue={setFieldValue}
+                              fieldName="notice_period"
+                              error={errors.notice_period}
+                              touched={touched.notice_period}
+                            />
                           </View>
-                          <ReusableDatePicker
-                            label="Worked From"
-                            value={values.workedfrom}
-                            onChange={date =>
-                              setFieldValue('workedfrom', new Date(date))
-                            }
-                            error={errors.workedfrom}
-                            touched={touched.workedfrom}
-                          />
+                        )}
 
-                          <ReusableTextInput
-                            name="workingtill"
-                            label="Worked Till"
-                            value="Present" // Sets the value to "Present"
-                            editable={false} // Makes the field non-editable
-                          />
-                        </View>
-                      )}
-                    {values.currentCompany === 'No' &&
-                      values.employment_type === 'Internship' && (
-                        <View>
-                          <ReusableTextInput
-                            name="company_name"
-                            label="Company Name"
-                            value={values.company_name}
-                            onChangeText={handleChange('company_name')}
-                          />
-                          <ReusableTextInput
-                            name="location"
-                            label="Location"
-                            value={values.location}
-                            onChangeText={handleChange('location')}
-                          />
-                          <ReusableDropdown
-                            options={departmentsMasters}
-                            placeholder="Department*"
-                            selectedValue={values.department}
-                            onSelect={selected =>
-                              setFieldValue('department', selected.value)
-                            }
-                            // error={errors.department}
-                            // touched={touched.department}
-                          />
-                          <ReusableDropdown
-                            options={jobTitleCategoriesMasters}
-                            placeholder="Role Category*"
-                            selectedValue={values.job_title_category}
-                            onSelect={selected =>
-                              setFieldValue(
-                                'job_title_category',
-                                selected.value,
-                              )
-                            }
-                            // error={errors.job_title_category}
-                            // touched={touched.job_title_category}
-                          />
-                          <ReusableDropdown
-                            options={rolesMasters}
-                            placeholder="Role*"
-                            selectedValue={values.role}
-                            onSelect={selected =>
-                              setFieldValue('role', selected.value)
-                            }
-                            // error={errors.role}
-                            // touched={touched.role}
-                          />
+                      {values.currentCompany === 'No' &&
+                        values.employment_type === 'Full-time' && (
+                          <View>
+                            <ReusableTextInput
+                              name="company_name"
+                              label="Previous Company Name*"
+                              value={values.company_name}
+                              onChangeText={handleChange('company_name')}
+                            />
+                            <ReusableTextInput
+                              name="job_title"
+                              label="Previous Job Title*"
+                              value={values.job_title}
+                              onChangeText={handleChange('job_title')}
+                            />
+                            <ReusableTextInput
+                              name="job_profile"
+                              label="Job Profile"
+                              value={values.job_profile}
+                              onChangeText={handleChange('job_profile')}
+                            />
 
-                          {/* Currency Dropdown */}
-                          <Text style={styles.subheading}>Salary</Text>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}>
-                            <View style={{width: '20%'}}>
-                              <ReusableDropdown
-                                options={CURRENCY_OPTIONS}
-                                placeholder={values.currency}
-                                selectedValue={values.annual_salary?.currency}
-                                onSelect={selected =>
-                                  setFieldValue(
-                                    'annual_salary.currency',
-                                    selected.value,
-                                  )
-                                }
-                              />
-                            </View>
-                            <View style={{flex: 1, marginTop: -7}}>
-                              <ReusableTextInput
-                                name="ammount"
-                                label="Current ammount"
-                                value={values.annual_salary?.ammount}
-                                onChangeText={handleChange(
-                                  'annual_salary.ammount',
-                                )}
-                                keyboardType="numeric"
-                              />
-                            </View>
+                            <ReusableDatePicker
+                              label="Joining Date"
+                              value={
+                                values.joining_date
+                                  ? new Date(values.joining_date)
+                                  : null
+                              }
+                              onChange={date =>
+                                setFieldValue('joining_date', date)
+                              }
+                              error={errors.joining_date}
+                              touched={touched.joining_date}
+                            />
+                            <ReusableDatePicker
+                              label="Leaving Date"
+                              value={
+                                values?.leaving_date
+                                  ? new Date(values.leaving_date)
+                                  : null
+                              }
+                              onChange={date =>
+                                setFieldValue('leaving_date', date)
+                              }
+                              error={errors.leaving_date}
+                              touched={touched.leaving_date}
+                            />
                           </View>
-                          <ReusableDatePicker
-                            label="Worked From"
-                            value={values.workedfrom}
-                            onChange={date =>
-                              setFieldValue('workedfrom', new Date(date))
-                            }
-                            error={errors.workedfrom}
-                            touched={touched.workedfrom}
-                          />
+                        )}
+                      {/* Yes - Internship Condition */}
+                      {values.currentCompany === 'Yes' &&
+                        values.employment_type === 'Internship' && (
+                          <View>
+                            <ReusableTextInput
+                              name="company_name"
+                              label="Company Name*"
+                              value={values.company_name}
+                              onChangeText={handleChange('company_name')}
+                            />
+                            <ReusableTextInput
+                              name="location"
+                              label="Location"
+                              value={values.location}
+                              onChangeText={handleChange('location')}
+                            />
+                            <ReusableDropdown
+                              options={departmentsMasters}
+                              placeholder="Department*"
+                              selectedValue={values.department}
+                              onSelect={selected =>
+                                setFieldValue('department', selected.value)
+                              }
+                              error={errors.department}
+                              touched={touched.department}
+                            />
+                            <ReusableDropdown
+                              options={jobTitleCategoriesMasters}
+                              placeholder="Role Category*"
+                              selectedValue={values.job_title_category}
+                              onSelect={selected =>
+                                setFieldValue(
+                                  'job_title_category',
+                                  selected.value,
+                                )
+                              }
+                              error={errors.job_title_category}
+                              touched={touched.job_title_category}
+                            />
+                            <ReusableDropdown
+                              options={rolesMasters}
+                              placeholder="Role*"
+                              selectedValue={values.role}
+                              onSelect={selected =>
+                                setFieldValue('role', selected.value)
+                              }
+                              error={errors.role}
+                              touched={touched.role}
+                            />
 
-                          <ReusableDatePicker
-                            label="Worked Till*"
-                            value={values.workedtill}
-                            onChange={date =>
-                              setFieldValue('workedtill', new Date(date))
-                            }
-                            error={errors.workedtill}
-                            touched={touched.workedtill}
-                          />
-                        </View>
-                      )}
-                    {/* Modal Footer */}
-                  </View>
-                </ScrollView>
-              )}
+                            {/* Currency Dropdown */}
+                            <Text style={styles.subheading}>Stipend</Text>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}>
+                              <View style={{width: '20%'}}>
+                                <ReusableDropdown
+                                  options={CURRENCY_OPTIONS}
+                                  placeholder={values.currency}
+                                  selectedValue={values.annual_salary?.currency}
+                                  onSelect={selected =>
+                                    setFieldValue(
+                                      'annual_salary.currency',
+                                      selected.value,
+                                    )
+                                  }
+                                />
+                              </View>
+                              <View style={{flex: 1, marginTop: -7}}>
+                                <ReusableTextInput
+                                  name="ammount"
+                                  label="Monthly Stipend "
+                                  value={values.annual_salary?.ammount}
+                                  onChangeText={handleChange(
+                                    'annual_salary.ammount',
+                                  )}
+                                  keyboardType="numeric"
+                                />
+                              </View>
+                            </View>
+                            <ReusableDatePicker
+                              label="Worked From"
+                              value={
+                                values?.worked_from
+                                  ? new Date(values?.worked_from)
+                                  : null
+                              }
+                              onChange={date =>
+                                setFieldValue('worked_from', date)
+                              }
+                              error={errors.worked_from}
+                              touched={touched.worked_from}
+                            />
+
+                            <ReusableTextInput
+                              name="workingtill"
+                              label="Worked Till"
+                              value="Present" // Sets the value to "Present"
+                              editable={false} // Makes the field non-editable
+                            />
+                          </View>
+                        )}
+                      {values.currentCompany === 'No' &&
+                        values.employment_type === 'Internship' && (
+                          <View>
+                            <ReusableTextInput
+                              name="company_name"
+                              label="Company Name"
+                              value={values.company_name}
+                              onChangeText={handleChange('company_name')}
+                            />
+                            <ReusableTextInput
+                              name="location"
+                              label="Location"
+                              value={values.location}
+                              onChangeText={handleChange('location')}
+                            />
+                            <ReusableDropdown
+                              options={departmentsMasters}
+                              placeholder="Department*"
+                              selectedValue={values.department}
+                              onSelect={selected =>
+                                setFieldValue('department', selected.value)
+                              }
+                              error={errors.department}
+                              touched={touched.department}
+                            />
+                            <ReusableDropdown
+                              options={jobTitleCategoriesMasters}
+                              placeholder="Role Category*"
+                              selectedValue={values.job_title_category}
+                              onSelect={selected =>
+                                setFieldValue(
+                                  'job_title_category',
+                                  selected.value,
+                                )
+                              }
+                              error={errors.job_title_category}
+                              touched={touched.job_title_category}
+                            />
+                            <ReusableDropdown
+                              options={rolesMasters}
+                              placeholder="Role*"
+                              selectedValue={values.role}
+                              onSelect={selected =>
+                                setFieldValue('role', selected.value)
+                              }
+                              error={errors.role}
+                              touched={touched.role}
+                            />
+
+                            {/* Currency Dropdown */}
+                            <Text style={styles.subheading}>Salary</Text>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}>
+                              <View style={{width: '20%'}}>
+                                <ReusableDropdown
+                                  options={CURRENCY_OPTIONS}
+                                  placeholder={values.currency}
+                                  selectedValue={values.annual_salary?.currency}
+                                  onSelect={selected =>
+                                    setFieldValue(
+                                      'annual_salary.currency',
+                                      selected.value,
+                                    )
+                                  }
+                                />
+                              </View>
+                              <View style={{flex: 1, marginTop: -7}}>
+                                <ReusableTextInput
+                                  name="annual_salary.ammount"
+                                  label="Current ammount"
+                                  value={values.annual_salary?.ammount}
+                                  onChangeText={handleChange(
+                                    'annual_salary.ammount',
+                                  )}
+                                  keyboardType="numeric"
+                                />
+                              </View>
+                            </View>
+                            <ReusableDatePicker
+                              label="Worked From"
+                              value={
+                                values.worked_from
+                                  ? new Date(values.worked_from)
+                                  : null
+                              }
+                              onChange={date =>
+                                setFieldValue('worked_from', date)
+                              }
+                              error={errors.worked_from}
+                              touched={touched.worked_from}
+                            />
+
+                            <ReusableDatePicker
+                              label="Worked Till*"
+                              value={
+                                values.worked_till
+                                  ? new Date(values.worked_till)
+                                  : null
+                              }
+                              onChange={date =>
+                                setFieldValue('worked_till', date)
+                              }
+                              error={errors.worked_till}
+                              touched={touched.worked_till}
+                            />
+                          </View>
+                        )}
+                      {/* Modal Footer */}
+                    </View>
+                  </ScrollView>
+                );
+              }}
             </Formik>
             <ModalFooter
               onPress={() => formikRef?.handleSubmit()}

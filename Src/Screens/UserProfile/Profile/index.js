@@ -25,6 +25,7 @@ import Languages from './Personal/Languages';
 import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Availability from './Personal/Availability';
 
 const Index = () => {
   const route = useRoute();
@@ -52,7 +53,7 @@ const Index = () => {
     getUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocus]);
-
+  // console.log('profileDetails', JSON.stringify(profileDetails, null, 2));
   const renderTabs = () => {
     switch (activeTab) {
       case 'Personal':
@@ -91,6 +92,8 @@ const Index = () => {
               </View>
               <BasicInformation profileDetails={profileDetails} />
               <CareerInformation profileDetails={profileDetails} />
+              <Availability />
+
               <Languages profileDetails={profileDetails} />
               <View style={{height: 100}} />
             </ScrollView>

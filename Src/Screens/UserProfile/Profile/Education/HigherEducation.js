@@ -27,8 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const EducationLevels = [
   {id: 1, value: 'Doctorate', label: 'Doctorate'},
   {id: 2, value: 'Post Graduate', label: 'Post Graduate'},
-  {id: 3, value: 'Graduate', label: 'Graduate'},
-  {id: 4, value: 'Diploma', label: 'Diploma'},
+  {id: 3, value: 'Graduate/Diploma', label: 'Graduate/Diploma'},
 ];
 
 const startYear = 1980;
@@ -64,30 +63,45 @@ const validationSchema = Yup.object().shape({
   university_name: Yup.string().required('University Name is required'),
   course_name: Yup.string().required('Course is required'),
   specialization: Yup.string().required('Specialization is required'),
-  // start_year: Yup.string()
-  //   .matches(/^\d{4}$/, 'Starting Year must be a valid year')
-  //   .required('Starting Year is required'),
-  // end_year: Yup.string()
-  //   .matches(/^\d{4}$/, 'Ending Year must be a valid year')
-  //   .required('Ending Year is required'),
-  // grading_system: Yup.string().required('Grading System is required'),
   course_type: Yup.string().required('Course Type is required'),
-  // marks: Yup.string().test(
-  //   'Marks must be a percentage (0-100)',
-  //   function (value) {
-  //     const {grading_system} = this.parent; // Access the grading_system field
-  //     if (grading_system && grading_system !== 'Course Requires a Pass') {
-  //       if (!value) {
-  //         return this.createError({message: 'Marks is required'});
-  //       }
-  //       // Validate numeric format and range (0-100)
-  //       const isValidFormat = /^\d+(\.\d{1,2})?$/.test(value); // Numeric with up to 2 decimals
-  //       const isValidRange = parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
-  //       return isValidFormat && isValidRange;
-  //     }
-  //     return true; // Skip validation when grading_system is "Course Requires a Pass"
-  //   },
-  // ),
+  duration: Yup.object().shape({
+    start_year: Yup.string()
+      .matches(/^\d{4}$/, 'Starting Year must be a valid year')
+      .required('Starting Year is required'),
+    end_year: Yup.string()
+      .matches(/^\d{4}$/, 'Ending Year must be a valid year')
+      .required('Ending Year is required'),
+  }),
+  grading_system: Yup.object().shape({
+    name: Yup.string().required('Grading System is required'),
+    marks: Yup.string().test(
+      'marks-percentage-validation',
+      'Marks must be a number between 0 and 100 with up to two decimal places',
+      function (value) {
+        const {name} = this.parent; // Access the `name` field within grading_system
+        if (name && name !== 'Course Requires a Pass') {
+          if (!value) {
+            return this.createError({message: 'Marks is required'});
+          }
+          // Validate numeric format and range (0-100)
+          const isValidFormat = /^\d+(\.\d{1,2})?$/.test(value); // Numeric with up to 2 decimals
+          const isValidRange =
+            parseFloat(value) >= 0 && parseFloat(value) <= 100; // Between 0 and 100
+          if (!isValidFormat) {
+            return this.createError({
+              message: 'Marks must be a number with up to 2 decimal places',
+            });
+          }
+          if (!isValidRange) {
+            return this.createError({
+              message: 'Marks must be between 0 and 100',
+            });
+          }
+        }
+        return true; // Skip validation when grading system does not require marks
+      },
+    ),
+  }),
 });
 const CourseType = [
   {id: 1, label: 'Full Time', value: 'Full Time'},
@@ -416,8 +430,8 @@ const HigherEducation = profileDetails => {
                   {[
                     'Doctorate',
                     'Post Graduate',
-                    'Graduate',
-                    'Diploma',
+                    'Graduate/Diploma',
+                    
                   ].includes(values.education_level) && (
                     <>
                       <CustomSelectionModal
@@ -483,8 +497,8 @@ const HigherEducation = profileDetails => {
                                 selected.value,
                               )
                             }
-                            // error={errors.start_year}
-                            // touched={touched.start_year}
+                            error={errors.duration?.start_year}
+                            touched={touched.duration?.start_year}
                           />
                         </View>
                         <View style={{width: '48%'}}>
@@ -495,8 +509,8 @@ const HigherEducation = profileDetails => {
                             onSelect={selected =>
                               setFieldValue('duration.end_year', selected.value)
                             }
-                            // error={errors.end_year}
-                            // touched={touched.end_year}
+                            error={errors.duration?.end_year}
+                            touched={touched.duration?.end_year}
                           />
                         </View>
                       </View>
@@ -507,10 +521,10 @@ const HigherEducation = profileDetails => {
                         selectedValue={values.grading_system?.name}
                         onSelect={selected => {
                           setFieldValue('grading_system.name', selected.value);
-                          setFieldValue('grading_system.marks', null);
+                          setFieldValue('grading_system.marks', '');
                         }}
-                        error={errors.grading_system}
-                        touched={touched.grading_system}
+                        error={errors.grading_system?.name}
+                        touched={touched.grading_system?.name}
                       />
 
                       {/* Conditionally render Marks field */}
@@ -518,7 +532,7 @@ const HigherEducation = profileDetails => {
                         values.grading_system?.name !==
                           'Course Requires a Pass' && (
                           <ReusableTextInput
-                            name="marks"
+                            name="grading_system.marks"
                             label="Marks*"
                             value={values.grading_system?.marks}
                             onChangeText={handleChange('grading_system.marks')}

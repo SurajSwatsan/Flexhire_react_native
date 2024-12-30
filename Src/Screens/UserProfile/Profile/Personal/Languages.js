@@ -164,7 +164,7 @@ const Languages = profileDetails => {
       </View>
 
       <View>
-        {profileDetails?.profileDetails?.languages.length > 0 ? (
+        {profileDetails?.profileDetails?.languages?.length > 0 ? (
           profileDetails?.profileDetails?.languages.map((item, index) => (
             <View key={`language-${index}`}>
               <TouchableOpacity onPress={() => openModal(item)}>
@@ -361,6 +361,7 @@ const styles = StyleSheet.create({
   },
 
   error: {
+    fontSize: 12,
     color: 'red',
     marginVertical: 6,
   },

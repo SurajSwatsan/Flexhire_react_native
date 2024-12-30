@@ -61,7 +61,7 @@ const CustomCarousel = ({companyDetails = {}}) => {
       <Image
         source={
           item.image
-            ? {uri: BASE_URL + item.image}
+            ? {uri: BASE_URL + '/' + item.image}
             : require('../Assets/CompanyLogo/Swatsan.png') // Fallback image
         }
         style={styles.avatar}
