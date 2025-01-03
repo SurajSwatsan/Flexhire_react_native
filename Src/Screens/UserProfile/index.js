@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,14 +9,37 @@ import {
 import ProfileImage from './Profile/ProfileImage';
 import {colors} from '../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State for selected image URI
   const navigation = useNavigation();
   const [showSections, setShowSections] = useState(false);
+  const dispatch = useDispatch();
+  const {GetProfileDetails} = UserProfileViewController();
+  const {profileDetails} = useSelector(state => state.profile);
+  const [id, setId] = useState();
+  const isFocus = useIsFocused();
 
-  
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const storedId = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        if (storedId) {
+          setId(storedId); // Update state
+          dispatch(GetProfileDetails(storedId));
+        }
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocus]);
   return (
     <View style={styles.mainContainer}>
       <ScrollView>
@@ -30,9 +53,14 @@ const Index = () => {
               <ProfileImage
                 onImageSelect={setSelectedImage} // Pass function to update selected image
                 selectedImage={selectedImage} // Pass current selected image
+                profileDetails={profileDetails.job_seeker_profile} // Pass profile details
               />
             </View>
-            <Text style={styles.nameText}>Vinod Gavade</Text>
+            <Text style={styles.nameText}>
+              {profileDetails?.first_name && profileDetails?.last_name
+                ? `${profileDetails?.first_name} ${profileDetails?.last_name}`
+                : 'User Name'}
+            </Text>
           </View>
         </TouchableOpacity>
         <View style={styles.bodyContainer}>
@@ -41,8 +69,7 @@ const Index = () => {
             style={styles.container}
             onPress={() =>
               navigation.navigate('userProfileScreen', {selectedImage})
-            }
-            >
+            }>
             <View style={styles.innerContainer}>
               <Ionicons
                 name="person-sharp"
@@ -57,12 +84,12 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}
-           onPress={() =>
-            navigation.navigate('UserApplies')
-            // navigation.navigate('Home', { screen: 'Applies' })           
-          }
-          >
+          <TouchableOpacity
+            style={styles.container}
+            onPress={
+              () => navigation.navigate('UserApplies')
+              // navigation.navigate('Home', { screen: 'Applies' })
+            }>
             <View style={styles.innerContainer}>
               <Ionicons
                 name="checkmark-circle-sharp"
@@ -77,14 +104,10 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}
-            onPress={() =>
-              navigation.navigate("bookmark")
-            }
-          >
-            <View style={styles.innerContainer}
-          
-            >
+          <TouchableOpacity
+            style={styles.container}
+            onPress={() => navigation.navigate('bookmark')}>
+            <View style={styles.innerContainer}>
               <Ionicons
                 name="arrow-down-circle-sharp"
                 size={18}
@@ -98,11 +121,9 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container}
-          onPress={() =>
-            navigation.navigate("InterviewPage")
-          }
-          >
+          <TouchableOpacity
+            style={styles.container}
+            onPress={() => navigation.navigate('InterviewPage')}>
             <View style={styles.innerContainer}>
               <Ionicons
                 name="people-circle-sharp"
@@ -120,48 +141,53 @@ const Index = () => {
 
           {showSections && (
             <>
-          <TouchableOpacity style={styles.container}>
-            <View style={styles.innerContainer}>
-              <Ionicons
-                name="chatbox-ellipses-sharp"
-                size={18}
-                style={styles.iconstyle}
-              />
-              <Text style={styles.text}>My Chats</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={18}
-              style={styles.iconstyle}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container}>
-            <View style={styles.innerContainer}>
-              <Ionicons name="wifi-sharp" size={18} style={styles.iconstyle} />
-              <Text style={styles.text}>Personalize Jobfeed</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={18}
-              style={styles.iconstyle}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container}>
-            <View style={styles.innerContainer}>
-              <Ionicons
-                name="file-tray-stacked-sharp"
-                size={18}
-                style={styles.iconstyle}
-              />
-              <Text style={styles.text}>Learning Center</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={18}
-              style={styles.iconstyle}
-            />
-          </TouchableOpacity>
-          </>)}
+              <TouchableOpacity style={styles.container}>
+                <View style={styles.innerContainer}>
+                  <Ionicons
+                    name="chatbox-ellipses-sharp"
+                    size={18}
+                    style={styles.iconstyle}
+                  />
+                  <Text style={styles.text}>My Chats</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={18}
+                  style={styles.iconstyle}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.container}>
+                <View style={styles.innerContainer}>
+                  <Ionicons
+                    name="wifi-sharp"
+                    size={18}
+                    style={styles.iconstyle}
+                  />
+                  <Text style={styles.text}>Personalize Jobfeed</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={18}
+                  style={styles.iconstyle}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.container}>
+                <View style={styles.innerContainer}>
+                  <Ionicons
+                    name="file-tray-stacked-sharp"
+                    size={18}
+                    style={styles.iconstyle}
+                  />
+                  <Text style={styles.text}>Learning Center</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={18}
+                  style={styles.iconstyle}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -201,7 +227,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    
   },
   container: {
     justifyContent: 'space-between',

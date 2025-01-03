@@ -98,87 +98,87 @@ const UserApplies = () => {
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
           contentContainerStyle={styles.contentContainer}>
-          {JobApplications.map((jobData, index) => (
-            <View key={jobData.id || index} style={styles.jobCardContainer}>
-              <TouchableOpacity
-                style={styles.jobCard}
-                onPress={() => handleJobPress(jobData)}>
-                <View style={styles.companyInfo}>
-                  <Image
-                    source={
-                      jobData?.job?.company.logo
-                        ? {uri: BASE_URL + jobData?.job?.company.logo}
-                        : require('../../Assets/CompanyLogo/Swatsan.png')
-                    }
-                    style={styles.companyImage}
-                  />
-                  <View>
-                    <Text style={styles.jobTitle}>
-                      {jobData?.job?.job_title.title}
-                    </Text>
-
-                    <Text style={styles.companyName}>
-                      {jobData?.job?.company_name}
-                    </Text>
+          {Array.isArray(JobApplications?.applied_jobs) &&
+          JobApplications.applied_jobs.length > 0 ? (
+            JobApplications.applied_jobs.map((jobData, index) => (
+              <View key={jobData.id || index} style={styles.jobCardContainer}>
+                <TouchableOpacity
+                  style={styles.jobCard}
+                  onPress={() => handleJobPress(jobData)}>
+                  <View style={styles.companyInfo}>
+                    <Image
+                      source={
+                        jobData?.job?.company?.logo
+                          ? {uri: BASE_URL + jobData.job.company.logo}
+                          : require('../../Assets/CompanyLogo/Swatsan.png')
+                      }
+                      style={styles.companyImage}
+                    />
+                    <View>
+                      <Text style={styles.jobTitle}>
+                        {jobData?.job?.job_title?.title ||
+                          'Title not available'}
+                      </Text>
+                      <Text style={styles.companyName}>
+                        {jobData?.job?.company_name || 'Company not available'}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.locationContainer}>
-                  <Ionicons
-                    name="location"
-                    size={14}
-                    color={colors.primary}
-                    style={styles.checkmarkIcon}
-                  />
-                  {jobData?.job?.job_location.map((location, idx) => (
-                    <Text key={idx} style={styles.locationText}>
-                      {location.name}
-                      {jobData?.job?.job_location?.length - 1 != idx ? ',' : ''}
-                    </Text>
-                  ))}
-                </View>
-
-                <View style={styles.salaryContainer}>
-                  <View style={styles.experienceContainer}>
+                  <View style={styles.locationContainer}>
                     <Ionicons
-                      name="briefcase"
+                      name="location"
                       size={14}
                       color={colors.primary}
-                    />
-
-                    <Text style={styles.jobDetailsalary}>
-                      {' '}
-                      {jobData?.job?.experience_level?.minYear} -{' '}
-                      {jobData?.job?.experience_level?.maxYear} Years
-                    </Text>
-                  </View>
-                  <Ionicons name="cash" size={14} color="#004466" />
-                  <Text style={styles.jobDetailsalary}>
-                    {getSalary(jobData?.job?.salary)}
-                  </Text>
-                </View>
-                <View style={styles.jobCardFooter}>
-                  <View style={styles.appliedContainer}>
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={14}
-                      color="#009900"
                       style={styles.checkmarkIcon}
                     />
-                    <Text style={styles.appliedText}>Applied</Text>
+                    {jobData?.job?.job_location?.map((location, idx) => (
+                      <Text key={idx} style={styles.locationText}>
+                        {location.name || 'Unknown location'}
+                        {jobData?.job?.job_location?.length - 1 !== idx
+                          ? ','
+                          : ''}
+                      </Text>
+                    ))}
                   </View>
-
-                  {/* Conditionally render the posted date */}
-                  {console.log(jobData?.application_date)}
-
-                  {jobData?.application_date && (
-                    <Text style={styles.jobPostedDate}>
-                      {getPostedDate(jobData?.application_date)}
+                  <View style={styles.salaryContainer}>
+                    <View style={styles.experienceContainer}>
+                      <Ionicons
+                        name="briefcase"
+                        size={14}
+                        color={colors.primary}
+                      />
+                      <Text style={styles.jobDetailsalary}>
+                        {jobData?.job?.experience_level?.minYear || 0} -{' '}
+                        {jobData?.job?.experience_level?.maxYear || 0} Years
+                      </Text>
+                    </View>
+                    <Ionicons name="cash" size={14} color="#004466" />
+                    <Text style={styles.jobDetailsalary}>
+                      {getSalary(jobData?.job?.salary) || 'Not disclosed'}
                     </Text>
-                  )}
-                </View>
-              </TouchableOpacity>
-            </View>
-          ))}
+                  </View>
+                  <View style={styles.jobCardFooter}>
+                    <View style={styles.appliedContainer}>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={14}
+                        color="#009900"
+                        style={styles.checkmarkIcon}
+                      />
+                      <Text style={styles.appliedText}>Applied</Text>
+                    </View>
+                    {jobData?.application_date && (
+                      <Text style={styles.jobPostedDate}>
+                        {getPostedDate(jobData.application_date)}
+                      </Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noJobsText}>No job applications found.</Text>
+          )}
         </ScrollView>
       )}
     </View>

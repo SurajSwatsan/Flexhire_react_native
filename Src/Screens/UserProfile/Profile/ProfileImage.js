@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   View,
@@ -6,31 +6,80 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {IconButton} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
 import {colors} from '../../../Global_CSS/TheamColors';
 
-const ProfileImage = ({onImageSelect, selectedImage}) => {
-  // Accept `onImageSelect` and `selectedImage` as props
+const ProfileImage = ({onImageSelect, selectedImage, profileDetails}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [image, setImage] = useState('');
+  const [id, setId] = useState();
+  const dispatch = useDispatch();
+
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data');
+        setId(id);
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    setImage(profileDetails?.profile_photo);
+  }, [profileDetails]);
+
+  // console.log(
+  //   'profileDetails id',
+  //   JSON.stringify(profileDetails, null, 2),
+  // );
 
   const handleImagePicker = async () => {
     try {
       const response = await launchImageLibrary({mediaType: 'photo'});
+      console.log('Image picker response: ', response);
+      
       if (response.assets) {
         const uri = response.assets[0].uri;
-        onImageSelect(uri); // Pass URI back to parent component
-        setModalVisible(false); // Close modal after selecting the image
+        onImageSelect(uri);
+        setImage(uri); // Update local state
       }
     } catch (error) {
       console.error('Image picker failed: ', error);
     }
   };
 
-  // Function to remove the selected image
+  const handleSubmit = async () => {
+
+    const formattedValues = {
+      id: profileDetails?.id
+        ? profileDetails?.id
+        : '',
+      user_id: id,
+      profile_photo: image, // Pass the selected image URI
+    };
+
+    // if (profileDetails?.id) {
+    //   dispatch(updateProfileDetails(updatedData));
+    // } else {
+    //   dispatch(addProfileDetails(updatedData));
+    // }
+    console.log('updatedData', formattedValues);
+
+    setModalVisible(false);
+  };
+
   const removeImage = () => {
-    onImageSelect(null); // Reset selected image in the parent component
+    onImageSelect(null);
+    setImage(''); // Reset local state
   };
 
   return (
@@ -50,7 +99,6 @@ const ProfileImage = ({onImageSelect, selectedImage}) => {
         )}
       </TouchableOpacity>
 
-      {/* Modal for selecting or removing image */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -58,17 +106,15 @@ const ProfileImage = ({onImageSelect, selectedImage}) => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <View>
-              <Text style={styles.modalTitle}>Profile picture</Text>
-              <Text style={styles.modalText}>
-                Profile with photo has 40% higher chances of getting noticed by
-                recruiters
-              </Text>
-            </View>
+            <Text style={styles.modalTitle}>Profile Picture</Text>
+            <Text style={styles.modalText}>
+              Profile with a photo has 40% higher chances of getting noticed by
+              recruiters
+            </Text>
             <TouchableOpacity
               style={styles.Addbutton}
               onPress={handleImagePicker}>
-              {!selectedImage ? (
+              {!image ? (
                 <View style={styles.selectediconContainer}>
                   <IconButton
                     icon="camera-plus"
@@ -78,36 +124,28 @@ const ProfileImage = ({onImageSelect, selectedImage}) => {
                   />
                 </View>
               ) : (
-                <Image
-                  source={{uri: selectedImage}}
-                  style={styles.modalimage}
-                />
+                <Image source={{uri: image}} style={styles.modalimage} />
               )}
             </TouchableOpacity>
-            <View>
-              <View style={styles.horizontalline} />
-              <View style={styles.buttonContainer}>
-                {!selectedImage ? (
-                  <TouchableOpacity
-                    style={styles.Cancelbutton}
-                    onPress={() => setModalVisible(false)}>
-                    <Text style={styles.buttonText}>Cancel</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.removeButton}
-                    onPress={removeImage}>
-                    <Text style={styles.buttonText}>Remove</Text>
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  style={styles.updatebutton}
-                  onPress={handleImagePicker}>
-                  <Text style={styles.buttonText}>
-                    {selectedImage ? 'Update Image' : 'Choose Image'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.horizontalline} />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.Cancelbutton}
+                onPress={() => setModalVisible(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={removeImage}>
+                <Text style={styles.buttonText}>Remove</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.updatebutton}
+                onPress={handleSubmit}>
+                <Text style={styles.buttonText}>
+                  {image ? 'Update Image' : 'Submit'}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -118,8 +156,6 @@ const ProfileImage = ({onImageSelect, selectedImage}) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
   },
   iconContainer: {
@@ -129,19 +165,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBgcolor,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconButton: {
-    //
-  },
-  selectediconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 200,
-    width: 200,
-    marginTop: 10,
-    marginBottom: 20,
-    backgroundColor: '#808080',
-    borderRadius: 100,
   },
   image: {
     width: 150,
@@ -189,8 +212,8 @@ const styles = StyleSheet.create({
   horizontalline: {
     height: 1,
     width: '100%',
-    backgroundColor: '#000', // Make the line black for better contrast
-    marginVertical: 10, // Add margin to create space above and below the line
+    backgroundColor: '#000',
+    marginVertical: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -201,14 +224,12 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#dc3545',
     borderRadius: 5,
-    width: '200',
   },
   updatebutton: {
     marginHorizontal: 12,
     padding: 10,
     backgroundColor: '#5e8776',
     borderRadius: 5,
-    width: '200',
   },
   removeButton: {
     marginHorizontal: 12,

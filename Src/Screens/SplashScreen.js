@@ -32,10 +32,12 @@ const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <View></View>
-      <Image
+      {/* <Image
         style={styles.imagestyle}
         source={require('../Assets/CompanyLogo/flexhire-logo.png')}
-      />
+      /> */}
+      <Text style={styles.companyname}>FlexHire</Text>
+
       <View style={styles.textContainer}>
         <Text style={styles.textcintainer1}>Powered by</Text>
         <Image
@@ -59,6 +61,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#808080',
     textAlign: 'center',
+  },
+  companyname: {
+    textAlign: 'center',
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#004466',
   },
   textContainer: {
     marginBottom: 36,

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -23,6 +23,7 @@ import {useIsFocused} from '@react-navigation/native';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ProfileContext} from '../../ProfileContext';
 
 const EducationLevels = [
   {id: 1, value: 'Doctorate', label: 'Doctorate'},
@@ -60,6 +61,7 @@ const GRADING_OPTIONS = [
 
 const validationSchema = Yup.object().shape({
   education_level: Yup.string().required('Education Level is required'),
+  college_name: Yup.string().required('Collage Name is required'),
   university_name: Yup.string().required('University Name is required'),
   course_name: Yup.string().required('Course is required'),
   specialization: Yup.string().required('Specialization is required'),
@@ -114,6 +116,7 @@ const CourseType = [
 ];
 
 const HigherEducation = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedData, setSubmittedData] = useState(null); // Single entry handlings
 
@@ -149,10 +152,6 @@ const HigherEducation = profileDetails => {
     //   // profileDetails?.profileDetails?.higher_edu,
     // );
 
-    // console.log(
-    //   'Profile Data:',
-    //   JSON.stringify(profileDetails?.profileDetails, null, 2),
-    // );
     setEducationData(profileDetails?.profileDetails?.higher_edu);
   }, [profileDetails]);
 
@@ -219,7 +218,7 @@ const HigherEducation = profileDetails => {
         higher_edu: educationData,
       };
       dispatch(updateProfileDetails(payload));
-
+      toggleIsUpdatedProfile();
       setEducationData(educationData);
       setModalVisible(false);
       setSelectedItem(null);
@@ -235,6 +234,7 @@ const HigherEducation = profileDetails => {
             education_level:
               EducationLevels.find(opt => opt.value === values.education_level)
                 ?.value || '',
+            college_name: values.college_name || '',
             university_name:
               universitydata?.find(uni => uni.value === values.university_name)
                 ?.value || '',
@@ -269,21 +269,15 @@ const HigherEducation = profileDetails => {
       } else {
         dispatch(addProfileDetails(formattedValues));
       }
-
-      // dispatch(updateProfileDetails(formattedValues));
+      toggleIsUpdatedProfile();
 
       // Update local state for UI and reset modal
 
       setEducationData(formattedValues.higher_edu);
+
       setModalVisible(false);
       setSelectedItem(null);
     }
-
-    // Debugging
-    // console.log(
-    //   'Updated Education Data:',
-    //   JSON.stringify(formattedValues, null, 2),
-    // );
   };
 
   const openModal = item => {
@@ -306,6 +300,7 @@ const HigherEducation = profileDetails => {
       higher_edu: filteredArray,
     };
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
     closeModal();
   };
 
@@ -327,12 +322,13 @@ const HigherEducation = profileDetails => {
         />
       </View>
 
-      {profileDetails?.profileDetails?.higher_edu.length > 0 ? (
+      {Array.isArray(profileDetails?.profileDetails?.higher_edu) &&
+      profileDetails?.profileDetails?.higher_edu.length > 0 ? (
         <FlatList
-          data={profileDetails?.profileDetails?.higher_edu}
+          data={profileDetails.profileDetails.higher_edu}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
-            <>
+            <View style={profileStyle.editContainer}>
               <TouchableOpacity onPress={() => openModal(item)}>
                 <View style={profileStyle.userDataContainer}>
                   <Text style={styles.ClassText}>
@@ -346,18 +342,24 @@ const HigherEducation = profileDetails => {
                     {item?.course_type}
                   </Text>
                   {/* <Text style={styles.passoutText}>
-                    Grading System: {item.grading_system.name}
-                    {item.grading_system.marks &&
-                      ` • Marks: ${item.grading_system.marks}`}
-                  </Text> */}
+                Grading System: {item.grading_system.name}
+                {item.grading_system.marks &&
+                  ` • Marks: ${item.grading_system.marks}`}
+              </Text> */}
                 </View>
               </TouchableOpacity>
-              {profileDetails?.profileDetails?.higher_edu.length > 1 &&
-                index <
-                  profileDetails?.profileDetails?.higher_edu.length - 1 && (
+              <IconButton
+                icon="pencil-outline"
+                size={20}
+                onPress={() => openModal(item)}
+                iconColor={'black'}
+                style={styles.editIcon}
+              />
+              {profileDetails.profileDetails.higher_edu.length > 1 &&
+                index < profileDetails.profileDetails.higher_edu.length - 1 && (
                   <View style={styles.horizontalLine} />
                 )}
-            </>
+            </View>
           )}
         />
       ) : (
@@ -377,6 +379,7 @@ const HigherEducation = profileDetails => {
             <Formik
               initialValues={{
                 education_level: selectedItem?.education_level || '',
+                college_name: selectedItem?.college_name || '',
                 university_name: selectedItem?.university_name || '',
                 course_name: selectedItem?.course_name || '',
                 specialization: selectedItem?.specialization || '',
@@ -427,13 +430,16 @@ const HigherEducation = profileDetails => {
                     />
                   </View>
 
-                  {[
-                    'Doctorate',
-                    'Post Graduate',
-                    'Graduate/Diploma',
-                    
-                  ].includes(values.education_level) && (
+                  {['Doctorate', 'Post Graduate', 'Graduate/Diploma'].includes(
+                    values.education_level,
+                  ) && (
                     <>
+                      <ReusableTextInput
+                        name="college_name"
+                        label="College Name*"
+                        value={values.college_name}
+                        onChangeText={handleChange('college_name')}
+                      />
                       <CustomSelectionModal
                         title="University Name"
                         data={universitydata}
@@ -583,7 +589,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray', // Light gray color
     marginVertical: 4,
   },
-  editIcon: {},
+  editIcon: {
+    alignSelf: 'flex-start',
+  },
 });
 
 export default HigherEducation;

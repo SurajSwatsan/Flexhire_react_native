@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import {ProfileContext} from '../../ProfileContext';
 
 const CURRENT_COMPANY_OPTIONS = [
   {id: 1, value: 'Yes'},
@@ -175,6 +176,8 @@ const EmploymentValidationSchema = values => {
 };
 
 const Employment = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [employmentList, setEmploymentList] = useState([]);
   const [selectedEmployment, setSelectedEmployment] = useState(null); // Track which data is being edited
@@ -285,7 +288,7 @@ const Employment = profileDetails => {
         employment_details: employmentList,
       };
       dispatch(updateProfileDetails(payload));
-
+      toggleIsUpdatedProfile();
       setEmploymentList(employmentList);
       setModalVisible(false);
       setSelectedEmployment(null);
@@ -349,6 +352,7 @@ const Employment = profileDetails => {
       } else {
         dispatch(addProfileDetails(formattedValues));
       }
+      toggleIsUpdatedProfile();
 
       // dispatch(updateProfileDetails(formattedValues));
 
@@ -379,6 +383,7 @@ const Employment = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
 
     // // Reset state and close modal
     setSelectedEmployment(null);
@@ -590,7 +595,7 @@ const Employment = profileDetails => {
                   <ScrollView contentContainerStyle={styles.container}>
                     <View style={profileStyle.formContainer}>
                       <Text style={profileStyle.formHeading}>
-                        Dropdown Fields Example with Save
+                        EMPLOYMENT DETAILS
                       </Text>
                       <Text style={profileStyle.formSubHeading}>
                         Details like job title, company name, etc, help
@@ -1103,7 +1108,7 @@ const styles = StyleSheet.create({
   outputContainer: {
     marginBottom: 12,
     borderRadius: 8,
-    backgroundColor: colors.background,
+    backgroundColor: '#fafafa',
   },
   company_name: {
     fontSize: 18,

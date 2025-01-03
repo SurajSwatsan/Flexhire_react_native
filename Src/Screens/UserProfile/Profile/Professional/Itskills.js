@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -16,10 +16,12 @@ import ReusableTextInput from '../../../../Constant/CustomTextInput';
 import ReusableDropdown from '../../../../Constant/CustomDropdown';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {useDispatch, useSelector} from 'react-redux';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useIsFocused} from '@react-navigation/native';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import {ProfileContext} from '../../ProfileContext';
 
 // Dropdown Options
 const Years = Array.from({length: 31}, (_, i) => ({
@@ -65,6 +67,8 @@ const validationSchema = Yup.object().shape({
 // Initial Values Helper
 
 const Itskills = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [skillList, setSkillList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -83,7 +87,6 @@ const Itskills = profileDetails => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the id to be retrieved
         setId(id);
-        console.log(id); // Log the id once it's retrieved
       } catch (error) {
         console.error('Error reading id from AsyncStorage', error);
       }
@@ -150,7 +153,7 @@ const Itskills = profileDetails => {
       // console.log(values);
 
       dispatch(updateProfileDetails(payload));
-
+      toggleIsUpdatedProfile();
       setSkillList(skillList);
       setModalVisible(false);
       setSelectedItem(null);
@@ -193,6 +196,7 @@ const Itskills = profileDetails => {
         dispatch(addProfileDetails(formattedValues));
       }
       // dispatch(updateProfileDetails(formattedValues));
+      toggleIsUpdatedProfile();
 
       closeModal();
     }
@@ -224,6 +228,7 @@ const Itskills = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
 
     // // Reset state and close modal
     setSelectedItem(null);
@@ -232,7 +237,7 @@ const Itskills = profileDetails => {
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <Text style={profileStyle.heading}>IT Skills</Text>
+        <Text style={profileStyle.heading}>IT SKILLS</Text>
         <IconButton
           icon="plus-circle-outline"
           iconColor={colors.blackText}
@@ -244,51 +249,53 @@ const Itskills = profileDetails => {
 
       {/* Display IT Skills List */}
       <View>
-        {profileDetails?.profileDetails?.it_skills.length > 0 ? (
+        {Array.isArray(profileDetails?.profileDetails?.it_skills) &&
+        profileDetails.profileDetails.it_skills.length > 0 ? (
           <FlatList
             horizontal
-            data={profileDetails?.profileDetails?.it_skills}
+            data={profileDetails.profileDetails.it_skills}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({item, index}) => (
               <TouchableOpacity
                 style={[profileStyle.userDataContainer, styles.listContainer]}
                 onPress={() => openModal(item)}>
-                {/* Display skill name or "Other" skill name */}
                 <View style={styles.userData}>
-                  <Text style={profileStyle.optionalData}>
-                    {item.name === 'Other' ? item.othername : item.name} -{' '}
-                    {`(v${item.version})` || '(v)'}
-                  </Text>
-                  {/* Display experience in years and months */}
-                  <Text style={profileStyle.optionalData}>
-                    {item?.exp?.years || item?.exp?.months
-                      ? `${
-                          item?.exp?.years ? `${item?.exp?.years} Years` : ''
-                        } ${
-                          item?.exp?.months ? `${item?.exp?.months} Months` : ''
-                        }`.trim()
-                      : '-'}
-                  </Text>
-                  {/* Display last used year */}
-                  <Text style={profileStyle.optionalData}>
-                    {item.last_used || '-'}
-                  </Text>
+                  <Ionicons name="laptop-outline" size={42} color="gray" />
+                  <View>
+                    <Text style={styles.name}>
+                      {item.name === 'Other' ? item.othername : item.name}
+                    </Text>
+                    <Text style={styles.date}>
+                      {item?.exp?.years || item?.exp?.months
+                        ? `${
+                            item?.exp?.years ? `${item?.exp?.years} Years` : ''
+                          } ${
+                            item?.exp?.months
+                              ? `${item?.exp?.months} Months`
+                              : ''
+                          }`.trim()
+                        : '-'}
+                    </Text>
+                    <Text style={styles.optionalData}>
+                      Last used: {item.last_used || '-'}
+                    </Text>
+                  </View>
                 </View>
                 <IconButton
                   icon="pencil-outline"
-                  iconColor={'black'}
+                  iconColor="black"
                   size={20}
                   onPress={() => openModal(item)}
+                  style={styles.editButton}
                 />
               </TouchableOpacity>
             )}
           />
         ) : (
-          // Show optional text when no data is available
           <View style={styles.noDataContainer}>
             <Text style={profileStyle.optionalData}>
-              Mention skills like programming languages (Java, Python),
-              softwares (Microsoft Word, Excel) and more, to show your technical
+              Mention skills like programming languages (Java, Python), software
+              (Microsoft Word, Excel), and more, to show your technical
               expertise.
             </Text>
           </View>
@@ -359,21 +366,15 @@ const Itskills = profileDetails => {
                       value={values.version}
                       onChangeText={handleChange('version')}
                     />
-                    <Text style={{color: '#000'}}>Experiance</Text>
+                    <Text style={{color: colors.secondary, fontSize: 12}}>
+                      Experiance *
+                    </Text>
                     <View
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         gap: 8,
                       }}>
-                      {console.log('Formik Initial Values:', {
-                        years: selectedItem?.exp?.years ?? '',
-                        months: selectedItem?.exp?.months ?? '',
-                      })}
-                      {console.log(
-                        'geting in ReusableDropdown values:',
-                        values?.years,
-                      )}
                       <ReusableDropdown
                         options={Years}
                         placeholder="Years*"
@@ -395,6 +396,9 @@ const Itskills = profileDetails => {
                         touched={touched.months}
                       />
                     </View>
+                    <Text style={{color: colors.secondary, fontSize: 12}}>
+                      Last Used*
+                    </Text>
                     <ReusableDropdown
                       options={LastUsedYears}
                       placeholder="Last Used*"
@@ -432,13 +436,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: 'auto',
-    padding: 12,
     backgroundColor: '#fafafa',
     marginRight: 12,
     borderRadius: 8,
+    alignItems: 'center',
   },
+  name: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  date: {
+    fontSize: 12,
+    color: colors.primary,
+  },
+  optionalData: {
+    fontSize: 11,
+    color: 'gray',
+  },
+  editButton: {
+    alignSelf: 'flex-start',
+  },
+
   userData: {
     flex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    padding: 12,
+    alignItems: 'center',
   },
 });
 export default Itskills;

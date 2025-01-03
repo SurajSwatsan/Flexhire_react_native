@@ -59,7 +59,7 @@ const UserProfileViewController = () => {
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/job-seeker-profile/${user_id}/`,
+        `http://15.206.149.28/api/job-seeker-user/${user_id}/`,
       );
       // console.log(
       //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
@@ -142,53 +142,9 @@ const UserProfileViewController = () => {
       });
     }
   };
-
-  const GetProfileBasicInformation = user_id => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await instance.get(`job-seeker-profile/`);
-      // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      // );
-
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({type: 'PROFILE_BASIC_INFORMATION_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_BASIC_INFORMATION_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-
   const addProfileDetails = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
-// console.log('--------------------------------',requestData);
+    // console.log('--------------------------------',requestData);
 
     try {
       const response = await axios.post(
@@ -233,197 +189,11 @@ const UserProfileViewController = () => {
     }
   };
 
-  const GetProfileCareerInformation = user_id => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await instance.get(`job-seeker-profile/`);
-      // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
-      // );
-
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({type: 'PROFILE_CAREER_INFORMATION_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_CAREER_INFORMATION_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-
-  const updateProfileInformation = requestData => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/job-seeker-profile/1/`,
-        requestData,
-      );
-      // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS update response***************************',
-      // );
-      // console.log(response);
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({
-        type: 'PROFILE_CAREER_INFORMATION_POST_SUCCESS',
-        payload: data,
-      });
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_BASIC_INFORMATION_POST_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-
-  const GetProfileLanguage = user_id => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await instance.get(`job-seeker-profile/`);
-      // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS RESPONSE***************************',
-      // );
-
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({type: 'PROFILE_LANGUAGE_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_LANGUAGE_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-
-  const updateProfileLanguage = requestData => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
-    try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/job-seeker-profile/1/`,
-        requestData,
-      );
-      // console.log(
-      //   '****************************PROFILE_PERSONAL_DETAILS UPDATE_RESPONSE***************************',
-      // );
-      // console.log(response);
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-
-      dispatch({type: 'PROFILE_LANGUAGE_POST_SUCCESS', payload: data});
-
-      dispatch({type: 'LOADING', payload: false});
-    } catch (error) {
-      console.log('error', error.response);
-
-      dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
-      dispatch({
-        type: 'PROFILE_LANGUAGE_POST_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
-      });
-    }
-  };
-
   return {
     goBackScreen,
     GetProfileAnalytic,
     GetProfileDetails,
-    GetProfileBasicInformation,
     addProfileDetails,
-    GetProfileCareerInformation,
-    updateProfileInformation,
-    GetProfileLanguage,
-    updateProfileLanguage,
     updateProfileDetails,
   };
 };

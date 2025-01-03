@@ -34,7 +34,7 @@ const SignupScreen = () => {
     email: Yup.string()
       .email('Please enter a valid email address')
       .required('Email is required'),
-    phoneNumber: Yup.string()
+    mobile_number: Yup.string()
       .matches(/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number')
       .required('Phone number is required'),
     password: Yup.string()
@@ -55,7 +55,7 @@ const SignupScreen = () => {
         first_name: values.first_name,
         last_name: values.last_name,
         email: values.email,
-        phoneNumber: values.phoneNumber,
+        mobile_number: values.mobile_number,
         password: values.password,
       };
       dispatch(register(UserData));
@@ -73,7 +73,7 @@ const SignupScreen = () => {
           first_name: '',
           last_name: '',
           email: '',
-          phoneNumber: '',
+          mobile_number: '',
           password: '',
           confirmPassword: '',
         }}
@@ -143,12 +143,12 @@ const SignupScreen = () => {
                 label="Mobile Number"
                 activeOutlineColor="lightgray"
                 textColor="black"
-                value={values.phoneNumber}
-                onChangeText={handleChange('phoneNumber')}
-                onBlur={handleBlur('phoneNumber')}
+                value={values.mobile_number}
+                onChangeText={handleChange('mobile_number')}
+                onBlur={handleBlur('mobile_number')}
               />
-              {errors.phoneNumber && touched.phoneNumber && (
-                <Text style={GlobalStyle.errorText}>{errors.phoneNumber}</Text>
+              {errors.mobile_number && touched.mobile_number && (
+                <Text style={GlobalStyle.errorText}>{errors.mobile_number}</Text>
               )}
 
               {/* Password Input */}

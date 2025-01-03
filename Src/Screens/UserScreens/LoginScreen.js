@@ -27,21 +27,6 @@ const LoginScreen = () => {
   const {login} = AuthViewController();
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   handleLoadingCredentials();
-  // }, []);
-
-  // const handleLoadingCredentials = async () => {
-  //   try {
-  //     const userdata = await AsyncStorage.getItem('UserData');
-  //     if (userdata) {
-  //       Alert.alert('Welcome ', userdata);
-  //     }
-  //   } catch (error) {
-  //     Alert.alert('Error', 'Unable to load credentials');
-  //   }
-  // };
-
   const loginSchema = Yup.object().shape({
     identifier: Yup.string()
       .test(
@@ -105,10 +90,11 @@ const LoginScreen = () => {
     <SafeAreaView style={styles.maincontainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.FormContainer}>
-          <Image
+          {/* <Image
             style={styles.loginpng}
             source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
-          />
+          /> */}
+          <Text style={styles.companyname}>FlexHire</Text>
           <Text style={styles.heading}>Login</Text>
           <Formik
             initialValues={{identifier: '', password: ''}}
@@ -244,6 +230,12 @@ const styles = StyleSheet.create({
     width: 250,
     height: 130,
     alignSelf: 'center',
+  },
+  companyname: {
+    textAlign: 'center',
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#004466',
   },
   heading: {
     marginVertical: 20,

@@ -59,8 +59,10 @@ const OtpVerificationScreen = () => {
             )}
 
             <View style={styles.buttonContainer}>
-              <Button labelStyle={GlobalStyle.labelStyle} onPress={handleSubmit}>
-                Send OTP
+              <Button
+                labelStyle={GlobalStyle.labelStyle}
+                onPress={handleSubmit}>
+                Verify OTP
               </Button>
             </View>
           </View>

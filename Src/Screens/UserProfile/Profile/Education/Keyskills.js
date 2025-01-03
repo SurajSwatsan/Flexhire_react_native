@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IconButton, TextInput} from 'react-native-paper';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,8 +17,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import {ProfileContext} from '../../ProfileContext';
 
 const Keyskills = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -80,7 +83,7 @@ const Keyskills = profileDetails => {
     } else {
       dispatch(addProfileDetails(payload));
     }
-
+    toggleIsUpdatedProfile();
     // dispatch(updateProfileDetails(payload));
     closeModal();
   };
@@ -97,6 +100,7 @@ const Keyskills = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
   };
 
   const toggleSkillSelection = skillLabel => {
@@ -130,7 +134,7 @@ const Keyskills = profileDetails => {
       </View>
 
       <View style={profileStyle.outputData}>
-        {selectedSkills.length > 0 ? (
+        {Array.isArray(selectedSkills) && selectedSkills.length > 0 ? (
           <View style={profileStyle.chipContainer}>
             {selectedSkills.map((skill, index) => (
               <TouchableOpacity
@@ -192,13 +196,14 @@ const Keyskills = profileDetails => {
                       ]}>
                       {skill.value}
                     </Text>
-                    {selectedSkills.includes(skill.value) && (
-                      <Ionicons
-                        name="checkmark-sharp"
-                        size={18}
-                        style={styles.iconStyle}
-                      />
-                    )}
+                    {Array.isArray(selectedSkills) &&
+                      selectedSkills.includes(skill.value) && (
+                        <Ionicons
+                          name="checkmark-sharp"
+                          size={18}
+                          style={styles.iconStyle}
+                        />
+                      )}
                   </TouchableOpacity>
                 ))}
               </View>

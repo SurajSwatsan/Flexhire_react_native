@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -21,6 +21,7 @@ import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import * as Yup from 'yup';
+import {ProfileContext} from '../../ProfileContext';
 
 const TeamSizeOptions = Array.from({length: 31}, (_, i) => ({
   label: `${i}`,
@@ -89,6 +90,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const Projects = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [projectList, setProjectList] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -158,7 +161,7 @@ const Projects = profileDetails => {
       };
 
       dispatch(updateProfileDetails(payload));
-
+      toggleIsUpdatedProfile();
       setProjectList(projectList);
       setModalVisible(false);
       setSelectedProject(null);
@@ -213,8 +216,7 @@ const Projects = profileDetails => {
       } else {
         dispatch(addProfileDetails(formattedValues));
       }
-      // dispatch(updateProfileDetails(formattedValues));
-
+      toggleIsUpdatedProfile();
       closeModal();
     }
   };
@@ -230,7 +232,7 @@ const Projects = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
-
+    toggleIsUpdatedProfile();
     // // Reset state and close modal
     setSelectedProject(null);
     closeModal();
@@ -239,7 +241,7 @@ const Projects = profileDetails => {
   return (
     <View style={profileStyle.mainContainer}>
       <View style={profileStyle.editContainer}>
-        <Text style={profileStyle.heading}>Projects</Text>
+        <Text style={profileStyle.heading}>PROJECTS</Text>
         <IconButton
           icon={'plus-circle-outline'}
           iconColor={colors.blackText}
@@ -250,20 +252,21 @@ const Projects = profileDetails => {
       </View>
 
       <View>
-        {profileDetails?.profileDetails?.project_details.length > 0 ? (
-          profileDetails?.profileDetails?.project_details.map((item, index) => (
+        {Array.isArray(profileDetails?.profileDetails?.project_details) &&
+        profileDetails?.profileDetails?.project_details.length > 0 ? (
+          profileDetails.profileDetails.project_details.map((item, index) => (
             <View key={index}>
               <View style={styles.outputContainer}>
                 <TouchableOpacity
                   style={[profileStyle.userDataContainer, styles.dataContainer]}
                   onPress={() => openModal(item)}>
-                  <Text style={profileStyle.optionalData}>
+                  <Text style={styles.titleText}>
                     {item?.title || 'No Title'}
                   </Text>
-                  <Text style={profileStyle.optionalData}>
+                  <Text style={styles.clientText}>
                     {item?.client || 'No Client'}
                   </Text>
-                  <Text style={profileStyle.optionalData}>
+                  <Text style={styles.optionalData}>
                     {item?.worked_duration?.from
                       ? moment(item?.worked_duration?.from).format(
                           'DD-MMM-YYYY',
@@ -289,10 +292,11 @@ const Projects = profileDetails => {
                 />
               </View>
 
-              {profileDetails?.profileDetails?.project_details.length > 1 &&
+              {profileDetails.profileDetails.project_details.length > 1 &&
                 index <
-                  profileDetails?.profileDetails?.project_details.length -
-                    1 && <View style={styles.horizontalLine} />}
+                  profileDetails.profileDetails.project_details.length - 1 && (
+                  <View style={styles.horizontalLine} />
+                )}
             </View>
           ))
         ) : (
@@ -350,7 +354,7 @@ const Projects = profileDetails => {
                 }) => (
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>
-                      Project Details
+                      PROJECT DETAILS
                     </Text>
                     <Text style={profileStyle.formSubHeading}>
                       Add details about your current and preferred job profile.
@@ -536,6 +540,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     borderRadius: 8,
     paddingVertical: 12,
+  },
+  titleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  clientText: {
+    fontSize: 14,
+    color: colors.primary,
+  },
+  optionalData: {
+    fontSize: 12,
+    color: 'gray',
   },
   label: {
     fontSize: 12,

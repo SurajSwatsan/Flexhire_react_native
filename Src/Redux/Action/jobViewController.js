@@ -522,6 +522,8 @@ const JobViewController = () => {
   const GetFilterdJobs = queryParams => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     const queryString = new URLSearchParams(queryParams).toString();
+    console.log('queryString', queryString);
+
     try {
       const response = await axios.get(
         `http://15.206.149.28/api/filter/?${queryString}`,

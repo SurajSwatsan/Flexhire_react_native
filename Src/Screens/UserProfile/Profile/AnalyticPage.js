@@ -32,7 +32,6 @@ const AnalyticsPage = () => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }

@@ -1,5 +1,5 @@
 import {Modal, Text, View, StyleSheet, FlatList} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -16,6 +16,8 @@ import UserProfileViewController from '../../../../Redux/Action/UserProfileViewC
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
 import {useIsFocused} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ProfileContext} from '../../ProfileContext';
+
 const OPTIONS = {
   GENDER: [
     {id: 1, value: 'Male'},
@@ -76,6 +78,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const BasicInformation = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [basicInfoData, setBasicInfoData] = useState(null);
   const [countrydata, setCountryData] = useState([]);
@@ -84,6 +87,7 @@ const BasicInformation = profileDetails => {
   const [renderFields, setRenderFields] = useState([]);
   const [id, setId] = useState();
   let formikRef = null;
+  // const {profileDetails} = useSelector(state => state.profile);
 
   const dispatch = useDispatch();
   const isFocus = useIsFocused();
@@ -97,7 +101,6 @@ const BasicInformation = profileDetails => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -242,13 +245,14 @@ const BasicInformation = profileDetails => {
     };
 
     setBasicInfoData(formattedValues);
-    // console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
+    console.log('Formatted Data:', JSON.stringify(formattedValues, null, 2));
 
     if (profileDetails?.profileDetails?.id) {
       dispatch(updateProfileDetails(formattedValues));
     } else {
       dispatch(addProfileDetails(formattedValues));
     }
+    toggleIsUpdatedProfile();
     setModalVisible(false);
   };
 
@@ -314,7 +318,7 @@ const BasicInformation = profileDetails => {
                 }) => (
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>
-                      Basic Information
+                      BASIC INFORMATION
                     </Text>
                     <Text style={profileStyle.formSubHeading}>
                       This information is important for employers to know you

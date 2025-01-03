@@ -6,7 +6,7 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Checkbox, IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -25,6 +25,7 @@ import UserProfileViewController from '../../../../Redux/Action/UserProfileViewC
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import {ProfileContext} from '../../ProfileContext';
 
 const NOTICEPERIOD_OPTIONS = [
   {id: 1, value: 'Immediate'},
@@ -51,15 +52,25 @@ const CURRENCY_OPTIONS = [
 ];
 
 const validationSchema = Yup.object().shape({
-  current_city: Yup.string().required('Current Location is required'),
+  city: Yup.string()
+    .matches(/^[A-Za-z\s]+$/, 'Current Location must only contain letters')
+    .required('Current Location is required'),
+
   notice_period: Yup.string()
     .oneOf(
       NOTICEPERIOD_OPTIONS.map(option => option.value.toString()),
       'Invalid notice period selected',
     )
-    .required('Notice Period is required'),
-  current_total_exp: Yup.string().required('Experience is required'),
-  current_annual_salary: Yup.object({
+    .required('Notice Period is required'), // Validate the notice period
+  pref_locations: Yup.array().min(1, 'At least one location is required'), // Validate the preferred locations
+  industry: Yup.string().required('Industry is required'), // Validate the industry
+  department: Yup.string().required('Department is required'), // Validate the department
+  job_title_category: Yup.string().required('Role Category is required'), // Validate the role category
+  job_title: Yup.array()
+    .min(1, 'At least one job role is required')
+    .required('Job Title is required'),
+  total_exp: Yup.string().required('Experience is required'),
+  annual_salary: Yup.object({
     currency: Yup.string().required('Currency is required'), // Validate the currency
     amount: Yup.string()
       .matches(/^\d+$/, 'Amount must be a valid number') // Ensure it's numeric
@@ -75,6 +86,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const CareerInformation = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedData, setSubmittedData] = useState(null); // Single entry handlings
   const [editingIndex, setEditingIndex] = useState(null);
@@ -109,7 +121,6 @@ const CareerInformation = profileDetails => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -125,36 +136,31 @@ const CareerInformation = profileDetails => {
   }, [profileDetails]);
 
   const getInitialValues = (editingIndex, submittedData) => ({
-    current_city:
-      profileDetails?.profileDetails?.career_preferences[0]?.current_city || '',
+    city: profileDetails?.profileDetails?.career_preferences[0]?.city || '',
     pref_locations:
       profileDetails?.profileDetails?.career_preferences[0]?.pref_locations ||
       [],
-    current_industry:
-      profileDetails?.profileDetails?.career_preferences[0]?.current_industry ||
-      '',
-    current_department:
+    industry:
+      profileDetails?.profileDetails?.career_preferences[0]?.industry || '',
+    department:
+      profileDetails?.profileDetails?.career_preferences[0]?.department || '',
+    job_title_category:
       profileDetails?.profileDetails?.career_preferences[0]
-        ?.current_department || '',
-    current_job_title_category:
-      profileDetails?.profileDetails?.career_preferences[0]
-        ?.current_job_title_category || '',
-    current_job_title:
-      profileDetails?.profileDetails?.career_preferences[0]
-        ?.current_job_title || [],
+        ?.job_title_category || '',
+    job_title:
+      profileDetails?.profileDetails?.career_preferences[0]?.job_title || [],
     notice_period:
       profileDetails?.profileDetails?.career_preferences[0]?.notice_period ||
       '',
-    current_total_exp:
-      profileDetails?.profileDetails?.career_preferences[0]
-        ?.current_total_exp || '',
-    current_annual_salary: {
+    total_exp:
+      profileDetails?.profileDetails?.career_preferences[0]?.total_exp || '',
+    annual_salary: {
       currency:
-        profileDetails?.profileDetails?.career_preferences[0]
-          ?.current_annual_salary?.currency || '₹',
+        profileDetails?.profileDetails?.career_preferences[0]?.annual_salary
+          ?.currency || '₹',
       amount:
-        profileDetails?.profileDetails?.career_preferences[0]
-          ?.current_annual_salary?.amount || '', // Defaults to empty string
+        profileDetails?.profileDetails?.career_preferences[0]?.annual_salary
+          ?.amount || '', // Defaults to empty string
     },
     expected_salary: {
       currency:
@@ -285,7 +291,7 @@ const CareerInformation = profileDetails => {
       user_id: id,
       career_preferences: [
         {
-          current_city: values.current_city,
+          city: values.city,
           pref_locations: values.pref_locations.map(location =>
             typeof location === 'string'
               ? location
@@ -294,18 +300,17 @@ const CareerInformation = profileDetails => {
                 location?.value ||
                 '',
           ),
-          current_industry:
-            industryMaster?.find(ind => ind.value === values.current_industry)
+          industry:
+            industryMaster?.find(ind => ind.value === values.industry)?.value ||
+            '',
+          department:
+            departmentMaster?.find(dep => dep.value === values.department)
               ?.value || '',
-          current_department:
-            departmentMaster?.find(
-              dep => dep.value === values.current_department,
-            )?.value || '',
-          current_job_title_category:
+          job_title_category:
             categoriesMaster?.find(
-              cat => cat.value === values.current_job_title_category,
+              cat => cat.value === values.job_title_category,
             )?.value || '',
-          current_job_title: values.current_job_title.map(job =>
+          job_title: values.job_title.map(job =>
             typeof job === 'string'
               ? job
               : roleMaster?.find(role => role.value === job?.value)?.value ||
@@ -317,10 +322,10 @@ const CareerInformation = profileDetails => {
             NOTICEPERIOD_OPTIONS.find(
               opt => opt.value === values?.notice_period,
             )?.value || '',
-          current_total_exp: values.current_total_exp,
-          current_annual_salary: {
-            currency: values.current_annual_salary?.currency || '₹', // Default to '₹'
-            amount: values.current_annual_salary?.amount || '', // Ensure amount is present
+          total_exp: values.total_exp,
+          annual_salary: {
+            currency: values.annual_salary?.currency || '₹', // Default to '₹'
+            amount: values.annual_salary?.amount || '', // Ensure amount is present
           },
           expected_salary: {
             currency: values.expected_salary?.currency || '₹', // Default to '₹'
@@ -364,7 +369,7 @@ const CareerInformation = profileDetails => {
     } else {
       dispatch(addProfileDetails(formattedValues));
     }
-
+    toggleIsUpdatedProfile();
     setModalVisible(false);
   };
 
@@ -405,53 +410,53 @@ const CareerInformation = profileDetails => {
                 label: 'Industry',
                 value:
                   profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_industry,
+                    ?.industry,
               },
               {
                 label: 'Department',
                 value:
                   profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_department,
+                    ?.department,
               },
               {
                 label: 'Role Category',
                 value:
                   profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_job_title_category,
+                    ?.job_title_category,
               },
               {
                 label: 'Job Role',
                 value:
                   Array.isArray(
                     profileDetails?.profileDetails?.career_preferences[0]
-                      ?.current_job_title,
+                      ?.job_title,
                   ) &&
                   profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_job_title.length > 0
-                    ? profileDetails?.profileDetails?.career_preferences[0]?.current_job_title.join(
+                    ?.job_title.length > 0
+                    ? profileDetails?.profileDetails?.career_preferences[0]?.job_title.join(
                         ', ',
                       ) // Join array elements into a string
                     : profileDetails?.profileDetails?.career_preferences[0]
-                        ?.current_job_title || 'Not provided', // Handle single string or default
+                        ?.job_title || 'Not provided', // Handle single string or default
               },
 
               {
                 label: 'Experience',
                 value: `${
                   profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_total_exp || 0
+                    ?.total_exp || 0
                 } Years`,
               },
               {
                 label: 'Annual Salary',
                 value: profileDetails?.profileDetails?.career_preferences[0]
-                  ?.current_annual_salary
+                  ?.annual_salary
                   ? `${
                       profileDetails?.profileDetails?.career_preferences[0]
-                        ?.current_annual_salary.currency || ''
+                        ?.annual_salary.currency || ''
                     } ${formatAmount(
                       profileDetails?.profileDetails?.career_preferences[0]
-                        ?.current_annual_salary.amount || 0,
+                        ?.annual_salary.amount || 0,
                     )} `
                   : null,
               },
@@ -471,8 +476,7 @@ const CareerInformation = profileDetails => {
               {
                 label: 'Current Location',
                 value:
-                  profileDetails?.profileDetails?.career_preferences[0]
-                    ?.current_city,
+                  profileDetails?.profileDetails?.career_preferences[0]?.city,
               },
               {
                 label: 'Preferred Locations',
@@ -536,10 +540,10 @@ const CareerInformation = profileDetails => {
                     </Text>
 
                     <ReusableTextInput
-                      name="current_city"
+                      name="city"
                       label="Current Location*"
-                      value={values.current_city}
-                      onChangeText={handleChange('current_city')}
+                      value={values.city}
+                      onChangeText={handleChange('city')}
                     />
 
                     <CustomSelectionModal
@@ -561,55 +565,59 @@ const CareerInformation = profileDetails => {
                       placeholder="Select Preferred Locations"
                       isMultiSelect
                       maxSelectionLimit={9}
+                      error={errors.pref_locations}
+                      touched={touched.pref_locations}
                     />
 
                     <CustomSelectionModal
                       title="Industry"
                       data={industryMaster}
                       selectedItems={industryMaster?.find(
-                        item => item.value === values.current_industry,
+                        item => item.value === values.industry,
                       )}
                       setSelectedItems={item =>
-                        setFieldValue('current_industry', item?.value || '')
+                        setFieldValue('industry', item?.value || '')
                       }
-                      placeholder="Select Current Industry"
+                      placeholder="Select Industry"
                       isMultiSelect={false}
+                      error={errors.industry}
+                      touched={touched.industry}
                     />
 
                     <CustomSelectionModal
                       title="Department"
                       data={departmentMaster}
                       selectedItems={departmentMaster?.find(
-                        item => item.value === values.current_department,
+                        item => item.value === values.department,
                       )}
                       setSelectedItems={item =>
-                        setFieldValue('current_department', item?.value || '')
+                        setFieldValue('department', item?.value || '')
                       }
-                      placeholder="Select Current Department"
+                      placeholder="Select Department"
                       isMultiSelect={false}
+                      error={errors.department}
+                      touched={touched.department}
                     />
 
                     <CustomSelectionModal
                       title="Role Category"
                       data={categoriesMaster}
                       selectedItems={categoriesMaster?.find(
-                        item =>
-                          item.value === values.current_job_title_category,
+                        item => item.value === values.job_title_category,
                       )}
                       setSelectedItems={item =>
-                        setFieldValue(
-                          'current_job_title_category',
-                          item?.value || '',
-                        )
+                        setFieldValue('job_title_category', item?.value || '')
                       }
-                      placeholder="Select Role Category"
+                      placeholder="Select Category"
                       isMultiSelect={false}
+                      error={errors.job_title_category}
+                      touched={touched.job_title_category}
                     />
 
                     <CustomSelectionModal
                       title="Job Role"
                       data={roleMaster}
-                      selectedItems={values.current_job_title.map(
+                      selectedItems={values.job_title.map(
                         role =>
                           roleMaster?.find(item => item.value === role) || {
                             id: null,
@@ -618,13 +626,15 @@ const CareerInformation = profileDetails => {
                       )}
                       setSelectedItems={items =>
                         setFieldValue(
-                          'current_job_title',
+                          'job_title',
                           items.map(item => item?.value || ''),
                         )
                       }
                       placeholder="Select Job Roles"
                       isMultiSelect
                       maxSelectionLimit={3}
+                      error={errors.job_title}
+                      touched={touched.job_title}
                     />
 
                     <CustomTabs
@@ -711,12 +721,16 @@ const CareerInformation = profileDetails => {
                     )}
 
                     <ReusableTextInput
-                      name="current_total_exp"
-                      label="Experience*"
-                      value={values.current_total_exp}
+                      name="total_exp"
+                      label="Total Experience*"
+                      value={values.total_exp}
                       keyboardType="numeric"
-                      onChangeText={handleChange('current_total_exp')}
+                      onChangeText={handleChange('total_exp')}
                     />
+                    <Text style={{fontSize: 11, color: colors.secondary}}>
+                      Note : Experience should be in years eg. 10, 10.5 and in
+                      months eg. 0.5
+                    </Text>
 
                     <View style={styles.salaryContainer}>
                       {/* Current Annual Salary */}
@@ -724,10 +738,10 @@ const CareerInformation = profileDetails => {
                         <ReusableDropdown
                           options={CURRENCY_OPTIONS}
                           placeholder="Select Currency" // Clear placeholder
-                          selectedValue={values.current_annual_salary?.currency}
+                          selectedValue={values.annual_salary?.currency}
                           onSelect={selected =>
                             setFieldValue(
-                              'current_annual_salary.currency',
+                              'annual_salary.currency',
                               selected.value,
                             )
                           }
@@ -735,12 +749,12 @@ const CareerInformation = profileDetails => {
                       </View>
                       <View style={{flex: 1, top: -6}}>
                         <ReusableTextInput
-                          name="current_annual_salary.amount"
+                          name="annual_salary.amount"
                           label="Annual Salary*"
-                          value={values.current_annual_salary?.amount}
+                          value={values.annual_salary?.amount}
                           keyboardType="numeric"
                           onChangeText={text =>
-                            setFieldValue('current_annual_salary.amount', text)
+                            setFieldValue('annual_salary.amount', text)
                           }
                         />
                       </View>

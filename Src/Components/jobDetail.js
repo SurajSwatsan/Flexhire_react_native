@@ -64,7 +64,9 @@ const JobDetailScreen = ({route, navigation}) => {
   useEffect(() => {
     // console.log('******************************************', JobDetails);
   }, [JobDetails]);
-  const jobIds = JobApplications.map(application => application.job.id);
+  const jobIds = Array.isArray(JobApplications)
+    ? JobApplications.map(application => application?.job?.id)
+    : [];
   console.log('Job IDs:', jobIds);
   // console.log('aplied', JSON.stringify(JobApplications, null, 2));
 
@@ -139,9 +141,21 @@ const JobDetailScreen = ({route, navigation}) => {
   // Function to create a lookup map from SavedJobs
   const createSavedJobsMap = () => {
     const map = {};
-    SavedJobs?.forEach(savedJob => {
-      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
-    });
+
+    // Check if SavedJobs.saved_jobs exists and is an array
+    if (Array.isArray(SavedJobs?.saved_jobs)) {
+      SavedJobs.saved_jobs.forEach(savedJob => {
+        if (savedJob?.job?.id !== undefined) {
+          map[savedJob.job.id] = savedJob.job.is_saved;
+        }
+      });
+    } else {
+      console.warn(
+        'SavedJobs.saved_jobs is not a valid array:',
+        SavedJobs?.saved_jobs,
+      );
+    }
+
     return map;
   };
 

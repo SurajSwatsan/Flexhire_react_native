@@ -25,7 +25,6 @@ const SavedJobScreen = () => {
   const {SavedJobs} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const navigation = useNavigation();
-  const [bookmarked, setBookmarked] = useState({});
 
   useEffect(() => {
     const getUserData = async () => {
@@ -40,9 +39,12 @@ const SavedJobScreen = () => {
 
     getUserData();
   }, [isFocus]);
+  console.log('SavedJobs', SavedJobs);
 
   const isBookmarked = job_id => {
-    return SavedJobs.some(savedJob => savedJob.job.id === job_id);
+    return Array.isArray(SavedJobs?.saved_jobs)
+      ? SavedJobs.saved_jobs.some(savedJob => savedJob.job?.id === job_id)
+      : false;
   };
 
   const toggleBookmark = job_id => {
@@ -55,8 +57,9 @@ const SavedJobScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.cardContainer}>
-        {SavedJobs && SavedJobs.length > 0 ? (
-          SavedJobs?.map(savedJob => (
+        {Array.isArray(SavedJobs?.saved_jobs) &&
+        SavedJobs.saved_jobs.length > 0 ? (
+          SavedJobs.saved_jobs.map(savedJob => (
             <TouchableOpacity
               key={savedJob.job.id}
               onPress={() =>
@@ -68,7 +71,8 @@ const SavedJobScreen = () => {
               <View style={styles.cardContent}>
                 <View style={styles.jobTitleContainer}>
                   <Text style={styles.cardTitle}>
-                    {savedJob?.job?.job_title?.title}
+                    {savedJob?.job?.job_title?.title ||
+                      'Job Title Not Available'}
                   </Text>
                   <TouchableOpacity
                     onPress={() => toggleBookmark(savedJob.job.id)}
@@ -94,7 +98,7 @@ const SavedJobScreen = () => {
                     />
                     <Text style={styles.detailsText}>
                       {savedJob?.job?.job_location
-                        ?.map(location => location.name)
+                        ?.map(location => location.name || 'Unknown Location')
                         .join(', ')}
                     </Text>
                   </View>
@@ -106,7 +110,9 @@ const SavedJobScreen = () => {
                         color={colors.primary}
                       />
                       <Text style={styles.detailsText}>
-                        {`${savedJob?.job?.experience_level?.minYear} - ${savedJob?.job.experience_level?.maxYear} years`}
+                        {`${savedJob?.job?.experience_level?.minYear || 0} - ${
+                          savedJob?.job.experience_level?.maxYear || 0
+                        } years`}
                       </Text>
                     </View>
                     <View style={styles.detailsalary}>
@@ -114,22 +120,19 @@ const SavedJobScreen = () => {
                       <View
                         style={{flexDirection: 'row', alignItems: 'center'}}>
                         <CustomFormatAmount
-                          amount={savedJob?.job?.salary?.yearly?.min}
+                          amount={savedJob?.job?.salary?.yearly?.min || 0}
                         />
-
                         <Text style={{color: colors.primary}}> - </Text>
                         <CustomFormatAmount
-                          amount={savedJob?.job?.salary?.yearly?.max}
+                          amount={savedJob?.job?.salary?.yearly?.max || 0}
                         />
-
                         <Text
                           style={{
                             fontSize: 10,
                             fontWeight: 'bold',
                             color: 'gray',
                           }}>
-                          {' '}
-                          {savedJob?.job?.salary.yearly.currency}
+                          {savedJob?.job?.salary?.yearly?.currency || 'N/A'}
                         </Text>
                       </View>
                     </View>
@@ -146,11 +149,11 @@ const SavedJobScreen = () => {
                       }
                       style={styles.logo}
                     />
-
                     <View style={styles.companyMaincontainer}>
                       <View style={styles.companyDetail}>
                         <Text style={styles.companyText}>
-                          {savedJob?.job.company?.company_name}
+                          {savedJob?.job?.company?.company_name ||
+                            'Company Name Not Available'}
                         </Text>
                         <View style={styles.icon}>
                           <Ionicons
@@ -160,7 +163,7 @@ const SavedJobScreen = () => {
                             style={styles.ratingIcon}
                           />
                           <Text style={styles.companyReview}>
-                            {savedJob?.rating}{' '}
+                            {savedJob?.rating || 0}
                           </Text>
                         </View>
                       </View>

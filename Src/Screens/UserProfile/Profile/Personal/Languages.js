@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Modal,
   StyleSheet,
@@ -19,6 +19,7 @@ import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import {ProfileContext} from '../../ProfileContext';
 
 const PROFICIENCY_OPTIONS = [
   {id: 1, value: 'Beginner'},
@@ -43,6 +44,7 @@ const getInitialValues = (
 });
 
 const Languages = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [editObject, setEditObject] = useState(null);
   const [languages, setLanguages] = useState([]);
@@ -107,7 +109,6 @@ const Languages = profileDetails => {
         comfortable_in: values.comfortablein,
       });
     }
-    // console.log('Updated Data:', languages);
 
     const payload = {
       id: profileDetails?.profileDetails?.id
@@ -117,15 +118,12 @@ const Languages = profileDetails => {
       languages: languages,
     };
 
-    // console.log('Languages:', JSON.stringify(payload, null, 2));
-
     if (profileDetails.profileDetails.id) {
       dispatch(updateProfileDetails(payload));
     } else {
       dispatch(addProfileDetails(payload));
     }
-
-    // dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
 
     setEditObject(null);
     setModalVisible(false);
@@ -142,6 +140,7 @@ const Languages = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
     setModalVisible(false);
   };
 
@@ -245,7 +244,11 @@ const Languages = profileDetails => {
                 {({handleSubmit, setFieldValue, values, errors, touched}) => (
                   <View style={profileStyle.formContainer}>
                     <Text style={profileStyle.formHeading}>
-                      Add or Edit Language
+                      LANGUAGE PROFICIENCY
+                    </Text>
+                    <Text style={profileStyle.formSubHeading}>
+                      Strengthen your resume by letting recruiters know you can
+                      communicate in multiple languages
                     </Text>
                     <CustomSelectionModal
                       title="Language"
@@ -412,6 +415,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statusButton: {
+    gap: 8,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 8,

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -22,6 +22,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
+import {ProfileContext} from '../../ProfileContext';
 
 const TAB_OPTIONS = [
   {label: 'Research Publication', key: 'research'},
@@ -35,7 +36,7 @@ const TAB_OPTIONS = [
 const Accomplishments = profileDetails => {
   // const [activeTab, setActiveTab] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
-
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [accomplishmentsData, setAccomplishmentsData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -50,7 +51,6 @@ const Accomplishments = profileDetails => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -71,7 +71,13 @@ const Accomplishments = profileDetails => {
   const openModal = (key, item = null) => {
     setActiveTab(key);
     setModalVisible(true); // Show the modal
-    setSelectedItem(item); // Set the index for editing
+    if (item && item.title) {
+      setSelectedItem(item);
+      console.log('Editing existing item:', item);
+    } else {
+      setSelectedItem(null);
+      console.log('Creating new entry for:', key);
+    }
   };
   const closeModal = () => {
     setModalVisible(false);
@@ -79,7 +85,9 @@ const Accomplishments = profileDetails => {
     setSelectedItem(null);
   };
   // console.log(savedData);
-
+  useEffect(() => {
+    console.log('Selected Item:', selectedItem);
+  }, [selectedItem]);
   const handleSubmit = values => {
     // Find the selected tab's label
     const selectedTab = TAB_OPTIONS.find(tab => tab.key === activeTab);
@@ -103,7 +111,7 @@ const Accomplishments = profileDetails => {
         accomplishments: accomplishmentsData,
       };
       dispatch(updateProfileDetails(payload));
-
+      toggleIsUpdatedProfile();
       setAccomplishmentsData(accomplishmentsData);
       setModalVisible(false);
       setSelectedItem(null);
@@ -152,48 +160,11 @@ const Accomplishments = profileDetails => {
         dispatch(addProfileDetails(formattedValues));
       }
       // dispatch(updateProfileDetails(formattedValues));
+      toggleIsUpdatedProfile();
 
       setModalVisible(false);
       setSelectedItem(null);
     }
-    // Format the new entry
-    // const formattedValues = {
-    //   id: profileDetails?.profileDetails?.id,
-    //   accomplishments: [
-    //     {
-    //       name: selectedTab ? selectedTab.label : '',
-    //       title: values.title || '',
-    //       url: values.url || '',
-    //       description: values.description || '',
-    //       published_date: values.published_date
-    //         ? moment(values.published_date).format('YYYY-MM-DD')
-    //         : null,
-    //       patentOffice: values.patentOffice || '',
-    //       application_number: values.application_number || '',
-    //       status: values.status || '',
-    //       issued_date: values.issued_date
-    //         ? moment(values.issued_date).format('YYYY-MM-DD')
-    //         : null,
-    //       certification_provider: values.certification_provider || '',
-    //       completion_id: values.completion_id || '',
-    //       from: values.from ? moment(values.from).format('YYYY-MM-DD') : null,
-    //       till: values.till ? moment(values.till).format('YYYY-MM-DD') : null,
-    //       noExpiry: values.noExpiry || false,
-    //       stillWorking: values.stillWorking || false,
-    //     },
-    //   ],
-    // };
-
-    // dispatch(updateProfileDetails(formattedValues));
-
-    // // Log the updated data for debugging
-    // console.log(
-    //   'Updated Accomplishments:',
-    //   JSON.stringify(formattedValues, null, 2),
-    // );
-
-    // // Close the modal
-    // closeModal();
   };
 
   const deleteItem = () => {
@@ -207,6 +178,7 @@ const Accomplishments = profileDetails => {
     };
 
     dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
 
     // // Reset state and close modal
     setSelectedItem(null);
@@ -656,7 +628,7 @@ const Accomplishments = profileDetails => {
     <View style={profileStyle.mainContainer}>
       <ScrollView>
         <View style={profileStyle.editContainer}>
-          <Text style={profileStyle.heading}>Accomplishments</Text>
+          <Text style={profileStyle.heading}>ACCOMPLISHMENTS</Text>
         </View>
 
         <View style={styles.tabContainer}>

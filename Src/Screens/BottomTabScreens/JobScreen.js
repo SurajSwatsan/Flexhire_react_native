@@ -113,7 +113,6 @@ const JobScreen = ({route}) => {
       const queryParams = {
         job_title: normalizedQuery, // Use the normalized query
       };
-
       // Simulate fetching jobs with the action and updating the jobs state
       dispatch(GetSearchJobs(queryParams)).then(results => {
         setJobs(results); // Assume results are returned by the action
@@ -130,9 +129,21 @@ const JobScreen = ({route}) => {
   // Function to create a lookup map from SavedJobs
   const createSavedJobsMap = () => {
     const map = {};
-    SavedJobs?.forEach(savedJob => {
-      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
-    });
+
+    // Check if SavedJobs is an object and contains the `saved_jobs` key
+    if (SavedJobs && Array.isArray(SavedJobs.saved_jobs)) {
+      SavedJobs.saved_jobs.forEach(savedJob => {
+        if (savedJob?.job?.id !== undefined) {
+          map[savedJob.job.id] = savedJob.job.is_saved;
+        }
+      });
+    } else {
+      console.warn(
+        'SavedJobs does not have a valid saved_jobs array:',
+        SavedJobs,
+      );
+    }
+
     return map;
   };
 
@@ -170,12 +181,16 @@ const JobScreen = ({route}) => {
   };
 
   const jobsToRender = query.trim()
-    ? SearchJobList?.results
+    ? SearchJobList?.results || [] // Use an empty array as fallback
     : selectedFilters &&
       Object.keys(selectedFilters).length > 0 &&
-      FilterJobList?.results?.length > 0
+      FilterJobList?.results?.length > 0 // Check if FilterJobList has results
     ? FilterJobList.results
-    : JobList?.results || [];
+    : JobList?.results || []; // Fallback to JobList results if no filters are applied
+  // Debugging logs
+
+  // console.log('FilterJobList from Redux:', FilterJobList);
+  // console.log('Jobs to Render:', jobsToRender);
 
   const handleJobDetails = jobData => {
     navigation.navigate('JobDetailScreen', {
@@ -237,8 +252,8 @@ const JobScreen = ({route}) => {
           : {}),
       };
       // const queryString = new URLSearchParams(queryParams).toString();
-      // console.log('selected experience', selectedExperience);
-
+      // console.log('selected experience', queryString);
+      console.log('Query Params Sent to Backend:', queryParams);
       // Dispatch action with queryParams
       dispatch(GetFilterdJobs(queryParams)).then(filteredResults => {
         setJobs(filteredResults); // Update the jobs state with filtered results

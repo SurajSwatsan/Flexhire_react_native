@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
   FlatList,
 } from 'react-native';
 import {useIsFocused, useRoute} from '@react-navigation/native';
@@ -26,8 +27,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Availability from './Personal/Availability';
-
+import {ProfileContext} from '../ProfileContext';
+import ProfileHeadline from './ProfileHeadline';
 const Index = () => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+  const [loading, setLoading] = useState(true); // Loader state
   const route = useRoute();
   const {selectedImage} = route.params || {};
   const [activeTab, setActiveTab] = useState('Personal');
@@ -40,21 +44,28 @@ const Index = () => {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const storedId = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        const storedId = await AsyncStorage.getItem('user_data');
         if (storedId) {
-          setId(storedId); // Update state
-          dispatch(GetProfileDetails(storedId));
+          setId(storedId);
+          setLoading(true); // Start loader
+          await dispatch(GetProfileDetails(storedId));
+          setLoading(false); // Stop loader after data is fetched
         }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
+        setLoading(false); // Stop loader in case of error
       }
     };
 
     getUserData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocus]);
-  // console.log('profileDetails', JSON.stringify(profileDetails, null, 2));
+  }, [isFocus, isUpdatedProfile]); // Dependency array includes isFocused
+
   const renderTabs = () => {
+    const profileData = profileDetails?.job_seeker_profile;
+
+    if (!profileDetails) return null;
     switch (activeTab) {
       case 'Personal':
         return (
@@ -70,9 +81,7 @@ const Index = () => {
                   />
                   <View>
                     <Text style={{color: '#000'}}>Email</Text>
-                    <Text style={{color: '#000'}}>
-                      {profileDetails?.user_id?.email}
-                    </Text>
+                    <Text style={{color: '#000'}}>{profileDetails?.email}</Text>
                   </View>
                 </TouchableOpacity>
                 <View style={styles.line} />
@@ -85,16 +94,22 @@ const Index = () => {
                   <View>
                     <Text style={{color: '#000'}}>Phone Number</Text>
                     <Text style={{color: '#000'}}>
-                      {profileDetails?.user_id?.mobile_number}
+                      {profileDetails?.mobile_number}
                     </Text>
                   </View>
                 </TouchableOpacity>
               </View>
-              <BasicInformation profileDetails={profileDetails} />
-              <CareerInformation profileDetails={profileDetails} />
-              <Availability />
+              <BasicInformation
+                profileDetails={profileDetails.job_seeker_profile}
+              />
+              <CareerInformation
+                profileDetails={profileDetails.job_seeker_profile}
+              />
+              <Availability
+                profileDetails={profileDetails.job_seeker_profile}
+              />
 
-              <Languages profileDetails={profileDetails} />
+              <Languages profileDetails={profileDetails.job_seeker_profile} />
               <View style={{height: 100}} />
             </ScrollView>
           </View>
@@ -106,9 +121,15 @@ const Index = () => {
               data={[1]} // Dummy data to ensure FlatList renders
               renderItem={() => (
                 <>
-                  <Education profileDetails={profileDetails} />
-                  <HigherEducation profileDetails={profileDetails} />
-                  <Keyskills profileDetails={profileDetails} />
+                  <Education
+                    profileDetails={profileDetails.job_seeker_profile}
+                  />
+                  <HigherEducation
+                    profileDetails={profileDetails.job_seeker_profile}
+                  />
+                  <Keyskills
+                    profileDetails={profileDetails.job_seeker_profile}
+                  />
                 </>
               )}
               keyExtractor={(item, index) => index.toString()}
@@ -119,10 +140,12 @@ const Index = () => {
         return (
           <View>
             <ScrollView style={styles.scrollContainer}>
-              <Projects profileDetails={profileDetails} />
-              <Employment profileDetails={profileDetails} />
-              <Itskills profileDetails={profileDetails} />
-              <Accomplishments profileDetails={profileDetails} />
+              <Projects profileDetails={profileDetails.job_seeker_profile} />
+              <Employment profileDetails={profileDetails.job_seeker_profile} />
+              <Itskills profileDetails={profileDetails.job_seeker_profile} />
+              <Accomplishments
+                profileDetails={profileDetails.job_seeker_profile}
+              />
             </ScrollView>
           </View>
         );
@@ -132,79 +155,89 @@ const Index = () => {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <View style={styles.headContainer}>
-        <View style={styles.imageContainer}>
-          {selectedImage ? (
-            <Image source={{uri: selectedImage}} style={styles.image} />
-          ) : (
-            <Image
-              source={require('../../../Assets/Images/def_prof_image.png')}
-              style={styles.image}
-            />
-          )}
+    <>
+      {loading ? ( // Show loader if loading is true
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
-        <View style={styles.nameTextContainer}>
-          <Text style={styles.nameText}>Vinod Gavade</Text>
-          <Text style={styles.profhedline}>
-            Experienced Mobile Developer | Proficient in React Native, Redux,
-            and APIs
-          </Text>
-        </View>
-      </View>
-      <View style={styles.bodyContainer}>
-        {/* <ScrollView style={styles.ScrollViewContainer}> */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'Personal' && styles.activeTab,
-            ]}
-            onPress={() => setActiveTab('Personal')}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'Personal' && styles.activeTabText,
-              ]}>
-              Personal
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'Education' && styles.activeTab,
-            ]}
-            onPress={() => setActiveTab('Education')}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'Education' && styles.activeTabText,
-              ]}>
-              Education
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'Professional' && styles.activeTab,
-            ]}
-            onPress={() => setActiveTab('Professional')}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'Professional' && styles.activeTabText,
-              ]}>
-              Professional
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.contentContainer}>{renderTabs()}</View>
-        {/* </ScrollView> */}
-      </View>
-    </View>
+      ) : (
+        profileDetails && (
+          <View style={styles.mainContainer}>
+            <View style={styles.headContainer}>
+              <View style={styles.imageContainer}>
+                {selectedImage ? (
+                  <Image source={{uri: selectedImage}} style={styles.image} />
+                ) : (
+                  <Image
+                    source={require('../../../Assets/Images/def_prof_image.png')}
+                    style={styles.image}
+                  />
+                )}
+              </View>
+              <View style={styles.nameTextContainer}>
+                <Text style={styles.nameText}>
+                  {profileDetails?.first_name && profileDetails?.last_name
+                    ? `${profileDetails?.first_name} ${profileDetails?.last_name}`
+                    : 'User Name'}
+                </Text>
+                <ProfileHeadline
+                  profileDetails={profileDetails.job_seeker_profile}
+                />
+              </View>
+            </View>
+            <View style={styles.bodyContainer}>
+              <View style={styles.tabContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'Personal' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('Personal')}>
+                  <Text
+                    style={[
+                      styles.tabText,
+                      activeTab === 'Personal' && styles.activeTabText,
+                    ]}>
+                    Personal
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'Education' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('Education')}>
+                  <Text
+                    style={[
+                      styles.tabText,
+                      activeTab === 'Education' && styles.activeTabText,
+                    ]}>
+                    Education
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'Professional' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('Professional')}>
+                  <Text
+                    style={[
+                      styles.tabText,
+                      activeTab === 'Professional' && styles.activeTabText,
+                    ]}>
+                    Professional
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.contentContainer}>{renderTabs()}</View>
+            </View>
+          </View>
+        )
+      )}
+    </>
   );
 };
-
 const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.primary,
@@ -212,6 +245,12 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
   },
   headContainer: {
     justifyContent: 'space-between',
@@ -235,6 +274,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.whiteText,
+    marginBottom: 4,
   },
   profhedline: {
     fontSize: 12,

@@ -56,7 +56,7 @@ const HomeScreen = () => {
         console.error('Error reading value from AsyncStorage', error);
       }
     };
-    console.log(CompanyData);
+    // console.log(CompanyData);
 
     getUserData();
   }, [isFocus]);
@@ -99,9 +99,11 @@ const HomeScreen = () => {
   // Function to create a lookup map from SavedJobs
   const createSavedJobsMap = () => {
     const map = {};
-    SavedJobs?.forEach(savedJob => {
-      map[savedJob?.job?.id] = savedJob?.job?.is_saved;
-    });
+    if (Array.isArray(SavedJobs)) {
+      SavedJobs.forEach(savedJob => {
+        map[savedJob?.job?.id] = savedJob?.job?.is_saved;
+      });
+    }
     return map;
   };
 

@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -20,6 +20,7 @@ import MasterViewController from '../../../../Redux/Action/MasterViewController'
 import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ProfileContext} from '../../ProfileContext';
 
 const EducationClass = [
   {id: 1, value: '10th', label: 'Class 10th'},
@@ -40,6 +41,7 @@ const PassoutYear = Array.from(
 const validationSchema = Yup.object().shape({
   education_name: Yup.string().required('Education Level is required'),
   board: Yup.string().required('Board is required'),
+  school_name: Yup.string().required('School Name is required'),
   passout_year: Yup.string().required('Passout Year is required'),
   school_medium: Yup.string().required('School Medium is required'),
   marks: Yup.string()
@@ -57,6 +59,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const Education = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [educationData, setEducationData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -84,6 +88,7 @@ const Education = profileDetails => {
     getUserData();
     setEducationData(profileDetails?.profileDetails?.secondary_edu);
   }, [profileDetails]);
+  // console.log('profileDetails', JSON.stringify(profileDetails, null, 2));
 
   useEffect(() => {
     const get_Board = () => {
@@ -121,6 +126,7 @@ const Education = profileDetails => {
       secondary_edu: [
         {
           education_name: values?.education_name,
+          school_name: values?.school_name,
           board:
             boardMasters?.find(eb => eb.value === values.board)?.value || '',
           passout_year:
@@ -162,6 +168,7 @@ const Education = profileDetails => {
       user_id: id,
       secondary_edu: existingSecondaryEdu,
     };
+    // console.log('FormattedData:', JSON.stringify(formattedData, null, 2));
 
     if (profileDetails.profileDetails.id) {
       dispatch(updateProfileDetails(formattedData));
@@ -169,8 +176,7 @@ const Education = profileDetails => {
       dispatch(addProfileDetails(formattedData));
     }
 
-    // Dispatch the updated data to Redux
-    // dispatch(updateProfileDetails(formattedData));
+    toggleIsUpdatedProfile();
 
     // Reset state and close modal
     setModalVisible(false);
@@ -197,16 +203,17 @@ const Education = profileDetails => {
       secondary_edu: filteredArray,
     };
     dispatch(updateProfileDetails(payload));
-
+    toggleIsUpdatedProfile();
     // Reset state and close modal
     setModalVisible(false);
     setSelectedItem(null);
   };
 
-  const allClassesAdded = EducationClass.every(cls =>
-    profileDetails?.profileDetails?.secondary_edu.some(
-      edu => edu.education_name === cls.value,
-    ),
+  const allClassesAdded = EducationClass.every(
+    cls =>
+      profileDetails?.profileDetails?.secondary_edu?.some(
+        edu => edu.education_name === cls.value,
+      ) || false,
   );
 
   return (
@@ -223,19 +230,16 @@ const Education = profileDetails => {
         )}
       </View>
 
-      {profileDetails?.profileDetails?.secondary_edu.length > 0 ? (
+      {Array.isArray(profileDetails?.profileDetails?.secondary_edu) &&
+      profileDetails?.profileDetails?.secondary_edu.length > 0 ? (
         <FlatList
-          data={profileDetails?.profileDetails?.secondary_edu}
+          data={profileDetails.profileDetails.secondary_edu}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({item, index}) => (
             <>
-              <TouchableOpacity onPress={() => openModal(index)}>
+              <TouchableOpacity onPress={() => openModal(item)}>
                 <View style={profileStyle.userDataContainer}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text style={styles.ClassText}>{item.education_name}</Text>
                     <IconButton
                       icon="pencil-outline"
@@ -250,9 +254,9 @@ const Education = profileDetails => {
                   </View>
                 </View>
               </TouchableOpacity>
-              {profileDetails?.profileDetails?.secondary_edu.length > 1 &&
+              {profileDetails.profileDetails.secondary_edu.length > 1 &&
                 index <
-                  profileDetails?.profileDetails?.secondary_edu.length - 1 && (
+                  profileDetails.profileDetails.secondary_edu.length - 1 && (
                   <View style={styles.horizontalLine} />
                 )}
             </>
@@ -274,6 +278,7 @@ const Education = profileDetails => {
             <Formik
               initialValues={{
                 education_name: selectedItem?.education_name || '',
+                school_name: selectedItem?.school_name || '',
                 board: selectedItem?.board || '',
                 passout_year: selectedItem?.passout_year || '',
                 school_medium: selectedItem?.school_medium || '',
@@ -337,6 +342,12 @@ const Education = profileDetails => {
                       ))}
                     </View>
                   </View>
+                  <ReusableTextInput
+                    name="school_name"
+                    label="School Name*"
+                    value={values.school_name}
+                    onChangeText={handleChange('school_name')}
+                  />
                   <CustomSelectionModal
                     title="Board"
                     data={boardMasters}

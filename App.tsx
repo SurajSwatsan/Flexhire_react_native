@@ -7,6 +7,7 @@ import {Provider} from 'react-redux';
 import store from './src/Redux/store';
 import {colors} from './src/Global_CSS/TheamColors';
 import {ToastProvider} from 'react-native-toast-notifications';
+import { ProfileProvider } from './src/Screens/UserProfile/ProfileContext';
 // import JobView from './src/Components/jobView';
 
 const App = () => {
@@ -21,10 +22,12 @@ const App = () => {
             // backgroundColor="#4f84c4"
             translucent={false}
           />
-        
+            <ProfileProvider>
+
           <NavigationContainer>
             <StackNavigation />
           </NavigationContainer>
+          </ProfileProvider>
         </PaperProvider>
       </ToastProvider>
     </Provider>
