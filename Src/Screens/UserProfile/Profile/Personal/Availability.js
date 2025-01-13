@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Animated,
   Easing,
 } from 'react-native';
@@ -21,68 +20,36 @@ import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import GlobalStyle from '../../../../Global_CSS/GlobalStyle';
 import {Toast, useToast} from 'react-native-toast-notifications';
-import {useDispatch} from 'react-redux';
-import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ProfileContext} from '../../ProfileContext';
 
 const AvailabilityOptions = [
   {id: 1, label: 'Full Time', value: 'Full Time'},
   {id: 2, label: 'Part Time', value: 'Part Time'},
 ];
 
-const Availability = profileDetails => {
-  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
+const Availability = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [currentSlotIndex, setCurrentSlotIndex] = useState(null);
   const [currentEditIndex, setCurrentEditIndex] = useState(null); // To track which record is being edited
-  const [availabilitiesData, setAvailabilitiesData] = useState([]);
+  const [availabilities, setAvailabilities] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const toastOpacity = new Animated.Value(100);
   const toast = useToast();
-  const [id, setId] = useState();
-  let formikRef = null;
 
-  const dispatch = useDispatch();
-
-  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
-
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
-        setId(id);
-      } catch (error) {
-        console.error('Error reading value from AsyncStorage', error);
-      }
-    };
-
-    getUserData();
-    // console.log('================================');
-    setAvailabilitiesData(profileDetails?.profileDetails?.work_availability);
-    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
-  }, [profileDetails]);
-  // console.log('profileDetails', JSON.stringify(availabilitiesData, null, 2));
-
-  const openModal = item => {
-    if (item) {
-      setSelectedItem(item);
-      console.log('Editing existing item:', item);
-    } else {
-      setSelectedItem(null);
-      console.log('Creating new entry.');
-    }
+  const openModal = (data, index = null) => {
+    setCurrentEditIndex(index);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setSelectedItem(null);
+    setCurrentEditIndex(null);
   };
+
+  let formikRef = null;
 
   const showToast = message => {
     setToastMessage(message);
@@ -103,6 +70,7 @@ const Availability = profileDetails => {
       }, 2000); // Toast visible duration
     });
   };
+
   const checkNineHourDifference = (start_time, end_time, showToast) => {
     if (!start_time || !end_time) return;
     const start = moment(start_time, 'hh:mm A');
@@ -148,17 +116,13 @@ const Availability = profileDetails => {
                 },
               )
               .test(
-                'nine-or-more-hours',
-                ' At least 9 hours for Full Time',
+                'nine-hours',
+                'Start and End time difference must be exactly 9 hours for Full Time',
                 function (value) {
                   const {start_time} = this.parent;
                   const {mode} = this.options.context;
                   if (mode === 'Full Time') {
-                    const difference = moment(value, 'hh:mm A').diff(
-                      moment(start_time, 'hh:mm A'),
-                      'hours',
-                    );
-                    return difference >= 9;
+                    return checkNineHourDifference(start_time, value);
                   }
                   return true;
                 },
@@ -190,88 +154,36 @@ const Availability = profileDetails => {
   };
 
   const handleFormSubmit = values => {
-    // Format the new entry according to your structure
-    const formattedEntry = {
-      id: profileDetails?.profileDetails?.id,
-      work_availability: [
-        {
-          mode: values?.mode || '',
-          slots: values.slots.map(slot => ({
-            start_time: slot.start_time || '',
-            end_time: slot.end_time || '',
-          })),
-        },
-      ],
-    };
-
-    // Clone the current `work_availability` data
-    const existingWorkAvailability =
-      profileDetails?.profileDetails?.work_availability || [];
-
-    // Find the index of the entry to update (if it exists)
-    const existingIndex = existingWorkAvailability.findIndex(
-      item => item.mode === values.mode,
+    const existingIndex = availabilities.findIndex(
+      availability => availability.mode === values.mode,
     );
 
     if (existingIndex !== -1) {
-      // Update the existing entry
-      existingWorkAvailability[existingIndex] = {
-        ...existingWorkAvailability[existingIndex],
-        ...formattedEntry.work_availability[0], // Merge updated values
-      };
+      // If the mode already exists, update the existing availability
+      const updatedAvailabilities = [...availabilities];
+      updatedAvailabilities[existingIndex] = values;
+      setAvailabilities(updatedAvailabilities);
     } else {
-      // Add a new entry
-      existingWorkAvailability.push(formattedEntry.work_availability[0]);
+      // If the mode does not exist, add a new availability
+      setAvailabilities([...availabilities, values]);
     }
 
-    // Prepare the final data for submission
-    const formattedData = {
-      id: profileDetails?.profileDetails?.id || '',
-      user_id: id,
-      work_availability: existingWorkAvailability,
-    };
-    // console.log('FormattedData:', JSON.stringify(formattedData, null, 2));
-
-    if (profileDetails?.profileDetails?.id) {
-      // If an ID exists, update the profile details
-      dispatch(updateProfileDetails(formattedData));
-    } else {
-      // If no ID exists, add new profile details
-      dispatch(addProfileDetails(formattedData));
-    }
-    toggleIsUpdatedProfile();
-    // Reset state and close modal
-    setModalVisible(false);
-    setSelectedItem(null);
+    closeModal();
   };
 
-  // console.log('Availabilities:', JSON.stringify(availabilitiesData, null, 2));
+  console.log('Availabilities:', JSON.stringify(availabilities, null, 2));
 
   const deleteSlot = (index, values, setFieldValue) => {
     const updatedSlots = values.slots.filter((_, i) => i !== index);
     setFieldValue('slots', updatedSlots);
   };
 
-  const deleteAvailability = () => {
-    const filteredArray = availabilitiesData.filter(
-      item => item.mode !== selectedItem.mode,
-    );
-    setAvailabilitiesData(filteredArray);
-    const payload = {
-      id: profileDetails?.profileDetails?.id,
-      work_availability: filteredArray,
-    };
-
-    dispatch(updateProfileDetails(payload));
-    toggleIsUpdatedProfile();
-    // // Reset state and close modal
-    setSelectedItem(null);
-    closeModal();
-  };
   const addNewSlot = (values, setFieldValue) => {
     const lastSlot = values.slots[values.slots.length - 1];
     if (lastSlot && !lastSlot.end_time) {
-      showToast('Complete the current slot before adding a new one');
+      Toast.show('Complete the current slot before adding a new one', {
+        type: 'warning',
+      });
       return;
     }
     setFieldValue('slots', [...values.slots, {start_time: '', end_time: ''}]);
@@ -284,46 +196,42 @@ const Availability = profileDetails => {
         <IconButton
           icon="plus-circle-outline"
           size={20}
-          onPress={() => openModal()}
+          onPress={() =>
+            openModal({mode: '', slots: [{start_time: '', end_time: ''}]})
+          }
           iconColor="#000"
         />
       </View>
       <View>
-        {Array.isArray(availabilitiesData) && availabilitiesData.length > 0 ? (
-          availabilitiesData.map((availability, item) => (
-            <View key={item} style={styles.dataContainer}>
-              <View>
-                <Text style={styles.dataLabel}>{availability.mode}</Text>
-                {availability.slots?.map((slot, slotIndex) => (
-                  <View key={slotIndex} style={styles.slotDataContainer}>
-                    <Text style={styles.dataLabel}>Slot {slotIndex + 1}: </Text>
-                    <Text style={styles.dataValue}>
-                      {slot.start_time &&
-                      moment(slot.start_time, 'hh:mm A', true).isValid()
-                        ? moment(slot.start_time, 'hh:mm A').format('hh:mm A')
-                        : 'Invalid Start Time'}{' '}
-                      -{' '}
-                      {slot.end_time &&
-                      moment(slot.end_time, 'hh:mm A', true).isValid()
-                        ? moment(slot.end_time, 'hh:mm A').format('hh:mm A')
-                        : 'Invalid End Time'}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-              <IconButton
-                icon="pencil-outline"
-                size={20}
-                iconColor="#000"
-                onPress={() => openModal(availability, item)}
-              />
+        {availabilities.map((availability, index) => (
+          <View key={index} style={styles.dataContainer}>
+            <View>
+              <Text style={styles.dataLabel}>{availability.mode}</Text>
+              {availability.slots?.map((slot, slotIndex) => (
+                <View key={slotIndex} style={styles.slotDataContainer}>
+                  <Text style={styles.dataLabel}>Slot {slotIndex + 1}: </Text>
+                  <Text style={styles.dataValue}>
+                    {slot.start_time &&
+                    moment(slot.start_time, 'hh:mm A', true).isValid()
+                      ? moment(slot.start_time, 'hh:mm A').format('hh:mm A')
+                      : 'Invalid Start Time'}{' '}
+                    -{' '}
+                    {slot.end_time &&
+                    moment(slot.end_time, 'hh:mm A', true).isValid()
+                      ? moment(slot.end_time, 'hh:mm A').format('hh:mm A')
+                      : 'Invalid End Time'}
+                  </Text>
+                </View>
+              ))}
             </View>
-          ))
-        ) : (
-          <Text style={profileStyle.optionalData}>
-            No availabilities found.
-          </Text>
-        )}
+            <IconButton
+              icon="pencil-outline"
+              size={20}
+              iconColor="#000"
+              onPress={() => openModal(availability, index)}
+            />
+          </View>
+        ))}
       </View>
 
       <Modal
@@ -336,15 +244,14 @@ const Availability = profileDetails => {
             data={[{key: 'form'}]}
             renderItem={() => (
               <Formik
-                initialValues={{
-                  mode: selectedItem?.mode || 'Full Time',
-                  slots: selectedItem?.slots?.length
-                    ? selectedItem.slots.map(slot => ({
-                        start_time: slot.start_time || '',
-                        end_time: slot.end_time || '',
-                      }))
-                    : [{start_time: '', end_time: ''}],
-                }}
+                initialValues={
+                  currentEditIndex !== null
+                    ? availabilities[currentEditIndex]
+                    : {
+                        mode: 'Full Time',
+                        slots: [{start_time: '', end_time: ''}],
+                      }
+                }
                 innerRef={ref => (formikRef = ref)}
                 validationSchema={validationSchema}
                 onSubmit={handleFormSubmit}>
@@ -357,7 +264,7 @@ const Availability = profileDetails => {
                       </Animated.View>
                     )}
                     <Text style={profileStyle.formHeading}>
-                      AVAILABILITY INFORMATION
+                      Availability Information
                     </Text>
                     <Text style={profileStyle.formSubHeading}>
                       This information is important for employers to know you
@@ -386,131 +293,108 @@ const Availability = profileDetails => {
                         </TouchableOpacity>
                       ))}
                     </View>
+                    {/* {touched.mode && errors.mode && (
+                      <Text style={profileStyle.errorText}>{errors.mode}</Text>
+                    )} */}
 
                     {values.mode === 'Full Time' && (
-                      <>
-                        <View style={styles.slotContainer}>
-                          <View style={{flexDirection: 'row', gap: 8}}>
-                            {/* Start Time */}
-                            <TouchableOpacity
-                              style={{flex: 1}}
-                              onPress={() => {
-                                setCurrentSlotIndex(0);
-                                setShowStartTimePicker(true);
-                              }}>
-                              <TextInput
-                                label="Start Time"
-                                mode="outlined"
-                                value={values.slots[0]?.start_time || ''}
-                                editable={false}
-                                style={styles.inputBox}
-                                textColor="#333"
-                                outlineColor="lightgray"
-                                activeOutlineColor="gray"
-                              />
-                              {touched.slots &&
-                                errors.slots?.[0]?.start_time && (
-                                  <Text style={profileStyle.error}>
-                                    {errors.slots[0].start_time}
-                                  </Text>
-                                )}
-                            </TouchableOpacity>
-                            {showStartTimePicker && currentSlotIndex === 0 && (
-                              <DateTimePicker
-                                value={
-                                  values.slots[0]?.start_time
-                                    ? moment(
-                                        values.slots[0].start_time,
-                                        'hh:mm A',
-                                      ).toDate()
-                                    : new Date()
-                                }
-                                mode="time"
-                                display="default"
-                                onChange={(event, selectedDate) => {
-                                  setShowStartTimePicker(false);
-                                  if (selectedDate) {
-                                    const updatedSlots = [...values.slots];
-                                    updatedSlots[0].start_time =
-                                      moment(selectedDate).format('hh:mm A'); // Format time directly
-                                    setFieldValue('slots', updatedSlots);
-
-                                    // Pass the toast instance
-                                    checkNineHourDifference(
-                                      updatedSlots[0].start_time,
-                                      updatedSlots[0].end_time,
-                                      showToast,
-                                    );
-                                  }
-                                }}
-                              />
+                      <View style={styles.slotContainer}>
+                        <View style={{flexDirection: 'row', gap: 8}}>
+                          {/* Start Time */}
+                          <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={() => {
+                              setCurrentSlotIndex(0);
+                              setShowStartTimePicker(true);
+                            }}>
+                            <TextInput
+                              label="Start Time"
+                              mode="outlined"
+                              value={values.slots[0]?.start_time || ''}
+                              editable={false}
+                              style={styles.inputBox}
+                              textColor="#333"
+                              outlineColor="lightgray"
+                              activeOutlineColor="gray"
+                            />
+                            {touched.slots && errors.slots?.[0]?.start_time && (
+                              <Text style={profileStyle.error}>
+                                {errors.slots[0].start_time}
+                              </Text>
                             )}
-
-                            {/* End Time */}
-                            <TouchableOpacity
-                              style={{flex: 1}}
-                              onPress={() => {
-                                setCurrentSlotIndex(0);
-                                setShowEndTimePicker(true);
-                              }}>
-                              <TextInput
-                                label="End Time"
-                                mode="outlined"
-                                value={values.slots[0]?.end_time || ''}
-                                editable={false}
-                                style={styles.inputBox}
-                                textColor="#333"
-                                outlineColor="lightgray"
-                                activeOutlineColor="gray"
-                              />
-                              {touched.slots && errors.slots?.[0]?.end_time && (
-                                <Text style={profileStyle.error}>
-                                  {errors.slots[0].end_time}
-                                </Text>
-                              )}
-                            </TouchableOpacity>
-                            {showEndTimePicker && currentSlotIndex === 0 && (
-                              <DateTimePicker
-                                value={
-                                  values.slots[0]?.end_time
-                                    ? moment(
-                                        values.slots[0].end_time,
-                                        'hh:mm A',
-                                      ).toDate()
-                                    : new Date()
+                          </TouchableOpacity>
+                          {showStartTimePicker && currentSlotIndex === 0 && (
+                            <DateTimePicker
+                              value={
+                                values.slots[0]?.start_time
+                                  ? moment(
+                                      values.slots[0].start_time,
+                                      'hh:mm A',
+                                    ).toDate()
+                                  : new Date()
+                              }
+                              mode="time"
+                              display="default"
+                              onChange={(event, selectedDate) => {
+                                setShowStartTimePicker(false);
+                                if (selectedDate) {
+                                  const updatedSlots = [...values.slots];
+                                  updatedSlots[0].start_time =
+                                    moment(selectedDate).format('hh:mm A'); // Format time directly
+                                  setFieldValue('slots', updatedSlots);
                                 }
-                                mode="time"
-                                display="default"
-                                onChange={(event, selectedDate) => {
-                                  setShowEndTimePicker(false);
-                                  if (selectedDate) {
-                                    const updatedSlots = [...values.slots];
-                                    updatedSlots[0].end_time =
-                                      moment(selectedDate).format('hh:mm A'); // Format time directly
-                                    setFieldValue('slots', updatedSlots);
+                              }}
+                            />
+                          )}
 
-                                    // Pass the toast instance
-                                    checkNineHourDifference(
-                                      updatedSlots[0].start_time,
-                                      updatedSlots[0].end_time,
-                                      showToast,
-                                    );
-                                  }
-                                }}
-                              />
+                          {/* End Time */}
+                          <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={() => {
+                              setCurrentSlotIndex(0);
+                              setShowEndTimePicker(true);
+                            }}>
+                            <TextInput
+                              label="End Time"
+                              mode="outlined"
+                              value={values.slots[0]?.end_time || ''}
+                              editable={false}
+                              style={styles.inputBox}
+                              textColor="#333"
+                              outlineColor="lightgray"
+                              activeOutlineColor="gray"
+                            />
+                            {touched.slots && errors.slots?.[0]?.end_time && (
+                              <Text style={profileStyle.error}>
+                                {errors.slots[0].end_time}
+                              </Text>
                             )}
-                          </View>
+                          </TouchableOpacity>
+                          {showEndTimePicker && currentSlotIndex === 0 && (
+                            <DateTimePicker
+                              value={
+                                values.slots[0]?.end_time
+                                  ? moment(
+                                      values.slots[0].end_time,
+                                      'hh:mm A',
+                                    ).toDate()
+                                  : new Date()
+                              }
+                              mode="time"
+                              display="default"
+                              onChange={(event, selectedDate) => {
+                                setShowEndTimePicker(false);
+                                if (selectedDate) {
+                                  const updatedSlots = [...values.slots];
+                                  updatedSlots[0].end_time =
+                                    moment(selectedDate).format('hh:mm A'); // Format time directly
+                                  setFieldValue('slots', updatedSlots);
+                                }
+                              }}
+                            />
+                          )}
                         </View>
-                        <Text
-                          style={{
-                            color: colors.secondary,
-                            fontSize: 11,
-                            marginTop: 8,
-                          }}>
-                          Note : Add your shift timings here must be 9 hours or
-                          more
-                        </Text>
-                      </>
+                      </View>
                     )}
 
                     {values.mode === 'Part Time' && (
@@ -646,11 +530,6 @@ const Availability = profileDetails => {
                                     />
                                   )}
                               </View>
-                              {touched.slots && errors.slots && (
-                                <Text style={profileStyle.error}>
-                                  {errors.slots}
-                                </Text>
-                              )}
                             </View>
                           )}
                           keyExtractor={(item, index) => index.toString()}
@@ -673,13 +552,6 @@ const Availability = profileDetails => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
-            showDelete={selectedItem !== null} // Show delete only if editing
-            onDelete={() => {
-              if (selectedItem !== null) {
-                deleteAvailability(selectedItem); // Call deleteLanguage with the current index
-                closeModal(); // Close the modal after deletion
-              }
-            }}
           />
         </View>
       </Modal>

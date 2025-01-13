@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import {colors} from '../../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+const {width} = Dimensions.get('window'); // Get the screen width
 
 const SavedJobScreen = () => {
   const [id, setId] = useState();
@@ -60,20 +62,82 @@ const SavedJobScreen = () => {
         {Array.isArray(SavedJobs?.saved_jobs) &&
         SavedJobs.saved_jobs.length > 0 ? (
           SavedJobs.saved_jobs.map(savedJob => (
-            <TouchableOpacity
-              key={savedJob.job.id}
-              onPress={() =>
-                navigation.navigate('JobDetailScreen', {
-                  job_id: savedJob.job.id,
-                })
-              }
-              style={styles.card}>
+            <TouchableOpacity key={savedJob.job.id} style={styles.card}>
               <View style={styles.cardContent}>
-                <View style={styles.jobTitleContainer}>
-                  <Text style={styles.cardTitle}>
-                    {savedJob?.job?.job_title?.title ||
-                      'Job Title Not Available'}
-                  </Text>
+                <View style={styles.innerContainer}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('JobDetailScreen', {
+                        job_id: savedJob.job.id,
+                      })
+                    }>
+                    <View style={styles.jobTitleContainer}>
+                      {savedJob?.job?.job_title?.title && (
+                        <Text style={styles.cardTitle}>
+                          {savedJob.job.job_title.title}
+                        </Text>
+                      )}
+                      <View style={styles.detailsRow}>
+                        <Ionicons
+                          name="location"
+                          size={14}
+                          color={colors.primary}
+                        />
+                        {savedJob?.job?.job_location &&
+                          savedJob.job.job_location.length > 0 && (
+                            <Text style={styles.detailsText}>
+                              {savedJob.job.job_location.join(', ')}
+                            </Text>
+                          )}
+                      </View>
+                      <View style={styles.containerData}>
+                        <View style={styles.detailsRow}>
+                          <Ionicons
+                            name="briefcase"
+                            size={14}
+                            color={colors.primary}
+                          />
+                          {savedJob?.job?.experience_level && (
+                            <Text style={styles.detailsText}>
+                              {`${
+                                savedJob.job.experience_level.minYear || 0
+                              } - ${
+                                savedJob.job.experience_level.maxYear || 0
+                              } years`}
+                            </Text>
+                          )}
+                        </View>
+                        <View style={styles.detailsalary}>
+                          <Ionicons
+                            name="cash"
+                            size={14}
+                            color={colors.primary}
+                          />
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
+                            <CustomFormatAmount
+                              amount={savedJob?.job?.salary?.yearly?.min || 0}
+                            />
+                            <Text style={{color: colors.primary}}> - </Text>
+                            <CustomFormatAmount
+                              amount={savedJob?.job?.salary?.yearly?.max || 0}
+                            />
+                            <Text
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 'bold',
+                                color: 'gray',
+                              }}>
+                              {savedJob?.job?.salary?.yearly?.currency || 'N/A'}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => toggleBookmark(savedJob.job.id)}
                     style={styles.bookmarkIconContainer}>
@@ -89,56 +153,6 @@ const SavedJobScreen = () => {
                   </TouchableOpacity>
                 </View>
 
-                <View style={styles.detailsContainer}>
-                  <View style={styles.detailsRow}>
-                    <Ionicons
-                      name="location"
-                      size={14}
-                      color={colors.primary}
-                    />
-                    <Text style={styles.detailsText}>
-                      {savedJob?.job?.job_location
-                        ?.map(location => location.name || 'Unknown Location')
-                        .join(', ')}
-                    </Text>
-                  </View>
-                  <View style={styles.containerData}>
-                    <View style={styles.detailsRow}>
-                      <Ionicons
-                        name="briefcase"
-                        size={14}
-                        color={colors.primary}
-                      />
-                      <Text style={styles.detailsText}>
-                        {`${savedJob?.job?.experience_level?.minYear || 0} - ${
-                          savedJob?.job.experience_level?.maxYear || 0
-                        } years`}
-                      </Text>
-                    </View>
-                    <View style={styles.detailsalary}>
-                      <Ionicons name="cash" size={14} color={colors.primary} />
-                      <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <CustomFormatAmount
-                          amount={savedJob?.job?.salary?.yearly?.min || 0}
-                        />
-                        <Text style={{color: colors.primary}}> - </Text>
-                        <CustomFormatAmount
-                          amount={savedJob?.job?.salary?.yearly?.max || 0}
-                        />
-                        <Text
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 'bold',
-                            color: 'gray',
-                          }}>
-                          {savedJob?.job?.salary?.yearly?.currency || 'N/A'}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-
                 <View style={styles.innerCard}>
                   <View style={styles.iconMain}>
                     <Image
@@ -151,27 +165,32 @@ const SavedJobScreen = () => {
                     />
                     <View style={styles.companyMaincontainer}>
                       <View style={styles.companyDetail}>
-                        <Text style={styles.companyText}>
-                          {savedJob?.job?.company?.company_name ||
-                            'Company Name Not Available'}
-                        </Text>
-                        <View style={styles.icon}>
-                          <Ionicons
-                            name="star"
-                            size={14}
-                            color="#ffd700"
-                            style={styles.ratingIcon}
-                          />
-                          <Text style={styles.companyReview}>
-                            {savedJob?.rating || 0}
+                        {savedJob?.job?.company?.company_name && (
+                          <Text style={styles.companyText}>
+                            {savedJob?.job?.company?.company_name}
                           </Text>
-                        </View>
+                        )}
+                        {savedJob?.rating && (
+                          <View style={styles.icon}>
+                            <Ionicons
+                              name="star"
+                              size={14}
+                              color="#ffd700"
+                              style={styles.ratingIcon}
+                            />
+                            <Text style={styles.companyReview}>
+                              {savedJob?.rating}
+                            </Text>
+                          </View>
+                        )}
                       </View>
                     </View>
+                  </View>
+                  {savedJob?.job?.created_at && (
                     <Text style={styles.companyDate}>
                       {moment(savedJob?.job?.created_at).format('MMM D')}
                     </Text>
-                  </View>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>
@@ -194,15 +213,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    width: '100%',
     padding: 12,
   },
   card: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    marginVertical: 10,
+    borderRadius: 8,
+    marginVertical: 8,
     padding: 12,
-    // marginHorizontal: 12,
   },
 
   cardContent: {
@@ -211,10 +228,15 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
-  jobTitleContainer: {
+  innerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Ensures title and bookmark are on opposite sides
-    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  jobTitleContainer: {
+    width: width * 0.78,
+  },
+  bookmarkIconContainer: {
+    width: width * 0.2,
   },
   cardTitle: {
     fontSize: 14,
@@ -250,25 +272,14 @@ const styles = StyleSheet.create({
   },
   innerCard: {
     flexDirection: 'row',
-    padding: 5,
-    borderRadius: 8,
-    gap: 8,
-    // alignItems: 'center',
-    marginTop: 6,
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
   },
-  iconContainer: {
-    backgroundColor: '#fafafa', // Set the background color for the icon
-    borderRadius: 4, // Make the background circular (adjust size as needed)
-    padding: 8, // Add some padding around the icon
-    // marginRight: 10,             // Add some space between icon and text
-    borderWidth: 1, // Add border to the background
-    borderColor: '#ddd', // Set the color of the border
-    justifyContent: 'center', // Center the icon inside the background
-    alignItems: 'center', // Center the icon horizontally
-    // marginTop:8
-  },
+
   iconMain: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   companyDetail: {
     flexDirection: 'column',
@@ -276,7 +287,6 @@ const styles = StyleSheet.create({
   companyMaincontainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '70%',
   },
   logo: {
     width: 38,
@@ -284,21 +294,14 @@ const styles = StyleSheet.create({
     resizeMode: 'contain', // Adjusts the image to cover the container uniformly
     marginRight: 8,
   },
-  techContainer: {
-    //  alignItems:'center'
-    justifyContent: 'center',
-  },
-  companyMainContainer: {
-    flexDirection: 'row',
-    // alignItems:'center',
-  },
+
   companyText: {
     color: 'gray',
     fontSize: 12,
     marginBottom: 2,
   },
   companyReview: {
-    fontSize: 10,
+    fontSize: 12,
     color: 'gray',
   },
   icon: {
@@ -309,7 +312,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   companyDate: {
-    fontSize: 10,
+    fontSize: 12,
     alignItems: 'center',
     color: 'gray',
 

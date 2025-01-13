@@ -29,6 +29,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Availability from './Personal/Availability';
 import {ProfileContext} from '../ProfileContext';
 import ProfileHeadline from './ProfileHeadline';
+import Spinner from 'react-native-loading-spinner-overlay';
+import GlobalStyle from '../../../Global_CSS/GlobalStyle';
 const Index = () => {
   const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [loading, setLoading] = useState(true); // Loader state
@@ -37,7 +39,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('Personal');
   const dispatch = useDispatch();
   const {GetProfileDetails} = UserProfileViewController();
-  const {profileDetails} = useSelector(state => state.profile);
+  const {profileDetails, isLoading} = useSelector(state => state.profile);
   const [id, setId] = useState();
   const isFocus = useIsFocused();
 
@@ -47,9 +49,7 @@ const Index = () => {
         const storedId = await AsyncStorage.getItem('user_data');
         if (storedId) {
           setId(storedId);
-          setLoading(true); // Start loader
           await dispatch(GetProfileDetails(storedId));
-          setLoading(false); // Stop loader after data is fetched
         }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
@@ -156,10 +156,22 @@ const Index = () => {
 
   return (
     <>
-      {loading ? ( // Show loader if loading is true
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
+      {isLoading ? ( // Show loader if loading is true
+        <Spinner
+          visible={isLoading}
+          textContent={'Believe in the journey – we’re here for you!'}
+          textStyle={styles.spinnerTextStyle}
+          overlayColor="rgba(0, 0, 0, 0.5)"
+          animation="fade"
+          size="large"
+          customIndicator={
+            <Image
+              source={require('../../../Assets/CompanyLogo/Swatsan.png')}
+              style={GlobalStyle.loaderimage}
+              resizeMode="center"
+            />
+          }
+        />
       ) : (
         profileDetails && (
           <View style={styles.mainContainer}>

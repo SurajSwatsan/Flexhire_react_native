@@ -16,10 +16,11 @@ import UserApplies from '../Screens/BottomTabScreens/UserAppliesScreen';
 import HomeComponent from '../Screens/BottomTabScreens/HomeScreen';
 import {colors} from '../Global_CSS/TheamColors';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen';
+import {useDispatch} from 'react-redux';
 
 const CustomBottomTab = () => {
   const [selectedTab, setSelectedTab] = useState('Home');
-
+  const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
       const backAction = () => {
@@ -52,6 +53,9 @@ const CustomBottomTab = () => {
   );
 
   const renderContent = () => {
+    if (selectedTab !== 'Jobs') {
+      dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
+    }
     switch (selectedTab) {
       case 'Home':
         return <HomeComponent />;

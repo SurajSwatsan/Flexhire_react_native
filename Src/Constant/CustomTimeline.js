@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../Global_CSS/TheamColors';
 import moment from 'moment';
 
 const applicationStatus = [
   {
-    name: 'Applied',
+    name: 'APPLIED',
     icon: 'document-text',
   },
   {
@@ -14,26 +13,27 @@ const applicationStatus = [
     icon: 'eye',
   },
   {
-    name: 'Accepted',
+    name: 'ACCEPTED',
     icon: 'checkmark-circle',
   },
   {
-    name: 'Rejected',
+    name: 'REJECTED',
     icon: 'close-circle',
   },
   {
-    name: 'Interview Scheduled',
+    name: 'INTERVIEW',
     icon: 'calendar',
   },
   {
-    name: 'Hired',
+    name: 'HIRED',
     icon: 'person',
   },
 ];
 
 const CustomTimelineScreen = ({res}) => {
-  const isAcceptedPresent = res.some(entry => entry.name === 'Accepted');
-  const isRejectedPresent = res.some(entry => entry.name === 'Rejected');
+  const isAcceptedPresent = res.some(entry => entry.name === 'ACCEPTED');
+  const isRejectedPresent = res.some(entry => entry.name === 'REJECTED');
+  console.log(isAcceptedPresent, isRejectedPresent);
 
   const isStatusPresent = status => {
     return res.some(entry => entry.name === status);
@@ -50,16 +50,16 @@ const CustomTimelineScreen = ({res}) => {
         .filter(item => {
           if (isRejectedPresent) {
             const rejectedIndex = applicationStatus.findIndex(
-              entry => entry.name === 'Rejected',
+              entry => entry.name === 'REJECTED',
             );
             const itemIndex = applicationStatus.findIndex(
               entry => entry.name === item.name,
             );
-            return itemIndex <= rejectedIndex && item.name !== 'Accepted';
+            return itemIndex <= rejectedIndex && item.name !== 'ACCEPTED';
           }
 
           if (isAcceptedPresent) {
-            return item.name !== 'Rejected';
+            return item.name !== 'REJECTED';
           }
 
           return true; // Otherwise, show the item
@@ -82,8 +82,10 @@ const CustomTimelineScreen = ({res}) => {
                     styles.line,
                     {
                       backgroundColor:
-                        isStatusPresent(item.name) &&
-                        isStatusCompleted(item.name)
+                        isRejectedPresent && item.name == 'REJECTED'
+                          ? 'red'
+                          : isStatusPresent(item.name) &&
+                            isStatusCompleted(item.name)
                           ? 'green'
                           : isStatusPresent(item.name) &&
                             !isStatusCompleted(item.name)
@@ -100,8 +102,10 @@ const CustomTimelineScreen = ({res}) => {
                     styles.circle,
                     {
                       borderColor:
-                        isStatusPresent(item.name) &&
-                        isStatusCompleted(item.name)
+                        isRejectedPresent && item.name == 'REJECTED'
+                          ? 'red'
+                          : isStatusPresent(item.name) &&
+                            isStatusCompleted(item.name)
                           ? 'green'
                           : isStatusPresent(item.name) &&
                             !isStatusCompleted(item.name)
@@ -113,7 +117,10 @@ const CustomTimelineScreen = ({res}) => {
                     name={item.icon}
                     size={14}
                     color={
-                      isStatusPresent(item.name) && isStatusCompleted(item.name)
+                      isRejectedPresent && item.name == 'REJECTED'
+                        ? 'red'
+                        : isStatusPresent(item.name) &&
+                          isStatusCompleted(item.name)
                         ? 'green'
                         : isStatusPresent(item.name) &&
                           !isStatusCompleted(item.name)
@@ -130,8 +137,10 @@ const CustomTimelineScreen = ({res}) => {
                     styles.cardTitle,
                     {
                       color:
-                        isStatusPresent(item.name) &&
-                        isStatusCompleted(item.name)
+                        isRejectedPresent && item.name == 'REJECTED'
+                          ? 'red'
+                          : isStatusPresent(item.name) &&
+                            isStatusCompleted(item.name)
                           ? 'green'
                           : isStatusPresent(item.name) &&
                             !isStatusCompleted(item.name)
@@ -147,8 +156,10 @@ const CustomTimelineScreen = ({res}) => {
                     styles.cardDate,
                     {
                       color:
-                        isStatusPresent(item.name) &&
-                        isStatusCompleted(item.name)
+                        isRejectedPresent && item.name == 'REJECTED'
+                          ? 'red'
+                          : isStatusPresent(item.name) &&
+                            isStatusCompleted(item.name)
                           ? 'green'
                           : isStatusPresent(item.name) &&
                             !isStatusCompleted(item.name)
@@ -165,8 +176,10 @@ const CustomTimelineScreen = ({res}) => {
                     styles.description,
                     {
                       color:
-                        isStatusPresent(item.name) &&
-                        isStatusCompleted(item.name)
+                        isRejectedPresent && item.name == 'REJECTED'
+                          ? 'red'
+                          : isStatusPresent(item.name) &&
+                            isStatusCompleted(item.name)
                           ? 'green'
                           : isStatusPresent(item.name) &&
                             !isStatusCompleted(item.name)

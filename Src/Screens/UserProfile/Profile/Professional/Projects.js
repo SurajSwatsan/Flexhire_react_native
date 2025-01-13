@@ -17,11 +17,13 @@ import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {IconButton} from 'react-native-paper';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import CustomTabs from '../../../../Constant/CustomTabs';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
 import * as Yup from 'yup';
 import {ProfileContext} from '../../ProfileContext';
+import MasterViewController from '../../../../Redux/Action/MasterViewController';
+import CustomSelectionModal from '../../../../Constant/CustomSelectionModal';
 
 const TeamSizeOptions = Array.from({length: 31}, (_, i) => ({
   label: `${i}`,
@@ -47,6 +49,7 @@ const validationSchema = Yup.object().shape({
   title: Yup.string()
     .required('Project Title is required')
     .min(3, 'Title should be at least 3 characters long'),
+  role: Yup.string().required('Role is required'),
   client: Yup.string()
     .required('Client is required')
     .min(2, 'Client name should be at least 2 characters long'),
@@ -59,10 +62,26 @@ const validationSchema = Yup.object().shape({
   worked_duration: Yup.object().shape({
     from: Yup.date()
       .required('Start date is required')
-      .typeError('Invalid start date format'),
+      .typeError('Invalid start date format')
+      .max(new Date(), 'Start date cannot be in the future'),
     till: Yup.date()
       .nullable()
       .typeError('Invalid end date format')
+      .test(
+        'validate-till-strict',
+        'End date must be strictly after start date',
+        function (value) {
+          const {from} = this.parent;
+          if (value && from) {
+            if (value <= from) {
+              return this.createError({
+                message: 'End date must be strictly after start date',
+              });
+            }
+          }
+          return true; // Pass validation if no issues
+        },
+      )
       .test(
         'validate-till-finished',
         'End date is required and must be after start date when status is Finished',
@@ -76,13 +95,13 @@ const validationSchema = Yup.object().shape({
                 message: 'End date is required when status is Finished',
               });
             }
-            if (value < from) {
+            if (value <= from) {
               return this.createError({
-                message: 'End date cannot be before start date',
+                message:
+                  'End date must be strictly after start date when status is Finished',
               });
             }
           }
-
           return true; // Pass validation if not 'Finished'
         },
       ),
@@ -96,11 +115,16 @@ const Projects = profileDetails => {
   const [projectList, setProjectList] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const [keyskillsMasters, setKeyskillsMasters] = useState([]);
+
   let formikRef = null;
 
   const [id, setId] = useState();
   const dispatch = useDispatch();
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  const {GetKeyskills} = MasterViewController();
+  const {keyskills} = useSelector(state => state.master);
   // const [selectedStatus, setSelectedStatus] = useState(null); // Track selected tab
 
   // const handleTabPress = value => {
@@ -126,6 +150,28 @@ const Projects = profileDetails => {
 
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
+
+  useEffect(() => {
+    const get_keyskills = () => {
+      dispatch(GetKeyskills());
+    };
+    get_keyskills();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const keyskills_data = keyskills?.map(skill => ({
+      id: skill.id,
+      value: skill.name,
+    }));
+
+    setKeyskillsMasters(keyskills_data);
+
+    // console.log('Job Title Category', role_data);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyskills]);
 
   const openModal = item => {
     setSelectedProject(item);
@@ -197,7 +243,12 @@ const Projects = profileDetails => {
             team_size: values.team_size,
             role: values.role,
             role_description: values.role_description,
-            skills_used: values.skills_used,
+            skills_used: values.skills_used.map(skill =>
+              typeof skill === 'string'
+                ? skill
+                : keyskillsMasters.find(item => item.value === skill?.value)
+                    ?.value || '',
+            ),
           },
         ],
       };
@@ -322,7 +373,7 @@ const Projects = profileDetails => {
                 initialValues={{
                   title: selectedProject?.title || '',
                   client: selectedProject?.client || '',
-                  status: selectedProject?.status || '',
+                  status: selectedProject?.status || 'Finished',
                   description: selectedProject?.description || '',
                   worked_duration: {
                     from: selectedProject?.worked_duration?.from
@@ -339,7 +390,7 @@ const Projects = profileDetails => {
                   team_size: selectedProject?.team_size || '',
                   role: selectedProject?.role || '',
                   role_description: selectedProject?.role_description || '',
-                  skills_used: selectedProject?.skills_used || '',
+                  skills_used: selectedProject?.skills_used || [],
                 }}
                 innerRef={ref => (formikRef = ref)}
                 validationSchema={validationSchema}
@@ -364,6 +415,12 @@ const Projects = profileDetails => {
                       label="Project Title*"
                       value={values.title}
                       onChangeText={handleChange('title')}
+                    />
+                    <ReusableTextInput
+                      name="role"
+                      label="Role in Project"
+                      value={values.role}
+                      onChangeText={handleChange('role')}
                     />
                     <ReusableTextInput
                       name="client"
@@ -439,6 +496,30 @@ const Projects = profileDetails => {
                       value={values.description}
                       onChangeText={handleChange('description')}
                     />
+                    <CustomSelectionModal
+                      title="Skills Used"
+                      data={keyskillsMasters}
+                      selectedItems={values.skills_used.map(
+                        skill =>
+                          keyskillsMasters.find(
+                            item => item.value === skill,
+                          ) || {
+                            id: null,
+                            value: skill,
+                          },
+                      )}
+                      setSelectedItems={items =>
+                        setFieldValue(
+                          'skills_used',
+                          items.map(item => item?.value || ''),
+                        )
+                      }
+                      placeholder="Select Skills"
+                      isMultiSelect
+                      maxSelectionLimit={5}
+                      // error={errors.skills_used}
+                      // touched={touched.skills_used}
+                    />
                     {showMoreDetails ? (
                       <View />
                     ) : (
@@ -485,23 +566,12 @@ const Projects = profileDetails => {
                             setFieldValue('team_size', item.value)
                           }
                         />
-                        <ReusableTextInput
-                          name="role"
-                          label="Role in Project"
-                          value={values.role}
-                          onChangeText={handleChange('role')}
-                        />
+
                         <ReusableTextInput
                           name="role_description"
                           label="Role Description"
                           value={values.role_description}
                           onChangeText={handleChange('role_description')}
-                        />
-                        <ReusableTextInput
-                          name="skills_used"
-                          label="Skills Used"
-                          value={values.skills_used}
-                          onChangeText={handleChange('skills_used')}
                         />
                       </>
                     )}

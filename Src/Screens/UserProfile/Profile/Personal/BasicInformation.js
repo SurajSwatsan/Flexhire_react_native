@@ -191,7 +191,7 @@ const BasicInformation = profileDetails => {
     DOB: profileDetails?.profileDetails?.basic_details[0]?.DOB
       ? moment(
           profileDetails.profileDetails.basic_details[0].DOB,
-          'DD-MM-YYYY',
+          'DD/MM/YYYY',
         ).toDate()
       : null,
     gender: profileDetails?.profileDetails?.basic_details[0]?.gender || '',
@@ -222,7 +222,7 @@ const BasicInformation = profileDetails => {
       user_id: id,
       basic_details: [
         {
-          DOB: values.DOB ? moment(values.DOB).format('DD-MM-YYYY') : null, // Format DOB to DD-MM-YYYY
+          DOB: values.DOB ? moment(values.DOB).format('DD/MM/YYYY') : null, // Format DOB to DD-MM-YYYY
           gender: values.gender,
           country:
             countrydata?.find(c => c.value === values.country)?.value || '',

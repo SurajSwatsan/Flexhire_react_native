@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Material I
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../Global_CSS/TheamColors';
 import {BASE_URL} from '../Services/baseAPI';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
 
 const CustomCompanyCard = ({companyData}) => {
   const navigation = useNavigation();
@@ -34,19 +35,23 @@ const CustomCompanyCard = ({companyData}) => {
       <TouchableOpacity
         style={{marginHorizontal: 8}}
         onPress={() => {
-          // Navigate to 'CompanyOverview' and pass the company ID
           navigation.navigate('CompanyOverview', {
-            company_id: companyData?.id, // Pass the id dynamically
+            company_id: companyData?.id,
           });
         }}>
-        <Image
-          source={
-            companyData?.logo
-              ? {uri: BASE_URL + companyData?.logo} // Dynamically load logo
-              : require('../Assets/CompanyLogo/Swatsan.png') // Fallback logo
-          }
-          style={styles.companyImage}
-        />
+        {companyData?.logo ? (
+          <Image
+            source={{uri: BASE_URL + companyData?.logo}}
+            style={styles.companyImage}
+          />
+        ) : (
+          <Ionicons
+            name="business"
+            size={36}
+            color="gray"
+            style={{alignSelf: 'center', margin: 10}}
+          />
+        )}
         <View>
           <Text style={styles.companyName}>{companyData?.company_name}</Text>
         </View>
@@ -102,5 +107,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
- 
+
 export default CustomCompanyCard;

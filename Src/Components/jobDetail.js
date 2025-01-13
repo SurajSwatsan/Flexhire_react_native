@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -13,31 +13,33 @@ import {
 import CustomHeader from '../Constant/CustomBackIcon';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/TheamColors';
-import {IconButton} from 'react-native-paper';
+import {ActivityIndicator, IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import JobViewController from '../Redux/Action/jobViewController';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Services/baseAPI';
 import {Toast} from 'react-native-toast-notifications';
 import JobCardStyle from '../Global_CSS/JobCardStyle';
+import CustomFormatAmount from '../Constant/CustomFormatAmount';
+import moment from 'moment';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-const JobDetailScreen = ({route, navigation}) => {
+const JobDetailScreen = ({route}) => {
   const {job_id} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
   const [id, setId] = useState();
   const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
-  const [savedJobs, setSavedJobs] = useState({}); // Track saved status per job ID
-
+  const [jobId, setJobId] = useState();
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const navigation = useNavigation(); // Get the navigation prop
   const [isApplied, setIsApplied] = useState(false);
   const dispatch = useDispatch();
-  const {GetJobDetails, GetJobApplications, ApplyJob, SaveJob} =
-    JobViewController();
-  const {JobDetails, SavedJobs, JobApplications} = useSelector(
-    state => state.job,
-  );
+  const scrollViewRef = useRef(null);
+  const {GetJobDetails, ApplyJob, SaveJob} = JobViewController();
+  const {JobDetails, SavedJobs, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -48,27 +50,40 @@ const JobDetailScreen = ({route, navigation}) => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        dispatch(GetJobDetails(job_id, id));
-        dispatch(GetJobApplications(id));
+        setJobId(job_id);
 
-        console.log(id); // Log the value once it's retrieved
+        dispatch(GetJobDetails(job_id, id));
+        // dispatch(GetJobApplications(id));
+
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
     };
-
+    dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
     getUserData();
   }, [isFocus]);
 
-  // const relatedJobs = jobData.related_jobs;
-  useEffect(() => {
-    // console.log('******************************************', JobDetails);
-  }, [JobDetails]);
-  const jobIds = Array.isArray(JobApplications)
-    ? JobApplications.map(application => application?.job?.id)
-    : [];
-  console.log('Job IDs:', jobIds);
-  // console.log('aplied', JSON.stringify(JobApplications, null, 2));
+  // const jobIds = Array.isArray(JobApplications)
+  //   ? JobApplications.map(application => application?.job?.id)
+  //   : [];
+  function formatAmount(value) {
+    if (value == null || isNaN(value)) {
+      // Handle undefined, null, or invalid values
+      return '0';
+    }
+
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(1) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(1) + ' Lac';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(1) + ' K';
+    } else {
+      return value.toString();
+    }
+  }
+
+  // console.log('JobDetails', JSON.stringify(JobDetails, null, 2));
 
   // const handleApply = () => {
   //   const data = {
@@ -141,20 +156,16 @@ const JobDetailScreen = ({route, navigation}) => {
   // Function to create a lookup map from SavedJobs
   const createSavedJobsMap = () => {
     const map = {};
+    (SavedJobs?.saved_jobs ?? []).forEach(savedJob => {
+      const jobId = savedJob?.job?.id ?? null;
+      const isSaved = savedJob?.job?.is_saved ?? false;
 
-    // Check if SavedJobs.saved_jobs exists and is an array
-    if (Array.isArray(SavedJobs?.saved_jobs)) {
-      SavedJobs.saved_jobs.forEach(savedJob => {
-        if (savedJob?.job?.id !== undefined) {
-          map[savedJob.job.id] = savedJob.job.is_saved;
-        }
-      });
-    } else {
-      console.warn(
-        'SavedJobs.saved_jobs is not a valid array:',
-        SavedJobs?.saved_jobs,
-      );
-    }
+      if (jobId !== null) {
+        map[jobId] = isSaved;
+      } else {
+        console.warn('Invalid job entry:', savedJob);
+      }
+    });
 
     return map;
   };
@@ -205,6 +216,16 @@ const JobDetailScreen = ({route, navigation}) => {
                     ),
                   )}
                 </View>
+                <View style={styles.jobDetailsContainer}>
+                  <Text style={styles.jobDescriptionheader}>Skills:</Text>
+                  <View style={styles.chipContainer}>
+                    {JobDetails?.key_skills?.map((skill, index) => (
+                      <View key={index} style={styles.chip}>
+                        <Text style={styles.chipText}>{skill}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
 
                 <View style={styles.jobDetailsContainer}>
                   <Text style={styles.jobDescriptionheader}>
@@ -223,8 +244,7 @@ const JobDetailScreen = ({route, navigation}) => {
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Department:</Text>
                   <Text style={styles.jobDetails1}>
-                    {' '}
-                    {JobDetails?.department?.[0]?.name}
+                    {JobDetails?.department?.[0]}
                   </Text>
                 </View>
                 <View style={styles.jobDepartmentContainer}>
@@ -235,12 +255,21 @@ const JobDetailScreen = ({route, navigation}) => {
                 </View>
 
                 <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Education:</Text>
-                  <View style={styles.educationItemsContainer}>
-                    <Text style={styles.jobDetails1}>
-                      {JobDetails?.education?.course?.name}
-                    </Text>
-                  </View>
+                  {JobDetails?.education?.length > 0 && (
+                    <>
+                      <Text style={styles.jobDetailsheader}>Education:</Text>
+                      <View style={styles.educationItemsContainer}>
+                        {JobDetails.education.map((course, index) => (
+                          <Text key={index} style={styles.jobDetails1}>
+                            {course?.course_name}
+                            {course?.specialization
+                              ? ` - ${course.specialization},`
+                              : ','}
+                          </Text>
+                        ))}
+                      </View>
+                    </>
+                  )}
                 </View>
 
                 <View style={styles.jobDepartmentContainer}>
@@ -270,7 +299,7 @@ const JobDetailScreen = ({route, navigation}) => {
             <View style={styles.jobDepartmentContainer}>
               <Text style={styles.jobDetailsheader}>About:</Text>
               <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.about_us?.[0]?.description}
+                {JobDetails?.company?.company_description}
               </Text>
             </View>
 
@@ -306,31 +335,57 @@ const JobDetailScreen = ({route, navigation}) => {
         return null;
     }
   };
+  const handleJobCardPress = jobId => {
+    setJobId(jobId);
+    dispatch(GetJobDetails(jobId, id));
+    scrollViewRef.current?.scrollTo({x: 0, y: 0, animated: true});
+
+    // console.log('JobCardPress triggered for ID:', jobId);
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={GlobalStyle.headerStyle}>
-        <CustomHeader />
-        <View style={styles.headerRightContainer}>
-          <IconButton
-            icon={
-              savedJobsMap[JobDetails?.id] ? 'bookmark' : 'bookmark-outline'
-            }
-            iconColor={colors.primary}
-            size={32}
-            // style={JobCardStyle.saveicon}
-            onPress={() => toggleSaveJob(JobDetails?.id)}
-          />
+    <>
+      <View style={styles.container}>
+        {/* <Spinner
+          visible={isLoading || jobId != JobDetails?.id}
+          textContent={'Believe in the journey – we’re here for you!'}
+          textStyle={styles.spinnerTextStyle}
+          overlayColor="rgba(0, 0, 0, 0.5)"
+          animation="fade"
+          size="large"
+          customIndicator={
+            <Image
+              source={require('../Assets/CompanyLogo/Swatsan.png')}
+              style={GlobalStyle.loaderimage}
+              resizeMode="center"
+            />
+          }></Spinner> */}
+        {jobId == JobDetails?.id && (
+          <>
+            <View style={GlobalStyle.headerStyle}>
+              <CustomHeader />
+              <View style={styles.headerRightContainer}>
+                <IconButton
+                  icon={
+                    savedJobsMap[JobDetails?.id]
+                      ? 'bookmark'
+                      : 'bookmark-outline'
+                  }
+                  iconColor={colors.primary}
+                  size={32}
+                  // style={JobCardStyle.saveicon}
+                  onPress={() => toggleSaveJob(JobDetails?.id)}
+                />
 
-          <IconButton
-            icon="share-variant-outline"
-            iconColor={colors.primary}
-            size={32}
-            style={styles.icon}
-            onPress={() => setModalVisible(true)}
-          />
+                <IconButton
+                  icon="share-variant-outline"
+                  iconColor={colors.primary}
+                  size={32}
+                  style={styles.icon}
+                  onPress={() => setModalVisible(true)}
+                />
 
-          {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
+                {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons
               name="share-social-outline"
               size={24}
@@ -338,248 +393,359 @@ const JobDetailScreen = ({route, navigation}) => {
               style={styles.icon}
             />
           </TouchableOpacity> */}
-        </View>
-        {/* Modal for sharing social media icons */}
-        <Modal
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}>
-          <View style={styles.SharemodalBackground}>
-            <View style={styles.SharemodalContent}>
-              <Text style={styles.SharemodalTitle}>Share this on:</Text>
-
-              {/* Social Media Icons */}
-              <View style={styles.socialIconsContainer}>
-                <TouchableOpacity onPress={() => handleShare('whatsapp')}>
-                  <Ionicons name="logo-whatsapp" size={40} color={'#25D366'} />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleShare('facebook')}>
-                  <Ionicons name="logo-facebook" size={40} color={'#1877F2'} />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleShare('twitter')}>
-                  <Ionicons name="logo-twitter" size={40} color={'#1DA1F2'} />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleShare('linkedin')}>
-                  <Ionicons name="logo-linkedin" size={40} color={'#0077B5'} />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleShare('instagram')}>
-                  <Ionicons name="logo-instagram" size={40} color={'#E1306C'} />
-                </TouchableOpacity>
               </View>
+              {/* Modal for sharing social media icons */}
+              <Modal
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}>
+                <View style={styles.SharemodalBackground}>
+                  <View style={styles.SharemodalContent}>
+                    <Text style={styles.SharemodalTitle}>Share this on:</Text>
 
-              {/* Close Button */}
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.SharecloseButton}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      </View>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.companyInfoContainer}>
-          <View style={styles.companyInfo}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={
-                  JobDetails?.company?.logo
-                    ? {uri: BASE_URL + JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
-                    : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
-                }
-                style={styles.logo}
-              />
-            </View>
-            <Text style={styles.jobTitle}>{JobDetails?.job_title?.title}</Text>
-            <Text style={styles.companyName}>{JobDetails?.company_name}</Text>
-            <View style={styles.locationContainer}>
-              <IconButton
-                icon="map-marker"
-                iconColor={colors.primary}
-                size={18}
-                style={{padding: 0, marginLeft: -10, height: 20}}
-              />
-              {JobDetails?.job_location?.map((location, idx) => (
-                <Text key={idx} style={styles.locationText}>
-                  {location.name}
-                  {JobDetails?.job_location?.length - 1 != idx ? ',' : ''}
-                </Text>
-              ))}
-            </View>
+                    {/* Social Media Icons */}
+                    <View style={styles.socialIconsContainer}>
+                      <TouchableOpacity onPress={() => handleShare('whatsapp')}>
+                        <Ionicons
+                          name="logo-whatsapp"
+                          size={40}
+                          color={'#25D366'}
+                        />
+                      </TouchableOpacity>
 
-            <View style={styles.mainfildContainer}>
-              {[
-                {
-                  icon: 'cash',
-                  label: 'Salary Range',
-                  value: `${JobDetails?.salary?.yearly?.min} - ${JobDetails?.salary?.yearly?.max} ${JobDetails?.salary?.yearly?.currency}`,
-                },
-                {
-                  icon: 'signal-cellular-3',
-                  label: 'Level',
-                  value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
-                },
-                {
-                  icon: 'account',
-                  label: 'Openings',
-                  value: JobDetails?.openings,
-                },
-                {
-                  icon: 'account-group',
-                  label: 'Applications',
-                  value: JobDetails?.applicant_count,
-                },
-              ].map((item, index) => (
-                <View key={index} style={styles.fildContainer}>
-                  <IconButton
-                    icon={item.icon}
-                    iconColor={colors.primary}
-                    size={24}
-                    style={styles.iconstyle}
-                  />
-                  <View style={styles.fildinerContainer}>
-                    <Text style={styles.jobDetails1}>{item.label}</Text>
-                    <Text style={styles.jobDetails}>{item.value}</Text>
+                      <TouchableOpacity onPress={() => handleShare('facebook')}>
+                        <Ionicons
+                          name="logo-facebook"
+                          size={40}
+                          color={'#1877F2'}
+                        />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity onPress={() => handleShare('twitter')}>
+                        <Ionicons
+                          name="logo-twitter"
+                          size={40}
+                          color={'#1DA1F2'}
+                        />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity onPress={() => handleShare('linkedin')}>
+                        <Ionicons
+                          name="logo-linkedin"
+                          size={40}
+                          color={'#0077B5'}
+                        />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={() => handleShare('instagram')}>
+                        <Ionicons
+                          name="logo-instagram"
+                          size={40}
+                          color={'#E1306C'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Close Button */}
+                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                      <Text style={styles.SharecloseButton}>Close</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-              ))}
+              </Modal>
             </View>
+            <ScrollView style={styles.scrollView} ref={scrollViewRef}>
+              <View style={styles.companyInfoContainer}>
+                <View style={styles.companyInfo}>
+                  <View style={styles.logoContainer}>
+                    <Image
+                      source={
+                        JobDetails?.company?.logo
+                          ? {uri: BASE_URL + JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
+                          : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
+                      }
+                      style={styles.logo}
+                    />
+                  </View>
+                  <Text style={styles.jobTitle}>
+                    {JobDetails?.job_title?.title}
+                  </Text>
+                  <Text style={styles.companyName}>
+                    {JobDetails?.company_name}
+                  </Text>
+                  <View style={styles.locationContainer}>
+                    <IconButton
+                      icon="map-marker"
+                      iconColor={colors.primary}
+                      size={18}
+                      style={{padding: 0, marginLeft: -10, height: 20}}
+                    />
+                    {JobDetails?.job_location?.map((location, idx) => (
+                      <Text key={idx} style={styles.locationText}>
+                        {location}
+                        {JobDetails?.job_location?.length - 1 !== idx
+                          ? ', '
+                          : ''}
+                      </Text>
+                    ))}
+                  </View>
 
-            <View style={styles.tabContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.tabButton,
-                  activeTab === 'About' && styles.activeTab,
-                ]}
-                onPress={() => setActiveTab('About')}>
-                <Text style={styles.tabText}>About</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.tabButton,
-                  activeTab === 'Company' && styles.activeTab,
-                ]}
-                onPress={() => setActiveTab('Company')}>
-                <Text style={styles.tabText}>Company</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.tabButton,
-                  activeTab === 'Review' && styles.activeTab,
-                ]}
-                onPress={() => setActiveTab('Review')}>
-                <Text style={styles.tabText}>Review</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.contentContainer}>{renderTabs()}</View>
-          </View>
+                  <View style={styles.mainfildContainer}>
+                    {[
+                      {
+                        icon: 'cash',
+                        label: 'Salary Range',
+                        value: `${formatAmount(
+                          JobDetails?.salary?.yearly?.min,
+                        )} - ${formatAmount(JobDetails?.salary?.yearly?.max)} ${
+                          JobDetails?.salary?.yearly?.currency
+                        }`,
+                      },
+                      {
+                        icon: 'signal-cellular-3',
+                        label: 'Level',
+                        value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
+                      },
+                      {
+                        icon: 'account',
+                        label: 'Openings',
+                        value: JobDetails?.openings,
+                      },
+                      {
+                        icon: 'account-group',
+                        label: 'Applications',
+                        value: JobDetails?.applicant_count,
+                      },
+                    ].map((item, index) => (
+                      <View key={index} style={styles.fildContainer}>
+                        <IconButton
+                          icon={item.icon}
+                          iconColor={colors.primary}
+                          size={24}
+                          style={styles.iconstyle}
+                        />
+                        <View style={styles.fildinerContainer}>
+                          <Text style={styles.jobDetails1}>{item.label}</Text>
+                          <Text style={styles.jobDetails}>{item.value}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
 
-          {/* {relatedJobs && Object.keys(relatedJobs).length > 0 && (
-            <View style={styles.relatedjobcontainer}>
-              <View style={styles.displayContainer}>
-                <Text style={styles.contHead}>Related Jobs</Text>
-                <Text style={styles.seeAll}>See All</Text>
-              </View>
-
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.scrollContainer}
-                contentContainerStyle={styles.contentContainer1}>
-                {Object.entries(relatedJobs).map(([key, jobdata], index) => (
-                  <View key={jobdata.id || index} style={{marginRight: 12}}>
+                  <View style={styles.tabContainer}>
                     <TouchableOpacity
-                      onPress={() => {
-                        // Navigate to JobDetailScreen for the related job
-                        navigation.navigate('JobDetailScreen', {
-                          jobData: jobdata,
-                        });
-                      }}>
-                      <CustomJobCard jobData={jobdata} />
+                      style={[
+                        styles.tabButton,
+                        activeTab === 'About' && styles.activeTab,
+                      ]}
+                      onPress={() => setActiveTab('About')}>
+                      <Text style={styles.tabText}>About</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.tabButton,
+                        activeTab === 'Company' && styles.activeTab,
+                      ]}
+                      onPress={() => setActiveTab('Company')}>
+                      <Text style={styles.tabText}>Company</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.tabButton,
+                        activeTab === 'Review' && styles.activeTab,
+                      ]}
+                      onPress={() => setActiveTab('Review')}>
+                      <Text style={styles.tabText}>Review</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.contentContainer}>{renderTabs()}</View>
+                </View>
+
+                <Text
+                  style={[
+                    styles.jobDescriptionheader,
+                    {
+                      marginHorizontal: 12,
+                      marginBottom: 8,
+                      color: colors.secondary,
+                    },
+                  ]}>
+                  Related Jobs
+                </Text>
+                {JobDetails?.related_jobs?.map((item, index) => (
+                  <View key={item?.id || index} style={{marginBottom: 14}}>
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => handleJobCardPress(item.id)}>
+                      <View style={styles.jobCard}>
+                        <View style={styles.cardcompanyInfo}>
+                          <View style={styles.companylogo}>
+                            <Image
+                              source={
+                                item?.company?.logo
+                                  ? {uri: BASE_URL + item?.company?.logo}
+                                  : require('../Assets/CompanyLogo/Swatsan.png') // Replace with a default logo
+                              }
+                              style={styles.companyImage}
+                            />
+                            <View style={styles.textName}>
+                              <Text style={styles.jobTitle}>
+                                {item?.job_title?.title}
+                              </Text>
+                              <Text style={styles.companyName}>
+                                {/* {item?.company_name} */}
+                                {item?.company?.company_name
+                                  ? item?.company?.company_name
+                                  : item?.company_name}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        <View style={styles.workModeContainer}>
+                          {item?.work_modes?.map((mode, idx) => (
+                            <View key={idx} style={styles.workModeChip}>
+                              <Text style={styles.cardchipText}>{mode}</Text>
+                            </View>
+                          ))}
+                        </View>
+
+                        <View style={styles.cardlocation}>
+                          <Ionicons
+                            name="location-outline"
+                            size={18}
+                            color={colors.primary}
+                          />
+
+                          <Text style={styles.jobCardLocation}>
+                            {item?.job_location.join(', ')}
+                          </Text>
+                        </View>
+
+                        <View style={styles.line}></View>
+
+                        <View style={styles.jobFooter}>
+                          {item?.salary?.yearly && (
+                            <View style={styles.experienceContainer}>
+                              <Ionicons name="cash" size={14} color="#004466" />
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                }}>
+                                <CustomFormatAmount
+                                  amount={item.salary?.yearly?.min}
+                                />
+
+                                <Text style={{color: colors.primary}}> - </Text>
+                                <CustomFormatAmount
+                                  amount={item?.salary?.yearly?.max}
+                                />
+
+                                <Text
+                                  style={{
+                                    fontSize: 10,
+                                    fontWeight: 'bold',
+                                    color: 'gray',
+                                  }}>
+                                  {' '}
+                                  {item.salary.yearly.currency}
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                          {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
+                          <Text style={styles.jobPostedDate}>
+                            {moment(item?.created_at).fromNow()}{' '}
+                            {/* Format created_at date */}
+                          </Text>
+                        </View>
+                      </View>
                     </TouchableOpacity>
                   </View>
                 ))}
-              </ScrollView>
+              </View>
+            </ScrollView>
+
+            <View style={styles.applyButtonContainer}>
+              <View style={styles.applyButtonContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.applyButton,
+                    {
+                      backgroundColor: JobDetails?.is_applied
+                        ? 'green'
+                        : applyButtonColor, // Dynamically set background color
+                    },
+                  ]}
+                  onPress={() => {
+                    // console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
+
+                    if (JobDetails?.is_applied) {
+                      Toast.show('Already applied for this job!', {
+                        type: 'warning',
+                        placement: 'top',
+                        duration: 4000,
+                        offset: 100,
+                        animationType: 'slide-in',
+                      });
+                    } else {
+                      setIsModalVisible(true); // Open modal when not applied
+                    }
+                  }}
+                  disabled={JobDetails?.is_applied} // Disable button if already applied
+                >
+                  <Text style={styles.applyButtonText}>
+                    {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          )} */}
-        </View>
-      </ScrollView>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isModalVisible}
+              onRequestClose={() => setIsModalVisible(false)}>
+              <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                  <Text style={styles.modalTitle}>Apply for the Job</Text>
 
-      <View style={styles.applyButtonContainer}>
-        <View style={styles.applyButtonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.applyButton,
-              {
-                backgroundColor: JobDetails?.is_applied
-                  ? 'green'
-                  : applyButtonColor, // Dynamically set background color
-              },
-            ]}
-            onPress={() => {
-              // console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
+                  <Text style={styles.jobTitleModal}>
+                    {JobDetails?.job_title?.title}
+                  </Text>
 
-              if (JobDetails?.is_applied) {
-                Toast.show('Already applied for this job!', {
-                  type: 'warning',
-                  placement: 'top',
-                  duration: 4000,
-                  offset: 100,
-                  animationType: 'slide-in',
-                });
-              } else {
-                setIsModalVisible(true); // Open modal when not applied
-              }
-            }}
-            disabled={JobDetails?.is_applied} // Disable button if already applied
-          >
-            <Text style={styles.applyButtonText}>
-              {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+                  {/* Cover Letter Input */}
+                  <TextInput
+                    placeholderTextColor={colors.primary}
+                    style={[styles.input, styles.coverLetterInput]}
+                    placeholder="Cover Letter"
+                    multiline
+                    value={coverLetter}
+                    onChangeText={setCoverLetter}
+                    color={colors.primary}
+                  />
+
+                  {/* Apply Button in Modal */}
+                  <TouchableOpacity
+                    style={styles.applyButton}
+                    onPress={handleApply}>
+                    <Text style={styles.applyButtonText}>Apply</Text>
+                  </TouchableOpacity>
+
+                  {/* Close Modal Button */}
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIsModalVisible(false)}>
+                    <Text style={styles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          </>
+        )}
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}>
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Apply for the Job</Text>
-
-            <Text style={styles.jobTitleModal}>
-              {JobDetails?.job_title?.title}
-            </Text>
-
-            {/* Cover Letter Input */}
-            <TextInput
-              placeholderTextColor={colors.primary}
-              style={[styles.input, styles.coverLetterInput]}
-              placeholder="Cover Letter"
-              multiline
-              value={coverLetter}
-              onChangeText={setCoverLetter}
-              color={colors.primary}
-            />
-
-            {/* Apply Button in Modal */}
-            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-              <Text style={styles.applyButtonText}>Apply</Text>
-            </TouchableOpacity>
-
-            {/* Close Modal Button */}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>
+    </>
   );
 };
 
@@ -593,6 +759,7 @@ const styles = StyleSheet.create({
   icon: {
     // justifyContent: 'flex-end',
   },
+
   headerRightContainer: {
     flexDirection: 'row',
     // gap: 18,
@@ -707,9 +874,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 12,
   },
-  appliedButton: {
-    backgroundColor: 'green', // Disabled color to indicate the button is applied
-  },
+
   // displayContainer: {
   //   flexDirection: 'row',
   //   justifyContent: 'space-between',
@@ -724,7 +889,7 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 24,
+    marginTop: 18,
     width: '100%',
     borderBottomColor: 'lightgray',
     borderBottomWidth: 1,
@@ -751,10 +916,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingVertical: 6,
   },
-  contentText: {
-    fontSize: 16,
-    color: '#333',
-  },
+
   jobDetailsContainer: {
     marginBottom: 8,
     // alignItems: 'center',
@@ -814,11 +976,7 @@ const styles = StyleSheet.create({
     // marginBottom: 12,
     marginHorizontal: 12,
   },
-  relatedjobcontainer: {
-    // marginTop:16,
-    // marginBottom: 24,
-    backgroundColor: colors.background,
-  },
+
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -888,6 +1046,102 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: 'blue',
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap', // Allows chips to wrap to the next line
+    gap: 8,
+    marginTop: 8,
+    marginHorizontal: 12,
+  },
+  chip: {
+    backgroundColor: '#f2f2f2',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  chipText: {
+    fontSize: 12,
+    color: colors.primary,
+  },
+  jobCard: {
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    padding: 12,
+    marginHorizontal: 12,
+  },
+  cardcompanyInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  companylogo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  companyImage: {
+    height: 40,
+    width: 40,
+    borderRadius: 8,
+  },
+  textName: {
+    marginLeft: 8,
+  },
+  workModeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  workModeChip: {
+    fontSize: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+    marginTop: 8,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  cardchipText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cardlocation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  jobFooter: {
+    // marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  experienceContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 8,
+    gap: 6,
+  },
+  jobDetailsalary: {
+    fontSize: 10,
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  jobCardLocation: {
+    fontSize: 12,
+    color: colors.blackText,
+  },
+  line: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    marginVertical: 10,
+  },
+
+  jobPostedDate: {
+    fontSize: 12,
+    color: 'gray',
   },
 });
 export default JobDetailScreen;

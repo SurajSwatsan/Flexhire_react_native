@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import {Toast} from 'react-native-toast-notifications';
 
-const CustomInviteScreen = ({route}) => {
+const CustomInvitePage = ({route}) => {
   const dispatch = useDispatch();
   const {inviteData} = route.params;
   const {ApplyJob, RejectInvitation} = JobViewController();
@@ -63,7 +63,7 @@ const CustomInviteScreen = ({route}) => {
     setModalVisible(false);
   };
 
-  const handlePress = () => {
+  const handleRejectPress = () => {
     Alert.alert(
       'Do you want to reject?', // Title of the alert
       '',
@@ -75,12 +75,23 @@ const CustomInviteScreen = ({route}) => {
         },
         {
           text: 'Yes',
-          // onPress: () => dispatch(RejectInvitation(inviteData.id)),
+          onPress: () => dispatch(RejectInvitation(inviteData?.id)),
         },
       ],
       {cancelable: false},
     );
   };
+  function formatAmount(value) {
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(1) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(1) + ' Lac';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(1) + ' K';
+    } else {
+      return value.toString();
+    }
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -96,11 +107,9 @@ const CustomInviteScreen = ({route}) => {
 
         <View style={styles.container}>
           <View style={styles.groupsContainer}>
-            {inviteData?.job?.groups?.map((group, index) => (
-              <Text key={index} style={styles.detailsText}>
-                {group.name}
-              </Text>
-            ))}
+            <Text style={[styles.detailsText, {color: colors.primary}]}>
+              {inviteData?.job?.job_title?.title}
+            </Text>
           </View>
           <View style={styles.locationContainer}>
             <Ionicons
@@ -110,29 +119,28 @@ const CustomInviteScreen = ({route}) => {
               style={{padding: 0}} // Adjust the style
             />
             <Text style={styles.detailsText}>
-              {inviteData?.job?.job_location?.map(loc => loc.name).join(', ')}
+              {inviteData?.job?.job_location?.join(', ')}
+              {console.log(inviteData)}
             </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="briefcase" size={14} color={colors.primary} />
             <Text style={styles.detailsText}>
-              {' '}
               {`${inviteData?.job?.experience_level?.minYear}-${inviteData?.job?.experience_level?.maxYear} Years`}
             </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="cash" size={14} color={colors.primary} />
             <Text style={styles.detailsText}>
-              {' '}
-              `{inviteData?.job?.salary?.yearly?.min} -
-              {inviteData?.job?.salary?.yearly?.max}
-              {inviteData?.job?.salary?.yearly?.currency}`
+              {formatAmount(inviteData?.job?.salary?.yearly?.min)} -
+              {formatAmount(inviteData?.job?.salary?.yearly?.max)}{' '}
+              {inviteData?.job?.salary?.yearly?.currency}
             </Text>
           </View>
           <View style={styles.experienceContainer}>
             <Ionicons name="pin" size={14} color={colors.primary} />
             <Text style={styles.detailsText}>
-              {inviteData?.job?.work_modes}
+              {inviteData?.job?.work_modes?.join(', ')}
             </Text>
           </View>
         </View>
@@ -238,7 +246,7 @@ const CustomInviteScreen = ({route}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.notInterestedButton}
-          onPress={handlePress}>
+          onPress={() => handleRejectPress()}>
           <Text style={styles.notInterestedButtonText}>Not Interested</Text>
         </TouchableOpacity>
       </View>
@@ -257,6 +265,7 @@ const CustomInviteScreen = ({route}) => {
             <TextInput
               style={styles.coverLetterInput}
               placeholder="Write your cover letter here..."
+              placeholderTextColor="lightgray"
               multiline={true}
               numberOfLines={4}
               value={coverLetter}
@@ -382,7 +391,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1', // Added background color for the buttons container
     paddingVertical: 12, // Optional: To add some padding around the buttons
 
-    backgroundColor: colors.whiteText,
     padding: 10,
   },
   notInterestedButton: {
@@ -434,6 +442,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    color: colors.primary,
   },
   coverLetterInput: {
     height: 100,
@@ -475,4 +484,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomInviteScreen;
+export default CustomInvitePage;

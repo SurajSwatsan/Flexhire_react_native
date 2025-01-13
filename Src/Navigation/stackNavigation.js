@@ -15,7 +15,6 @@ import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
-import CustomInviteScreen from '../Constant/CustomInviteCard.js';
 import CustomNotificationScreen from '../Constant/CustomNotification.js';
 import ApplicationStatusScreen from '../Constant/ApplicationStatusScreen.js';
 import JobScreen from '../Screens/BottomTabScreens/JobScreen.js';
@@ -29,6 +28,8 @@ import ReportPage from '../DrawerContent/AboutUs/ReportPage.js';
 import PrivacyPolicyScreen from '../DrawerContent/AboutUs/PrivacyPolicyScreen.js';
 import TermsAndConditionsScreen from '../DrawerContent/AboutUs/TermsAndConditionPage.js';
 import CreditPage from '../DrawerContent/AboutUs/CreditPage.js';
+import CustomInvitePage from '../Constant/CustomInvitePage.js';
+import {colors} from '../Global_CSS/TheamColors.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -90,7 +91,18 @@ const StackNavigation = () => {
       <Stack.Screen
         name="bookmark"
         component={SavedJobScreen}
-        // options={{headerShown: false}}
+        options={{
+          headerStyle: {
+            backgroundColor: colors.primary, // Change to your preferred color
+          },
+          headerTintColor: '#fff', // Set the color of the header text and icons
+          headerTitleStyle: {
+            fontWeight: 'bold', // Set the title text style
+            fontSize: 18, // Adjust the font size
+          },
+          title: 'Saved Jobs', // Customize the header title
+          headerTitleAlign: 'center',
+        }}
       />
 
       <Stack.Screen
@@ -129,7 +141,7 @@ const StackNavigation = () => {
 
       <Stack.Screen
         name="Invite"
-        component={CustomInviteScreen}
+        component={CustomInvitePage}
         options={{headerShown: false}}
       />
 

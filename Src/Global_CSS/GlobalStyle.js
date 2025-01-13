@@ -27,6 +27,10 @@ const GlobalStyle = StyleSheet.create({
     fontSize: 20,
     color: '#000',
   },
+  loaderimage: {
+    width: 100,
+    height: 100,
+  },
 });
 
 export default GlobalStyle;

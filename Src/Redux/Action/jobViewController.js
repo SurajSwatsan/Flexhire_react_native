@@ -343,8 +343,8 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.put(
-        `http://15.206.149.28/api/'reject-job-invitation/${invitation_id}/`,
+      const response = await axios.patch(
+        `http://15.206.149.28/api/reject-job-invitation/${invitation_id}/`,
       );
       // console.log(
       //   '****************************job-application response***************************',
@@ -384,12 +384,12 @@ const JobViewController = () => {
     }
   };
 
-  const GetHomeData = user_id => async dispatch => {
+  const GetHomePageData = user_id => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/jobs/homepage/${user_id}`,
+        `http://15.206.149.28/api/android-home-page-data/${user_id}`,
       );
       // console.log(
       //   '****************************job-GetHomeData response***************************',
@@ -429,17 +429,19 @@ const JobViewController = () => {
     }
   };
 
-  const GetJobList = user_id => async dispatch => {
+  const GetJobList = (user_id,page) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(`http://15.206.149.28/api/jobs/`);
-      // console.log(
-      //   '****************************job-GetJobList response***************************',
-      // );
+      const response = await axios.get(
+        `http://15.206.149.28/api/job/?user_id=${user_id}&page=${page}`,
+      );
+      console.log(
+        '****************************job-GetJobList response***************************',
+      );
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      // console.log(data);
+      console.log(data);
 
       dispatch({type: 'JOB_LIST_SUCCESS', payload: data});
 
@@ -471,23 +473,23 @@ const JobViewController = () => {
     }
   };
 
-  const GetSearchJobs = queryParams => async dispatch => {
+  const GetSearchJobs = (queryParams,page) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     const queryString = new URLSearchParams(queryParams).toString();
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/search/?${queryString}`,
+        `http://15.206.149.28/api/search-jobs/?${queryString}`,
       );
-      // console.log(
-      //   '****************************job-GetSearchJobList response***************************',
-      // );
+      console.log(
+        '****************************job-GetSearchJobList response***************************',
+      );
       // console.log('response', response);
       // console.log('queryParams', queryParams);
       // console.log(`http://15.206.149.28/api/search/?${queryString}`);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      // console.log(data);
+      console.log(data);
 
       dispatch({type: 'SEARCH_JOB_SUCCESS', payload: data});
 
@@ -522,21 +524,20 @@ const JobViewController = () => {
   const GetFilterdJobs = queryParams => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     const queryString = new URLSearchParams(queryParams).toString();
-    console.log('queryString', queryString);
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/filter/?${queryString}`,
+        `http://15.206.149.28/api/filter-jobs/?${queryString}`,
       );
       console.log(
         '****************************job-GetFilterdJobs response***************************',
       );
       // console.log('queryParams', queryParams);
-      console.log(`http://15.206.149.28/api/filter/?${queryString}`);
+      console.log(`http://15.206.149.28/api/filter-jobs/?${queryString}`);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      // console.log(data);
+      console.log(data);
 
       dispatch({type: 'FILTER_JOB_SUCCESS', payload: data});
 
@@ -568,21 +569,19 @@ const JobViewController = () => {
     }
   };
 
-  const GetAggregatedData = user_id => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
-
+  const GetFiltermasterData = user_id => async dispatch => {
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/aggregated-data/`,
+        `http://15.206.149.28/api/filter-master-data/`,
       );
       // console.log(
-      //   '****************************job-GetAggregatedData response***************************',
+      //   '****************************job-GetFiltermasterData response***************************',
       // );
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
       // console.log(data);
 
-      dispatch({type: 'AGGREGATED_DATA_SUCCESS', payload: data});
+      dispatch({type: 'FILTER_MASTER_DATA_SUCCESS', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
     } catch (error) {
@@ -602,7 +601,7 @@ const JobViewController = () => {
         },
       );
       dispatch({
-        type: 'AGGREGATED_DATA_FAILURE',
+        type: 'FILTER_MASTER_DATA_FAILURE',
         payload: {
           error: error.response?.data?.non_field_errors
             ? error.response.data.non_field_errors[0]
@@ -617,7 +616,7 @@ const JobViewController = () => {
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/companies/${company_id}/`,
+        `http://15.206.149.28/api/company/${company_id}/`,
         {
           params: {
             user_id: user_id,
@@ -660,6 +659,54 @@ const JobViewController = () => {
       });
     }
   };
+  const GetCompanyJobs = (company_id, user_id) => async dispatch => {
+    // dispatch({type: 'LOADING', payload: true});
+
+    try {
+      const response = await axios.get(
+        `http://15.206.149.28/api/jobs-by-department/${company_id}/`,
+        {
+          params: {
+            user_id: user_id,
+          },
+        },
+      );
+      // console.log(
+      //   '****************************GetCompanyJobs response***************************',
+      // );
+
+      const jsonString = JSON.stringify(response.data);
+      const data = JSON.parse(jsonString);
+      // console.log(data);
+
+      dispatch({type: 'COMPANY_JOBS_SUCCESS', payload: data});
+      dispatch({type: 'LOADING', payload: false});
+    } catch (error) {
+      console.log('error', error.response);
+
+      dispatch({type: 'LOADING', payload: false});
+      Toast.show(
+        error.response?.data?.non_field_errors[0]
+          ? error.response.data.non_field_errors[0]
+          : 'Something went wrong, Please try again!',
+        {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 100,
+          animationType: 'slide-in',
+        },
+      );
+      dispatch({
+        type: 'COMPANY_JOBS_FAILURE',
+        payload: {
+          error: error.response?.data?.non_field_errors
+            ? error.response.data.non_field_errors[0]
+            : error?.response?.data,
+        },
+      });
+    }
+  };
 
   return {
     goBackScreen,
@@ -671,12 +718,13 @@ const JobViewController = () => {
     GetInvitation,
     ReadInvitation,
     RejectInvitation,
-    GetHomeData,
+    GetHomePageData,
     GetJobList,
     GetSearchJobs,
     GetFilterdJobs,
-    GetAggregatedData,
+    GetFiltermasterData,
     GetCompanyDetails,
+    GetCompanyJobs,
   };
 };
 

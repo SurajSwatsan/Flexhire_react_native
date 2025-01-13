@@ -6,14 +6,18 @@ const initialState = {
   JobInvitation: null,
   SavedJobData: null,
   RejectInvitation: null,
-  CompanyData: [],
-  JobList: [],
-  SearchJobList: [],
-  FilterJobList: [],
-  AggregatedData: [],
+  HomeData: [],
   CompanyDetails: null, // Add this state to store job details
-
+  CompanyJobs: null, // Add this state to store
   error: null,
+
+  JobListPagination: {},
+
+  JobList: [],
+  FilterJobList: [],
+  FilterMasterData: [],
+  SearchJobList: [],
+
   isLoading: false, // Track loading for any API request
 };
 
@@ -137,7 +141,7 @@ const jobReducer = (state = initialState, action) => {
     case 'JOB_HOMEDATA_SUCCESS':
       return {
         ...state,
-        CompanyData: action.payload,
+        HomeData: action.payload,
         error: null,
       };
 
@@ -152,7 +156,24 @@ const jobReducer = (state = initialState, action) => {
     case 'JOB_LIST_SUCCESS':
       return {
         ...state,
-        JobList: action.payload,
+        JobListPagination: {
+          count: action.payload.count,
+          total_pages: action.payload.total_pages,
+          current_page: action.payload.current_page,
+          items_per_page: action.payload.items_per_page,
+          previous: action.payload.previous,
+          next_page_number: action.payload.next_page_number,
+          previous_page_number: action.payload.previous_page_number,
+        },
+        JobList: [
+          ...state.JobList,
+          ...action.payload.results.filter(
+            newJob =>
+              !state.JobList.some(existingJob => existingJob.id === newJob.id),
+          ),
+        ],
+        FilterJobList: [],
+        SearchJobList: [],
         error: null,
       };
 
@@ -165,7 +186,30 @@ const jobReducer = (state = initialState, action) => {
     case 'SEARCH_JOB_SUCCESS':
       return {
         ...state,
-        SearchJobList: action.payload,
+        JobListPagination: {
+          count: action.payload?.count || 0,
+          total_pages: action.payload?.total_pages || 0,
+          current_page: action.payload?.current_page || 0,
+          items_per_page: action.payload?.items_per_page || 0,
+          previous: action.payload?.previous || null,
+          next_page_number: action.payload?.next_page_number || null,
+          previous_page_number: action.payload?.previous_page_number || null,
+        },
+        SearchJobList:
+          parseInt(action.payload?.current_page) > 1
+            ? [
+                ...(state?.SearchJobList || []),
+                ...(action?.payload?.results?.filter(
+                  newJob =>
+                    !(state?.SearchJobList || []).some(
+                      existingJob => existingJob.id === newJob.id,
+                    ),
+                ) || []),
+              ]
+            : action?.payload?.results || [],
+
+        FilterJobList: [],
+
         error: null,
       };
 
@@ -179,7 +223,28 @@ const jobReducer = (state = initialState, action) => {
     case 'FILTER_JOB_SUCCESS':
       return {
         ...state,
-        FilterJobList: action.payload,
+        JobListPagination: {
+          count: action.payload?.count || 0,
+          total_pages: action.payload?.total_pages || 0,
+          current_page: action.payload?.current_page || 0,
+          items_per_page: action.payload?.items_per_page || 0,
+          previous: action.payload?.previous || null,
+          next_page_number: action.payload?.next_page_number || null,
+          previous_page_number: action.payload?.previous_page_number || null,
+        },
+        FilterJobList:
+          parseInt(action.payload?.current_page) > 1
+            ? [
+                ...(state?.FilterJobList || []),
+                ...(action?.payload?.results?.filter(
+                  newJob =>
+                    !(state?.FilterJobList || []).some(
+                      existingJob => existingJob.id === newJob.id,
+                    ),
+                ) || []),
+              ]
+            : action?.payload?.results || [],
+        SearchJobList: [],
         error: null,
       };
 
@@ -188,16 +253,21 @@ const jobReducer = (state = initialState, action) => {
         ...state,
         error: action.payload.error,
       };
-
-    // Filter Job List
-    case 'AGGREGATED_DATA_SUCCESS':
+    case 'CLEAR_JOB_LIST':
       return {
         ...state,
-        AggregatedData: action.payload,
+        SearchJobList: [],
+        FilterJobList: [],
+      };
+    // Filter Job List
+    case 'FILTER_MASTER_DATA_SUCCESS':
+      return {
+        ...state,
+        FilterMasterData: action.payload,
         error: null,
       };
 
-    case 'AGGREGATED_DATA_FAILURE':
+    case 'FILTER_MASTER_DATA_FAILURE':
       return {
         ...state,
         error: action.payload.error,
@@ -212,6 +282,19 @@ const jobReducer = (state = initialState, action) => {
       };
 
     case 'COMPANY_DETAILS_FAILURE':
+      return {
+        ...state,
+        error: action.payload.error,
+      };
+
+    case 'COMPANY_JOBS_SUCCESS':
+      return {
+        ...state,
+        CompanyJobs: action.payload,
+        error: null,
+      };
+
+    case 'COMPANY_JOBS_FAILURE':
       return {
         ...state,
         error: action.payload.error,

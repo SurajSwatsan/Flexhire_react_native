@@ -28,7 +28,7 @@ import {ProfileContext} from '../../ProfileContext';
 const EducationLevels = [
   {id: 1, value: 'Doctorate', label: 'Doctorate'},
   {id: 2, value: 'Post Graduate', label: 'Post Graduate'},
-  {id: 3, value: 'Graduate/Diploma', label: 'Graduate/Diploma'},
+  {id: 3, value: 'Graduation/Diploma', label: 'Graduation/Diploma'},
 ];
 
 const startYear = 1980;
@@ -430,7 +430,7 @@ const HigherEducation = profileDetails => {
                     />
                   </View>
 
-                  {['Doctorate', 'Post Graduate', 'Graduate/Diploma'].includes(
+                  {['Doctorate', 'Post Graduate', 'Graduation/Diploma'].includes(
                     values.education_level,
                   ) && (
                     <>

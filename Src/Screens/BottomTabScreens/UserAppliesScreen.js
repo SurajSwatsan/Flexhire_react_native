@@ -16,12 +16,14 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+import Spinner from 'react-native-loading-spinner-overlay';
+import GlobalStyle from '../../Global_CSS/GlobalStyle';
 const UserApplies = () => {
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
   const {GetJobApplications} = JobViewController();
-  const {JobApplications} = useSelector(state => state.job);
+  const {JobApplications, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const [userId, set_userId] = useState('');
 
@@ -62,6 +64,8 @@ const UserApplies = () => {
     getUserData();
   }, [isFocus]);
 
+  // console.log('length', JobApplications.applied_jobs.length);
+
   const handleJobPress = jobData => {
     // Navigate to the "ApplicationStatus" page when a job is pressed
     navigation.navigate('ApplicationStatus', {ApplicationObject: jobData});
@@ -77,8 +81,22 @@ const UserApplies = () => {
   };
   return (
     <View style={styles.container}>
-      {/* If there are no applied jobs, display a message */}
-      {JobApplications.length === 0 ? (
+      {/* <Spinner
+          visible={isLoading}
+          textContent={'Believe in the journey – we’re here for you!'}
+          textStyle={styles.spinnerTextStyle}
+          overlayColor="rgba(0, 0, 0, 0.5)"
+          animation="fade"
+          size="large"
+          customIndicator={
+            <Image
+              source={require('../../Assets/CompanyLogo/Swatsan.png')}
+              style={GlobalStyle.loaderimage}
+              resizeMode="center"
+            />
+          }></Spinner> */}
+
+      {JobApplications?.applied_jobs?.length === 0 ? (
         <View style={styles.noJobsContainer}>
           <Image
             source={require('../../Assets/ApplyImages/apply.png')}
@@ -98,8 +116,7 @@ const UserApplies = () => {
           showsVerticalScrollIndicator={false}
           style={styles.scrollContainer}
           contentContainerStyle={styles.contentContainer}>
-          {Array.isArray(JobApplications?.applied_jobs) &&
-          JobApplications.applied_jobs.length > 0 ? (
+          {JobApplications?.applied_jobs?.length > 0 ? (
             JobApplications.applied_jobs.map((jobData, index) => (
               <View key={jobData.id || index} style={styles.jobCardContainer}>
                 <TouchableOpacity
@@ -131,14 +148,10 @@ const UserApplies = () => {
                       color={colors.primary}
                       style={styles.checkmarkIcon}
                     />
-                    {jobData?.job?.job_location?.map((location, idx) => (
-                      <Text key={idx} style={styles.locationText}>
-                        {location.name || 'Unknown location'}
-                        {jobData?.job?.job_location?.length - 1 !== idx
-                          ? ','
-                          : ''}
-                      </Text>
-                    ))}
+                    <Text style={styles.locationText}>
+                      {jobData?.job?.job_location?.join(', ') ||
+                        'Location not specified'}
+                    </Text>
                   </View>
                   <View style={styles.salaryContainer}>
                     <View style={styles.experienceContainer}>

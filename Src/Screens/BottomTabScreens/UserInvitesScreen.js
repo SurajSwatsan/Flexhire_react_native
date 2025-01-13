@@ -14,15 +14,29 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import JobViewController from '../../Redux/Action/jobViewController';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../Services/baseAPI';
 
 const UserInvitesScreen = () => {
   const [id, setId] = useState();
 
   const dispatch = useDispatch();
+  const [filter, setFilter] = useState('All'); // State to manage the toggle
   const {GetInvitation, ReadInvitation} = JobViewController();
   const {JobInvitation} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const navigation = useNavigation();
+
+  function formatAmount(value) {
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(1) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(1) + ' Lac';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(1) + ' K';
+    } else {
+      return value.toString();
+    }
+  }
 
   useEffect(() => {
     const getUserData = async () => {
@@ -30,7 +44,6 @@ const UserInvitesScreen = () => {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
         dispatch(GetInvitation(id));
-
         console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
@@ -39,6 +52,11 @@ const UserInvitesScreen = () => {
 
     getUserData();
   }, [isFocus]);
+
+  const filteredInvites =
+    filter === 'All'
+      ? JobInvitation
+      : JobInvitation?.filter(invite => !invite.is_read);
 
   return (
     <View style={styles.inviteContainer}>
@@ -49,14 +67,40 @@ const UserInvitesScreen = () => {
           these jobs.
         </Text>
       </View>
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            {backgroundColor: filter === 'All' ? colors.primary : '#f1f1f1'},
+          ]}
+          onPress={() => setFilter('All')}>
+          <Text
+            style={{
+              color: filter === 'All' ? '#fff' : colors.primary,
+              fontSize: 12,
+            }}>
+            All ({JobInvitation?.length})
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            {backgroundColor: filter === 'Unread' ? colors.primary : '#f1f1f1'},
+          ]}
+          onPress={() => setFilter('Unread')}>
+          <Text
+            style={{
+              color: filter === 'Unread' ? '#fff' : colors.primary,
+              fontSize: 12,
+            }}>
+            Unread ({JobInvitation?.filter(invite => !invite.is_read).length})
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView style={styles.cardContainer}>
-        {JobInvitation?.map((invite, index) => {
+        {filteredInvites?.map((invite, index) => {
           // Directly access job properties using optional chaining
-          const hasCompanyInfo =
-            invite?.job?.company_name &&
-            invite?.job?.logo &&
-            invite?.job?.rating;
 
           return (
             <TouchableOpacity
@@ -77,11 +121,9 @@ const UserInvitesScreen = () => {
                   {backgroundColor: invite.is_read ? '#fafafa' : '#deede5'}, // Conditional background color
                 ]}>
                 <View style={styles.groupsContainer}>
-                  {invite?.job?.groups?.map((group, index) => (
-                    <Text key={index} style={styles.cardTitle}>
-                      {group?.name}
-                    </Text>
-                  ))}
+                  <Text key={index} style={styles.cardTitle}>
+                    {invite?.job?.job_title?.title}
+                  </Text>
                 </View>
 
                 <View style={styles.locationContainer}>
@@ -92,7 +134,7 @@ const UserInvitesScreen = () => {
                     style={{padding: 0}}
                   />
                   <Text style={styles.detailsText}>
-                    {invite?.job?.job_location?.map(loc => loc.name).join(', ')}
+                    {invite?.job?.job_location?.join(', ')}
                   </Text>
                 </View>
                 <View style={styles.detailsRow}>
@@ -103,73 +145,44 @@ const UserInvitesScreen = () => {
                   <View style={styles.detailsalary}>
                     <Ionicons name="cash" size={14} color={colors.primary} />
                     <Text style={styles.detailsText}>
-                      {`${invite?.job?.salary?.yearly?.min} - ${invite?.job?.salary?.yearly?.max} ${invite?.job?.salary?.yearly?.currency}`}
+                      {`${formatAmount(
+                        invite?.job?.salary?.yearly?.min,
+                      )} - ${formatAmount(invite?.job?.salary?.yearly?.max)} ${
+                        invite?.job?.salary?.yearly?.currency
+                      }`}
                     </Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.innerCard}>
-                {hasCompanyInfo ? (
-                  <View style={styles.iconMain}>
-                    <Image
-                      source={
-                        invite?.job?.company?.logo
-                          ? {uri: invite?.job?.company?.logo}
-                          : require('../../Assets/CompanyLogo/Swatsan.png')
-                      }
-                      style={styles.logo}
-                    />
-                    <View style={styles.companyMaincontainer}>
-                      <View style={styles.companyDetail}>
-                        <Text style={styles.companyText}>
-                          {invite?.job?.company_name}
-                        </Text>
-                        <View style={styles.icon}>
-                          <Ionicons
-                            name="star"
-                            size={14}
-                            color="#ffd700"
-                            style={styles.ratingIcon}
-                          />
-                          <Text style={styles.companyReview}>
-                            {invite?.job?.rating}
-                          </Text>
-                        </View>
-                      </View>
-                      <Text style={styles.companyDate}>
-                        {moment(invite?.job?.created_at).format('MMM D')}
+                <View style={styles.iconMain}>
+                  <Image
+                    source={
+                      invite?.job?.company?.logo
+                        ? {uri: BASE_URL + invite?.job?.company?.logo}
+                        : require('../../Assets/CompanyLogo/Swatsan.png')
+                    }
+                    style={styles.logo}
+                  />
+                  <View style={styles.companyMaincontainer}>
+                    <View style={styles.companyDetail}>
+                      <Text style={styles.companyText}>
+                        {invite?.job?.company_name
+                          ? invite?.job?.company_name
+                          : 'Swatsan Tech'}
+                      </Text>
+                      <Text style={styles.detailscompanytext}>
+                        Posted by{' '}
+                        {invite?.job?.company_name
+                          ? invite?.job?.company_name
+                          : 'Swatsan Tech Private Limited'}
                       </Text>
                     </View>
                   </View>
-                ) : (
-                  <View
-                    style={[
-                      styles.iconContainer,
-                      {backgroundColor: invite.is_read ? '#fff' : '#deede5'},
-                    ]}>
-                    <Ionicons
-                      name="person"
-                      size={14}
-                      color={colors.primary}
-                      style={styles.icon}
-                    />
-                  </View>
-                )}
-
-                {!hasCompanyInfo && (
-                  <View style={styles.techContainer}>
-                    <Text style={styles.companyText}>
-                      Hiring for {invite?.job?.company_name}
-                    </Text>
-                    <Text style={styles.detailscompanytext}>
-                      Posted by Swatsan Tech Private Limited
-                    </Text>
-                  </View>
-                )}
-
+                </View>
                 <Text style={styles.companyDate}>
-                  {moment(invite?.job?.created_at).format('MMM D')}
+                  {moment(invite?.date_of_invitation).format('MMM D')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -185,6 +198,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f1f1f1',
     width: '100%',
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    marginVertical: 8,
+    gap: 12,
+  },
+  toggleButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderColor: colors.primary,
+    borderWidth: 1,
   },
   textContainer: {
     marginVertical: 12,
@@ -251,16 +278,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 8,
     marginTop: 6,
+    justifyContent: 'space-between',
   },
-  iconContainer: {
-    backgroundColor: '#fafafa',
-    borderRadius: 4,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   iconMain: {
     flexDirection: 'row',
   },
@@ -269,8 +289,8 @@ const styles = StyleSheet.create({
   },
   companyMaincontainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '70%',
   },
   logo: {
     width: 38,

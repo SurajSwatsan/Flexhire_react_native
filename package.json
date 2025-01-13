@@ -27,6 +27,7 @@
     "react-native-element-dropdown": "^2.12.2",
     "react-native-fs": "^2.20.0",
     "react-native-image-picker": "^7.1.2",
+    "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-paper": "^5.12.5",
     "react-native-safe-area-context": "^4.11.0",
     "react-native-screens": "^3.34.0",
@@ -35,10 +36,12 @@
     "react-native-timeline-flatlist": "^0.8.0",
     "react-native-toast-notifications": "^3.4.0",
     "react-native-vector-icons": "^10.2.0",
+    "react-native-video": "^6.9.0",
     "react-native-webview": "^13.12.3",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
+    "rn-range-slider": "^2.2.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {

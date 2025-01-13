@@ -27,13 +27,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+import {Toast} from 'react-native-toast-notifications';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
-  const {GetHomeData, SaveJob, GetSavedJobs} = JobViewController();
-  const {CompanyData, SavedJobs} = useSelector(state => state.job);
+  const {GetHomePageData, SaveJob} = JobViewController();
+  const {HomeData} = useSelector(state => state.job);
   const isFocus = useIsFocused();
 
   const [id, setId] = useState();
@@ -48,18 +49,18 @@ const HomeScreen = () => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
-        dispatch(GetHomeData(id));
-        dispatch(GetSavedJobs(id));
+        dispatch(GetHomePageData(id));
+        // dispatch(GetSavedJobs(id));
 
         console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
     };
-    // console.log(CompanyData);
 
     getUserData();
   }, [isFocus]);
+  // console.log('HomeData', JSON.stringify(HomeData, null, 2));
 
   useFocusEffect(
     React.useCallback(() => {
@@ -86,49 +87,24 @@ const HomeScreen = () => {
 
   const handleSearch = () => {
     if (!searchQuery || searchQuery.trim() === '') {
-      // Show warning if searchQuery is empty
-      Alert.alert('Warning', 'Please enter a search searchQuery.');
+      Toast.show('Please enter a search query.', {
+        type: 'warning',
+        placement: 'top',
+        duration: 4000,
+        offset: 100,
+        animationType: 'slide-in',
+      });
       return;
     }
-    // Navigate if searchQuery is not empty
     navigation.navigate('JobsScreen', {searchQuery});
-    // console.log(searchQuery);
     setSearchQuery('');
   };
 
-  // Function to create a lookup map from SavedJobs
-  const createSavedJobsMap = () => {
-    const map = {};
-    if (Array.isArray(SavedJobs)) {
-      SavedJobs.forEach(savedJob => {
-        map[savedJob?.job?.id] = savedJob?.job?.is_saved;
-      });
-    }
-    return map;
-  };
-
-  const savedJobsMap = createSavedJobsMap(); // Create the map dynamically
-
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
+    if (!jobId) return; // Ensure a valid job ID is passed
 
-    const currentState = savedJobsMap[jobId]; // Use savedJobsMap for lookup
-
-    // Optimistically update global SavedJobs state
-    dispatch({
-      type: 'UPDATE_SAVED_JOBS',
-      payload: {
-        jobId,
-        isSaved: !currentState, // Toggle the saved state
-      },
-    });
-
-    // Call the SaveJob API
-    dispatch(SaveJob(requestData));
-    // .then(() => console.log(`Job ${jobId} saved successfully.`))
-    // .catch(error => {
-    //   console.error(`Failed to update job ${jobId}:`, error);
-    // });
+    dispatch(SaveJob(requestData)); // Pass only the job ID
   };
 
   const lastUpdatedDate = '2024-11-24';
@@ -151,27 +127,33 @@ const HomeScreen = () => {
         <View style={JobCardStyle.jobCard}>
           <View style={JobCardStyle.companyInfo}>
             <View style={JobCardStyle.companylogo}>
-              <Image
-                source={
-                  jobdata.company.logo
-                    ? {uri: BASE_URL + jobdata?.company?.logo}
-                    : require('../../Assets/CompanyLogo/Swatsan.png')
-                }
-                style={JobCardStyle.companyImage}
-              />
+              {jobdata?.company?.logo ? (
+                <Image
+                  source={{uri: BASE_URL + jobdata?.company?.logo}}
+                  style={JobCardStyle.companyImage}
+                />
+              ) : (
+                <Ionicons name="business" size={42} color="gray" />
+              )}
               <View style={JobCardStyle.textName}>
-                <Text style={JobCardStyle.jobTitle}>
-                  {jobdata?.job_title?.title}
-                </Text>
-                <Text style={JobCardStyle.companyName}>
-                  {jobdata?.company_name}
-                </Text>
+                {jobdata?.job_title?.title && (
+                  <Text style={JobCardStyle.jobTitle}>
+                    {jobdata?.job_title?.title}
+                  </Text>
+                )}
+                {(jobdata?.company_name || jobdata?.company?.company_name) && (
+                  <Text style={JobCardStyle.companyName}>
+                    {jobdata?.company?.company_name
+                      ? jobdata?.company?.company_name
+                      : jobdata?.company_name}
+                  </Text>
+                )}
               </View>
             </View>
             <View>
               <IconButton
                 icon={
-                  savedJobsMap[jobdata?.id] ? 'bookmark' : 'bookmark-outline'
+                  jobdata?.is_saved ? 'bookmark' : 'bookmark-outline'
                 }
                 iconColor={colors.primary}
                 size={24}
@@ -190,19 +172,19 @@ const HomeScreen = () => {
           </View>
 
           <View style={JobCardStyle.location}>
-            <IconButton
-              icon="map-marker"
-              iconColor={colors.primary}
-              size={18}
-              style={{padding: 0, marginLeft: -10, height: 20}}
-            />
-
-            {jobdata.job_location.map((location, locIndex) => (
-              <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
-                {location.name}
-                {locIndex < jobdata.job_location.length - 1 && ',  '}
-              </Text>
-            ))}
+            {jobdata && jobdata.job_location && (
+              <>
+                <IconButton
+                  icon="map-marker"
+                  iconColor={colors.primary}
+                  size={18}
+                  style={{padding: 0, marginLeft: -10, height: 20}}
+                />
+                <Text style={JobCardStyle.jobCardLocation}>
+                  {jobdata.job_location.join(', ')}
+                </Text>
+              </>
+            )}
           </View>
 
           <View style={JobCardStyle.line}></View>
@@ -216,17 +198,20 @@ const HomeScreen = () => {
                   <Text style={{color: colors.primary}}> - </Text>
                   <CustomFormatAmount amount={jobdata.salary?.yearly?.max} />
 
-                  <Text
-                    style={{fontSize: 10, fontWeight: 'bold', color: 'gray'}}>
-                    {' '}
-                    {jobdata.salary.yearly.currency}
-                  </Text>
+                  {jobdata.salary.yearly.currency && (
+                    <Text
+                      style={{fontSize: 10, fontWeight: 'bold', color: 'gray'}}>
+                      {jobdata.salary.yearly.currency}
+                    </Text>
+                  )}
                 </View>
               </View>
             )}
-            <Text style={JobCardStyle.jobPostedDate}>
-              {moment(jobdata?.created_at).fromNow()}
-            </Text>
+            {jobdata?.created_at && (
+              <Text style={JobCardStyle.jobPostedDate}>
+                {moment(jobdata?.created_at).fromNow()}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -234,200 +219,228 @@ const HomeScreen = () => {
   };
   return (
     <View style={styles.bodycontainer}>
-      <View style={styles.container}>
-        <View style={styles.searchbarContainer}>
-          <TextInput
-            placeholder="Search"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            style={styles.searchbar}
-            placeholderTextColor="#000"
+      {/* <Spinner
+        visible={isLoading}
+        textContent={'Believe in the journey – we’re here for you!'}
+        textStyle={styles.spinnerTextStyle}
+        overlayColor="rgba(0, 0, 0, 0.5)"
+        animation="fade"
+        size="large"
+        customIndicator={
+          <Image
+            source={require('../../Assets/CompanyLogo/Swatsan.png')}
+            style={GlobalStyle.loaderimage}
+            resizeMode="center"
           />
-          <IconButton
-            style={styles.searchIcon}
-            icon="magnify"
-            iconColor="#004466"
-            size={26}
-            onPress={handleSearch}
-          />
-        </View>
-      </View>
-
-      <ScrollView style={{flex: 1, marginVertical: 12}}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('userProfileScreen')}
-          style={styles.profileContainer}>
-          <View style={styles.dataContainer}>
-            <View style={styles.profileImageWrapper}>
-              <CircularProgress
-                size={85}
-                width={4}
-                fill={CompanyData?.profile_filled_percentage || 0}
-                rotation={220}
-                tintColor="#509570" // Color of the progress
-                backgroundColor="lightgray"
-                lineCap="round"
-                arcSweepAngle={360}
+        }></Spinner> */}
+      {HomeData && (
+        <>
+          <View style={styles.container}>
+            <View style={styles.searchbarContainer}>
+              <TextInput
+                placeholder="Search"
+                onChangeText={setSearchQuery}
+                value={searchQuery}
+                style={styles.searchbar}
+                placeholderTextColor="#000"
               />
-
-              <Image
-                source={require('../../Assets/Images/Userimage.png')}
-                style={styles.profileImage}
+              <IconButton
+                style={styles.searchIcon}
+                icon="magnify"
+                iconColor="#004466"
+                size={26}
+                onPress={handleSearch}
               />
             </View>
-
-            <View style={styles.profile}>
-              <Text style={styles.profileName}>Xyz's Profile</Text>
-              <Text style={styles.profileDate}>
-                Updated {daysSinceUpdate}
-                {daysSinceUpdate === 1 ? 'd' : 'd'} ago
-              </Text>
-              <Text style={styles.profileDetail}>Missing details</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.JobsContainer}>
-          <View style={{marginVertical: 12, marginLeft: 18}}>
-            <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>Suggested Jobs</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAll}>See All</Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.contentContainer}>
-              {/* {(CompanyData?.suggested_jobs &&
-              Array.isArray(CompanyData.suggested_jobs)
-                ? CompanyData.suggested_jobs
-                : []
-              ).map(item => (
-                <>{renderCard(item)}</>
-              ))} */}
-              {(CompanyData?.suggested_jobs &&
-              Array.isArray(CompanyData.suggested_jobs)
-                ? CompanyData.suggested_jobs
-                : []
-              ).map(item => (
-                <View key={item.id || item.job_title} style={{marginRight: 12}}>
-                  {renderCard(item)}
-                </View>
-              ))}
-            </ScrollView>
           </View>
 
-          {/* <View style={{marginLeft: 18}}>
-            <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>Suggested Jobs</Text>
-              <Text style={styles.seeAll}>See All</Text>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.contentContainer}>
-              {jobs.map((jobdata, index) => (
-                <View key={jobdata.id || index} style={{marginRight: 12}}>
-                  <CustomJobCard jobData={jobdata} />
-                </View>
-              ))}
-            </ScrollView>
-          </View> */}
-          <View style={{marginLeft: 18}}>
-            <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>Recent Jobs</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAll}>See All</Text>
-              </TouchableOpacity>
-            </View>
+          <ScrollView style={{flex: 1, marginVertical: 12}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('userProfileScreen')}
+              style={styles.profileContainer}>
+              <View style={styles.dataContainer}>
+                <View style={styles.profileImageWrapper}>
+                  <CircularProgress
+                    size={85}
+                    width={4}
+                    fill={HomeData?.profile_filled_percentage || 0}
+                    rotation={220}
+                    tintColor="#509570" // Color of the progress
+                    backgroundColor="lightgray"
+                    lineCap="round"
+                    arcSweepAngle={360}
+                  />
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.chipContainer}>
-              {chipLabels.map((label, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.chip,
-                    selectedChip === label && styles.selectedChip, // Apply selected chip style
-                  ]}
-                  onPress={() => setSelectedChip(label)} // Update selected chip on press
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selectedChip === label && styles.selectedChipText, // Apply text color change if selected
-                    ]}>
-                    {label}
+                  <Image
+                    source={require('../../Assets/Images/Userimage.png')}
+                    style={styles.profileImage}
+                  />
+                </View>
+
+                <View style={styles.profile}>
+                  <Text style={styles.profileName}>Xyz's Profile</Text>
+                  <Text style={styles.profileDate}>
+                    Updated {daysSinceUpdate}
+                    {daysSinceUpdate === 1 ? 'd' : 'd'} ago
                   </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                  <Text style={styles.profileDetail}>Missing details</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.JobsContainer}>
+              {HomeData?.suggested_jobs?.length > 0 && (
+                <View style={{marginVertical: 8, marginLeft: 18}}>
+                  <View style={styles.displayContainer}>
+                    <Text style={styles.contHead}>Suggested Jobs</Text>
+                    <TouchableOpacity>
+                      <Text style={styles.seeAll}>See All</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.contentContainer}>
+                    {HomeData.suggested_jobs.map(item => (
+                      <View
+                        key={item.id || item.job_title}
+                        style={{marginRight: 12}}>
+                        {renderCard(item)}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.contentContainer}>
-              {/* {(CompanyData?.recent_jobs &&
-              Array.isArray(CompanyData.recent_jobs)
-                ? CompanyData.recent_jobs
-                : []
-              ).map(item => (
-                // <>{renderCard(item)}</>
-                <View key={item.id} style={{marginRight: 12}}>
-                  <CustomJobCard jobData={item} />
+              {HomeData?.recent_jobs?.length > 0 && (
+                <View style={{marginLeft: 18}}>
+                  <View style={styles.displayContainer}>
+                    <Text style={styles.contHead}>Recent Jobs</Text>
+                    <TouchableOpacity>
+                      <Text style={styles.seeAll}>See All</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.chipContainer}>
+                    {chipLabels.map((label, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.chip,
+                          selectedChip === label && styles.selectedChip, // Apply selected chip style
+                        ]}
+                        onPress={() => setSelectedChip(label)} // Update selected chip on press
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            selectedChip === label && styles.selectedChipText, // Apply text color change if selected
+                          ]}>
+                          {label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.contentContainer}>
+                    {HomeData.recent_jobs.map(item => (
+                      <View
+                        key={item.id || item.job_title}
+                        style={{marginRight: 12}}>
+                        {renderCard(item)}
+                      </View>
+                    ))}
+                  </ScrollView>
                 </View>
-              ))} */}
-              {(CompanyData?.recent_jobs &&
-              Array.isArray(CompanyData.recent_jobs)
-                ? CompanyData.recent_jobs
-                : []
-              ).map(item => (
-                <View key={item.id || item.job_title} style={{marginRight: 12}}>
-                  {renderCard(item)}
+              )}
+
+              {HomeData?.profile_based_jobs?.length > 0 && (
+                <View style={{marginVertical: 8, marginLeft: 18}}>
+                  <View style={styles.displayContainer}>
+                    <Text style={styles.contHead}>Profile-Based Jobs</Text>
+                    <TouchableOpacity>
+                      <Text style={styles.seeAll}>See All</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.contentContainer}>
+                    {HomeData.profile_based_jobs.map(item => (
+                      <View
+                        key={item.id || item.job_title}
+                        style={{marginRight: 12}}>
+                        {renderCard(item)}
+                      </View>
+                    ))}
+                  </ScrollView>
                 </View>
-              ))}
-            </ScrollView>
-          </View>
-          <View style={{marginLeft: 18}}>
-            <View style={styles.displayContainer}>
-              <Text style={styles.contHead}>Top Companies</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAll}>See All</Text>
-              </TouchableOpacity>
+              )}
+
+              {HomeData?.jobs_based_on_applied?.length > 0 && (
+                <View style={{marginVertical: 8, marginLeft: 18}}>
+                  <View style={styles.displayContainer}>
+                    <Text style={styles.contHead}>
+                      Jobs Based on Your Applications
+                    </Text>
+                    <TouchableOpacity>
+                      <Text style={styles.seeAll}>See All</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.contentContainer}>
+                    {HomeData.jobs_based_on_applied.map(item => (
+                      <View
+                        key={item.id || item.job_title}
+                        style={{marginRight: 12}}>
+                        {renderCard(item)}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
+              <View style={{marginLeft: 18}}>
+                {HomeData?.top_companies?.length > 0 && (
+                  <>
+                    <View style={styles.displayContainer}>
+                      <Text style={styles.contHead}>Top Companies</Text>
+                      <TouchableOpacity>
+                        <Text style={styles.seeAll}>See All</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.scrollContainer}
+                      contentContainerStyle={styles.contentContainer}>
+                      {HomeData.top_companies.map(item => (
+                        <View
+                          key={item.id || item.company_name}
+                          style={{marginRight: 12}}>
+                          <CustomCompanyCard companyData={item} />
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
+              </View>
             </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.contentContainer}>
-              {/* {CompanyData?.top_companies?.map(item => (
-                // <View key={item.id} style={{marginRight: 12}}>
-                //   <CustomCompanyCard companyData={item} />
-                // </View>
-                <View
-                  key={item.id || item.company_name}
-                  style={{marginRight: 12}}>
-                  <CustomCompanyCard companyData={item} />
-                </View>
-              ))} */}
-              {(CompanyData?.top_companies || []).map(item => (
-                <View
-                  key={item.id || item.company_name}
-                  style={{marginRight: 12}}>
-                  <CustomCompanyCard companyData={item} />
-                  {/* {  console.log('company',JSON.stringify(CompanyData, null, 2))} */}
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 };

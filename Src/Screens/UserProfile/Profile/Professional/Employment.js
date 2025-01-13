@@ -47,6 +47,7 @@ const NOTICEPERIOD_OPTIONS = [
 const CURRENCY_OPTIONS = [
   {id: 1, value: '$', label: '$'},
   {id: 2, value: '₹', label: '₹'},
+  {id: 3, value: '€', label: '€'},
 ];
 const SALARY_OPTIONS = [
   {id: 1, value: 'Fixed', label: 'Fixed'},

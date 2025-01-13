@@ -1,5 +1,5 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {
   Image,
   ScrollView,
@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Timeline from 'react-native-timeline-flatlist';
 import CustomHeader from './CustomBackIcon';
 
 import moment from 'moment';
@@ -21,6 +20,7 @@ import CustomFormatAmount from './CustomFormatAmount';
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
   const {ApplicationObject} = route.params;
+  console.log(ApplicationObject);
 
   // Function to navigate to the JobDescription screen
   const handleViewDescriptionPress = () => {
@@ -98,19 +98,6 @@ const ApplicationStatusScreen = ({route}) => {
                 </TouchableOpacity>
               </View>
 
-              {/* <ScrollView>
-                {ApplicationObject?.job?.related_jobs.map(({item, index}) => (
-                  <View key={item?.id || index} style={{marginBottom: 14}}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('JobDetailScreen', {
-                          jobData: item,
-                        });
-                      }}>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </ScrollView> */}
               <ScrollView>
                 {ApplicationObject?.job?.related_jobs?.map((item, index) => (
                   <View key={item?.id || index} style={{marginBottom: 14}}>
@@ -151,12 +138,10 @@ const ApplicationStatusScreen = ({route}) => {
                             size={18}
                             color={colors.primary}
                           />
-                          {item?.job_location?.map((location, locIndex) => (
-                            <Text key={locIndex} style={styles.jobCardLocation}>
-                              {location.name}
-                              {locIndex < item?.job_location.length - 1 && ', '}
-                            </Text>
-                          ))}
+
+                          <Text style={styles.jobCardLocation}>
+                            {item?.job_location.join(', ')}
+                          </Text>
                         </View>
 
                         <View style={styles.line}></View>
