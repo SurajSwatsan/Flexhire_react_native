@@ -28,6 +28,7 @@ import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 import {Toast} from 'react-native-toast-notifications';
+import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -35,14 +36,13 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
   const {GetHomePageData, SaveJob} = JobViewController();
   const {HomeData} = useSelector(state => state.job);
-  const isFocus = useIsFocused();
-
+  const {GetProfileDetails} = UserProfileViewController();
+  const {profileDetails} = useSelector(state => state.profile);
   const [id, setId] = useState();
-
+  const isFocus = useIsFocused();
   const [selectedChip, setSelectedChip] = useState(null);
 
   const chipLabels = ['All', 'New', 'Popular', 'Trending', 'Recommended'];
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -50,6 +50,9 @@ const HomeScreen = () => {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         setId(id);
         dispatch(GetHomePageData(id));
+
+        dispatch(GetProfileDetails(id));
+
         // dispatch(GetSavedJobs(id));
 
         console.log(id); // Log the value once it's retrieved
@@ -61,6 +64,7 @@ const HomeScreen = () => {
     getUserData();
   }, [isFocus]);
   // console.log('HomeData', JSON.stringify(HomeData, null, 2));
+  // console.log('profile data', profileDetails);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -102,13 +106,9 @@ const HomeScreen = () => {
 
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    if (!jobId) return; // Ensure a valid job ID is passed
-
-    dispatch(SaveJob(requestData)); // Pass only the job ID
+    dispatch(SaveJob(requestData, 'HomeScreen')); // Pass only the job ID
+    // console.log('Job saved', requestData);
   };
-
-  const lastUpdatedDate = '2024-11-24';
-  const daysSinceUpdate = moment().diff(moment(lastUpdatedDate), 'days');
 
   const handleCardPress = jobdata => {
     // Navigate to the JobDetailScreen and pass the jobdata (or job ID)
@@ -116,10 +116,6 @@ const HomeScreen = () => {
   };
 
   const renderCard = jobdata => {
-    if (!jobdata?.id) {
-      console.warn('Missing job data id');
-      return null;
-    }
     return (
       <TouchableOpacity
         key={jobdata.id}
@@ -133,7 +129,12 @@ const HomeScreen = () => {
                   style={JobCardStyle.companyImage}
                 />
               ) : (
-                <Ionicons name="business" size={42} color="gray" />
+                <Ionicons
+                  name="business"
+                  size={36}
+                  color="gray"
+                  style={JobCardStyle.companyImage}
+                />
               )}
               <View style={JobCardStyle.textName}>
                 {jobdata?.job_title?.title && (
@@ -152,9 +153,7 @@ const HomeScreen = () => {
             </View>
             <View>
               <IconButton
-                icon={
-                  jobdata?.is_saved ? 'bookmark' : 'bookmark-outline'
-                }
+                icon={jobdata?.is_saved ? 'bookmark' : 'bookmark-outline'}
                 iconColor={colors.primary}
                 size={24}
                 style={JobCardStyle.saveicon}
@@ -259,31 +258,51 @@ const HomeScreen = () => {
               onPress={() => navigation.navigate('userProfileScreen')}
               style={styles.profileContainer}>
               <View style={styles.dataContainer}>
-                <View style={styles.profileImageWrapper}>
-                  <CircularProgress
-                    size={85}
-                    width={4}
-                    fill={HomeData?.profile_filled_percentage || 0}
-                    rotation={220}
-                    tintColor="#509570" // Color of the progress
-                    backgroundColor="lightgray"
-                    lineCap="round"
-                    arcSweepAngle={360}
-                  />
+                <View style={{alignItems: 'center'}}>
+                  <View style={styles.profileImageWrapper}>
+                    <CircularProgress
+                      size={85}
+                      width={4}
+                      fill={HomeData?.profile_data?.filled_percentage || 0}
+                      rotation={220}
+                      tintColor="#509570" // Color of the progress
+                      backgroundColor="lightgray"
+                      lineCap="round"
+                      arcSweepAngle={360}
+                    />
 
-                  <Image
-                    source={require('../../Assets/Images/Userimage.png')}
-                    style={styles.profileImage}
-                  />
+                    <Image
+                      source={require('../../Assets/Images/Userimage.png')}
+                      style={styles.profileImage}
+                    />
+                  </View>
+                  {HomeData?.profile_data?.filled_percentage && (
+                    <Text style={[styles.profileName, {marginTop: -20}]}>
+                      {HomeData?.profile_data?.filled_percentage}%
+                    </Text>
+                  )}
                 </View>
-
                 <View style={styles.profile}>
-                  <Text style={styles.profileName}>Xyz's Profile</Text>
-                  <Text style={styles.profileDate}>
-                    Updated {daysSinceUpdate}
-                    {daysSinceUpdate === 1 ? 'd' : 'd'} ago
-                  </Text>
-                  <Text style={styles.profileDetail}>Missing details</Text>
+                  {(profileDetails?.first_name ||
+                    profileDetails?.last_name) && (
+                    <Text style={styles.profileName}>
+                      {`${profileDetails?.first_name} ${profileDetails?.last_name}`.trim()}
+                    </Text>
+                  )}
+
+                  {HomeData?.profile_data?.updated_at && (
+                    <Text style={styles.profileDate}>
+                      Updated{' '}
+                      {moment(HomeData?.profile_data?.updated_at).fromNow()}
+                    </Text>
+                  )}
+
+                  {HomeData?.profile_data?.total_missing_field_count && (
+                    <Text style={styles.profileDetail}>
+                      {HomeData?.profile_data?.total_missing_field_count}{' '}
+                      Missing details
+                    </Text>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>
@@ -321,7 +340,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                   </View>
 
-                  <ScrollView
+                  {/* <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={styles.scrollContainer}
@@ -344,7 +363,7 @@ const HomeScreen = () => {
                         </Text>
                       </TouchableOpacity>
                     ))}
-                  </ScrollView>
+                  </ScrollView> */}
 
                   <ScrollView
                     horizontal
@@ -484,6 +503,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   dataContainer: {
+    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

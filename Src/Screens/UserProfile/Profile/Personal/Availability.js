@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -19,34 +19,66 @@ import profileStyle from '../../ProfileStyle';
 import ModalFooter from '../../../../Constant/ProfileModalFooter';
 import {colors} from '../../../../Global_CSS/TheamColors';
 import GlobalStyle from '../../../../Global_CSS/GlobalStyle';
-import {Toast, useToast} from 'react-native-toast-notifications';
+import {useToast} from 'react-native-toast-notifications';
+import {useDispatch} from 'react-redux';
+import UserProfileViewController from '../../../../Redux/Action/UserProfileViewController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ProfileContext} from '../../ProfileContext';
 
 const AvailabilityOptions = [
   {id: 1, label: 'Full Time', value: 'Full Time'},
   {id: 2, label: 'Part Time', value: 'Part Time'},
 ];
 
-const Availability = () => {
+const Availability = profileDetails => {
+  const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [currentSlotIndex, setCurrentSlotIndex] = useState(null);
   const [currentEditIndex, setCurrentEditIndex] = useState(null); // To track which record is being edited
   const [availabilities, setAvailabilities] = useState([]);
+  const [availabilitiesData, setAvailabilitiesData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const toastOpacity = new Animated.Value(100);
   const toast = useToast();
+  const [id, setId] = useState();
+  const dispatch = useDispatch();
 
-  const openModal = (data, index = null) => {
-    setCurrentEditIndex(index);
+  const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(id);
+      } catch (error) {
+        console.error('Error reading value from AsyncStorage', error);
+      }
+    };
+
+    getUserData();
+    // console.log('================================');
+    setAvailabilitiesData(profileDetails?.profileDetails?.work_availability);
+    // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
+  }, [profileDetails]);
+
+  const openModal = item => {
+    if (item) {
+      setSelectedItem(item);
+      console.log('Editing existing item:', item);
+    } else {
+      setSelectedItem(null);
+      console.log('Creating new entry.');
+    }
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setCurrentEditIndex(null);
+    setSelectedItem(null);
   };
 
   let formikRef = null;
@@ -71,20 +103,8 @@ const Availability = () => {
     });
   };
 
-  const checkNineHourDifference = (start_time, end_time, showToast) => {
-    if (!start_time || !end_time) return;
-    const start = moment(start_time, 'hh:mm A');
-    const end = moment(end_time, 'hh:mm A');
-
-    const difference = end.diff(start, 'hours');
-
-    if (difference < 9) {
-      showToast('Time of work must bemore than 9 hours.');
-    }
-  };
-
-  const validationSchema = () => {
-    return Yup.object().shape({
+  const validationSchema = () =>
+    Yup.object().shape({
       mode: Yup.string().required('Availability mode is required'),
       slots: Yup.array()
         .of(
@@ -116,13 +136,23 @@ const Availability = () => {
                 },
               )
               .test(
-                'nine-hours',
-                'Start and End time difference must be exactly 9 hours for Full Time',
+                'nine-hours-difference',
+                'The difference between Start and End time must be more than 9 hours',
                 function (value) {
                   const {start_time} = this.parent;
-                  const {mode} = this.options.context;
-                  if (mode === 'Full Time') {
-                    return checkNineHourDifference(start_time, value);
+                  const {mode} = this.options.context; // Access mode from the validation context
+                  if (mode !== 'Full Time') return true; // Skip validation if mode is not "Full Time"
+
+                  if (!start_time || !value) return true;
+
+                  const start = moment(start_time, 'hh:mm A');
+                  const end = moment(value, 'hh:mm A');
+                  const differenceInHours = end.diff(start, 'hours', true);
+
+                  if (differenceInHours <= 9) {
+                    // Trigger toast if the difference is <= 9 hours
+                    showToast('Time of work must be more than 9 hours.');
+                    return false;
                   }
                   return true;
                 },
@@ -144,6 +174,7 @@ const Availability = () => {
                   moment(prevSlot.end_time, 'hh:mm A'),
                 )
               ) {
+                showToast('Time slots must not overlap.');
                 return false;
               }
             }
@@ -151,27 +182,51 @@ const Availability = () => {
           },
         ),
     });
-  };
 
-  const handleFormSubmit = values => {
-    const existingIndex = availabilities.findIndex(
+  const handleFormSubmit = async values => {
+    // Clone the current state
+    let updatedAvailabilities = [...availabilities];
+
+    // Check if the mode already exists
+    const existingIndex = updatedAvailabilities.findIndex(
       availability => availability.mode === values.mode,
     );
 
     if (existingIndex !== -1) {
-      // If the mode already exists, update the existing availability
-      const updatedAvailabilities = [...availabilities];
+      // If the mode exists, update the slots for that mode
       updatedAvailabilities[existingIndex] = values;
-      setAvailabilities(updatedAvailabilities);
     } else {
       // If the mode does not exist, add a new availability
-      setAvailabilities([...availabilities, values]);
+      updatedAvailabilities.push(values);
     }
 
+    // Update the state
+    setAvailabilities(updatedAvailabilities);
+
+    // Format the data for submission
+    const formattedData = {
+      id: profileDetails?.profileDetails?.id,
+      work_availability: updatedAvailabilities.map(values => ({
+        mode: values.mode,
+        slots: values.slots.map(slot => ({
+          start_time: slot.start_time,
+          end_time: slot.end_time,
+        })),
+      })),
+    };
+
+    console.log('Formatted Data:', JSON.stringify(formattedData, null, 2));
+    if (profileDetails?.profileDetails?.id) {
+      // If an ID exists, update the profile details
+      dispatch(updateProfileDetails(formattedData));
+    } else {
+      // If no ID exists, add new profile details
+      dispatch(addProfileDetails(formattedData));
+    }
+    toggleIsUpdatedProfile();
+    // toggleIsUpdatedProfile();
     closeModal();
   };
-
-  console.log('Availabilities:', JSON.stringify(availabilities, null, 2));
 
   const deleteSlot = (index, values, setFieldValue) => {
     const updatedSlots = values.slots.filter((_, i) => i !== index);
@@ -181,9 +236,7 @@ const Availability = () => {
   const addNewSlot = (values, setFieldValue) => {
     const lastSlot = values.slots[values.slots.length - 1];
     if (lastSlot && !lastSlot.end_time) {
-      Toast.show('Complete the current slot before adding a new one', {
-        type: 'warning',
-      });
+      showToast('Complete the current slot before adding a new one');
       return;
     }
     setFieldValue('slots', [...values.slots, {start_time: '', end_time: ''}]);
@@ -203,35 +256,41 @@ const Availability = () => {
         />
       </View>
       <View>
-        {availabilities.map((availability, index) => (
-          <View key={index} style={styles.dataContainer}>
-            <View>
-              <Text style={styles.dataLabel}>{availability.mode}</Text>
-              {availability.slots?.map((slot, slotIndex) => (
-                <View key={slotIndex} style={styles.slotDataContainer}>
-                  <Text style={styles.dataLabel}>Slot {slotIndex + 1}: </Text>
-                  <Text style={styles.dataValue}>
-                    {slot.start_time &&
-                    moment(slot.start_time, 'hh:mm A', true).isValid()
-                      ? moment(slot.start_time, 'hh:mm A').format('hh:mm A')
-                      : 'Invalid Start Time'}{' '}
-                    -{' '}
-                    {slot.end_time &&
-                    moment(slot.end_time, 'hh:mm A', true).isValid()
-                      ? moment(slot.end_time, 'hh:mm A').format('hh:mm A')
-                      : 'Invalid End Time'}
-                  </Text>
-                </View>
-              ))}
+        {Array.isArray(availabilitiesData) && availabilitiesData.length > 0 ? (
+          availabilitiesData.map((availability, item) => (
+            <View key={item} style={styles.dataContainer}>
+              <View>
+                <Text style={styles.dataLabel}>{availability.mode}</Text>
+                {availability.slots?.map((slot, slotIndex) => (
+                  <View key={slotIndex} style={styles.slotDataContainer}>
+                    <Text style={styles.dataLabel}>Slot {slotIndex + 1}: </Text>
+                    <Text style={styles.dataValue}>
+                      {slot.start_time &&
+                      moment(slot.start_time, 'hh:mm A', true).isValid()
+                        ? moment(slot.start_time, 'hh:mm A').format('hh:mm A')
+                        : 'Invalid Start Time'}{' '}
+                      -{' '}
+                      {slot.end_time &&
+                      moment(slot.end_time, 'hh:mm A', true).isValid()
+                        ? moment(slot.end_time, 'hh:mm A').format('hh:mm A')
+                        : 'Invalid End Time'}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              <IconButton
+                icon="pencil-outline"
+                size={20}
+                iconColor="#000"
+                onPress={() => openModal(availability, item)}
+              />
             </View>
-            <IconButton
-              icon="pencil-outline"
-              size={20}
-              iconColor="#000"
-              onPress={() => openModal(availability, index)}
-            />
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text style={profileStyle.optionalData}>
+            No availabilities found.
+          </Text>
+        )}
       </View>
 
       <Modal
@@ -245,10 +304,15 @@ const Availability = () => {
             renderItem={() => (
               <Formik
                 initialValues={
-                  currentEditIndex !== null
-                    ? availabilities[currentEditIndex]
+                  selectedItem
+                    ? {
+                        mode: selectedItem.mode || 'Full Time',
+                        slots: selectedItem.slots || [
+                          {start_time: '', end_time: ''},
+                        ],
+                      }
                     : {
-                        mode: 'Full Time',
+                        mode: '',
                         slots: [{start_time: '', end_time: ''}],
                       }
                 }
@@ -278,14 +342,14 @@ const Availability = () => {
                           key={option.id}
                           style={[
                             profileStyle.tabBtnStyle,
-                            values.mode === option.value &&
+                            values?.mode === option?.value &&
                               profileStyle.selectedTab,
                           ]}
-                          onPress={() => setFieldValue('mode', option.value)}>
+                          onPress={() => setFieldValue('mode', option?.value)}>
                           <Text
                             style={[
                               profileStyle.tabBtnText,
-                              values.mode === option.value &&
+                              values?.mode === option?.value &&
                                 profileStyle.selectedTabText,
                             ]}>
                             {option.label}
@@ -297,7 +361,7 @@ const Availability = () => {
                       <Text style={profileStyle.errorText}>{errors.mode}</Text>
                     )} */}
 
-                    {values.mode === 'Full Time' && (
+                    {values?.mode === 'Full Time' && (
                       <View style={styles.slotContainer}>
                         <View style={{flexDirection: 'row', gap: 8}}>
                           {/* Start Time */}
@@ -310,7 +374,7 @@ const Availability = () => {
                             <TextInput
                               label="Start Time"
                               mode="outlined"
-                              value={values.slots[0]?.start_time || ''}
+                              value={values?.slots[0]?.start_time || ''}
                               editable={false}
                               style={styles.inputBox}
                               textColor="#333"
@@ -397,10 +461,10 @@ const Availability = () => {
                       </View>
                     )}
 
-                    {values.mode === 'Part Time' && (
+                    {values?.mode === 'Part Time' && (
                       <>
                         <FlatList
-                          data={values.slots}
+                          data={values?.slots}
                           renderItem={({item, index}) => (
                             <View
                               key={index}
@@ -414,14 +478,16 @@ const Availability = () => {
                                 <Text style={styles.slotLabel}>
                                   Slot {index + 1}
                                 </Text>
-                                <IconButton
-                                  icon="delete"
-                                  size={20}
-                                  iconColor={colors.primary}
-                                  onPress={() =>
-                                    deleteSlot(index, values, setFieldValue)
-                                  }
-                                />
+                                {values?.slots?.length > 1 && ( // Show delete button only if more than one slot
+                                  <IconButton
+                                    icon="delete"
+                                    size={20}
+                                    iconColor={colors.primary}
+                                    onPress={() =>
+                                      deleteSlot(index, values, setFieldValue)
+                                    }
+                                  />
+                                )}
                               </View>
                               <View style={{flexDirection: 'row', gap: 8}}>
                                 {/* Start Time */}

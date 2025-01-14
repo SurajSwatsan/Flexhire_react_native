@@ -16,8 +16,7 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
-import Spinner from 'react-native-loading-spinner-overlay';
-import GlobalStyle from '../../Global_CSS/GlobalStyle';
+
 const UserApplies = () => {
   const navigation = useNavigation();
 
@@ -123,14 +122,19 @@ const UserApplies = () => {
                   style={styles.jobCard}
                   onPress={() => handleJobPress(jobData)}>
                   <View style={styles.companyInfo}>
-                    <Image
-                      source={
-                        jobData?.job?.company?.logo
-                          ? {uri: BASE_URL + jobData.job.company.logo}
-                          : require('../../Assets/CompanyLogo/Swatsan.png')
-                      }
-                      style={styles.companyImage}
-                    />
+                    {jobData.job.company.logo ? (
+                      <Image
+                        source={{uri: BASE_URL + jobData.job.company.logo}}
+                        style={styles.companyImage}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="business"
+                        size={36}
+                        color="gray"
+                        style={styles.companyImage}
+                      />
+                    )}
                     <View>
                       <Text style={styles.jobTitle}>
                         {jobData?.job?.job_title?.title ||

@@ -20,6 +20,7 @@ import {colors} from '../../Global_CSS/TheamColors';
 import AuthViewController from '../../Redux/Action/AuthViewController';
 import {useDispatch} from 'react-redux';
 
+
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);

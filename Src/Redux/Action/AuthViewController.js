@@ -3,12 +3,26 @@ import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import instance, {setAuthToken} from '../../Services/baseAPI';
 import axios from 'axios';
+import messaging from '@react-native-firebase/messaging';
 
 const AuthViewController = () => {
   const navigation = useNavigation();
   const goBackScreen = () => {
     navigation.goBack();
   };
+  const subscribeToUserTopic = (user_id) => {
+    // Topic name: user_{user_id}
+    const topic = `user_${user_id}`;
+      messaging()
+      .subscribeToTopic(topic)
+      .then(() => {
+        console.log(`Successfully subscribed to topic ${topic}`);
+      })
+      .catch(error => {
+        console.error('Error subscribing to topic', error);
+      });
+  };
+
   const checkLoginStatus = () => async dispatch => {
     // console.log('checkLoginStatus called');
 
@@ -107,7 +121,7 @@ const AuthViewController = () => {
 
       setAuthToken(access); // Set token in axios headers or AsyncStorage
       await AsyncStorage.setItem('user_data', JSON.stringify(user_id));
-
+      subscribeToUserTopic(user_id)
       dispatch({type: 'LOGIN_SUCCESS', payload: {access, user_id}});
 
       dispatch({type: 'LOADING', payload: false});

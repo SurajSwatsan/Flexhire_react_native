@@ -39,7 +39,7 @@ const JobDetailScreen = ({route}) => {
   const dispatch = useDispatch();
   const scrollViewRef = useRef(null);
   const {GetJobDetails, ApplyJob, SaveJob} = JobViewController();
-  const {JobDetails, SavedJobs, isLoading} = useSelector(state => state.job);
+  const {JobDetails, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -54,7 +54,6 @@ const JobDetailScreen = ({route}) => {
 
         dispatch(GetJobDetails(job_id, id));
         // dispatch(GetJobApplications(id));
-
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -154,39 +153,10 @@ const JobDetailScreen = ({route}) => {
   };
 
   // Function to create a lookup map from SavedJobs
-  const createSavedJobsMap = () => {
-    const map = {};
-    (SavedJobs?.saved_jobs ?? []).forEach(savedJob => {
-      const jobId = savedJob?.job?.id ?? null;
-      const isSaved = savedJob?.job?.is_saved ?? false;
-
-      if (jobId !== null) {
-        map[jobId] = isSaved;
-      } else {
-        console.warn('Invalid job entry:', savedJob);
-      }
-    });
-
-    return map;
-  };
-
-  const savedJobsMap = createSavedJobsMap(); // Create the map dynamically
-
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-
-    const currentState = savedJobsMap[jobId]; // Use savedJobsMap for lookup
-
-    // Optimistically update global SavedJobs state
-    dispatch({
-      type: 'UPDATE_SAVED_JOBS',
-      payload: {
-        jobId,
-        isSaved: !currentState, // Toggle the saved state
-      },
-    });
-
-    dispatch(SaveJob(requestData));
+    dispatch(SaveJob(requestData, 'JobDetailScreen')); // Pass only the job ID
+    console.log('Job saved', requestData);
   };
 
   const renderTabs = () => {
@@ -244,7 +214,7 @@ const JobDetailScreen = ({route}) => {
                 <View style={styles.jobDepartmentContainer}>
                   <Text style={styles.jobDetailsheader}>Department:</Text>
                   <Text style={styles.jobDetails1}>
-                    {JobDetails?.department?.[0]}
+                    {JobDetails?.department?.join(', ')}
                   </Text>
                 </View>
                 <View style={styles.jobDepartmentContainer}>
@@ -301,6 +271,10 @@ const JobDetailScreen = ({route}) => {
               <Text style={styles.jobDetails1}>
                 {JobDetails?.company?.company_description}
               </Text>
+              {console.log(
+                'JobDetails?.company?.company_description',
+                JobDetails,
+              )}
             </View>
 
             <View style={styles.jobDepartmentContainer}>
@@ -366,14 +340,9 @@ const JobDetailScreen = ({route}) => {
               <CustomHeader />
               <View style={styles.headerRightContainer}>
                 <IconButton
-                  icon={
-                    savedJobsMap[JobDetails?.id]
-                      ? 'bookmark'
-                      : 'bookmark-outline'
-                  }
+                  icon={JobDetails?.is_saved ? 'bookmark' : 'bookmark-outline'}
                   iconColor={colors.primary}
                   size={32}
-                  // style={JobCardStyle.saveicon}
                   onPress={() => toggleSaveJob(JobDetails?.id)}
                 />
 
@@ -384,15 +353,6 @@ const JobDetailScreen = ({route}) => {
                   style={styles.icon}
                   onPress={() => setModalVisible(true)}
                 />
-
-                {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Ionicons
-              name="share-social-outline"
-              size={24}
-              color={colors.primary}
-              style={styles.icon}
-            />
-          </TouchableOpacity> */}
               </View>
               {/* Modal for sharing social media icons */}
               <Modal
@@ -459,21 +419,32 @@ const JobDetailScreen = ({route}) => {
               <View style={styles.companyInfoContainer}>
                 <View style={styles.companyInfo}>
                   <View style={styles.logoContainer}>
-                    <Image
-                      source={
-                        JobDetails?.company?.logo
-                          ? {uri: BASE_URL + JobDetails?.company?.logo} // Use URI if the logo is a valid URL or path
-                          : require('../Assets/CompanyLogo/Swatsan.png') // Fallback to a default image
-                      }
-                      style={styles.logo}
-                    />
+                    {JobDetails?.company?.logo ? (
+                      <Image
+                        source={{uri: BASE_URL + JobDetails?.company?.logo}}
+                        style={styles.logo}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="business"
+                        size={36}
+                        color="gray"
+                        // style={styles.logo}
+                      />
+                    )}
                   </View>
                   <Text style={styles.jobTitle}>
                     {JobDetails?.job_title?.title}
                   </Text>
-                  <Text style={styles.companyName}>
-                    {JobDetails?.company_name}
-                  </Text>
+
+                  {(JobDetails?.company_name ||
+                    JobDetails?.company?.company_name) && (
+                    <Text style={styles.companyName}>
+                      {JobDetails?.company?.company_name
+                        ? JobDetails?.company?.company_name
+                        : JobDetails?.company_name}
+                    </Text>
+                  )}
                   <View style={styles.locationContainer}>
                     <IconButton
                       icon="map-marker"
@@ -581,14 +552,18 @@ const JobDetailScreen = ({route}) => {
                       <View style={styles.jobCard}>
                         <View style={styles.cardcompanyInfo}>
                           <View style={styles.companylogo}>
-                            <Image
-                              source={
-                                item?.company?.logo
-                                  ? {uri: BASE_URL + item?.company?.logo}
-                                  : require('../Assets/CompanyLogo/Swatsan.png') // Replace with a default logo
-                              }
-                              style={styles.companyImage}
-                            />
+                            {item?.company?.logo ? (
+                              <Image
+                                source={{uri: BASE_URL + item?.company?.logo}}
+                                style={styles.companyImage}
+                              />
+                            ) : (
+                              <Ionicons
+                                name="business"
+                                size={36}
+                                color="gray"
+                              />
+                            )}
                             <View style={styles.textName}>
                               <Text style={styles.jobTitle}>
                                 {item?.job_title?.title}

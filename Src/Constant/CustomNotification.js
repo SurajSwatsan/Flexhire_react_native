@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors } from '../Global_CSS/TheamColors';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment'; // Import moment.js
 import CustomHeader from './CustomBackIcon';
@@ -25,7 +25,8 @@ const notifications = [
   {
     id: 3,
     title: 'Profile Update Reminder ',
-    description: 'Update your profile to increase your chances.Update your profile to increase your chances',
+    description:
+      'Update your profile to increase your chances.Update your profile to increase your chances',
     type: 'profile_update_reminder',
     date: moment().subtract(2, 'days'), // 2 days ago
   },
@@ -37,7 +38,7 @@ const CustomNotificationScreen = () => {
 
   // Handle notification click
   const handleNotificationClick = notification => {
-    const { id, type } = notification;
+    const {id, type} = notification;
 
     // Only add the notification to 'readNotifications' if it's not already there
     if (!readNotifications.includes(id)) {
@@ -47,16 +48,16 @@ const CustomNotificationScreen = () => {
     // Handle navigation based on the notification type
     switch (type) {
       case 'job_alert':
-        navigation.navigate('JobDetail');
+        // navigation.navigate('JobDetail');
         break;
       case 'interview_invite':
-        navigation.navigate('ApplicationStatus');
+        // navigation.navigate('ApplicationStatus');
         break;
       case 'profile_update_reminder':
-        navigation.navigate('userProfileScreen');
+        // navigation.navigate('userProfileScreen');
         break;
       default:
-        console.log('Unknown notification type');
+      // console.log('Unknown notification type');
     }
   };
 
@@ -113,16 +114,15 @@ const CustomNotificationScreen = () => {
 
       <FlatList
         data={notifications}
-        renderItem={({ item }) => {
+        renderItem={({item}) => {
           const isRead = readNotifications.includes(item.id);
           return (
             <TouchableOpacity
               onPress={() => handleNotificationClick(item)}
               style={[
                 styles.notificationItem,
-                { backgroundColor: isRead ? '#fff': '#e3f0e9' }, 
-              ]}
-            >
+                {backgroundColor: isRead ? '#fff' : '#e3f0e9'},
+              ]}>
               <View style={styles.notificationContent}>
                 {/* Display Icon */}
                 {renderIcon(item.type)}
@@ -151,14 +151,14 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 12,
     marginLeft: 12,
-    flexDirection:'row',
-    alignItems:'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  headerText:{
-    fontSize:18,
-    color:colors.blackText,
-    fontWeight:'bold',
-    marginLeft:18
+  headerText: {
+    fontSize: 18,
+    color: colors.blackText,
+    fontWeight: 'bold',
+    marginLeft: 18,
   },
   textInfo: {
     color: colors.blackText,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     // fontWeight: 'bold',
     fontSize: 12,
     color: 'gray',
-    paddingTop:4
+    paddingTop: 4,
   },
   description: {
     fontSize: 14,
@@ -191,13 +191,12 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1, // Ensure the text takes up the available space
     marginLeft: 4,
-    
   },
 
   timeAgo: {
     fontSize: 11,
     color: 'gray',
-    alignSelf: 'flex-end', 
+    alignSelf: 'flex-end',
   },
   icon: {
     marginRight: 12,

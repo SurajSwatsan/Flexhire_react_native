@@ -41,7 +41,7 @@ const SavedJobScreen = () => {
 
     getUserData();
   }, [isFocus]);
-  console.log('SavedJobs', SavedJobs);
+
 
   const isBookmarked = job_id => {
     return Array.isArray(SavedJobs?.saved_jobs)
@@ -155,14 +155,19 @@ const SavedJobScreen = () => {
 
                 <View style={styles.innerCard}>
                   <View style={styles.iconMain}>
-                    <Image
-                      source={
-                        savedJob?.job?.company?.logo
-                          ? {uri: BASE_URL + savedJob?.job?.company.logo}
-                          : require('../../Assets/CompanyLogo/Swatsan.png')
-                      }
-                      style={styles.logo}
-                    />
+                    {savedJob?.job?.company.logo ? (
+                      <Image
+                        source={{uri: BASE_URL + savedJob?.job?.company.logo}}
+                        style={styles.logo}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="business"
+                        size={36}
+                        color="gray"
+                        style={styles.logo}
+                      />
+                    )}
                     <View style={styles.companyMaincontainer}>
                       <View style={styles.companyDetail}>
                         {savedJob?.job?.company?.company_name && (

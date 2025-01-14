@@ -46,6 +46,7 @@ const JobCardStyle = StyleSheet.create({
     color: '#000',
   },
   workModeContainer: {
+    marginTop: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,

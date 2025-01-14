@@ -7,17 +7,12 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
-  FlatList,
-  ImageBackground,
   Animated,
-  Linking,
   Alert,
-  Modal,
 } from 'react-native';
 import {colors} from '../Global_CSS/TheamColors';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure this import is correct
-import {Button, IconButton} from 'react-native-paper';
-// import CustomJobCard from '../Constant/CustomJobCard';
+import {IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import CustomCarousel from '../Constant/CustomCarousel';
 import ReviewPage from '../Constant/CustomReviewPage';
@@ -34,8 +29,6 @@ import WebView from 'react-native-webview';
 
 const {width, height} = Dimensions.get('window'); // Get the screen width
 
-const {width: screenWidth} = Dimensions.get('window');
-
 const CompanyOverviewScreen = ({route}) => {
   const {company_id} = route?.params;
   // console.log('company_id', company_id);
@@ -47,7 +40,6 @@ const CompanyOverviewScreen = ({route}) => {
   const [showAllServices, setShowAllServices] = useState(false);
   const animatedValue = new Animated.Value(0); // Initialize animated value
   const [currentCount, setCurrentCount] = useState(0); // Track the live counter value
-  const [selectedChip, setSelectedChip] = useState('All');
   const [selectedVideoUrl, setSelectedVideoUrl] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const dispatch = useDispatch();
@@ -72,9 +64,6 @@ const CompanyOverviewScreen = ({route}) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // console.log('CompanyDetails', CompanyDetails);
-  // console.log(CompanyDetails?.company_size);
 
   const [employeeCount] = useState(
     Number(CompanyDetails?.company_size) || 0, // Default to 0 if conversion fails
@@ -140,8 +129,6 @@ const CompanyOverviewScreen = ({route}) => {
     CompanyJobs?.jobs_by_department?.find(
       department => department?.department_name == selectedDepartment,
     )?.jobs || [];
-  console.log('filteredJobs', filteredJobs);
-  console.log('selectedDepartment', selectedDepartment);
 
   const renderTabs = () => {
     switch (activeTab) {
@@ -189,8 +176,8 @@ const CompanyOverviewScreen = ({route}) => {
               </View>
             </View>
 
-            <View style={styles.benefitContainer}>
-              <Text style={styles.textBenefits}>Benefits</Text>
+            <View style={styles.Container}>
+              <Text style={styles.textcontainerheading}>Benefits</Text>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {Array.isArray(CompanyDetails?.company_benefits) &&
@@ -211,7 +198,7 @@ const CompanyOverviewScreen = ({route}) => {
             </View>
 
             <View style={styles.recentContainer}>
-              <View style={{marginVertical: 12, marginLeft: 16}}>
+              <View style={{marginLeft: 16}}>
                 <View style={styles.displayContainer}>
                   <Text style={styles.contHead}>Recent Jobs</Text>
                 </View>
@@ -222,21 +209,24 @@ const CompanyOverviewScreen = ({route}) => {
                         key={jobData.id}
                         // onPress={() => handleCardPress(jobData)}
                         style={{marginRight: 12}}>
-                        <View
-                          style={[
-                            JobCardStyle.jobCard,
-                            {backgroundColor: '#fafafa'},
-                          ]}>
+                        <View style={[JobCardStyle.jobCard]}>
                           <View style={JobCardStyle.companyInfo}>
                             <View style={JobCardStyle.companylogo}>
-                              <Image
-                                source={
-                                  jobData.company?.logo
-                                    ? {uri: BASE_URL + jobData.company.logo}
-                                    : require('../Assets/CompanyLogo/Swatsan.png')
-                                }
-                                style={JobCardStyle.companyImage}
-                              />
+                              {jobData.company.logo ? (
+                                <Image
+                                  source={{
+                                    uri: BASE_URL + jobData.company.logo,
+                                  }}
+                                  style={JobCardStyle.companyImage}
+                                />
+                              ) : (
+                                <Ionicons
+                                  name="business"
+                                  size={36}
+                                  color="gray"
+                                  style={JobCardStyle.companyImage}
+                                />
+                              )}
                               <View style={JobCardStyle.textName}>
                                 {jobData?.job_title?.title && (
                                   <Text style={JobCardStyle.jobTitle}>
@@ -357,12 +347,13 @@ const CompanyOverviewScreen = ({route}) => {
                 marginBottom: 12,
                 flex: 1,
                 width: '100%',
+                backgroundColor: '#fff',
               }}>
               <CustomCarousel companyDetails={CompanyDetails} />
             </View>
 
-            <View style={styles.benefitContainer}>
-              <Text style={styles.textculture}>Culture</Text>
+            <View style={styles.Container}>
+              <Text style={styles.textcontainerheading}>Culture</Text>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {Array.isArray(CompanyDetails?.company_cultures) &&
@@ -606,8 +597,7 @@ const CompanyOverviewScreen = ({route}) => {
       case 'Jobs':
         return (
           <View>
-            <View
-              style={{flex: 1, backgroundColor: '#fff', paddingVertical: 12}}>
+            <View style={{flex: 1, paddingVertical: 12}}>
               {/* Department Chips */}
               <ScrollView
                 horizontal
@@ -647,24 +637,23 @@ const CompanyOverviewScreen = ({route}) => {
                         <View
                           style={[
                             JobCardStyle.jobCard,
-                            {backgroundColor: '#fafafa'},
+                            // {backgroundColor: '#fafafa'},
                           ]}>
                           <View style={JobCardStyle.companyInfo}>
                             <View style={JobCardStyle.companylogo}>
                               {jobData.company.logo ? (
                                 <Image
-                                  source={
-                                    {
-                                      // uri: BASE_URL + jobData.company.logo,
-                                    }
-                                  }
+                                  source={{
+                                    uri: BASE_URL + jobData.company.logo,
+                                  }}
                                   style={JobCardStyle.companyImage}
                                 />
                               ) : (
                                 <Ionicons
                                   name="business" // Icon for the fallback
-                                  size={42}
+                                  size={36}
                                   color="gray"
+                                  style={JobCardStyle.companyImage}
                                 />
                               )}
 
@@ -866,18 +855,6 @@ const CompanyOverviewScreen = ({route}) => {
                     <Text style={styles.chipText}>{service?.service_name}</Text>
                   </TouchableOpacity>
                 ))}
-
-              {/* Display the "See All" button as a chip */}
-              {CompanyDetails?.company_services.length > 2 && (
-                <TouchableOpacity
-                  onPress={() => setShowAllServices(!showAllServices)}
-                  style={styles.chip}>
-                  <Text style={styles.chipText}>
-                    {showAllServices ? 'See Less' : 'See All'}
-                  </Text>
-                </TouchableOpacity>
-              )}
-
               {/* Display all services if "See All" is clicked */}
               {showAllServices &&
                 CompanyDetails?.company_services
@@ -889,6 +866,17 @@ const CompanyOverviewScreen = ({route}) => {
                       </Text>
                     </TouchableOpacity>
                   ))}
+
+              {/* Display the "See All" button as a chip */}
+              {CompanyDetails?.company_services.length > 2 && (
+                <TouchableOpacity
+                  onPress={() => setShowAllServices(!showAllServices)}
+                  style={styles.chip}>
+                  <Text style={styles.chipText}>
+                    {showAllServices ? 'See Less' : 'See All'}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </>
           ) : (
             <Text style={styles.noServices}>No services available</Text>
@@ -1139,21 +1127,13 @@ const styles = StyleSheet.create({
     fontSize: 12, // Smaller font size
     fontWeight: 'bold', // Bold text
   },
-  benefitContainer: {
+  Container: {
     marginTop: 18,
-    paddingHorizontal: 10,
+    padding: 12,
     marginBottom: 18,
     backgroundColor: '#FFF',
   },
-  textBenefits: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: colors.blackText,
-    marginHorizontal: 12,
-  },
-  textculture: {
-    marginTop: 12,
+  textcontainerheading: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
@@ -1216,7 +1196,7 @@ const styles = StyleSheet.create({
   },
 
   recentContainer: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fafafa',
   },
   displayContainer: {
     flexDirection: 'row',
@@ -1231,30 +1211,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
   },
-  teamHead: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.blackText,
-    alignSelf: 'center',
-    // color: colors.primary,
-    backgroundColor: colors.whiteText,
-    width: '100%',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 18,
-  },
-  seeAll: {
-    fontSize: 14,
-    color: colors.blackText,
-    marginRight: 10,
-  },
 
   screen: {
     flex: 1,
     backgroundColor: colors.whiteText,
     borderRadius: 8,
-    // margin:12
-    // marginLeft:-12,
   },
   contentContainer: {
     // marginBottom: 12,

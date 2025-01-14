@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,7 +14,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+const {height} = Dimensions.get('window');
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State for selected image URI
   const navigation = useNavigation();
@@ -86,26 +87,6 @@ const Index = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.container}
-            onPress={
-              () => navigation.navigate('UserApplies')
-              // navigation.navigate('Home', { screen: 'Applies' })
-            }>
-            <View style={styles.innerContainer}>
-              <Ionicons
-                name="checkmark-circle-sharp"
-                size={18}
-                style={styles.iconstyle}
-              />
-              <Text style={styles.text}>Applied Jobs</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={18}
-              style={styles.iconstyle}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.container}
             onPress={() => navigation.navigate('bookmark')}>
             <View style={styles.innerContainer}>
               <Ionicons
@@ -121,7 +102,7 @@ const Index = () => {
               style={styles.iconstyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.container}
             onPress={() => navigation.navigate('InterviewPage')}>
             <View style={styles.innerContainer}>
@@ -137,7 +118,7 @@ const Index = () => {
               size={18}
               style={styles.iconstyle}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {showSections && (
             <>
@@ -223,7 +204,7 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     // flex: 1,
-    height: '100%',
+    height: height * 1,
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

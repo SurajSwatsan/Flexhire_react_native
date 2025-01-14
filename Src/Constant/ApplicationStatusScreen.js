@@ -28,10 +28,11 @@ const ApplicationStatusScreen = ({route}) => {
       job_id: ApplicationObject?.job?.id,
     });
   };
-  const handleJobCardPress = () => {
+  const handleJobCardPress = job => {
     navigation.navigate('JobDetailScreen', {
-      job_id: ApplicationObject?.job?.id,
+      job_id: job?.id, // Pass the related job ID
     });
+    console.log('Navigating to job ID:', job?.id);
   };
 
   return (
@@ -44,23 +45,36 @@ const ApplicationStatusScreen = ({route}) => {
       </View>
       <ScrollView showsVerticalScrollIndicator={false} marginVertical={18}>
         <View style={styles.jobContainer}>
-          <Image
-            source={
-              ApplicationObject?.job?.company?.logo
-                ? {uri: BASE_URL + ApplicationObject?.job?.company?.logo}
-                : require('../Assets/CompanyLogo/Swatsan.png')
-            }
-            style={styles.image}
-          />
+          {ApplicationObject?.job?.company?.logo ? (
+            <Image
+              source={{uri: BASE_URL + ApplicationObject?.job?.company?.logo}}
+              style={styles.image}
+            />
+          ) : (
+            <Ionicons
+              name="business"
+              size={42}
+              color="gray"
+              // style={styles.companyImage}
+            />
+          )}
 
           <View>
             <Text style={styles.jobTitle}>
               {ApplicationObject?.job?.job_title?.title}
             </Text>
-
             <Text style={styles.companyName}>
               {ApplicationObject?.job?.company_name}
             </Text>
+
+            {/* {(ApplicationObject?.company_name ||
+              ApplicationObject?.company?.company_name) && (
+              <Text style={styles.companyName}>
+                {ApplicationObject?.company?.company_name
+                  ? ApplicationObject?.company?.company_name
+                  : ApplicationObject?.company_name}
+              </Text>
+            )} */}
           </View>
         </View>
 
@@ -77,7 +91,9 @@ const ApplicationStatusScreen = ({route}) => {
           />
 
           <View style={styles.applicationText}>
-            <Text style={styles.subText}>12326 Applicants on this job</Text>
+            <Text style={styles.subText}>
+              {ApplicationObject?.job?.applicant_count} Applicants on this job
+            </Text>
             <Text style={styles.subText}>
               0 Applications viewed by recruiter
             </Text>
@@ -93,9 +109,6 @@ const ApplicationStatusScreen = ({route}) => {
             <View style={styles.relatedjobcontainer}>
               <View style={styles.displayContainer}>
                 <Text style={styles.contHead}>Similar Jobs</Text>
-                <TouchableOpacity>
-                  <Text style={styles.seeAll}>See All</Text>
-                </TouchableOpacity>
               </View>
 
               <ScrollView>
@@ -105,21 +118,32 @@ const ApplicationStatusScreen = ({route}) => {
                       <View style={styles.jobCard}>
                         <View style={styles.companyInfo}>
                           <View style={styles.companylogo}>
-                            <Image
-                              source={
-                                item?.company?.logo
-                                  ? {uri: BASE_URL + item?.company?.logo}
-                                  : require('../Assets/CompanyLogo/Swatsan.png') // Replace with a default logo
-                              }
-                              style={styles.companyImage}
-                            />
+                            {item?.company?.logo ? (
+                              <Image
+                                source={{uri: BASE_URL + item?.company?.logo}}
+                                style={styles.companyImage}
+                              />
+                            ) : (
+                              <Ionicons
+                                name="business"
+                                size={36}
+                                color="gray"
+                                style={styles.companyImage}
+                              />
+                            )}
                             <View style={styles.textName}>
                               <Text style={styles.jobTitle}>
                                 {item?.job_title?.title}
                               </Text>
-                              <Text style={styles.companyName}>
-                                {item?.company_name}
-                              </Text>
+
+                              {(item?.company_name ||
+                                item?.company?.company_name) && (
+                                <Text style={styles.companyName}>
+                                  {item?.company?.company_name
+                                    ? item?.company?.company_name
+                                    : item?.company_name}
+                                </Text>
+                              )}
                             </View>
                           </View>
                         </View>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "239352759423",
+    "project_id": "flexhire-a2194",
+    "storage_bucket": "flexhire-a2194.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239352759423:android:99a3751ea8c9da97f06b4a",
+        "android_client_info": {
+          "package_name": "com.flexhireapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo-HoAEVLFkC--Nn3kgN_V_rlmu6SsQBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

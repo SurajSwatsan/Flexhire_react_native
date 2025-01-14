@@ -11,7 +11,6 @@ import LogoutComponent from '../Screens/UserScreens/LogoutScreen.js';
 import OtpVerificationScreen from '../Screens/UserScreens/OtpVerificationScreen.js';
 import ResetPasswordScreen from '../Screens/UserScreens/ResetPasswordScreen.js.js';
 import DefaultScreen from '../Screens/DefaultScreen.js';
-import JobDetailScreen from '../Components/JobDetail.js';
 import HomeScreen from '../Screens/BottomTabScreens/HomeScreen.js';
 import Index from '../Screens/UserProfile/Profile/index.js';
 import CompanyOverviewScreen from '../Components/CompanyOverview.js';
@@ -30,6 +29,7 @@ import TermsAndConditionsScreen from '../DrawerContent/AboutUs/TermsAndCondition
 import CreditPage from '../DrawerContent/AboutUs/CreditPage.js';
 import CustomInvitePage from '../Constant/CustomInvitePage.js';
 import {colors} from '../Global_CSS/TheamColors.js';
+import JobDetailScreen from '../Components/JobDetailScreen.js';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();

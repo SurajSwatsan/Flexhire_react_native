@@ -207,7 +207,7 @@ const JobViewController = () => {
     }
   };
 
-  const SaveJob = requestData => async dispatch => {
+  const SaveJob = (requestData, page, pageNo) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     // console.log('requestData', requestData);
 
@@ -217,13 +217,24 @@ const JobViewController = () => {
         requestData,
       );
 
+      // console.log(response);
+
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
       dispatch({type: 'JOB_SAVED_SUCCESSFULLY', payload: data});
 
+      if (page == 'HomeScreen') {
+        dispatch(GetHomePageData(requestData.user_id));
+      } else if (page == 'JobDetailScreen') {
+        dispatch(GetJobDetails(requestData.job, requestData.user_id));
+      } else if (page == 'JobScreen') {
+        dispatch(GetJobList(requestData.user_id, pageNo));
+      }
+
+      dispatch(GetSavedJobs(requestData.user_id));
+
       dispatch({type: 'LOADING', payload: false});
-      dispatch(GetSavedJobs(_userId));
     } catch (error) {
       console.log('error', error.response);
 
@@ -429,19 +440,19 @@ const JobViewController = () => {
     }
   };
 
-  const GetJobList = (user_id,page) => async dispatch => {
+  const GetJobList = (user_id, page) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
       const response = await axios.get(
         `http://15.206.149.28/api/job/?user_id=${user_id}&page=${page}`,
       );
-      console.log(
-        '****************************job-GetJobList response***************************',
-      );
+      // console.log(
+      //   '****************************job-GetJobList response***************************',
+      // );
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'JOB_LIST_SUCCESS', payload: data});
 
@@ -473,7 +484,7 @@ const JobViewController = () => {
     }
   };
 
-  const GetSearchJobs = (queryParams,page) => async dispatch => {
+  const GetSearchJobs = (queryParams, page) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     const queryString = new URLSearchParams(queryParams).toString();
     try {

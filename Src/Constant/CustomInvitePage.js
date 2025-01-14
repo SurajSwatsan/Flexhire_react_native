@@ -42,7 +42,7 @@ const CustomInvitePage = ({route}) => {
     };
 
     getUserData();
-    // console.log('##########',inviteData);
+    // console.log('##########', JSON.stringify(inviteData, null, 2));
   }, [isFocus]);
 
   const handleInputChange = text => {
@@ -60,6 +60,8 @@ const CustomInvitePage = ({route}) => {
       is_invited: true,
     };
     dispatch(ApplyJob(data));
+    console.log(data);
+    
     setModalVisible(false);
   };
 
@@ -146,11 +148,11 @@ const CustomInvitePage = ({route}) => {
         </View>
         <View style={styles.descriptionContainer}>
           {/* Job Description - Only show if summary is available */}
-          {inviteData?.job?.job_description?.summary ? (
+          {inviteData?.job?.company?.company_description ? (
             <>
               <Text style={styles.descriptionText}>Job Description</Text>
               <Text style={styles.description}>
-                {inviteData?.job?.job_description?.summary}
+                {inviteData?.job?.company?.company_description}
               </Text>
             </>
           ) : null}

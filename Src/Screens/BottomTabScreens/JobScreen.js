@@ -24,8 +24,7 @@ import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import Slider from '@react-native-community/slider';
 import CustomFormatAmount from '../../Constant/CustomFormatAmount';
-import Spinner from 'react-native-loading-spinner-overlay';
-import GlobalStyle from '../../Global_CSS/GlobalStyle';
+
 const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
   const {searchQuery} = route?.params || '';
@@ -92,6 +91,7 @@ const JobScreen = ({route}) => {
       } finally {
       }
     };
+    
 
     getUserData();
     if (FilterMasterData?.length === 0) {
@@ -100,6 +100,7 @@ const JobScreen = ({route}) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onFocus]);
+  console.log('JobList', JSON.stringify(FilterJobList, null, 2));
 
   useEffect(() => {
     if (FilterJobList.length > 0) {
@@ -110,6 +111,9 @@ const JobScreen = ({route}) => {
       setJobListToRender(JobList);
     }
   }, [JobList, FilterJobList, SearchJobList]);
+  
+  console.log('JobList', JSON.stringify(FilterJobList, null, 2));
+
 
   function formatAmount(value) {
     if (value >= 10000000) {
@@ -150,9 +154,9 @@ const JobScreen = ({route}) => {
 
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    if (!jobId) return; // Ensure a valid job ID is passed
-
-    dispatch(SaveJob(requestData)); // Pass only the job ID
+    dispatch(SaveJob(requestData, 'JobScreen','1')); // Pass only the job ID
+    console.log('requestData',requestData);
+    
   };
 
   // Dependencies
@@ -594,7 +598,8 @@ const JobScreen = ({route}) => {
                   navigation.navigate('JobDetailScreen', {
                     job_id: item?.id,
                   });
-                }}>
+                }}
+                style={{marginHorizontal: 12}}>
                 <View style={JobCardStyle.jobCard}>
                   <View style={JobCardStyle.companyInfo}>
                     <View style={JobCardStyle.companylogo}>
@@ -927,6 +932,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 12,
     gap: 8,
+    marginBottom: 12,
   },
   searchbarContainer: {
     flex: 1,

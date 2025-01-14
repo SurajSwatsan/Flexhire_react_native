@@ -1,12 +1,19 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthViewController from '../Redux/Action/AuthViewController';
+import JobViewController from '../Redux/Action/jobViewController';
+import UserProfileViewController from '../Redux/Action/UserProfileViewController';
+import {useDispatch} from 'react-redux';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
   const {checkLoginStatus} = AuthViewController();
+  const {GetHomePageData} = JobViewController();
+  const {GetProfileDetails} = UserProfileViewController();
+  const dispatch = useDispatch();
+  const [id, setId] = useState();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -15,6 +22,11 @@ const SplashScreen = () => {
         if (token) {
           // Validate the token or proceed to the main screen
           await checkLoginStatus()(dispatch => {}); // Invoke checkLoginStatus action
+
+          const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+          setId(id);
+          dispatch(GetHomePageData(id));
+
           navigation.replace('DefaultScreen');
         } else {
           navigation.replace('LoginScreen');

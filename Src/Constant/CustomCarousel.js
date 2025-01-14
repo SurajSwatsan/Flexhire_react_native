@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: width * 0.6, // Card width is 60% of the screen width
-    backgroundColor: 'white',
+    backgroundColor: '#fafafa',
     borderRadius: 8,
 
     marginRight: 20, // Ensures spacing between cards
