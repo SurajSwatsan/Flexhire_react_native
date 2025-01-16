@@ -91,7 +91,6 @@ const JobScreen = ({route}) => {
       } finally {
       }
     };
-    
 
     getUserData();
     if (FilterMasterData?.length === 0) {
@@ -100,7 +99,7 @@ const JobScreen = ({route}) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onFocus]);
-  console.log('JobList', JSON.stringify(FilterJobList, null, 2));
+  // console.log('JobList', JSON.stringify(JobList, null, 2));
 
   useEffect(() => {
     if (FilterJobList.length > 0) {
@@ -111,9 +110,6 @@ const JobScreen = ({route}) => {
       setJobListToRender(JobList);
     }
   }, [JobList, FilterJobList, SearchJobList]);
-  
-  console.log('JobList', JSON.stringify(FilterJobList, null, 2));
-
 
   function formatAmount(value) {
     if (value >= 10000000) {
@@ -154,9 +150,8 @@ const JobScreen = ({route}) => {
 
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    dispatch(SaveJob(requestData, 'JobScreen','1')); // Pass only the job ID
-    console.log('requestData',requestData);
-    
+    const pageNo = JobListPagination.current_page;
+    dispatch(SaveJob(requestData, 'JobScreen', pageNo)); // Pass only the job ID
   };
 
   // Dependencies
@@ -182,6 +177,7 @@ const JobScreen = ({route}) => {
         console.warn(`Invalid filter value for key: ${key}`, filters[key]);
         return;
       }
+      console.log(`Processing filter key: ${key}, value:`, filters[key]);
 
       switch (key) {
         case 'work_modes':
@@ -323,6 +319,7 @@ const JobScreen = ({route}) => {
 
     closeFiltermodal(); // Close the modal after applying filters
   };
+
   const renderFilterOptions = filterCategory => {
     const categoryData = FilterMasterData?.find(
       item => item.filter === filterCategory,
@@ -485,25 +482,35 @@ const JobScreen = ({route}) => {
                         )
                       }
                     />
-                    <Text
-                      style={{
-                        color: selectedFilters[filterCategory]?.includes(
+                    <TouchableOpacity
+                      onPress={() =>
+                        toggleFilter(
+                          filterCategory,
                           item.name ||
                             item.industry_name ||
                             item?.company_name ||
                             item?.course_name,
                         )
-                          ? colors.secondary
-                          : '#000',
-                        fontSize: 12,
-                      }}>
-                      {`${
+                      }>
+                      <Text
+                        style={{
+                          color: selectedFilters[filterCategory]?.includes(
+                            item.name ||
+                              item.industry_name ||
+                              item?.company_name ||
+                              item?.course_name,
+                          )
+                            ? colors.secondary
+                            : '#000',
+                          fontSize: 12,
+                          width: width * 0.55,
+                        }}>{`${
                         item.name ||
                         item.industry_name ||
                         item?.company_name ||
                         item?.course_name
-                      } (${item.count})`}
-                    </Text>
+                      } (${item.count})`}</Text>
+                    </TouchableOpacity>
                   </View>
                 ))}
               </ScrollView>
@@ -512,6 +519,7 @@ const JobScreen = ({route}) => {
       </View>
     );
   };
+
   const loadMoreJobs = () => {
     searchQueryData.page = JobListPagination.next_page_number;
     const filterParams = buildFilterParams({
@@ -633,6 +641,7 @@ const JobScreen = ({route}) => {
                         )}
                       </View>
                     </View>
+                    {/* {console.log('item?.is_saved', item?.id, item?.is_saved)} */}
 
                     <IconButton
                       icon={item?.is_saved ? 'bookmark' : 'bookmark-outline'}

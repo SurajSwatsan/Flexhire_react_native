@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -51,51 +51,23 @@ const CustomBottomTab = () => {
       return () => backHandler.remove(); // Cleanup on unmount
     }, [selectedTab]),
   );
-
-  const renderContent = () => {
+  useEffect(() => {
     if (selectedTab !== 'Jobs') {
       dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
     }
-    switch (selectedTab) {
-      case 'Home':
-        return <HomeComponent />;
-      case 'Applies':
-        return <UserApplies />;
-      case 'Invites':
-        return <UserInvites />;
-      case 'Profile':
-        return <UserProfile />;
-      case 'Jobs':
-        return <JobScreen />;
-      default:
-        return <HomeComponent />;
-    }
-  };
+  }, [selectedTab]);
 
-  return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <View style={styles.content}>{renderContent()}</View>
-        <View style={styles.tabContainer}>
-          {renderTab('Home', 'home', 'Home')}
-          {renderTab('Applies', 'send', 'Applies')}
-          {renderTab('Jobs', 'briefcase', 'Jobs')}
-          {renderTab('Invites', 'mail-sharp', 'Invites')}
-          {/* {renderTab('Bookmark', 'bookmark', 'Bookmark')} */}
-          {renderTab('Profile', 'person-sharp', 'Profile')}
-        </View>
-      </View>
-    </PaperProvider>
-  );
-
-  function renderTab(tabName, iconName, label) {
+  const renderTabBtn = (tabName, iconName, label) => {
     return (
       <TouchableOpacity
         style={[
           styles.tab,
           selectedTab === tabName ? styles.selectedTab : styles.notselectedTab,
         ]}
-        onPress={() => setSelectedTab(tabName)}>
+        onPress={() => {
+          console.log('selectedTab', selectedTab, tabName);
+          setSelectedTab(tabName);
+        }}>
         <Ionicons
           name={iconName}
           size={18}
@@ -111,7 +83,27 @@ const CustomBottomTab = () => {
         </Text>
       </TouchableOpacity>
     );
-  }
+  };
+  return (
+    <PaperProvider>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          {selectedTab === 'Home' && <HomeComponent />}
+          {selectedTab === 'Applies' && <UserApplies />}
+          {selectedTab === 'Invites' && <UserInvites />}
+          {selectedTab === 'Profile' && <UserProfile />}
+          {selectedTab === 'Jobs' && <JobScreen />}
+        </View>
+        <View style={styles.tabContainer}>
+          {renderTabBtn('Home', 'home', 'Home')}
+          {renderTabBtn('Applies', 'send', 'Applies')}
+          {renderTabBtn('Jobs', 'briefcase', 'Jobs')}
+          {renderTabBtn('Invites', 'mail-sharp', 'Invites')}
+          {renderTabBtn('Profile', 'person-sharp', 'Profile')}
+        </View>
+      </View>
+    </PaperProvider>
+  );
 };
 
 const styles = StyleSheet.create({

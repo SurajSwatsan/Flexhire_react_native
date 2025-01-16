@@ -48,11 +48,24 @@ const EmploymentNatureOptions = [
 const validationSchema = Yup.object().shape({
   title: Yup.string()
     .required('Project Title is required')
-    .min(3, 'Title should be at least 3 characters long'),
-  role: Yup.string().required('Role is required'),
+    .min(3, 'Title should be at least 3 characters long')
+    .matches(
+      /^[A-Za-z\s,.]+$/,
+      'Title must only contain letters, spaces, or commas',
+    ),
+  role: Yup.string()
+    .required('Role is required')
+    .matches(
+      /^[A-Za-z\s,.]+$/,
+      'Title must only contain letters, spaces, or commas',
+    ),
   client: Yup.string()
     .required('Client is required')
-    .min(2, 'Client name should be at least 2 characters long'),
+    .min(2, 'Client name should be at least 2 characters long')
+    .matches(
+      /^[A-Za-z\s,.]+$/,
+      'Title must only contain letters, spaces, or commas',
+    ),
   status: Yup.string()
     .required('Project Status is required')
     .oneOf(['In Progress', 'Finished'], 'Invalid status'),
@@ -68,41 +81,32 @@ const validationSchema = Yup.object().shape({
       .nullable()
       .typeError('Invalid end date format')
       .test(
-        'validate-till-strict',
-        'End date must be strictly after start date',
+        'validate-till-required',
+        'End date is required when status is Finished',
         function (value) {
-          const {from} = this.parent;
-          if (value && from) {
-            if (value <= from) {
-              return this.createError({
-                message: 'End date must be strictly after start date',
-              });
-            }
+          const {status} = this.parent;
+          if (status === 'Finished' && !value) {
+            return this.createError({
+              message: 'End date is required when status is Finished',
+            });
           }
-          return true; // Pass validation if no issues
+          return true; // Pass validation if not 'Finished' or value exists
         },
       )
       .test(
-        'validate-till-finished',
-        'End date is required and must be after start date when status is Finished',
+        'validate-till-after-from',
+        'End date must be strictly after start date',
         function (value) {
-          const {status, from} = this.parent;
-
-          // Only validate if the project status is 'Finished'
-          if (status === 'Finished') {
-            if (!value) {
-              return this.createError({
-                message: 'End date is required when status is Finished',
-              });
-            }
-            if (value <= from) {
-              return this.createError({
-                message:
-                  'End date must be strictly after start date when status is Finished',
-              });
-            }
+          const {from, status} = this.parent;
+          if (value && from && value <= from) {
+            return this.createError({
+              message:
+                status === 'Finished'
+                  ? 'End date must be strictly after start date when status is Finished'
+                  : 'End date must be strictly after start date',
+            });
           }
-          return true; // Pass validation if not 'Finished'
+          return true; // Pass validation if no issues
         },
       ),
   }),

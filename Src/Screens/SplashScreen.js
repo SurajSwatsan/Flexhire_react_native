@@ -20,13 +20,10 @@ const SplashScreen = () => {
       try {
         const token = await AsyncStorage.getItem('token'); // Get token from AsyncStorage
         if (token) {
-          // Validate the token or proceed to the main screen
-          await checkLoginStatus()(dispatch => {}); // Invoke checkLoginStatus action
-
-          const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
-          setId(id);
-          dispatch(GetHomePageData(id));
-
+          const _user_id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+          setId(_user_id);
+          dispatch(GetHomePageData(_user_id));
+          dispatch(GetProfileDetails(_user_id));
           navigation.replace('DefaultScreen');
         } else {
           navigation.replace('LoginScreen');

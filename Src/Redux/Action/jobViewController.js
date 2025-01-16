@@ -209,29 +209,32 @@ const JobViewController = () => {
 
   const SaveJob = (requestData, page, pageNo) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
-    // console.log('requestData', requestData);
+    console.log('requestData', pageNo, page);
 
     try {
       const response = await axios.post(
         `http://15.206.149.28/api/job-saved/`,
         requestData,
       );
-
       // console.log(response);
-
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
 
-      dispatch({type: 'JOB_SAVED_SUCCESSFULLY', payload: data});
-
+      // dispatch({type: 'JOB_SAVED_SUCCESSFULLY', payload: data});
       if (page == 'HomeScreen') {
         dispatch(GetHomePageData(requestData.user_id));
       } else if (page == 'JobDetailScreen') {
         dispatch(GetJobDetails(requestData.job, requestData.user_id));
+        // dispatch(GetHomePageData(requestData.user_id));
       } else if (page == 'JobScreen') {
         dispatch(GetJobList(requestData.user_id, pageNo));
+        dispatch(GetFilterdJobs(requestData.user_id, pageNo));
       }
 
+      // dispatch(GetJobList(requestData.user_id, pageNo));
+      // dispatch(GetFilterdJobs(requestData.user_id, pageNo));
+      dispatch(GetJobDetails(requestData.job, requestData.user_id));
+      dispatch(GetHomePageData(requestData.user_id));
       dispatch(GetSavedJobs(requestData.user_id));
 
       dispatch({type: 'LOADING', payload: false});
@@ -445,7 +448,7 @@ const JobViewController = () => {
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/job/?user_id=${user_id}&page=${page}`,
+        `http://15.206.149.28/api/job?user_id=${user_id}&page=${page}`,
       );
       // console.log(
       //   '****************************job-GetJobList response***************************',

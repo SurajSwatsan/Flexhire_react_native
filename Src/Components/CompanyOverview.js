@@ -367,9 +367,7 @@ const CompanyOverviewScreen = ({route}) => {
                         }
                         style={styles.cultureicon}
                       />
-                      <Text style={styles.cultureText}>
-                        {benefit?.name} hellow
-                      </Text>
+                      <Text style={styles.cultureText}>{benefit?.name}</Text>
                     </View>
                   ))}
               </ScrollView>

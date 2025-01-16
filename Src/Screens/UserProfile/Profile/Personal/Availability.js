@@ -178,6 +178,7 @@ const Availability = profileDetails => {
                 return false;
               }
             }
+
             return true;
           },
         ),
@@ -231,6 +232,23 @@ const Availability = profileDetails => {
   const deleteSlot = (index, values, setFieldValue) => {
     const updatedSlots = values.slots.filter((_, i) => i !== index);
     setFieldValue('slots', updatedSlots);
+  };
+
+  const deleteAvailability = () => {
+    const filteredArray = availabilitiesData.filter(
+      item => item.mode !== selectedItem.mode,
+    );
+    setAvailabilitiesData(filteredArray);
+    const payload = {
+      id: profileDetails?.profileDetails?.id,
+      work_availability: filteredArray,
+    };
+
+    dispatch(updateProfileDetails(payload));
+    toggleIsUpdatedProfile();
+    // // Reset state and close modal
+    setSelectedItem(null);
+    closeModal();
   };
 
   const addNewSlot = (values, setFieldValue) => {
@@ -618,6 +636,13 @@ const Availability = profileDetails => {
           <ModalFooter
             onPress={() => formikRef?.handleSubmit()}
             onCancel={closeModal}
+            showDelete={selectedItem !== null} // Show delete only if editing
+            onDelete={() => {
+              if (selectedItem !== null) {
+                deleteAvailability(selectedItem); // Call deleteLanguage with the current index
+                closeModal(); // Close the modal after deletion
+              }
+            }}
           />
         </View>
       </Modal>

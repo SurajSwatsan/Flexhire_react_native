@@ -88,6 +88,7 @@ const Accomplishments = profileDetails => {
   useEffect(() => {
     console.log('Selected Item:', selectedItem);
   }, [selectedItem]);
+
   const handleSubmit = values => {
     // Find the selected tab's label
     const selectedTab = TAB_OPTIONS.find(tab => tab.key === activeTab);
@@ -188,13 +189,19 @@ const Accomplishments = profileDetails => {
     switch (activeTab) {
       case 'research':
         return Yup.object().shape({
-          title: Yup.string().required('Title is required'),
+          title: Yup.string()
+            .required('Title is required')
+            .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
+          description: Yup.string().matches(
+            /^[A-Za-z\s,.]+$/,
+            'must only contain letters',
+          ),
           url: Yup.string().url('Invalid URL').required('URL is required'),
           published_date: Yup.string()
             .required('Published Date is required')
             .test(
               'not-future-date',
-              'published_date cannot be in the future',
+              'Date cannot be in the future',
               function (value) {
                 return value ? new Date(value) <= new Date() : true; // Ensure from is not in the future
               },
@@ -202,14 +209,22 @@ const Accomplishments = profileDetails => {
         });
       case 'patent':
         return Yup.object().shape({
-          title: Yup.string().required('Patent Title is required'),
+          title: Yup.string()
+            .required('Patent Title is required')
+            .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
+          description: Yup.string().matches(
+            /^[A-Za-z\s,.]+$/,
+            'must only contain letters',
+          ),
           url: Yup.string()
             .url('Invalid URL')
             .required('Patent URL is required'),
         });
       case 'certification':
         return Yup.object().shape({
-          title: Yup.string().required('Certification Name is required'),
+          title: Yup.string()
+            .required('Certification Name is required')
+            .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
           certification_provider: Yup.string().required('Provider is required'),
           from: Yup.date()
             .required('From date is required')
@@ -222,41 +237,39 @@ const Accomplishments = profileDetails => {
             ),
           till: Yup.date().test(
             'till-validation',
-            'Valid Till date must be after From date',
+            'Valid Till date must be before From date and cannot be the same',
             function (value) {
               const {from, noExpiry} = this.parent;
 
-              // Skip validation if noExpiry is true
               if (noExpiry) {
-                return true;
+                return true; // Skip validation if noExpiry is true
               }
-
-              // Till date is required if noExpiry is false
               if (!value) {
                 return this.createError({message: 'Till date is required'});
               }
-              // Ensure Till date is after From date
-              if (from && new Date(value) <= new Date(from)) {
-                if (
-                  new Date(value).toISOString().split('T')[0] ===
-                  new Date(from).toISOString().split('T')[0]
-                ) {
+              if (from) {
+                const fromDate = new Date(from);
+                const tillDate = new Date(value);
+
+                if (tillDate >= fromDate) {
+                  if (
+                    tillDate.toISOString().split('T')[0] ===
+                    fromDate.toISOString().split('T')[0]
+                  ) {
+                    return this.createError({
+                      message: 'Till date cannot be the same as From date',
+                    });
+                  }
                   return this.createError({
-                    message: 'Till date cannot be the same as From date',
+                    message: 'Till date must be before From date',
                   });
                 }
-                return this.createError({
-                  message: 'Till date must be after From date',
-                });
               }
-
-              // Ensure Till date is not a future date
               if (new Date(value) > new Date()) {
                 return this.createError({
                   message: 'Till date cannot be in the future',
                 });
               }
-
               return true;
             },
           ),
@@ -265,7 +278,13 @@ const Accomplishments = profileDetails => {
 
       case 'workSample':
         return Yup.object().shape({
-          title: Yup.string().required('Work Sample Title is required'),
+          title: Yup.string()
+            .required('Work Sample Title is required')
+            .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
+          description: Yup.string().matches(
+            /^[A-Za-z\s,.]+$/,
+            'must only contain letters',
+          ),
           url: Yup.string()
             .url('Invalid URL')
             .required('Work Sample URL is required'),
@@ -280,41 +299,37 @@ const Accomplishments = profileDetails => {
             ),
           till: Yup.date().test(
             'till-validation',
-            'Valid Till date must be after From date',
+            'Valid Till date must be before From date and cannot be the same',
             function (value) {
               const {from, stillWorking} = this.parent;
-
-              // Skip validation if noExpiry is true
               if (stillWorking) {
                 return true;
               }
-
-              // Till date is required if noExpiry is false
               if (!value) {
                 return this.createError({message: 'Till date is required'});
               }
-              // Ensure Till date is after From date
-              if (from && new Date(value) <= new Date(from)) {
-                if (
-                  new Date(value).toISOString().split('T')[0] ===
-                  new Date(from).toISOString().split('T')[0]
-                ) {
+              if (from) {
+                const fromDate = new Date(from);
+                const tillDate = new Date(value);
+                if (tillDate >= fromDate) {
+                  if (
+                    tillDate.toISOString().split('T')[0] ===
+                    fromDate.toISOString().split('T')[0]
+                  ) {
+                    return this.createError({
+                      message: 'Till date cannot be the same as From date',
+                    });
+                  }
                   return this.createError({
-                    message: 'Till date cannot be the same as From date',
+                    message: 'Till date must be before From date',
                   });
                 }
-                return this.createError({
-                  message: 'Till date must be after From date',
-                });
               }
-
-              // Ensure Till date is not a future date
               if (new Date(value) > new Date()) {
                 return this.createError({
                   message: 'Till date cannot be in the future',
                 });
               }
-
               return true;
             },
           ),
@@ -326,10 +341,20 @@ const Accomplishments = profileDetails => {
           url: Yup.string()
             .url('Invalid URL')
             .required('Profile URL is required'),
+          description: Yup.string().matches(
+            /^[A-Za-z\s,.]+$/,
+            'must only contain letters',
+          ),
         });
       case 'presentation':
         return Yup.object().shape({
-          title: Yup.string().required('Presentation Title is required'),
+          title: Yup.string()
+            .required('Presentation Title is required')
+            .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
+          description: Yup.string().matches(
+            /^[A-Za-z\s,.]+$/,
+            'must only contain letters',
+          ),
           url: Yup.string()
             .url('Invalid URL')
             .required('Presentation URL is required'),

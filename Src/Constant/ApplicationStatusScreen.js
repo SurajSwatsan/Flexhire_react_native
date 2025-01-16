@@ -20,7 +20,7 @@ import CustomFormatAmount from './CustomFormatAmount';
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
   const {ApplicationObject} = route.params;
-  console.log(ApplicationObject);
+  // console.log('ApplicationObject', JSON.stringify(ApplicationObject, null, 2));
 
   // Function to navigate to the JobDescription screen
   const handleViewDescriptionPress = () => {
@@ -32,7 +32,7 @@ const ApplicationStatusScreen = ({route}) => {
     navigation.navigate('JobDetailScreen', {
       job_id: job?.id, // Pass the related job ID
     });
-    console.log('Navigating to job ID:', job?.id);
+    // console.log('Navigating to job ID:', job?.id);
   };
 
   return (

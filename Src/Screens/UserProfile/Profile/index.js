@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused, useRoute} from '@react-navigation/native';
 import {colors} from '../../../Global_CSS/TheamColors';
@@ -31,6 +32,8 @@ import {ProfileContext} from '../ProfileContext';
 import ProfileHeadline from './ProfileHeadline';
 import Spinner from 'react-native-loading-spinner-overlay';
 import GlobalStyle from '../../../Global_CSS/GlobalStyle';
+const {width} = Dimensions.get('window'); // Get the screen width
+
 const Index = () => {
   const {isUpdatedProfile, toggleIsUpdatedProfile} = useContext(ProfileContext);
   const [loading, setLoading] = useState(true); // Loader state
@@ -187,14 +190,7 @@ const Index = () => {
                 )}
               </View>
               <View style={styles.nameTextContainer}>
-                <Text style={styles.nameText}>
-                  {profileDetails?.first_name && profileDetails?.last_name
-                    ? `${profileDetails?.first_name} ${profileDetails?.last_name}`
-                    : 'User Name'}
-                </Text>
-                <ProfileHeadline
-                  profileDetails={profileDetails.job_seeker_profile}
-                />
+                <ProfileHeadline profileDetails={profileDetails} />
               </View>
             </View>
             <View style={styles.bodyContainer}>
@@ -294,7 +290,7 @@ const styles = StyleSheet.create({
   },
   nameTextContainer: {
     flex: 1,
-    marginHorizontal: 18,
+    marginLeft: 18,
   },
   bodyContainer: {
     flex: 1,

@@ -42,7 +42,6 @@ const SavedJobScreen = () => {
     getUserData();
   }, [isFocus]);
 
-
   const isBookmarked = job_id => {
     return Array.isArray(SavedJobs?.saved_jobs)
       ? SavedJobs.saved_jobs.some(savedJob => savedJob.job?.id === job_id)
@@ -54,7 +53,7 @@ const SavedJobScreen = () => {
       job: job_id,
       user_id: id,
     };
-    dispatch(SaveJob(data));
+    dispatch(SaveJob(data, 'HomeScreen'));
   };
   return (
     <View style={styles.container}>

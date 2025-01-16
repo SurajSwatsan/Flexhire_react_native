@@ -62,10 +62,16 @@ const EmploymentValidationSchema = values => {
     values.employment_type === 'Full-time' &&
     values.currentCompany === 'Yes'
   ) {
-    schema.company_name = Yup.string().required(
-      'Current company name is required',
+    schema.company_name = Yup.string()
+      .required('Current company name is required')
+      .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
+    schema.job_title = Yup.string()
+      .required('Current job title is required')
+      .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
+    schema.job_profile = Yup.string().matches(
+      /^[A-Za-z\s,.]+$/,
+      'must only contain letters',
     );
-    schema.job_title = Yup.string().required('Current job title is required');
     schema.joining_date = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
@@ -130,27 +136,41 @@ const EmploymentValidationSchema = values => {
     values.employment_type === 'Full-time' &&
     values.currentCompany === 'No'
   ) {
-    schema.company_name = Yup.string().required(
-      'Previous company name is required',
-    );
-    schema.job_title = Yup.string().required('Previous job title is required');
-
+    schema.company_name = Yup.string()
+      .required('Previous company name is required')
+      .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
+    schema.job_title = Yup.string()
+      .required('Previous job title is required')
+      .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
     schema.joining_date = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
+    schema.job_profile = Yup.string().matches(
+      /^[A-Za-z\s,.]+$/,
+      'must only contain letters',
+    );
     schema.leaving_date = Yup.date()
       .required('Leaving date is required')
-      .min(Yup.ref('joining_date'), 'Leaving date must be after joining date');
+      .test(
+        'leaving_date_after_joining_date',
+        'Leaving date must be after joining date',
+        function (value) {
+          const {joining_date} = this.parent;
+          return (
+            value && joining_date && new Date(value) > new Date(joining_date)
+          );
+        },
+      );
   }
 
   // Validation for Internship
   if (values.employment_type === 'Internship') {
-    schema.company_name = Yup.string().required(
-      'Company name is required for internship',
-    );
-    schema.location = Yup.string().required(
-      'Location is required for internships',
-    );
+    schema.company_name = Yup.string()
+      .required('Company name is required for internship')
+      .matches(/^[A-Za-z\s,.]+$/, 'Company name must only contain letters');
+    schema.location = Yup.string()
+      .required('Location is required for internships')
+      .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
     schema.department = Yup.string().required(
       'Department is required for internships',
     );
@@ -166,9 +186,15 @@ const EmploymentValidationSchema = values => {
     if (values.currentCompany === 'No') {
       schema.worked_till = Yup.date()
         .required('Worked till date is required')
-        .min(
-          Yup.ref('worked_from'),
-          'Worked till date must be after worked from date',
+        .test(
+          'worked_till_after_worked_from',
+          'Worked till date must be after Worked from date',
+          function (value) {
+            const {worked_from} = this.parent;
+            return (
+              value && worked_from && new Date(value) > new Date(worked_from)
+            );
+          },
         );
     }
   }

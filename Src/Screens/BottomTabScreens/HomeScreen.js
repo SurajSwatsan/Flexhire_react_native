@@ -47,11 +47,14 @@ const HomeScreen = () => {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
-        setId(id);
-        dispatch(GetHomePageData(id));
-
-        dispatch(GetProfileDetails(id));
+        const user_id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(user_id);
+        if (!HomeData) {
+          dispatch(GetHomePageData(user_id));
+        }
+        if (!profileDetails) {
+          dispatch(GetProfileDetails(user_id));
+        }
 
         // dispatch(GetSavedJobs(id));
 

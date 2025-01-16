@@ -4,17 +4,13 @@ import {
   Text,
   View,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
-  Alert,
-  Animated,
-  Easing,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import moment from 'moment';
-import {Button, TextInput} from 'react-native-paper';
+import {TextInput} from 'react-native-paper';
 import {IconButton} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -50,10 +46,12 @@ const ProfileHeadline = profileDetails => {
 
     getUserData();
     // console.log('================================');
-    setHeadlineData(profileDetails?.profileDetails?.profile_headline);
+    setHeadlineData(
+      profileDetails?.profileDetails?.job_seeker_profile?.profile_headline,
+    );
     // dispatch(GetProfileAnalytic('e')); // Dispatch the action when the component mounts
   }, [profileDetails]);
-  // console.log('headlineData', JSON.stringify(headlineData));
+  // console.log('headlineData', JSON.stringify(headlineData, null, 2));
 
   const openModal = item => {
     setSelectedItem({profile_headline: item}); // Set as an object
@@ -75,12 +73,12 @@ const ProfileHeadline = profileDetails => {
   const handleFormSubmit = values => {
     // Prepare the updated profile headline data
     const updatedData = {
-      id: profileDetails?.profileDetails?.id || '', // Use existing ID or an empty string for a new entry
+      id: profileDetails?.profileDetails?.job_seeker_profile?.id || '', // Use existing ID or an empty string for a new entry
       user_id: id,
       profile_headline: values.profile_headline.trim(),
     };
 
-    if (profileDetails?.profileDetails?.id) {
+    if (profileDetails?.profileDetails?.job_seeker_profile?.id) {
       dispatch(updateProfileDetails(updatedData));
     } else {
       dispatch(addProfileDetails(updatedData));
@@ -92,19 +90,28 @@ const ProfileHeadline = profileDetails => {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.editContainer}>
-        <Text style={styles.profhedline}>
-          {headlineData ? headlineData : 'Add your Profile Headline'}
-        </Text>
+      <TouchableOpacity onPress={() => openModal(headlineData)}>
+        <View style={styles.editContainer}>
+          <Text style={styles.nameText}>
+            {profileDetails?.profileDetails?.first_name &&
+            profileDetails?.profileDetails?.last_name
+              ? `${profileDetails?.profileDetails?.first_name} ${profileDetails?.profileDetails?.last_name}`
+              : 'User Name'}
+          </Text>
 
-        <IconButton
-          icon={headlineData ? 'pencil-outline' : 'plus-circle-outline'}
-          size={16}
-          onPress={() => openModal(headlineData)}
-          iconColor={'#f2f2f2'}
-        />
-      </View>
-
+          <IconButton
+            icon={headlineData ? 'pencil-outline' : 'plus-circle-outline'}
+            size={16}
+            onPress={() => openModal(headlineData)}
+            iconColor={'#f2f2f2'}
+          />
+        </View>
+        <View>
+          <Text style={styles.profhedline}>
+            {headlineData ? headlineData : 'Add your Profile Headline'}
+          </Text>
+        </View>
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent
@@ -117,6 +124,11 @@ const ProfileHeadline = profileDetails => {
               <Formik
                 initialValues={{
                   profile_headline: selectedItem?.profile_headline || '',
+                  first_name: profileDetails?.profileDetails?.first_name || '',
+                  last_name: profileDetails?.profileDetails?.last_name || '',
+                  email: profileDetails?.profileDetails?.email || '',
+                  mobile_number:
+                    profileDetails?.profileDetails?.mobile_number || '',
                 }}
                 innerRef={ref => (formikRef = ref)}
                 validationSchema={validationSchema}
@@ -130,6 +142,50 @@ const ProfileHeadline = profileDetails => {
                       This information is important for employers to know you
                       better
                     </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                      }}>
+                      <TextInput
+                        mode="outlined"
+                        outlineColor="lightgrey"
+                        label="First Name"
+                        textColor="black"
+                        value={values.first_name}
+                        activeOutlineColor="lightgrey"
+                        style={[styles.inputBox, {width: '48%'}]}
+                      />
+                      <TextInput
+                        mode="outlined"
+                        outlineColor="lightgrey"
+                        label="Last Name"
+                        textColor="black"
+                        value={values.last_name}
+                        style={[styles.inputBox, {width: '48%'}]}
+                      />
+                    </View>
+
+                    <TextInput
+                      mode="outlined"
+                      outlineColor="lightgrey"
+                      label="Email Address"
+                      textColor="black"
+                      value={values.email}
+                      activeOutlineColor="lightgrey"
+                      style={styles.inputBox}
+                    />
+                    <TextInput
+                      mode="outlined"
+                      outlineColor="lightgrey"
+                      label="Mobile Number"
+                      textColor="black"
+                      value={values.mobile_number}
+                      activeOutlineColor="lightgrey"
+                      keyboardType="numeric"
+                      style={styles.inputBox}
+                    />
                     <TextInput
                       mode="outlined"
                       outlineColor="lightgrey"
@@ -165,18 +221,25 @@ const ProfileHeadline = profileDetails => {
 
 const styles = StyleSheet.create({
   editContainer: {
+    justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
   },
   profhedline: {
     fontSize: 12,
     color: '#f2f2f2',
-    width: width * 0.53,
+    width: width * 0.55,
   },
   inputBox: {
     marginTop: 12,
     backgroundColor: '#fff',
     borderColor: 'lightgrey',
+  },
+  nameText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.whiteText,
+    marginBottom: 4,
   },
 });
 

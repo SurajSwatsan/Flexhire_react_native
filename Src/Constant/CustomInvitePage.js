@@ -42,7 +42,7 @@ const CustomInvitePage = ({route}) => {
     };
 
     getUserData();
-    // console.log('##########', JSON.stringify(inviteData, null, 2));
+    console.log('##########', JSON.stringify(inviteData, null, 2));
   }, [isFocus]);
 
   const handleInputChange = text => {
@@ -61,7 +61,7 @@ const CustomInvitePage = ({route}) => {
     };
     dispatch(ApplyJob(data));
     console.log(data);
-    
+
     setModalVisible(false);
   };
 
@@ -317,18 +317,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     marginVertical: 12,
   },
-  companyName: {
-    fontSize: 16,
-    color: colors.blackText,
-    // marginBottom: 4,
-  },
-  jobTitle: {
-    fontSize: 16,
-    color: colors.blackText,
-    marginBottom: 4,
-  },
+  // companyName: {
+  //   fontSize: 16,
+  //   color: colors.blackText,
+  //   // marginBottom: 4,
+  // },
+  // jobTitle: {
+  //   fontSize: 16,
+  //   color: colors.blackText,
+  //   marginBottom: 4,
+  // },
   locationContainer: {
     flexDirection: 'row',
+    gap: 8,
   },
   detailsText: {
     fontSize: 12,
@@ -344,6 +345,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   experienceContainer: {
+    gap: 8,
     flexDirection: 'row',
   },
   descriptionContainer: {
@@ -364,7 +366,6 @@ const styles = StyleSheet.create({
   },
   bulletPointContainer: {
     marginTop: 4,
-    // marginLeft: 16,
     marginBottom: 8,
   },
   bulletPointText: {
@@ -408,8 +409,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   applyButton: {
-    // backgroundColor: colors.primary,
-
     borderRadius: 8,
     flex: 1, // Ensures buttons are equal in size
     marginHorizontal: 5, // Adds space between the buttons

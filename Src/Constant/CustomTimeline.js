@@ -21,7 +21,7 @@ const applicationStatus = [
     icon: 'close-circle',
   },
   {
-    name: 'INTERVIEW',
+    name: 'INTERVIEW SCHEDULE',
     icon: 'calendar',
   },
   {
@@ -33,7 +33,7 @@ const applicationStatus = [
 const CustomTimelineScreen = ({res}) => {
   const isAcceptedPresent = res.some(entry => entry.name === 'ACCEPTED');
   const isRejectedPresent = res.some(entry => entry.name === 'REJECTED');
-  console.log(isAcceptedPresent, isRejectedPresent);
+  // console.log(isAcceptedPresent, isRejectedPresent);
 
   const isStatusPresent = status => {
     return res.some(entry => entry.name === status);

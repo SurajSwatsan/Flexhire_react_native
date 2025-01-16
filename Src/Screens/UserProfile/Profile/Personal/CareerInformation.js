@@ -54,7 +54,7 @@ const CURRENCY_OPTIONS = [
 
 const validationSchema = Yup.object().shape({
   city: Yup.string()
-    .matches(/^[A-Za-z\s]+$/, 'Current Location must only contain letters')
+    .matches(/^[A-Za-z\s,.]+$/, 'Current Location must only contain letters')
     .required('Current Location is required'),
 
   notice_period: Yup.string()
