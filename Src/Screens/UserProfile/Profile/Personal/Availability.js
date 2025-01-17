@@ -68,10 +68,10 @@ const Availability = profileDetails => {
   const openModal = item => {
     if (item) {
       setSelectedItem(item);
-      console.log('Editing existing item:', item);
+      // console.log('Editing existing item:', item);
     } else {
       setSelectedItem(null);
-      console.log('Creating new entry.');
+      // console.log('Creating new entry.');
     }
     setModalVisible(true);
   };
@@ -216,7 +216,7 @@ const Availability = profileDetails => {
       })),
     };
 
-    console.log('Formatted Data:', JSON.stringify(formattedData, null, 2));
+    // console.log('Formatted Data:', JSON.stringify(formattedData, null, 2));
     if (profileDetails?.profileDetails?.id) {
       // If an ID exists, update the profile details
       dispatch(updateProfileDetails(formattedData));

@@ -16,7 +16,7 @@ import CustomHeader from './CustomBackIcon';
 import JobViewController from '../Redux/Action/jobViewController';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {Toast} from 'react-native-toast-notifications';
 
 const CustomInvitePage = ({route}) => {
@@ -26,10 +26,12 @@ const CustomInvitePage = ({route}) => {
   const isFocus = useIsFocused();
   const [modalVisible, setModalVisible] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
+  const [isApplied, setIsApplied] = useState(false);
   const [id, setId] = useState();
-  const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
+  const [applyButtonColor, setApplyButtonColor] = useState('#b3d7ff');
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const navigation = useNavigation();
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -42,7 +44,7 @@ const CustomInvitePage = ({route}) => {
     };
 
     getUserData();
-    console.log('##########', JSON.stringify(inviteData, null, 2));
+    // console.log('##########', JSON.stringify(inviteData, null, 2));
   }, [isFocus]);
 
   const handleInputChange = text => {
@@ -59,10 +61,32 @@ const CustomInvitePage = ({route}) => {
       cover_letter: coverLetter,
       is_invited: true,
     };
-    dispatch(ApplyJob(data));
-    console.log(data);
 
-    setModalVisible(false);
+    dispatch(ApplyJob(data))
+      .then(() => {
+        setIsApplied(true);
+        setApplyButtonColor('green');
+
+        inviteData.job.is_applied = true;
+
+        Toast.show('Application submitted successfully!', {
+          type: 'success',
+          placement: 'top',
+          duration: 3000,
+          offset: 50,
+          animationType: 'slide-in',
+        });
+        setModalVisible(false);
+      })
+      .catch(error => {
+        Toast.show(`Error: ${error.message}`, {
+          type: 'error',
+          placement: 'top',
+          duration: 3000,
+          offset: 50,
+          animationType: 'slide-in',
+        });
+      });
   };
 
   const handleRejectPress = () => {
@@ -102,62 +126,67 @@ const CustomInvitePage = ({route}) => {
         contentContainerStyle={{paddingBottom: 100}}>
         <View style={styles.headerContainer}>
           <CustomHeader />
-          <Text style={styles.companyHeaderName}>
-            {inviteData?.job?.company_name}
-          </Text>
         </View>
 
         <View style={styles.container}>
-          <View style={styles.groupsContainer}>
-            <Text style={[styles.detailsText, {color: colors.primary}]}>
-              {inviteData?.job?.job_title?.title}
-            </Text>
-          </View>
-          <View style={styles.locationContainer}>
-            <Ionicons
-              name="location" // Icon for location
-              color={colors.primary} // Icon color
-              size={14} // Icon size
-              style={{padding: 0}} // Adjust the style
-            />
-            <Text style={styles.detailsText}>
-              {inviteData?.job?.job_location?.join(', ')}
-              {console.log(inviteData)}
-            </Text>
-          </View>
-          <View style={styles.experienceContainer}>
-            <Ionicons name="briefcase" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}>
-              {`${inviteData?.job?.experience_level?.minYear}-${inviteData?.job?.experience_level?.maxYear} Years`}
-            </Text>
-          </View>
-          <View style={styles.experienceContainer}>
-            <Ionicons name="cash" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}>
-              {formatAmount(inviteData?.job?.salary?.yearly?.min)} -
-              {formatAmount(inviteData?.job?.salary?.yearly?.max)}{' '}
-              {inviteData?.job?.salary?.yearly?.currency}
-            </Text>
-          </View>
-          <View style={styles.experienceContainer}>
-            <Ionicons name="pin" size={14} color={colors.primary} />
-            <Text style={styles.detailsText}>
-              {inviteData?.job?.work_modes?.join(', ')}
-            </Text>
-          </View>
+          {inviteData?.job?.job_title?.title && (
+            <View style={styles.groupsContainer}>
+              <Text style={[styles.detailsText, {color: colors.primary}]}>
+                {inviteData?.job?.job_title?.title}
+              </Text>
+            </View>
+          )}
+          {inviteData?.job?.job_location && (
+            <View style={styles.locationContainer}>
+              <Ionicons
+                name="location" // Icon for location
+                color={colors.primary} // Icon color
+                size={14} // Icon size
+                style={{padding: 0}} // Adjust the style
+              />
+              <Text style={styles.detailsText}>
+                {inviteData?.job?.job_location?.join(', ')}
+              </Text>
+            </View>
+          )}
+          {inviteData?.job?.experience_level && (
+            <View style={styles.experienceContainer}>
+              <Ionicons name="briefcase" size={14} color={colors.primary} />
+              <Text style={styles.detailsText}>
+                {`${inviteData?.job?.experience_level?.minYear}-${inviteData?.job?.experience_level?.maxYear} Years`}
+              </Text>
+            </View>
+          )}
+          {inviteData?.job?.salary && (
+            <View style={styles.experienceContainer}>
+              <Ionicons name="cash" size={14} color={colors.primary} />
+              <Text style={styles.detailsText}>
+                {formatAmount(inviteData?.job?.salary?.yearly?.min)} -
+                {formatAmount(inviteData?.job?.salary?.yearly?.max)}{' '}
+                {inviteData?.job?.salary?.yearly?.currency}
+              </Text>
+            </View>
+          )}
+          {inviteData?.job?.work_modes && (
+            <View style={styles.experienceContainer}>
+              <Ionicons name="pin" size={14} color={colors.primary} />
+              <Text style={styles.detailsText}>
+                {inviteData?.job?.work_modes?.join(', ')}
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.descriptionContainer}>
           {/* Job Description - Only show if summary is available */}
-          {inviteData?.job?.company?.company_description ? (
+          {inviteData?.job?.company?.company_description && (
             <>
               <Text style={styles.descriptionText}>Job Description</Text>
               <Text style={styles.description}>
-                {inviteData?.job?.company?.company_description}
+                {inviteData?.job?.job_description?.summary}
               </Text>
             </>
-          ) : null}
+          )}
 
-          {/* Requirements - Render as Bullet Points, only if there are requirements */}
           {inviteData?.job?.job_description?.requirements &&
           inviteData?.job?.job_description?.requirements.length > 0 ? (
             <>
@@ -204,19 +233,32 @@ const CustomInvitePage = ({route}) => {
           ) : null}
         </View>
 
-        <View style={styles.Industryname}>
-          <Text style={styles.industryText}>Industry Type</Text>
-          <Text style={styles.detailsText}>
-            {inviteData?.job?.industry_type?.industry_name}
-          </Text>
-        </View>
+        {inviteData?.job?.company?.industry?.industry_name && (
+          <View style={styles.Industryname}>
+            <Text style={styles.industryText}>Industry Type</Text>
+            <Text style={styles.detailsText}>
+              {inviteData?.job?.company?.industry?.industry_name}
+            </Text>
+          </View>
+        )}
 
-        <View style={styles.Industryname}>
-          <Text style={styles.industryText}> Role</Text>
-          <Text style={styles.detailsText}>
-            {inviteData?.job?.job_title_category?.title}
-          </Text>
-        </View>
+        {inviteData?.job?.company?.website && (
+          <View style={styles.Industryname}>
+            <Text style={styles.industryText}> Website</Text>
+            <Text style={styles.detailsText}>
+              {inviteData?.job?.company?.website}
+            </Text>
+          </View>
+        )}
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('JobDetailScreen', {
+              job_id: inviteData?.job?.id,
+            })
+          }>
+          <Text style={styles.viewDescription}>View Job Description</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       <View style={styles.buttonsContainer}>
@@ -225,7 +267,7 @@ const CustomInvitePage = ({route}) => {
             styles.applyButton,
             {
               backgroundColor: inviteData?.job?.is_applied
-                ? 'green'
+                ? '#d4edda'
                 : applyButtonColor,
             },
           ]} // Dynamically change the background color
@@ -242,15 +284,22 @@ const CustomInvitePage = ({route}) => {
               openApplyModal();
             }
           }}>
-          <Text style={styles.applybuttonText}>
+          <Text
+            style={[
+              styles.applybuttonText,
+              {color: inviteData?.job?.is_applied ? '#28a745' : '#004466'},
+            ]}>
             {inviteData?.job?.is_applied ? 'Applied' : 'Apply'}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.notInterestedButton}
-          onPress={() => handleRejectPress()}>
-          <Text style={styles.notInterestedButtonText}>Not Interested</Text>
-        </TouchableOpacity>
+
+        {!inviteData?.job?.is_applied && (
+          <TouchableOpacity
+            style={styles.notInterestedButton}
+            onPress={() => handleRejectPress()}>
+            <Text style={styles.notInterestedButtonText}>Not Interested</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <Modal
@@ -268,6 +317,7 @@ const CustomInvitePage = ({route}) => {
               style={styles.coverLetterInput}
               placeholder="Write your cover letter here..."
               placeholderTextColor="lightgray"
+              color="black"
               multiline={true}
               numberOfLines={4}
               value={coverLetter}
@@ -299,10 +349,13 @@ const styles = StyleSheet.create({
     // marginHorizontal: 18,
     // marginVertical: 18,
   },
-  companyHeaderName: {
-    color: colors.blackText,
-    fontSize: 16,
-    marginLeft: 16,
+  viewDescription: {
+    borderRadius: 8,
+    color: colors.secondary,
+    fontSize: 14,
+
+    marginHorizontal: 18,
+    marginVertical: 18,
   },
   headerContainer: {
     marginHorizontal: 12,
@@ -317,16 +370,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     marginVertical: 12,
   },
-  // companyName: {
-  //   fontSize: 16,
-  //   color: colors.blackText,
-  //   // marginBottom: 4,
-  // },
-  // jobTitle: {
-  //   fontSize: 16,
-  //   color: colors.blackText,
-  //   marginBottom: 4,
-  // },
   locationContainer: {
     flexDirection: 'row',
     gap: 8,
@@ -399,7 +442,6 @@ const styles = StyleSheet.create({
   notInterestedButton: {
     backgroundColor: '#fff', // Red for Not Interested button
     paddingVertical: 12,
-    // paddingHorizontal: 20,
     borderRadius: 8,
     flex: 1, // Equal size with the other button
     marginLeft: 10, // Adds space between buttons
@@ -412,6 +454,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flex: 1, // Ensures buttons are equal in size
     marginHorizontal: 5, // Adds space between the buttons
+    padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },

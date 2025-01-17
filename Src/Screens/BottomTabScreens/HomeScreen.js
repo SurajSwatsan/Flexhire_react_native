@@ -58,7 +58,6 @@ const HomeScreen = () => {
 
         // dispatch(GetSavedJobs(id));
 
-        console.log(id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -109,8 +108,7 @@ const HomeScreen = () => {
 
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    dispatch(SaveJob(requestData, 'HomeScreen')); // Pass only the job ID
-    // console.log('Job saved', requestData);
+    dispatch(SaveJob(requestData)); // Pass only the job ID
   };
 
   const handleCardPress = jobdata => {
@@ -509,7 +507,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
   profileImageWrapper: {
     position: 'relative',
@@ -531,16 +529,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   profileDate: {
-    color: '#478564',
+    color: 'gray',
     fontSize: 12,
   },
   profileName: {
     color: '#478564',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   profileDetail: {
-    color: 'blue',
+    color: colors.primary,
     fontSize: 12,
     marginTop: 8,
   },

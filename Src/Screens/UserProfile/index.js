@@ -43,66 +43,61 @@ const Index = () => {
   }, [isFocus]);
   return (
     <View style={styles.mainContainer}>
-      <ScrollView>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('userProfileScreen', {selectedImage})
+        }>
+        <View style={styles.headContainer}>
+          <View style={styles.imageContainer}>
+            {/* Display Profile Image */}
+            <ProfileImage
+              onImageSelect={setSelectedImage} // Pass function to update selected image
+              selectedImage={selectedImage} // Pass current selected image
+              profileDetails={profileDetails.job_seeker_profile} // Pass profile details
+            />
+          </View>
+          <Text style={styles.nameText}>
+            {profileDetails?.first_name && profileDetails?.last_name
+              ? `${profileDetails?.first_name} ${profileDetails?.last_name}`
+              : 'User Name'}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.bodyContainer}>
+        <Text style={styles.headingText}>Explore Profile</Text>
         <TouchableOpacity
+          style={styles.container}
           onPress={() =>
             navigation.navigate('userProfileScreen', {selectedImage})
           }>
-          <View style={styles.headContainer}>
-            <View style={styles.imageContainer}>
-              {/* Display Profile Image */}
-              <ProfileImage
-                onImageSelect={setSelectedImage} // Pass function to update selected image
-                selectedImage={selectedImage} // Pass current selected image
-                profileDetails={profileDetails.job_seeker_profile} // Pass profile details
-              />
-            </View>
-            <Text style={styles.nameText}>
-              {profileDetails?.first_name && profileDetails?.last_name
-                ? `${profileDetails?.first_name} ${profileDetails?.last_name}`
-                : 'User Name'}
-            </Text>
+          <View style={styles.innerContainer}>
+            <Ionicons name="person-sharp" size={18} style={styles.iconstyle} />
+            <Text style={styles.text}>Profile</Text>
           </View>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={18}
+            style={styles.iconstyle}
+          />
         </TouchableOpacity>
-        <View style={styles.bodyContainer}>
-          <Text style={styles.headingText}>Explore Profile</Text>
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() =>
-              navigation.navigate('userProfileScreen', {selectedImage})
-            }>
-            <View style={styles.innerContainer}>
-              <Ionicons
-                name="person-sharp"
-                size={18}
-                style={styles.iconstyle}
-              />
-              <Text style={styles.text}>Profile</Text>
-            </View>
+        <TouchableOpacity
+          style={styles.container}
+          onPress={() => navigation.navigate('bookmark')}>
+          <View style={styles.innerContainer}>
             <Ionicons
-              name="chevron-forward-outline"
+              name="arrow-down-circle-sharp"
               size={18}
               style={styles.iconstyle}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => navigation.navigate('bookmark')}>
-            <View style={styles.innerContainer}>
-              <Ionicons
-                name="arrow-down-circle-sharp"
-                size={18}
-                style={styles.iconstyle}
-              />
-              <Text style={styles.text}>Saved Jobs</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={18}
-              style={styles.iconstyle}
-            />
-          </TouchableOpacity>
-          {/* <TouchableOpacity
+            <Text style={styles.text}>Saved Jobs</Text>
+          </View>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={18}
+            style={styles.iconstyle}
+          />
+        </TouchableOpacity>
+        {/* <TouchableOpacity
             style={styles.container}
             onPress={() => navigation.navigate('InterviewPage')}>
             <View style={styles.innerContainer}>
@@ -120,7 +115,7 @@ const Index = () => {
             />
           </TouchableOpacity> */}
 
-          {showSections && (
+        {/* {showSections && (
             <>
               <TouchableOpacity style={styles.container}>
                 <View style={styles.innerContainer}>
@@ -168,9 +163,8 @@ const Index = () => {
                 />
               </TouchableOpacity>
             </>
-          )}
-        </View>
-      </ScrollView>
+          )} */}
+      </View>
     </View>
   );
 };
@@ -203,8 +197,8 @@ const styles = StyleSheet.create({
     marginLeft: 18,
   },
   bodyContainer: {
-    // flex: 1,
-    height: height * 1,
+    flex: 1,
+    height: height * 0.9,
     backgroundColor: colors.cardBgcolor,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

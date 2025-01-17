@@ -31,7 +31,7 @@ const JobDetailScreen = ({route}) => {
   const {job_id} = route.params; // Get company data from params
   const [activeTab, setActiveTab] = useState('About');
   const [id, setId] = useState();
-  const [applyButtonColor, setApplyButtonColor] = useState(colors.primary);
+  const [applyButtonColor, setApplyButtonColor] = useState('#b3d7ff');
   const [jobId, setJobId] = useState();
   const [selectedJobId, setSelectedJobId] = useState(null);
   const navigation = useNavigation(); // Get the navigation prop
@@ -45,6 +45,10 @@ const JobDetailScreen = ({route}) => {
   const [coverLetter, setCoverLetter] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
+  // useEffect(() => {
+  //   console.log("____",JobDetails?.is_saved);
+
+  // }, [JobDetails]);
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -155,8 +159,7 @@ const JobDetailScreen = ({route}) => {
   // Function to create a lookup map from SavedJobs
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    dispatch(SaveJob(requestData, 'JobDetailScreen')); // Pass only the job ID
-    console.log('Job saved', requestData);
+    dispatch(SaveJob(requestData)); // Pass only the job ID
   };
 
   const renderTabs = () => {
@@ -271,10 +274,6 @@ const JobDetailScreen = ({route}) => {
               <Text style={styles.jobDetails1}>
                 {JobDetails?.company?.company_description}
               </Text>
-              {console.log(
-                'JobDetails?.company?.company_description',
-                JobDetails,
-              )}
             </View>
 
             <View style={styles.jobDepartmentContainer}>
@@ -650,13 +649,11 @@ const JobDetailScreen = ({route}) => {
                     styles.applyButton,
                     {
                       backgroundColor: JobDetails?.is_applied
-                        ? 'green'
+                        ? '#d4edda'
                         : applyButtonColor, // Dynamically set background color
                     },
                   ]}
                   onPress={() => {
-                    // console.log('JobDetails?.is_applied', JobDetails?.is_applied); // Debugging: Check if value is correct
-
                     if (JobDetails?.is_applied) {
                       Toast.show('Already applied for this job!', {
                         type: 'warning',
@@ -671,7 +668,13 @@ const JobDetailScreen = ({route}) => {
                   }}
                   disabled={JobDetails?.is_applied} // Disable button if already applied
                 >
-                  <Text style={styles.applyButtonText}>
+                  <Text
+                    style={[
+                      styles.applyButtonText,
+                      {
+                        color: JobDetails?.is_applied ? '#28a745' : '#004466',
+                      },
+                    ]}>
                     {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
                   </Text>
                 </TouchableOpacity>
@@ -838,16 +841,16 @@ const styles = StyleSheet.create({
   applyButtonContainer: {
     backgroundColor: colors.cardBgcolor,
     borderTopColor: colors.lightgaryText,
-    borderTopWidth: 1,
+    // borderTopWidth: 1,
   },
   applyButton: {
     // marginTop: 24,
-    margin: 16,
+    marginBottom: 12,
     padding: 12,
     backgroundColor: colors.primary,
     borderRadius: 8,
     alignItems: 'center',
-    marginHorizontal: 12,
+    marginHorizontal: 18,
   },
 
   // displayContainer: {
@@ -860,6 +863,7 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: 'white',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   tabContainer: {
     flexDirection: 'row',

@@ -140,7 +140,7 @@ const JobScreen = ({route}) => {
         page: 1,
       };
       setSearchQueryData(queryParams);
-      dispatch(GetSearchJobs(queryParams));
+      dispatch(GetSearchJobs({user_id: id, ...queryParams}));
     }
   };
 
@@ -150,8 +150,7 @@ const JobScreen = ({route}) => {
 
   const toggleSaveJob = jobId => {
     const requestData = {job: jobId, user_id: id};
-    const pageNo = JobListPagination.current_page;
-    dispatch(SaveJob(requestData, 'JobScreen', pageNo)); // Pass only the job ID
+    dispatch(SaveJob(requestData)); // Pass only the job ID
   };
 
   // Dependencies
@@ -177,7 +176,6 @@ const JobScreen = ({route}) => {
         console.warn(`Invalid filter value for key: ${key}`, filters[key]);
         return;
       }
-      console.log(`Processing filter key: ${key}, value:`, filters[key]);
 
       switch (key) {
         case 'work_modes':
@@ -302,7 +300,7 @@ const JobScreen = ({route}) => {
   };
 
   const handleApplyFilters = () => {
-    console.log(selectedFilters);
+    // console.log(selectedFilters);
 
     const filterParams = buildFilterParams({
       ...selectedFilters, // Always include selectedFilters
@@ -311,10 +309,11 @@ const JobScreen = ({route}) => {
         experience_level_max: selectedExperience,
       }), // Conditionally include
     });
-    console.log('Query Params:', filterParams);
+    console.log('Query Params:', {user_id: id, filterParams});
 
     // Dispatch the API call with the query parameters
-    dispatch(GetFilterdJobs(filterParams));
+    dispatch(GetFilterdJobs({user_id: id, ...filterParams}));
+
     setFilterQuery(filterParams);
 
     closeFiltermodal(); // Close the modal after applying filters
@@ -533,9 +532,9 @@ const JobScreen = ({route}) => {
 
     if (!isLoading && id && JobListPagination.next_page_number != null) {
       if (searchQueryData) {
-        dispatch(GetSearchJobs(searchQueryData));
+        dispatch(GetSearchJobs({user_id: id, ...searchQueryData}));
       } else if (filterQuery) {
-        dispatch(GetFilterdJobs(filterParams));
+        dispatch(GetFilterdJobs({user_id: id, ...filterParams}));
       } else {
         dispatch(GetJobList(id, JobListPagination.next_page_number)); // Dispatch the action to load more jobs
       }
@@ -549,7 +548,7 @@ const JobScreen = ({route}) => {
             placeholder="Search"
             // onChangeText={setQuery}
             onChangeText={text => {
-              console.log(text.length);
+              // console.log(text.length);
               if (text.length === 0) {
                 setJobListToRender(JobList);
               }

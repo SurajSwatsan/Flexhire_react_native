@@ -1,6 +1,6 @@
 const initialState = {
   JobApplications: [],
-  JobDetails: null, // Add this state to store job details
+  JobDetails: {}, // Add this state to store job details
   ApplyJob: null,
   SavedJobs: null,
   JobInvitation: null,
@@ -86,10 +86,49 @@ const jobReducer = (state = initialState, action) => {
       };
 
     case 'JOB_SAVED_SUCCESSFULLY':
+      console.log(
+        'state.FilterJobList',
+        state.FilterJobList.map(job => ({
+          id: job.id,
+          is_saved: job.is_saved,
+        })),
+      );
+
       return {
         ...state,
-        SavedJobData: action.payload, // Store job details in the state
+        // SavedJobData: action.payload, // Store job details in the state
         error: null,
+        HomeData: {
+          ...state.HomeData,
+          suggested_jobs: state.HomeData.suggested_jobs.map(job =>
+            job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+          ),
+          recent_jobs: state.HomeData.recent_jobs.map(job =>
+            job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+          ),
+          profile_based_jobs: state.HomeData.profile_based_jobs.map(job =>
+            job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+          ),
+          jobs_based_on_applied: state.HomeData.jobs_based_on_applied.map(job =>
+            job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+          ),
+        },
+        JobDetails: {
+          ...state.JobDetails,
+          is_saved:
+            state.JobDetails.id === action.payload
+              ? !state.JobDetails.is_saved
+              : state.JobDetails.is_saved,
+        },
+        JobList: state.JobList.map(job =>
+          job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+        ),
+        FilterJobList: state.FilterJobList.map(job =>
+          job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+        ),
+        SearchJobList: state.SearchJobList.map(job =>
+          job.id === action.payload ? {...job, is_saved: !job.is_saved} : job,
+        ),
       };
 
     case 'JOB_SAVED_UNSUCCESSFULLY':

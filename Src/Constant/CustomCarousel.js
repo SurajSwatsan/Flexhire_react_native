@@ -24,11 +24,7 @@ const CustomCarousel = ({companyDetails = {}}) => {
 
   // Handle case when no data is available
   if (!company_leaders.length) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No leaders available to display.</Text>
-      </View>
-    );
+    return null; // Return nothing if no data
   }
 
   const onViewableItemsChanged = ({viewableItems}) => {

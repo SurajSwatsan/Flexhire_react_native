@@ -64,7 +64,7 @@ const CustomCompanyCard = ({companyData}) => {
 
         <Text style={styles.mnctext}>Foreign MNC</Text>
 
-        <Text style={{color: 'blue', textAlign: 'center'}}>View jobs</Text>
+        {/* <Text style={{color: 'blue', textAlign: 'center'}}>View jobs</Text> */}
       </TouchableOpacity>
     </View>
   );
