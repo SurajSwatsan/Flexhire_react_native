@@ -57,7 +57,6 @@ const HomeScreen = () => {
         }
 
         // dispatch(GetSavedJobs(id));
-
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }

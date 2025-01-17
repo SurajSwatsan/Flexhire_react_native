@@ -148,13 +148,19 @@ const BasicInformation = profileDetails => {
   }, [profileDetails]);
   useEffect(() => {
     const get_country = () => {
-      dispatch(GetCountry());
+      if (!countries) {
+        dispatch(GetCountry());
+      }
     };
     const get_state = () => {
-      dispatch(GetState());
+      if (!states) {
+        dispatch(GetState());
+      }
     };
     const get_city = () => {
-      dispatch(GetCity());
+      if (!cities) {
+        dispatch(GetCity());
+      }
     };
     get_state();
     get_city();

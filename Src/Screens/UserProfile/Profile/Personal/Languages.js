@@ -67,7 +67,9 @@ const Languages = profileDetails => {
 
   useEffect(() => {
     const get_languages = () => {
-      dispatch(GetLaguages());
+      if (!languageList) {
+        dispatch(GetLaguages());
+      }
     };
 
     get_languages();

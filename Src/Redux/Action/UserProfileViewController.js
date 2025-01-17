@@ -58,9 +58,7 @@ const UserProfileViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/job-seeker-user/${user_id}/`,
-      );
+      const response = await instance.get(`/job-seeker-user/${user_id}/`);
       // console.log(
       //   '****************************PROFILE_PERSONAL_DETAILS response***************************',
       // );

@@ -72,7 +72,6 @@ const Education = profileDetails => {
 
   const {GetBoard, GetMedium} = MasterViewController();
   const {boards, mediums} = useSelector(state => state.master);
-  // console.log('0-0--0-0-000', boards);
 
   const {updateProfileDetails, addProfileDetails} = UserProfileViewController();
   useEffect(() => {
@@ -92,10 +91,14 @@ const Education = profileDetails => {
 
   useEffect(() => {
     const get_Board = () => {
-      dispatch(GetBoard());
+      if (!boards) {
+        dispatch(GetBoard());
+      }
     };
     const get_medium = () => {
-      dispatch(GetMedium());
+      if (!mediums) {
+        dispatch(GetMedium());
+      }
     };
 
     get_Board();

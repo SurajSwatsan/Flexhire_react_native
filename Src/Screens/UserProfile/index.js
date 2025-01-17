@@ -14,6 +14,8 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MasterViewController from '../../Redux/Action/MasterViewController';
+import MasterReducer from '../../Redux/Reducer/masterReducer';
 const {height} = Dimensions.get('window');
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State for selected image URI
@@ -21,6 +23,39 @@ const Index = () => {
   const [showSections, setShowSections] = useState(false);
   const dispatch = useDispatch();
   const {GetProfileDetails} = UserProfileViewController();
+  const {
+    GetCountry,
+    GetState,
+    GetCity,
+    GetIndustry,
+    GetDepartment,
+    GetCategories,
+    GetRoles,
+    GetLaguages,
+    GetBoard,
+    GetMedium,
+    GetUniversities,
+    GetCourses,
+    GetSpecializations,
+    GetKeyskills,
+  } = MasterViewController(); // Get Country data from API
+  const {
+    countries,
+    states,
+    cities,
+    industries,
+    departments,
+    categories,
+    roles,
+    languageList,
+    boards,
+    mediums,
+    universities,
+    courses,
+    specializations,
+    keyskills,
+  } = useSelector(state => state.master);
+
   const {profileDetails} = useSelector(state => state.profile);
   const [id, setId] = useState();
   const isFocus = useIsFocused();
@@ -39,6 +74,48 @@ const Index = () => {
     };
 
     getUserData();
+    if (!countries) {
+      dispatch(GetCountry());
+    }
+    if (!states) {
+      dispatch(GetState());
+    }
+    if (!cities) {
+      dispatch(GetCity());
+    }
+    if (!industries) {
+      dispatch(GetIndustry());
+    }
+    if (!departments) {
+      dispatch(GetDepartment());
+    }
+    if (!categories) {
+      dispatch(GetCategories());
+    }
+    if (!roles) {
+      dispatch(GetRoles());
+    }
+    if (!languageList) {
+      dispatch(GetLaguages());
+    }
+    if (!boards) {
+      dispatch(GetBoard());
+    }
+    if (!mediums) {
+      dispatch(GetMedium());
+    }
+    if (!universities) {
+      dispatch(GetUniversities());
+    }
+    if (!courses) {
+      dispatch(GetCourses());
+    }
+    if (!specializations) {
+      dispatch(GetSpecializations());
+    }
+    if (!keyskills) {
+      dispatch(GetKeyskills());
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocus]);
   return (

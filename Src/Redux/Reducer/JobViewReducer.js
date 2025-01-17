@@ -6,7 +6,7 @@ const initialState = {
   JobInvitation: null,
   SavedJobData: null,
   RejectInvitation: null,
-  HomeData: [],
+  HomeData: null,
   CompanyDetails: null, // Add this state to store job details
   CompanyJobs: null, // Add this state to store
   error: null,

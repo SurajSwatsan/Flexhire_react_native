@@ -242,16 +242,24 @@ const Employment = profileDetails => {
 
   useEffect(() => {
     const get_keyskills = () => {
-      dispatch(GetKeyskills());
+      if (!keyskills) {
+        dispatch(GetKeyskills());
+      }
     };
     const get_departments = () => {
-      dispatch(GetDepartment());
+      if (!departments) {
+        dispatch(GetDepartment());
+      }
     };
     const get_category = () => {
-      dispatch(GetCategories());
+      if (!categories) {
+        dispatch(GetCategories());
+      }
     };
     const get_role = () => {
-      dispatch(GetRoles());
+      if (!roles) {
+        dispatch(GetRoles());
+      }
     };
 
     get_departments();

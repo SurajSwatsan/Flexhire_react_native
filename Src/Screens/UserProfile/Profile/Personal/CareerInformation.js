@@ -207,23 +207,35 @@ const CareerInformation = profileDetails => {
 
   useEffect(() => {
     const get_city = () => {
-      dispatch(GetCity());
+      if (!cities) {
+        dispatch(GetCity());
+      }
     };
     const get_country = () => {
-      dispatch(GetCountry());
+      if (!countries) {
+        dispatch(GetCountry());
+      }
     };
     const get_departments = () => {
-      dispatch(GetDepartment());
+      if (!departments) {
+        dispatch(GetDepartment());
+      }
     };
 
     const get_industries = () => {
-      dispatch(GetIndustry());
+      if (!industries) {
+        dispatch(GetIndustry());
+      }
     };
     const get_category = () => {
-      dispatch(GetCategories());
+      if (!categories) {
+        dispatch(GetCategories());
+      }
     };
     const get_role = () => {
-      dispatch(GetRoles());
+      if (!roles) {
+        dispatch(GetRoles());
+      }
     };
 
     get_industries();

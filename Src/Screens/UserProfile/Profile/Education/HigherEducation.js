@@ -157,13 +157,19 @@ const HigherEducation = profileDetails => {
 
   useEffect(() => {
     const get_university = () => {
-      dispatch(GetUniversities());
+      if (!universities) {
+        dispatch(GetUniversities());
+      }
     };
     const get_course = () => {
-      dispatch(GetCourses());
+      if (!courses) {
+        dispatch(GetCourses());
+      }
     };
     const get_specialization = () => {
-      dispatch(GetSpecializations());
+      if (!specializations) {
+        dispatch(GetSpecializations());
+      }
     };
     get_university();
     get_course();
@@ -430,9 +436,11 @@ const HigherEducation = profileDetails => {
                     />
                   </View>
 
-                  {['Doctorate', 'Post Graduate', 'Graduation/Diploma'].includes(
-                    values.education_level,
-                  ) && (
+                  {[
+                    'Doctorate',
+                    'Post Graduate',
+                    'Graduation/Diploma',
+                  ].includes(values.education_level) && (
                     <>
                       <ReusableTextInput
                         name="college_name"

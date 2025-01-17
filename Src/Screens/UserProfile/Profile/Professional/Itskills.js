@@ -103,7 +103,9 @@ const Itskills = profileDetails => {
 
   useEffect(() => {
     const get_keyskills = () => {
-      dispatch(GetKeyskills());
+      if (!keyskills) {
+        dispatch(GetKeyskills());
+      }
     };
 
     get_keyskills();
