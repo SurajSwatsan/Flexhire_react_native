@@ -67,6 +67,49 @@ const Index = () => {
         if (storedId) {
           setId(storedId); // Update state
           dispatch(GetProfileDetails(storedId));
+
+          if (!countries || countries.length === 0) {
+            dispatch(GetCountry());
+          }
+          if (!states || states.length === 0) {
+            dispatch(GetState());
+          }
+          if (cities || cities.length === 0) {
+            dispatch(GetCity());
+          }
+          if (!industries || cities.length === 0) {
+            dispatch(GetIndustry());
+          }
+          if (!departments || departments.length === 0) {
+            dispatch(GetDepartment());
+          }
+          if (!categories || categories.length === 0) {
+            dispatch(GetCategories());
+          }
+          if (!roles || roles.length === 0) {
+            dispatch(GetRoles());
+          }
+          if (!languageList || languageList.length === 0) {
+            dispatch(GetLaguages());
+          }
+          if (!boards || boards.length === 0) {
+            dispatch(GetBoard());
+          }
+          if (!mediums || mediums.length === 0) {
+            dispatch(GetMedium());
+          }
+          if (!universities || universities.length === 0) {
+            dispatch(GetUniversities());
+          }
+          if (!courses || courses.length === 0) {
+            dispatch(GetCourses());
+          }
+          if (!specializations || specializations.length === 0) {
+            dispatch(GetSpecializations());
+          }
+          if (!keyskills || keyskills.length === 0) {
+            dispatch(GetKeyskills());
+          }
         }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
@@ -74,50 +117,10 @@ const Index = () => {
     };
 
     getUserData();
-    if (!countries) {
-      dispatch(GetCountry());
-    }
-    if (!states) {
-      dispatch(GetState());
-    }
-    if (!cities) {
-      dispatch(GetCity());
-    }
-    if (!industries) {
-      dispatch(GetIndustry());
-    }
-    if (!departments) {
-      dispatch(GetDepartment());
-    }
-    if (!categories) {
-      dispatch(GetCategories());
-    }
-    if (!roles) {
-      dispatch(GetRoles());
-    }
-    if (!languageList) {
-      dispatch(GetLaguages());
-    }
-    if (!boards) {
-      dispatch(GetBoard());
-    }
-    if (!mediums) {
-      dispatch(GetMedium());
-    }
-    if (!universities) {
-      dispatch(GetUniversities());
-    }
-    if (!courses) {
-      dispatch(GetCourses());
-    }
-    if (!specializations) {
-      dispatch(GetSpecializations());
-    }
-    if (!keyskills) {
-      dispatch(GetKeyskills());
-    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocus]);
+
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity

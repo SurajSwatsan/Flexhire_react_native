@@ -529,23 +529,23 @@ const JobViewController = () => {
 
   const GetFilterdJobs = (queryParams) => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
-    const queryString = new URLSearchParams(queryParams).toString();
+    // const queryString = new URLSearchParams(queryParams).toString();
 
     try {
       const response = await axios.get(
-        `http://15.206.149.28/api/filter-jobs/?${queryString}`,
+        `http://15.206.149.28/api/filter-jobs/?${queryParams}`,
       );
       console.log(
         '****************************job-GetFilterdJobs response***************************',
       );
       // console.log('queryParams', queryParams);
       console.log(
-        `http://15.206.149.28/api/filter-jobs/?${queryString}`,
+        `http://15.206.149.28/api/filter-jobs/?${queryParams}`,
       );
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
-      console.log(data);
+      // console.log(data);
 
       dispatch({type: 'FILTER_JOB_SUCCESS', payload: data});
 

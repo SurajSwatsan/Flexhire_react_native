@@ -37,6 +37,7 @@ const JobScreen = ({route}) => {
   const [searchoptions, setSearchoptions] = useState('');
   const onFocus = useNavigation();
   const navigation = useNavigation();
+
   //states related to filter
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('work_modes');
@@ -44,7 +45,7 @@ const JobScreen = ({route}) => {
   const [minSalary, setMinSalary] = useState();
   const [maxSalary, setMaxSalary] = useState();
   const [jobListToRender, setJobListToRender] = useState([]);
-
+  const [filters, setFilters] = useState({});
   const [selectedFilters, setSelectedFilters] = useState({
     work_modes: [],
     department: [],
@@ -162,128 +163,107 @@ const JobScreen = ({route}) => {
     setFilterModalVisible(true);
   };
 
+  console.log('filters.work_modes:', filters.work_modes);
+  console.log('selectedCategory:', selectedCategory);
+
+  if (filters[selectedCategory]) {
+    // Get the length of the array associated with the selectedCategory
+    const categoryLength = filters[selectedCategory].length;
+    console.log(`[${filters[selectedCategory]}] = ${categoryLength}`);
+  } else {
+    console.log(
+      `Selected category '${selectedCategory}' does not exist in filters.`,
+    );
+  }
+
   const buildFilterParams = filters => {
-    const queryParams = {};
+    const params = new URLSearchParams();
 
-    Object.keys(filters).forEach(key => {
-      if (
-        !filters[key] ||
-        (key !== 'salary' &&
-          key !== 'experience_level_max' &&
-          !Array.isArray(filters[key]))
-      ) {
-        // Skip invalid filters, except for 'salary' and 'experience_level_max'
-        console.warn(`Invalid filter value for key: ${key}`, filters[key]);
-        return;
-      }
+    // Generic handler for direct filter categories
+    const addDirectParams = (key, value) => {
+      params.append(key, value?.join(',') || '');
+    };
 
-      switch (key) {
-        case 'work_modes':
-        case 'department':
-        case 'location':
-        case 'skills':
-          // Use the `name` field for these filters
-          queryParams[key] = filters[key].join(',');
-          break;
+    // Add 'work_modes', 'department', 'location', and 'skills'
+    addDirectParams('work_modes', filters.work_modes);
+    // console.log('filters.work_modes', filters.work_modes.length);
 
-        case 'education':
-          queryParams[key] = filters[key]
-            .map(name => {
-              const match = FilterMasterData?.find(
-                filter => filter.filter === 'education',
-              )?.data.find(item => item.course_name === name); // Use `course_name` for education
-              return match?.course_name; // Ensure `id` is available in data structure
-            })
-            .filter(Boolean)
-            .join(',');
-          break;
+    addDirectParams('department', filters.department);
+    addDirectParams('location', filters.location);
+    addDirectParams('skills', filters.skills);
 
-        case 'posted_on':
-          // Use the `value` field for posted_on
-          queryParams[key] = filters[key]
-            .map(name => {
-              const match = FilterMasterData?.find(
-                filter => filter.filter === 'posted_on',
-              )?.data.find(item => item.name === name);
-              return match?.value;
-            })
-            .filter(Boolean) // Remove undefined values
-            .join(',');
-          break;
+    // Handle 'education' filter with custom mapping
+    const educationValues = filters.education
+      ?.map(name => {
+        const match = FilterMasterData?.find(
+          filter => filter.filter === 'education',
+        )?.data.find(item => item.course_name === name);
+        return match?.course_name;
+      })
+      .filter(Boolean)
+      .join(',');
+    params.append('education', educationValues || '');
 
-        case 'industry_type':
-          // Use the `industry_name` field for industry_type
-          queryParams[key] = filters[key]
-            .map(name => {
-              const match = FilterMasterData?.find(
-                filter => filter.filter === 'industry_type',
-              )?.data.find(item => item.industry_name === name); // Updated key to `industry_name`
-              return match?.id;
-            })
-            .filter(Boolean) // Filters out undefined/null values
-            .join(',');
+    // Handle 'posted_on' filter with custom mapping
+    const postedOnValues = filters.posted_on
+      ?.map(name => {
+        const match = FilterMasterData?.find(
+          filter => filter.filter === 'posted_on',
+        )?.data.find(item => item.name === name);
+        return match?.value;
+      })
+      .filter(Boolean)
+      .join(',');
+    params.append('posted_on', postedOnValues || '');
 
-          break;
-        case 'company_type':
-          // Use the `company_type` field for company_type
-          queryParams[key] = filters[key]
-            .map(name => {
-              const match = FilterMasterData?.find(
-                filter => filter.filter === 'company_type',
-              )?.data.find(item => item.name === name); // Updated key to `company_type`
-              return match?.id;
-            })
-            .filter(Boolean) // Filters out undefined/null values
-            .join(',');
-          break;
+    // Handle 'industry_type' filter with custom mapping
+    const industryTypeValues = filters.industry_type
+      ?.map(name => {
+        const match = FilterMasterData?.find(
+          filter => filter.filter === 'industry_type',
+        )?.data.find(item => item.industry_name === name);
+        return match?.id;
+      })
+      .filter(Boolean)
+      .join(',');
+    params.append('industry_type', industryTypeValues || '');
 
-        case 'companies':
-          // Use the `company_name` field for companies
-          queryParams[key] = filters[key]
-            .map(name => {
-              const match = FilterMasterData?.find(
-                filter => filter.filter === 'companies',
-              )?.data.find(item => item.company_name === name);
-              return match?.id; // Use ID if available in the data
-            })
-            .filter(Boolean)
-            .join(',');
-          break;
+    // Handle 'company_type' filter with custom mapping
+    const companyTypeValues = filters.company_type
+      ?.map(name => {
+        const match = FilterMasterData?.find(
+          filter => filter.filter === 'company_type',
+        )?.data.find(item => item.name === name);
+        return match?.id;
+      })
+      .filter(Boolean)
+      .join(',');
+    params.append('company_type', companyTypeValues || '');
 
-        case 'salary':
-          // Handle salary min and max
-          if (filters[key].min) queryParams['salary_min'] = filters[key].min;
-          if (filters[key].max) queryParams['salary_max'] = filters[key].max;
-          break;
+    // Handle 'companies' filter with custom mapping
+    const companyValues = filters.companies
+      ?.map(name => {
+        const match = FilterMasterData?.find(
+          filter => filter.filter === 'companies',
+        )?.data.find(item => item.company_name === name);
+        return match?.id;
+      })
+      .filter(Boolean)
+      .join(',');
+    params.append('companies', companyValues || '');
 
-        case 'experience_level_max':
-          // Handle minimum experience level
-          queryParams['experience_level_max'] = filters[key];
-          break;
+    // Handle 'salary' filter for min and max
+    params.append('salary_min', minSalary || '');
+    params.append('salary_max', maxSalary || '');
 
-        default:
-          console.warn(`Unhandled filter key: ${key}`);
-          break;
-      }
-    });
+    // Add 'experience_level_max'
+    params.append('experience_level_max', selectedExperience || '');
 
-    return queryParams;
-  };
+    // Optional: Add default parameters (e.g., pagination)
+    params.append('user_id', id);
 
-  const toggleFilter = (category, option) => {
-    setSelectedFilters(prevState => {
-      const currentSelections = prevState[category] || [];
-      const updatedSelections = currentSelections.includes(option)
-        ? currentSelections.filter(item => item !== option) // Remove if selected
-        : [...currentSelections, option]; // Add if not selected
-
-      // Update the state, removing the category if no options are left
-      return {
-        ...prevState,
-        [category]:
-          updatedSelections.length > 0 ? updatedSelections : undefined,
-      };
-    });
+    // Return the generated query string
+    return params.toString();
   };
 
   const closeFiltermodal = () => {
@@ -291,55 +271,82 @@ const JobScreen = ({route}) => {
   };
 
   const clearAllFilters = () => {
-    setSelectedFilters({});
+    // setSelectedFilters({});
     setSelectedExperience();
     setMinSalary();
     setMaxSalary();
+    setFilters({});
     dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
     setJobListToRender(JobList);
   };
 
   const handleApplyFilters = () => {
-    // console.log(selectedFilters);
-
     const filterParams = buildFilterParams({
-      ...selectedFilters, // Always include selectedFilters
-      salary: {min: minSalary, max: maxSalary}, // Always include salary
-      ...(selectedExperience !== undefined && {
-        experience_level_max: selectedExperience,
-      }), // Conditionally include
+      ...filters,
+      user_id: id, // Add user_id to the query params
     });
-    console.log('Query Params:', {user_id: id, filterParams});
 
-    // Dispatch the API call with the query parameters
-    dispatch(GetFilterdJobs({user_id: id, ...filterParams}));
+    // console.log('Query Params:', filterParams);
 
+    // Dispatch the API call with filterParams as an object
+    dispatch(GetFilterdJobs(filterParams));
+
+    // Set the filter query (for UI state or debugging)
     setFilterQuery(filterParams);
 
-    closeFiltermodal(); // Close the modal after applying filters
+    // Close the modal after applying filters
+    closeFiltermodal();
   };
 
   const renderFilterOptions = filterCategory => {
+    // const filters = {}; // Local filters object for storing selected options
     const categoryData = FilterMasterData?.find(
       item => item.filter === filterCategory,
     );
-    // Filter options based on the search query
-    const filteredData = categoryData
-      ? categoryData.data.filter(
-          item =>
-            item?.name?.toLowerCase().includes(searchoptions.toLowerCase()) ||
-            item?.industry_name ||
-            item?.course_name ||
-            item?.company_name
-              ?.toLowerCase()
-              .includes(searchoptions.toLowerCase()),
-        )
-      : [];
+
+    const filterSearchResults = () => {
+      if (!categoryData) return [];
+      return categoryData.data.filter(item => {
+        const searchText = searchoptions.toLowerCase();
+        const itemName = item?.name?.toLowerCase() || '';
+        const industryName = item?.industry_name?.toLowerCase() || '';
+        const courseName = item?.course_name?.toLowerCase() || '';
+        const companyName = item?.company_name?.toLowerCase() || '';
+        return (
+          itemName.includes(searchText) ||
+          industryName.includes(searchText) ||
+          courseName.includes(searchText) ||
+          companyName.includes(searchText)
+        );
+      });
+    };
+    {
+      console.log('filter', filters);
+    }
+
+    const toggleFilter = (category, option) => {
+      setFilters(prevFilters => {
+        // Initialize the category array if it doesn't exist
+        const currentSelections = prevFilters[category] || [];
+
+        // Toggle the option in the category array
+        const updatedSelections = currentSelections.includes(option)
+          ? currentSelections.filter(item => item !== option) // Remove if already selected
+          : [...currentSelections, option]; // Add if not selected
+
+        return {
+          ...prevFilters,
+          [category]: updatedSelections,
+        };
+      });
+    };
+
+    const filteredData = filterSearchResults();
 
     return (
-      <View style={[styles.optionsContainer]}>
+      <View style={styles.optionsContainer}>
         {/* Experience Filter */}
-        {filterCategory === 'experience' ? (
+        {filterCategory === 'experience' && (
           <View style={{marginVertical: 16, alignItems: 'center'}}>
             <Text
               style={{
@@ -354,10 +361,9 @@ const JobScreen = ({route}) => {
               Select Experience Range (Years)
             </Text>
             <Slider
-              style={{width: width * 0.6, height: 70}}
+              style={{width: '80%', height: 70}}
               minimumValue={0}
               maximumValue={30}
-              vertical={true}
               step={1}
               value={selectedExperience}
               minimumTrackTintColor={colors.primary}
@@ -366,10 +372,10 @@ const JobScreen = ({route}) => {
               onValueChange={value => setSelectedExperience(value)}
             />
           </View>
-        ) : null}
+        )}
 
         {/* Salary Filter */}
-        {filterCategory === 'salary' ? (
+        {filterCategory === 'salary' && (
           <View style={{marginVertical: 16, alignItems: 'center'}}>
             <Text
               style={{
@@ -384,7 +390,6 @@ const JobScreen = ({route}) => {
               style={{color: colors.secondary, fontSize: 14, marginBottom: 8}}>
               {formatAmount(minSalary)} - {formatAmount(maxSalary)}
             </Text>
-
             <View
               style={{
                 flexDirection: 'row',
@@ -392,7 +397,6 @@ const JobScreen = ({route}) => {
                 width: '90%',
                 alignItems: 'center',
               }}>
-              {/* Minimum Salary Input */}
               <TextInput
                 style={{
                   borderWidth: 1,
@@ -407,10 +411,9 @@ const JobScreen = ({route}) => {
                 placeholderTextColor={colors.primary}
                 keyboardType="numeric"
                 value={minSalary}
-                onChangeText={text => setMinSalary(text)}
+                onChangeText={setMinSalary}
               />
               <Text style={{color: 'gray'}}>-</Text>
-              {/* Maximum Salary Input */}
               <TextInput
                 style={{
                   borderWidth: 1,
@@ -421,15 +424,15 @@ const JobScreen = ({route}) => {
                   textAlign: 'center',
                   color: colors.primary,
                 }}
-                placeholderTextColor={colors.primary}
                 placeholder="Max Salary..."
+                placeholderTextColor={colors.primary}
                 keyboardType="numeric"
                 value={maxSalary}
-                onChangeText={text => setMaxSalary(text)}
+                onChangeText={setMaxSalary}
               />
             </View>
           </View>
-        ) : null}
+        )}
 
         {/* Dynamic Filter Options */}
         {categoryData &&
@@ -442,76 +445,49 @@ const JobScreen = ({route}) => {
                 <View style={styles.searchContainer}>
                   <TextInput
                     style={styles.searchInput}
-                    placeholderTextColor={'#000'}
                     placeholder={`Search ${filterCategory}`}
+                    placeholderTextColor="#000"
                     value={searchoptions}
-                    onChangeText={text => setSearchoptions(text)}
+                    onChangeText={setSearchoptions}
                   />
                 </View>
               )}
               <ScrollView>
-                {filteredData.map(item => (
-                  <View
-                    key={
-                      item.name ||
-                      item.industry_name ||
-                      item?.company_name ||
-                      item?.course_name
-                    }
-                    style={styles.filterItem}>
-                    <Checkbox
-                      status={
-                        selectedFilters[filterCategory]?.includes(
-                          item.name ||
-                            item.industry_name ||
-                            item?.company_name ||
-                            item?.course_name,
-                        )
-                          ? 'checked'
-                          : 'unchecked'
-                      }
-                      color={colors.secondary}
-                      onPress={() =>
-                        toggleFilter(
-                          filterCategory,
-                          item.name ||
-                            item.industry_name ||
-                            item?.company_name ||
-                            item?.course_name,
-                        )
-                      }
-                    />
-                    <TouchableOpacity
-                      onPress={() =>
-                        toggleFilter(
-                          filterCategory,
-                          item.name ||
-                            item.industry_name ||
-                            item?.company_name ||
-                            item?.course_name,
-                        )
-                      }>
-                      <Text
-                        style={{
-                          color: selectedFilters[filterCategory]?.includes(
-                            item.name ||
-                              item.industry_name ||
-                              item?.company_name ||
-                              item?.course_name,
-                          )
-                            ? colors.secondary
-                            : '#000',
-                          fontSize: 12,
-                          width: width * 0.55,
-                        }}>{`${
-                        item.name ||
-                        item.industry_name ||
-                        item?.company_name ||
-                        item?.course_name
-                      } (${item.count})`}</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                {filteredData.map(item => {
+                  const displayName =
+                    item.name ||
+                    item.industry_name ||
+                    item.course_name ||
+                    item.company_name ||
+                    'Unknown';
+                  const isChecked =
+                    filters[filterCategory]?.includes(displayName);
+
+                  return (
+                    <View key={displayName} style={styles.filterItem}>
+                      <Checkbox
+                        status={isChecked ? 'checked' : 'unchecked'}
+                        color={colors.secondary}
+                        onPress={() =>
+                          toggleFilter(filterCategory, displayName)
+                        }
+                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          toggleFilter(filterCategory, displayName)
+                        }>
+                        <Text
+                          style={{
+                            color: isChecked ? colors.secondary : '#000',
+                            fontSize: 12,
+                            width: width * 0.55,
+                          }}>
+                          {`${displayName} (${item.count || 0})`}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
               </ScrollView>
             </>
           )}
@@ -521,20 +497,16 @@ const JobScreen = ({route}) => {
 
   const loadMoreJobs = () => {
     searchQueryData.page = JobListPagination.next_page_number;
-    const filterParams = buildFilterParams({
-      ...filterQuery,
-      ...(JobListPagination.next_page_number !== undefined ||
-        (JobListPagination.next_page_number !== null && {
-          page: JobListPagination.i,
-        })),
-      // Convert to string explicitly
-    });
+    const filterParams = filterQuery
+      ? `${filterQuery}&page=${JobListPagination.next_page_number}`
+      : `page=${JobListPagination.next_page_number}`;
+    // console.log('filterParams@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', filterParams);
 
     if (!isLoading && id && JobListPagination.next_page_number != null) {
       if (searchQueryData) {
         dispatch(GetSearchJobs({user_id: id, ...searchQueryData}));
       } else if (filterQuery) {
-        dispatch(GetFilterdJobs({user_id: id, ...filterParams}));
+        dispatch(GetFilterdJobs(filterParams));
       } else {
         dispatch(GetJobList(id, JobListPagination.next_page_number)); // Dispatch the action to load more jobs
       }
@@ -878,22 +850,32 @@ const JobScreen = ({route}) => {
                             },
                           ]}>
                           {filterCategory.filter
-                            .replace('_', ' ') // Replace underscores with spaces
-                            .toLowerCase() // Convert to lowercase
-                            .replace(/^\w/, c => c.toUpperCase())}{' '}
-                          {/* Capitalize the first letter */}
+                            .replace('_', ' ')
+                            .toLowerCase()
+                            .replace(/^\w/, c => c.toUpperCase())}
                         </Text>
+                        {console.log(
+                          'selectedFilters[filterCategory.filter]?.length',
+                          selectedFilters[filterCategory.filter]?.length,
+                        )}
+                        {/* Display the selected count */}
                         <Text style={{color: 'grey', fontSize: 10}}>
+                          {/* Show count for non-experience and non-salary filters */}
                           {filterCategory.filter !== 'experience' &&
-                            selectedFilters[filterCategory.filter]?.length >
-                              0 &&
-                            ` (${
-                              selectedFilters[filterCategory.filter].length
-                            })`}
+                            filterCategory.filter !== 'salary' &&
+                            filters[filterCategory.filter]?.length > 0 &&
+                            ` (${filters[filterCategory.filter].length})`}
 
+                          {/* Show experience only if selectedExperience > 0 */}
                           {filterCategory.filter === 'experience' &&
-                            selectedExperience !== undefined &&
+                            selectedExperience > 0 &&
                             ` (${selectedExperience} Y)`}
+
+                          {/* Show salary range only if minSalary and maxSalary are defined */}
+                          {filterCategory.filter === 'salary' &&
+                            minSalary &&
+                            maxSalary &&
+                            ` • (${minSalary} - ${maxSalary})`}
                         </Text>
                       </TouchableOpacity>
                     ),
