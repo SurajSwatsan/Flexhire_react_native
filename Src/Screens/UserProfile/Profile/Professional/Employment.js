@@ -68,10 +68,12 @@ const EmploymentValidationSchema = values => {
     schema.job_title = Yup.string()
       .required('Current job title is required')
       .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters');
-    schema.job_profile = Yup.string().matches(
-      /^[A-Za-z\s,.]+$/,
-      'must only contain letters',
-    );
+    schema.job_profile = Yup.string()
+      .nullable()
+      .matches(/^[A-Za-z\s,.]+$/, {
+        message: 'Must only contain letters, spaces, commas, or periods',
+        excludeEmptyString: true, // Allows blank strings to pass validation
+      });
     schema.joining_date = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
@@ -145,10 +147,12 @@ const EmploymentValidationSchema = values => {
     schema.joining_date = Yup.date()
       .required('Joining date is required')
       .max(new Date(), 'Joining date cannot be in the future');
-    schema.job_profile = Yup.string().matches(
-      /^[A-Za-z\s,.]+$/,
-      'must only contain letters',
-    );
+    schema.job_profile = Yup.string()
+      .nullable()
+      .matches(/^[A-Za-z\s,.]+$/, {
+        message: 'Must only contain letters, spaces, commas, or periods',
+        excludeEmptyString: true, // Allows blank strings to pass validation
+      });
     schema.leaving_date = Yup.date()
       .required('Leaving date is required')
       .test(
@@ -462,7 +466,7 @@ const Employment = profileDetails => {
                     flex: 1,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    marginTop: 18,
+                    marginVertical: 12,
                     marginHorizontal: 18,
                     gap: 12,
                   }}>
