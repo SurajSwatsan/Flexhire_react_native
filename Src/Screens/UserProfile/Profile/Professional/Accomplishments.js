@@ -192,10 +192,10 @@ const Accomplishments = profileDetails => {
           title: Yup.string()
             .required('Title is required')
             .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
-          description: Yup.string().matches(
-            /^[A-Za-z\s,.]+$/,
-            'must only contain letters',
-          ),
+          description: Yup.string().matches(/^[A-Za-z\s,.]+$/, {
+            message: 'Must only contain letters, spaces, commas, or periods',
+            excludeEmptyString: true, // Allows blank strings to pass validation
+          }),
           url: Yup.string().url('Invalid URL').required('URL is required'),
           published_date: Yup.string()
             .required('Published Date is required')
@@ -212,10 +212,10 @@ const Accomplishments = profileDetails => {
           title: Yup.string()
             .required('Patent Title is required')
             .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
-          description: Yup.string().matches(
-            /^[A-Za-z\s,.]+$/,
-            'must only contain letters',
-          ),
+          description: Yup.string().matches(/^[A-Za-z\s,.]+$/, {
+            message: 'Must only contain letters, spaces, commas, or periods',
+            excludeEmptyString: true, // Allows blank strings to pass validation
+          }),
           url: Yup.string()
             .url('Invalid URL')
             .required('Patent URL is required'),
@@ -281,10 +281,10 @@ const Accomplishments = profileDetails => {
           title: Yup.string()
             .required('Work Sample Title is required')
             .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
-          description: Yup.string().matches(
-            /^[A-Za-z\s,.]+$/,
-            'must only contain letters',
-          ),
+          description: Yup.string().matches(/^[A-Za-z\s,.]+$/, {
+            message: 'Must only contain letters, spaces, commas, or periods',
+            excludeEmptyString: true, // Allows blank strings to pass validation
+          }),
           url: Yup.string()
             .url('Invalid URL')
             .required('Work Sample URL is required'),
@@ -341,20 +341,20 @@ const Accomplishments = profileDetails => {
           url: Yup.string()
             .url('Invalid URL')
             .required('Profile URL is required'),
-          description: Yup.string().matches(
-            /^[A-Za-z\s,.]+$/,
-            'must only contain letters',
-          ),
+          description: Yup.string().matches(/^[A-Za-z\s,.]+$/, {
+            message: 'Must only contain letters, spaces, commas, or periods',
+            excludeEmptyString: true, // Allows blank strings to pass validation
+          }),
         });
       case 'presentation':
         return Yup.object().shape({
           title: Yup.string()
             .required('Presentation Title is required')
             .matches(/^[A-Za-z\s,.]+$/, 'must only contain letters'),
-          description: Yup.string().matches(
-            /^[A-Za-z\s,.]+$/,
-            'must only contain letters',
-          ),
+          description: Yup.string().matches(/^[A-Za-z\s,.]+$/, {
+            message: 'Must only contain letters, spaces, commas, or periods',
+            excludeEmptyString: true, // Allows blank strings to pass validation
+          }),
           url: Yup.string()
             .url('Invalid URL')
             .required('Presentation URL is required'),
