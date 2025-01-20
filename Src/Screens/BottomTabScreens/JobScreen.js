@@ -100,7 +100,6 @@ const JobScreen = ({route}) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onFocus]);
-  // console.log('JobList', JSON.stringify(JobList, null, 2));
 
   useEffect(() => {
     if (FilterJobList.length > 0) {
@@ -163,19 +162,6 @@ const JobScreen = ({route}) => {
     setFilterModalVisible(true);
   };
 
-  console.log('filters.work_modes:', filters.work_modes);
-  console.log('selectedCategory:', selectedCategory);
-
-  if (filters[selectedCategory]) {
-    // Get the length of the array associated with the selectedCategory
-    const categoryLength = filters[selectedCategory].length;
-    console.log(`[${filters[selectedCategory]}] = ${categoryLength}`);
-  } else {
-    console.log(
-      `Selected category '${selectedCategory}' does not exist in filters.`,
-    );
-  }
-
   const buildFilterParams = filters => {
     const params = new URLSearchParams();
 
@@ -186,7 +172,6 @@ const JobScreen = ({route}) => {
 
     // Add 'work_modes', 'department', 'location', and 'skills'
     addDirectParams('work_modes', filters.work_modes);
-    // console.log('filters.work_modes', filters.work_modes.length);
 
     addDirectParams('department', filters.department);
     addDirectParams('location', filters.location);
@@ -320,9 +305,6 @@ const JobScreen = ({route}) => {
         );
       });
     };
-    {
-      console.log('filter', filters);
-    }
 
     const toggleFilter = (category, option) => {
       setFilters(prevFilters => {
@@ -500,7 +482,6 @@ const JobScreen = ({route}) => {
     const filterParams = filterQuery
       ? `${filterQuery}&page=${JobListPagination.next_page_number}`
       : `page=${JobListPagination.next_page_number}`;
-    // console.log('filterParams@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', filterParams);
 
     if (!isLoading && id && JobListPagination.next_page_number != null) {
       if (searchQueryData) {
@@ -520,7 +501,6 @@ const JobScreen = ({route}) => {
             placeholder="Search"
             // onChangeText={setQuery}
             onChangeText={text => {
-              // console.log(text.length);
               if (text.length === 0) {
                 setJobListToRender(JobList);
               }
@@ -612,7 +592,6 @@ const JobScreen = ({route}) => {
                         )}
                       </View>
                     </View>
-                    {/* {console.log('item?.is_saved', item?.id, item?.is_saved)} */}
 
                     <IconButton
                       icon={item?.is_saved ? 'bookmark' : 'bookmark-outline'}
@@ -854,10 +833,6 @@ const JobScreen = ({route}) => {
                             .toLowerCase()
                             .replace(/^\w/, c => c.toUpperCase())}
                         </Text>
-                        {console.log(
-                          'selectedFilters[filterCategory.filter]?.length',
-                          selectedFilters[filterCategory.filter]?.length,
-                        )}
                         {/* Display the selected count */}
                         <Text style={{color: 'grey', fontSize: 10}}>
                           {/* Show count for non-experience and non-salary filters */}

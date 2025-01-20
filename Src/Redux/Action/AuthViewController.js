@@ -10,10 +10,10 @@ const AuthViewController = () => {
   const goBackScreen = () => {
     navigation.goBack();
   };
-  const subscribeToUserTopic = (user_id) => {
+  const subscribeToUserTopic = user_id => {
     // Topic name: user_{user_id}
     const topic = `user_${user_id}`;
-      messaging()
+    messaging()
       .subscribeToTopic(topic)
       .then(() => {
         console.log(`Successfully subscribed to topic ${topic}`);
@@ -47,21 +47,19 @@ const AuthViewController = () => {
   const register = requestData => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     try {
-      const response = await instance.post('/register/user/', requestData);
-      // console.log(
-      //   '****************************Register response***************************',
-      // );
-      // console.log(response);
-      const jsonString = JSON.stringify(response.data);
-      const data = JSON.parse(jsonString);
-      // console.log(data);
-      const {token, user} = data;
-      // setAuthToken(token); // Set token in axios headers or AsyncStorage
-      // await AsyncStorage.setItem('user_data', JSON.stringify(user));
-      // await AsyncStorage.setItem('email', requestData.email);
+      const response = await axios.post(
+        'http://15.206.149.28/api/register/user/',
+        requestData,
+      );
 
+      // Parse the response
+      const {token, user} = response.data;
+
+      // Dispatch success actions
       dispatch({type: 'REGISTER_SUCCESS', payload: {token, user}});
       dispatch({type: 'LOADING', payload: false});
+
+      // Show success toast
       Toast.show('You have Successfully Registered', {
         type: 'success',
         placement: 'top',
@@ -69,32 +67,46 @@ const AuthViewController = () => {
         offset: 100,
         animationType: 'slide-in',
       });
+
+      // Navigation to another screen if needed
       // navigation.navigate('VerifyOtp');
     } catch (error) {
-      // console.log(error);
-
       dispatch({type: 'LOADING', payload: false});
-      Toast.show(
-        error.response?.data
-          ? error.response?.data
-          : error.response?.data?.non_field_errors[0]
-          ? error.response.data.non_field_errors[0]
-          : 'Something went wrong,Please Try again!',
-        {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 100,
-          animationType: 'slide-in',
-        },
-      );
+
+      // Default error message
+      let errorMessage = 'Something went wrong, please try again!';
+
+      // Parse Axios error response
+      if (error.response?.data) {
+        const errorData = error.response.data;
+
+        // Check for email-specific error
+        if (errorData.email) {
+          errorMessage = errorData.email[0];
+        }
+        // Check for mobile-specific error
+        else if (errorData.mobile_number) {
+          errorMessage = errorData.mobile_number[0];
+        }
+        // General message from API
+        else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      }
+
+      // Show error toast
+      Toast.show(errorMessage, {
+        type: 'danger',
+        placement: 'top',
+        duration: 4000,
+        offset: 100,
+        animationType: 'slide-in',
+      });
+
+      // Dispatch failure action
       dispatch({
         type: 'REGISTER_FAILURE',
-        payload: {
-          error: error.response?.data?.non_field_errors
-            ? error.response.data.non_field_errors[0]
-            : error?.response?.data,
-        },
+        payload: {error: errorMessage},
       });
     }
   };
@@ -121,7 +133,7 @@ const AuthViewController = () => {
 
       setAuthToken(access); // Set token in axios headers or AsyncStorage
       await AsyncStorage.setItem('user_data', JSON.stringify(user_id));
-      subscribeToUserTopic(user_id)
+      subscribeToUserTopic(user_id);
       dispatch({type: 'LOGIN_SUCCESS', payload: {access, user_id}});
 
       dispatch({type: 'LOADING', payload: false});

@@ -58,9 +58,11 @@ const SignupScreen = () => {
         mobile_number: values.mobile_number,
         password: values.password,
       };
+      console.log(UserData);
+      
       dispatch(register(UserData));
       // await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
-      navigation.navigate('LoginScreen');
+      // navigation.navigate('LoginScreen');
     } catch (error) {
       Alert.alert('Error saving credentials');
     }

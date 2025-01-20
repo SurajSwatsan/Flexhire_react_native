@@ -28,9 +28,7 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/job-application/${user_id}/`,
-      );
+      const response = await instance.get(`/job-application/${user_id}/`);
       // console.log(
       //   '****************************job-application response***************************',
       // );
@@ -73,14 +71,11 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await instance.get(
-        `/job/${job_id}/`,
-        {
-          params: {
-            user_id: user_id,
-          },
+      const response = await instance.get(`/job/${job_id}/`, {
+        params: {
+          user_id: user_id,
         },
-      );
+      });
       // console.log(
       //   '****************************job-details response*************************** ',
       // );
@@ -122,10 +117,7 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.post(
-        `http://15.206.149.28/api/job-application/`,
-        requestData,
-      );
+      const response = await instance.post(`/job-application/`, requestData);
       // console.log(
       //   '****************************job-application response***************************',
       // );
@@ -168,9 +160,7 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/job-saved/${user_id}/`,
-      );
+      const response = await instance.get(`/job-saved/${user_id}/`);
       // console.log(
       //   '****************************job-saved response***************************',
       // );
@@ -261,9 +251,7 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/job-invitations/${user_id}/`,
-      );
+      const response = await instance.get(`/job-invitations/${user_id}/`);
       // console.log(
       //   '****************************job-Invitation ///response***************************',
       // );
@@ -394,9 +382,7 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/android-home-page-data/${user_id}`,
-      );
+      const response = await instance.get(`/android-home-page-data/${user_id}`);
       // console.log(
       //   '****************************job-GetHomeData response***************************',
       // );
@@ -527,7 +513,7 @@ const JobViewController = () => {
     }
   };
 
-  const GetFilterdJobs = (queryParams) => async dispatch => {
+  const GetFilterdJobs = queryParams => async dispatch => {
     dispatch({type: 'LOADING', payload: true});
     // const queryString = new URLSearchParams(queryParams).toString();
 
@@ -539,9 +525,7 @@ const JobViewController = () => {
         '****************************job-GetFilterdJobs response***************************',
       );
       // console.log('queryParams', queryParams);
-      console.log(
-        `http://15.206.149.28/api/filter-jobs/?${queryParams}`,
-      );
+      console.log(`http://15.206.149.28/api/filter-jobs/?${queryParams}`);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -623,14 +607,11 @@ const JobViewController = () => {
     dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/company/${company_id}/`,
-        {
-          params: {
-            user_id: user_id,
-          },
+      const response = await instance.get(`/company/${company_id}/`, {
+        params: {
+          user_id: user_id,
         },
-      );
+      });
       // console.log(
       //   '****************************GetCompanyDetails response***************************',
       // );
@@ -671,8 +652,8 @@ const JobViewController = () => {
     // dispatch({type: 'LOADING', payload: true});
 
     try {
-      const response = await axios.get(
-        `http://15.206.149.28/api/jobs-by-department/${company_id}/`,
+      const response = await instance.get(
+        `/jobs-by-department/${company_id}/`,
         {
           params: {
             user_id: user_id,
