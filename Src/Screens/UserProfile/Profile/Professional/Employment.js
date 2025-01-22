@@ -153,6 +153,8 @@ const EmploymentValidationSchema = values => {
         message: 'Must only contain letters, spaces, commas, or periods',
         excludeEmptyString: true, // Allows blank strings to pass validation
       });
+    schema.skills = Yup.array().min(1, 'At least one skill is required');
+
     schema.leaving_date = Yup.date()
       .required('Leaving date is required')
       .test(
@@ -603,32 +605,32 @@ const Employment = profileDetails => {
                 errors,
                 touched,
               }) => {
-                const handleEmploymentTypeChange = value => {
-                  // Reset fields to initial values when employment type changes
-                  setValues({
-                    ...values,
-                    employment_type: value,
-                    skills: [],
-                    job_title: '',
-                    job_profile: '',
-                    company_name: '',
-                    joining_date: null,
-                    leaving_date: null,
-                    worked_from: null,
-                    worked_till: null,
-                    location: '',
-                    department: '',
-                    job_title_category: '',
-                    role: '',
-                    notice_period: '',
-                    annual_salary: {currency: '₹', ammount: ''},
-                    salary_breakdown: {
-                      name: '',
-                      fixed_salary: '',
-                      variable_salary: '',
-                    },
-                  });
-                };
+                // const handleEmploymentTypeChange = value => {
+                //   // Reset fields to initial values when employment type changes
+                //   setValues({
+                //     ...values,
+                //     employment_type: value,
+                //     skills: [],
+                //     job_title: '',
+                //     job_profile: '',
+                //     company_name: '',
+                //     joining_date: null,
+                //     leaving_date: null,
+                //     worked_from: null,
+                //     worked_till: null,
+                //     location: '',
+                //     department: '',
+                //     job_title_category: '',
+                //     role: '',
+                //     notice_period: '',
+                //     annual_salary: {currency: '₹', ammount: ''},
+                //     salary_breakdown: {
+                //       name: '',
+                //       fixed_salary: '',
+                //       variable_salary: '',
+                //     },
+                //   });
+                // };
 
                 return (
                   <ScrollView contentContainerStyle={styles.container}>
@@ -649,10 +651,18 @@ const Employment = profileDetails => {
                       />
                       <CustomTabs
                         label="Employment Type"
-                        options={EMPLOYMENT_TYPES}
+                        options={
+                          selectedEmployment
+                            ? EMPLOYMENT_TYPES.filter(
+                                option =>
+                                  option.value ===
+                                  selectedEmployment.employment_type,
+                              )
+                            : EMPLOYMENT_TYPES
+                        }
                         selectedValue={values.employment_type}
                         setFieldValue={(fieldName, value) =>
-                          handleEmploymentTypeChange(value)
+                          setFieldValue('employment_type', value)
                         }
                         fieldName="employment_type"
                       />
@@ -669,7 +679,7 @@ const Employment = profileDetails => {
                             />
                             <ReusableTextInput
                               name="job_title"
-                              label="Current job title*"
+                              label="Current job role*"
                               value={values.job_title}
                               onChangeText={handleChange('job_title')}
                             />
@@ -858,7 +868,7 @@ const Employment = profileDetails => {
                             />
                             <ReusableTextInput
                               name="job_title"
-                              label="Previous Job Title*"
+                              label="Previous Job role*"
                               value={values.job_title}
                               onChangeText={handleChange('job_title')}
                             />
@@ -867,6 +877,32 @@ const Employment = profileDetails => {
                               label="Job Profile"
                               value={values.job_profile}
                               onChangeText={handleChange('job_profile')}
+                            />
+
+                            <Text style={styles.subheading}>Skills Used</Text>
+                            <CustomSelectionModal
+                              title="Skills Used"
+                              data={keyskillsMasters}
+                              selectedItems={values.skills.map(
+                                skill =>
+                                  keyskillsMasters.find(
+                                    item => item.value === skill,
+                                  ) || {
+                                    id: null,
+                                    value: skill,
+                                  },
+                              )}
+                              setSelectedItems={items =>
+                                setFieldValue(
+                                  'skills',
+                                  items.map(item => item?.value || ''),
+                                )
+                              }
+                              placeholder="Select Skills"
+                              isMultiSelect
+                              maxSelectionLimit={5}
+                              error={errors.skills}
+                              touched={touched.skills}
                             />
 
                             <ReusableDatePicker
