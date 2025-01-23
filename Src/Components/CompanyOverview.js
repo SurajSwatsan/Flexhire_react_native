@@ -19,7 +19,7 @@ import ReviewPage from '../Constant/CustomReviewPage';
 import Swiper from 'react-native-swiper';
 import Timeline from 'react-native-timeline-flatlist';
 import JobViewController from '../Redux/Action/jobViewController';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../Services/baseAPI';
 import moment from 'moment';
@@ -45,7 +45,7 @@ const CompanyOverviewScreen = ({route}) => {
   const dispatch = useDispatch();
   const {GetCompanyDetails, GetCompanyJobs} = JobViewController();
   const {CompanyDetails, CompanyJobs} = useSelector(state => state?.job);
-
+  const navigation = useNavigation();
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -215,7 +215,11 @@ const CompanyOverviewScreen = ({route}) => {
                       {CompanyDetails.recent_jobs.map(jobData => (
                         <TouchableOpacity
                           key={jobData.id}
-                          // onPress={() => handleCardPress(jobData)}
+                          onPress={() =>
+                            navigation.navigate('JobDetailScreen', {
+                              job_id: jobData.id,
+                            })
+                          }
                           style={{marginRight: 12}}>
                           <View
                             style={[
@@ -657,7 +661,11 @@ const CompanyOverviewScreen = ({route}) => {
                     {filteredJobs?.map(jobData => (
                       <TouchableOpacity
                         key={jobData.id}
-                        // onPress={() => handleCardPress(jobData)}
+                        onPress={() =>
+                          navigation.navigate('JobDetailScreen', {
+                            job_id: jobData.id,
+                          })
+                        }
                         style={{marginRight: 12}}>
                         <View
                           style={[
