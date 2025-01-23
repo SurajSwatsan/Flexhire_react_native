@@ -22,13 +22,13 @@
     android:supportsRtl="true"
     android:usesCleartextTraffic="true"
     tools:replace="android:usesCleartextTraffic">
-    <service android:name="com.google.firebase.messaging.FirebaseMessagingService" android:exported="true" tools:replace="android:exported">
+    <service android:name="com.google.firebase.messaging.FirebaseMessagingService" android:exported="false" tools:replace="android:exported">
     <intent-filter>
       <action android:name="com.google.firebase.MESSAGING_EVENT" />
     </intent-filter>
     </service><!--
     Add the Firebase instance ID service (used for managing tokens) -->
-    <service android:name="com.google.firebase.iid.FirebaseInstanceIdService" android:exported="true" tools:replace="android:exported">
+    <service android:name="com.google.firebase.iid.FirebaseInstanceIdService" android:exported="false" tools:replace="android:exported">
     <intent-filter>
       <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
     </intent-filter>
