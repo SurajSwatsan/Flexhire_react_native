@@ -531,114 +531,132 @@ const JobDetailScreen = ({route}) => {
                   </View>
                   <View style={styles.contentContainer}>{renderTabs()}</View>
                 </View>
+                <View style={{flex: 1, minHeight: 50}}>
+                  {JobDetails?.related_jobs?.length > 0 && (
+                    <>
+                      <Text
+                        style={[
+                          styles.jobDescriptionheader,
+                          {
+                            marginHorizontal: 12,
+                            marginBottom: 8,
+                            color: colors.secondary,
+                          },
+                        ]}>
+                        Related Jobs
+                      </Text>
+                      {JobDetails?.related_jobs?.map((item, index) => (
+                        <View
+                          key={item?.id || index}
+                          style={{marginBottom: 14}}>
+                          <TouchableOpacity
+                            key={item.id}
+                            onPress={() => handleJobCardPress(item.id)}>
+                            <View style={styles.jobCard}>
+                              <View style={styles.cardcompanyInfo}>
+                                <View style={styles.companylogo}>
+                                  {item?.company?.logo ? (
+                                    <Image
+                                      source={{
+                                        uri: BASE_URL + item?.company?.logo,
+                                      }}
+                                      style={styles.companyImage}
+                                    />
+                                  ) : (
+                                    <Ionicons
+                                      name="business"
+                                      size={36}
+                                      color="gray"
+                                    />
+                                  )}
+                                  <View style={styles.textName}>
+                                    <Text style={styles.jobTitle}>
+                                      {item?.job_title?.title}
+                                    </Text>
+                                    <Text style={styles.companyName}>
+                                      {/* {item?.company_name} */}
+                                      {item?.company?.company_name
+                                        ? item?.company?.company_name
+                                        : item?.company_name}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
 
-                <Text
-                  style={[
-                    styles.jobDescriptionheader,
-                    {
-                      marginHorizontal: 12,
-                      marginBottom: 8,
-                      color: colors.secondary,
-                    },
-                  ]}>
-                  Related Jobs
-                </Text>
-                {JobDetails?.related_jobs?.map((item, index) => (
-                  <View key={item?.id || index} style={{marginBottom: 14}}>
-                    <TouchableOpacity
-                      key={item.id}
-                      onPress={() => handleJobCardPress(item.id)}>
-                      <View style={styles.jobCard}>
-                        <View style={styles.cardcompanyInfo}>
-                          <View style={styles.companylogo}>
-                            {item?.company?.logo ? (
-                              <Image
-                                source={{uri: BASE_URL + item?.company?.logo}}
-                                style={styles.companyImage}
-                              />
-                            ) : (
-                              <Ionicons
-                                name="business"
-                                size={36}
-                                color="gray"
-                              />
-                            )}
-                            <View style={styles.textName}>
-                              <Text style={styles.jobTitle}>
-                                {item?.job_title?.title}
-                              </Text>
-                              <Text style={styles.companyName}>
-                                {/* {item?.company_name} */}
-                                {item?.company?.company_name
-                                  ? item?.company?.company_name
-                                  : item?.company_name}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
+                              <View style={styles.workModeContainer}>
+                                {item?.work_modes?.map((mode, idx) => (
+                                  <View key={idx} style={styles.workModeChip}>
+                                    <Text style={styles.cardchipText}>
+                                      {mode}
+                                    </Text>
+                                  </View>
+                                ))}
+                              </View>
 
-                        <View style={styles.workModeContainer}>
-                          {item?.work_modes?.map((mode, idx) => (
-                            <View key={idx} style={styles.workModeChip}>
-                              <Text style={styles.cardchipText}>{mode}</Text>
-                            </View>
-                          ))}
-                        </View>
-
-                        <View style={styles.cardlocation}>
-                          <Ionicons
-                            name="location-outline"
-                            size={18}
-                            color={colors.primary}
-                          />
-
-                          <Text style={styles.jobCardLocation}>
-                            {item?.job_location.join(', ')}
-                          </Text>
-                        </View>
-
-                        <View style={styles.line}></View>
-
-                        <View style={styles.jobFooter}>
-                          {item?.salary?.yearly && (
-                            <View style={styles.experienceContainer}>
-                              <Ionicons name="cash" size={14} color="#004466" />
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                }}>
-                                <CustomFormatAmount
-                                  amount={item.salary?.yearly?.min}
+                              <View style={styles.cardlocation}>
+                                <Ionicons
+                                  name="location-outline"
+                                  size={18}
+                                  color={colors.primary}
                                 />
 
-                                <Text style={{color: colors.primary}}> - </Text>
-                                <CustomFormatAmount
-                                  amount={item?.salary?.yearly?.max}
-                                />
+                                <Text style={styles.jobCardLocation}>
+                                  {item?.job_location.join(', ')}
+                                </Text>
+                              </View>
 
-                                <Text
-                                  style={{
-                                    fontSize: 10,
-                                    fontWeight: 'bold',
-                                    color: 'gray',
-                                  }}>
-                                  {' '}
-                                  {item.salary.yearly.currency}
+                              <View style={styles.line}></View>
+
+                              <View style={styles.jobFooter}>
+                                {item?.salary?.yearly && (
+                                  <View style={styles.experienceContainer}>
+                                    <Ionicons
+                                      name="cash"
+                                      size={14}
+                                      color="#004466"
+                                    />
+                                    <View
+                                      style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                      }}>
+                                      <CustomFormatAmount
+                                        amount={item.salary?.yearly?.min}
+                                      />
+
+                                      <Text style={{color: colors.primary}}>
+                                        {' '}
+                                        -{' '}
+                                      </Text>
+                                      <CustomFormatAmount
+                                        amount={item?.salary?.yearly?.max}
+                                      />
+
+                                      <Text
+                                        style={{
+                                          fontSize: 10,
+                                          fontWeight: 'bold',
+                                          color: 'gray',
+                                        }}>
+                                        {' '}
+                                        {item.salary.yearly.currency}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                )}
+                                {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
+                                <Text style={styles.jobPostedDate}>
+                                  {moment(item?.created_at).fromNow()}{' '}
+                                  {/* Format created_at date */}
                                 </Text>
                               </View>
                             </View>
-                          )}
-                          {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
-                          <Text style={styles.jobPostedDate}>
-                            {moment(item?.created_at).fromNow()}{' '}
-                            {/* Format created_at date */}
-                          </Text>
+                          </TouchableOpacity>
                         </View>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                      ))}
+                    </>
+                  )}
+                </View>
               </View>
             </ScrollView>
 

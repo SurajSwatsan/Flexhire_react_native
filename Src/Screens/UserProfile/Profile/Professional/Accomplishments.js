@@ -251,7 +251,7 @@ const Accomplishments = profileDetails => {
                 const fromDate = new Date(from);
                 const tillDate = new Date(value);
 
-                if (tillDate >= fromDate) {
+                if (tillDate <= fromDate) {
                   if (
                     tillDate.toISOString().split('T')[0] ===
                     fromDate.toISOString().split('T')[0]
@@ -261,7 +261,7 @@ const Accomplishments = profileDetails => {
                     });
                   }
                   return this.createError({
-                    message: 'Till date must be before From date',
+                    message: 'Till date must be after From date',
                   });
                 }
               }
@@ -311,7 +311,7 @@ const Accomplishments = profileDetails => {
               if (from) {
                 const fromDate = new Date(from);
                 const tillDate = new Date(value);
-                if (tillDate >= fromDate) {
+                if (tillDate <= fromDate) {
                   if (
                     tillDate.toISOString().split('T')[0] ===
                     fromDate.toISOString().split('T')[0]
@@ -321,7 +321,7 @@ const Accomplishments = profileDetails => {
                     });
                   }
                   return this.createError({
-                    message: 'Till date must be before From date',
+                    message: 'Till date must be after From date',
                   });
                 }
               }

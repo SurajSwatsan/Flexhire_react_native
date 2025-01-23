@@ -106,7 +106,7 @@ const UserApplies = () => {
           </Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('SearchJob')}>
+            onPress={() => navigation.navigate('JobsScreen')}>
             <Text style={styles.buttonText}>Start Job Search</Text>
           </TouchableOpacity>
         </View>
