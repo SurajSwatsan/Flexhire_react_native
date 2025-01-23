@@ -15,6 +15,7 @@ import JobViewController from '../../Redux/Action/jobViewController';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
+import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 
 const UserInvitesScreen = () => {
   const [id, setId] = useState();
@@ -25,18 +26,6 @@ const UserInvitesScreen = () => {
   const {JobInvitation} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const navigation = useNavigation();
-
-  function formatAmount(value) {
-    if (value >= 10000000) {
-      return (value / 10000000).toFixed(1) + ' Cr';
-    } else if (value >= 100000) {
-      return (value / 100000).toFixed(1) + ' Lac';
-    } else if (value >= 1000) {
-      return (value / 1000).toFixed(1) + ' K';
-    } else {
-      return value.toString();
-    }
-  }
 
   useEffect(() => {
     const getUserData = async () => {
@@ -145,11 +134,13 @@ const UserInvitesScreen = () => {
                   <View style={styles.detailsalary}>
                     <Ionicons name="cash" size={14} color={colors.primary} />
                     <Text style={styles.detailsText}>
-                      {`${formatAmount(
-                        invite?.job?.salary?.yearly?.min,
-                      )} - ${formatAmount(invite?.job?.salary?.yearly?.max)} ${
+                      {`${
                         invite?.job?.salary?.yearly?.currency
-                      }`}
+                      }  ${useCustomFormatAmount(
+                        Number(invite?.job?.salary?.yearly?.min),
+                      )} - ${useCustomFormatAmount(
+                        Number(invite?.job?.salary?.yearly?.max),
+                      )} `}
                     </Text>
                   </View>
                 </View>
@@ -255,8 +246,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   detailsText: {
-    fontSize: 12,
-    color: colors.blackText,
+    fontSize: 11,
+    color: colors.primary,
     marginLeft: 6,
   },
   detailscompanytext: {

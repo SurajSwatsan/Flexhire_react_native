@@ -15,38 +15,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
-import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 
 const UserApplies = () => {
   const navigation = useNavigation();
-
   const dispatch = useDispatch();
   const {GetJobApplications} = JobViewController();
   const {JobApplications, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const [userId, set_userId] = useState('');
-
-  const getSalary = salary => {
-    if (salary?.yearly?.min && salary?.yearly?.max) {
-      return (
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <CustomFormatAmount amount={salary?.yearly?.min} />
-          <Text style={{color: colors.primary}}> - </Text>
-          <CustomFormatAmount amount={salary?.yearly?.max} />
-          <Text
-            style={{
-              fontSize: 10,
-              fontWeight: 'bold',
-              color: 'gray',
-            }}>
-            {' '}
-            {salary.yearly.currency}
-          </Text>
-        </View>
-      );
-    }
-    return 'Salary not disclosed';
-  };
 
   // Fetch applied jobs from the Redux store
   useEffect(() => {
@@ -169,10 +146,31 @@ const UserApplies = () => {
                         {jobData?.job?.experience_level?.maxYear || 0} Years
                       </Text>
                     </View>
+
                     <Ionicons name="cash" size={14} color="#004466" />
-                    <Text style={styles.jobDetailsalary}>
-                      {getSalary(jobData?.job?.salary) || 'Not disclosed'}
-                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 11,
+                          color: colors.primary,
+                        }}>
+                        {jobData?.job?.salary.yearly.currency}
+                      </Text>
+                      <Text style={{color: colors.primary, fontSize: 11}}>
+                        {useCustomFormatAmount(
+                          Number(jobData?.job?.salary?.yearly?.min),
+                        )}
+                        {' - '}
+                        {useCustomFormatAmount(
+                          Number(jobData?.job?.salary?.yearly?.max),
+                        )}
+                      </Text>
+                    </View>
                   </View>
                   <View style={styles.jobCardFooter}>
                     <View style={styles.appliedContainer}>
@@ -298,8 +296,7 @@ const styles = StyleSheet.create({
   },
   jobDetailsalary: {
     fontSize: 12,
-    color: 'gray',
-    fontWeight: 'bold',
+    color: colors.primary,
   },
 
   locationText: {

@@ -23,7 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import Slider from '@react-native-community/slider';
-import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 
 const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
@@ -111,17 +111,6 @@ const JobScreen = ({route}) => {
     }
   }, [JobList, FilterJobList, SearchJobList]);
 
-  function formatAmount(value) {
-    if (value >= 10000000) {
-      return (value / 10000000).toFixed(1) + ' Cr';
-    } else if (value >= 100000) {
-      return (value / 100000).toFixed(1) + ' Lac';
-    } else if (value >= 1000) {
-      return (value / 1000).toFixed(1) + ' K';
-    } else {
-      return value;
-    }
-  }
   useEffect(() => {
     if (searchQuery) {
       SearchJobs(searchQuery);
@@ -370,7 +359,8 @@ const JobScreen = ({route}) => {
             </Text>
             <Text
               style={{color: colors.secondary, fontSize: 14, marginBottom: 8}}>
-              {formatAmount(minSalary)} - {formatAmount(maxSalary)}
+              {useCustomFormatAmount(Number(minSalary))} -{' '}
+              {useCustomFormatAmount(Number(maxSalary))}
             </Text>
             <View
               style={{
@@ -610,12 +600,8 @@ const JobScreen = ({route}) => {
                       ))}
                   </View>
                   <View style={JobCardStyle.location}>
-                    <IconButton
-                      icon="map-marker"
-                      iconColor={colors.primary}
-                      size={18}
-                      style={{padding: 0, marginLeft: -10, height: 20}}
-                    />
+                    <Ionicons name="location" size={14} color="#004466" />
+
                     {item?.job_location?.map((location, locIndex) => (
                       <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
                         {location}
@@ -632,21 +618,23 @@ const JobScreen = ({route}) => {
                           style={{
                             flexDirection: 'row',
                             alignItems: 'center',
+                            gap: 4,
                           }}>
-                          <CustomFormatAmount
-                            amount={item.salary?.yearly?.min}
-                          />
-                          <Text style={{color: colors.primary}}> - </Text>
-                          <CustomFormatAmount
-                            amount={item.salary?.yearly?.max}
-                          />
                           <Text
                             style={{
-                              fontSize: 10,
-                              fontWeight: 'bold',
-                              color: 'gray',
+                              fontSize: 11,
+                              color: colors.primary,
                             }}>
                             {item?.salary?.yearly?.currency}
+                          </Text>
+                          <Text style={{color: colors.primary, fontSize: 11}}>
+                            {useCustomFormatAmount(
+                              Number(item.salary?.yearly?.min),
+                            )}
+                            {' - '}
+                            {useCustomFormatAmount(
+                              Number(item.salary?.yearly?.max),
+                            )}
                           </Text>
                         </View>
                       </View>

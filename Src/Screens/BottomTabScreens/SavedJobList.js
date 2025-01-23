@@ -17,11 +17,12 @@ import JobViewController from '../../Redux/Action/jobViewController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
-import CustomFormatAmount from '../../Constant/CustomFormatAmount';
+import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 const {width} = Dimensions.get('window'); // Get the screen width
 
 const SavedJobScreen = () => {
   const [id, setId] = useState();
+
   const dispatch = useDispatch();
   const {GetSavedJobs, SaveJob} = JobViewController();
   const {SavedJobs} = useSelector(state => state.job);
@@ -116,21 +117,23 @@ const SavedJobScreen = () => {
                             style={{
                               flexDirection: 'row',
                               alignItems: 'center',
+                              gap: 4,
                             }}>
-                            <CustomFormatAmount
-                              amount={savedJob?.job?.salary?.yearly?.min || 0}
-                            />
-                            <Text style={{color: colors.primary}}> - </Text>
-                            <CustomFormatAmount
-                              amount={savedJob?.job?.salary?.yearly?.max || 0}
-                            />
                             <Text
                               style={{
-                                fontSize: 10,
-                                fontWeight: 'bold',
-                                color: 'gray',
+                                fontSize: 11,
+                                color: colors.primary,
                               }}>
-                              {savedJob?.job?.salary?.yearly?.currency || 'N/A'}
+                              {savedJob?.job?.salary?.yearly?.currency}
+                            </Text>
+                            <Text style={{color: colors.primary, fontSize: 11}}>
+                              {useCustomFormatAmount(
+                                Number(savedJob?.job?.salary?.yearly?.min),
+                              )}
+                              {` - `}
+                              {useCustomFormatAmount(
+                                Number(savedJob?.job?.salary?.yearly?.max),
+                              )}
                             </Text>
                           </View>
                         </View>

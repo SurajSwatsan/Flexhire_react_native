@@ -15,7 +15,7 @@ import CustomHeader from './CustomBackIcon';
 import moment from 'moment';
 import CustomTimelineScreen from './CustomTimeline';
 import {BASE_URL} from '../Services/baseAPI';
-import CustomFormatAmount from './CustomFormatAmount';
+import useCustomFormatAmount from '../CustomHooks/CustomFormatAmount';
 
 const ApplicationStatusScreen = ({route}) => {
   const navigation = useNavigation(); // Get the navigation prop
@@ -178,24 +178,25 @@ const ApplicationStatusScreen = ({route}) => {
                                 style={{
                                   flexDirection: 'row',
                                   alignItems: 'center',
+                                  gap: 4,
                                 }}>
-                                <CustomFormatAmount
-                                  amount={item.salary?.yearly?.min}
-                                />
-
-                                <Text style={{color: colors.primary}}> - </Text>
-                                <CustomFormatAmount
-                                  amount={item?.salary?.yearly?.max}
-                                />
-
                                 <Text
                                   style={{
-                                    fontSize: 10,
-                                    fontWeight: 'bold',
-                                    color: 'gray',
+                                    fontSize: 11,
+                                    color: colors.primary,
                                   }}>
-                                  {' '}
                                   {item.salary.yearly.currency}
+                                </Text>
+
+                                <Text
+                                  style={{color: colors.primary, fontSize: 11}}>
+                                  {useCustomFormatAmount(
+                                    Number(item.salary?.yearly?.min),
+                                  )}
+                                  {` - `}
+                                  {useCustomFormatAmount(
+                                    Number(item?.salary?.yearly?.max),
+                                  )}
                                 </Text>
                               </View>
                             </View>

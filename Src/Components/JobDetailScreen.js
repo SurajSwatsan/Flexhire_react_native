@@ -23,12 +23,13 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Services/baseAPI';
 import {Toast} from 'react-native-toast-notifications';
 import JobCardStyle from '../Global_CSS/JobCardStyle';
-import CustomFormatAmount from '../Constant/CustomFormatAmount';
 import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
+import useCustomFormatAmount from '../CustomHooks/CustomFormatAmount';
 
 const JobDetailScreen = ({route}) => {
   const {job_id} = route.params; // Get company data from params
+
   const [activeTab, setActiveTab] = useState('About');
   const [id, setId] = useState();
   const [applyButtonColor, setApplyButtonColor] = useState('#b3d7ff');
@@ -69,22 +70,6 @@ const JobDetailScreen = ({route}) => {
   // const jobIds = Array.isArray(JobApplications)
   //   ? JobApplications.map(application => application?.job?.id)
   //   : [];
-  function formatAmount(value) {
-    if (value == null || isNaN(value)) {
-      // Handle undefined, null, or invalid values
-      return '0';
-    }
-
-    if (value >= 10000000) {
-      return (value / 10000000).toFixed(1) + ' Cr';
-    } else if (value >= 100000) {
-      return (value / 100000).toFixed(1) + ' Lac';
-    } else if (value >= 1000) {
-      return (value / 1000).toFixed(1) + ' K';
-    } else {
-      return value.toString();
-    }
-  }
 
   // console.log('JobDetails', JSON.stringify(JobDetails, null, 2));
 
@@ -169,95 +154,114 @@ const JobDetailScreen = ({route}) => {
           <View>
             <View>
               <View style={{marginBottom: 20}}>
-                <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>
-                    Job Description:
-                  </Text>
-                  <Text style={styles.jobDescription}>
-                    {JobDetails?.job_description?.summary}
-                  </Text>
-                </View>
-
-                <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>Requirements:</Text>
-                  {JobDetails?.job_description?.requirements?.map(
-                    (item, index) => (
-                      <View key={index} style={styles.bulletContainer}>
-                        <Text style={styles.bullet}>●</Text>
-                        <Text style={styles.jobDescription}>{item}</Text>
-                      </View>
-                    ),
-                  )}
-                </View>
-                <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>Skills:</Text>
-                  <View style={styles.chipContainer}>
-                    {JobDetails?.key_skills?.map((skill, index) => (
-                      <View key={index} style={styles.chip}>
-                        <Text style={styles.chipText}>{skill}</Text>
-                      </View>
-                    ))}
+                {JobDetails?.job_description?.summary && (
+                  <View style={styles.jobDetailsContainer}>
+                    <Text style={styles.jobDescriptionheader}>
+                      Job Description:
+                    </Text>
+                    <Text style={styles.jobDescription}>
+                      {JobDetails?.job_description?.summary}
+                    </Text>
                   </View>
-                </View>
+                )}
 
-                <View style={styles.jobDetailsContainer}>
-                  <Text style={styles.jobDescriptionheader}>
-                    Responsibilities:
-                  </Text>
-                  {JobDetails?.job_description?.responsibilities?.map(
-                    (item, index) => (
-                      <View key={index} style={styles.bulletContainer}>
-                        <Text style={styles.bullet}>●</Text>
-                        <Text style={styles.jobDescription}>{item}</Text>
-                      </View>
-                    ),
-                  )}
-                </View>
+                {JobDetails?.job_description?.requirements?.length > 0 && (
+                  <View style={styles.jobDetailsContainer}>
+                    <Text style={styles.jobDescriptionheader}>
+                      Requirements:
+                    </Text>
+                    {JobDetails?.job_description?.requirements?.map(
+                      (item, index) => (
+                        <View key={index} style={styles.bulletContainer}>
+                          <Text style={styles.bullet}>●</Text>
+                          <Text style={styles.jobDescription}>{item}</Text>
+                        </View>
+                      ),
+                    )}
+                  </View>
+                )}
 
-                <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Department:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {JobDetails?.department?.join(', ')}
-                  </Text>
-                </View>
-                <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Employment types:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {JobDetails?.employment_types?.join(', ')}
-                  </Text>
-                </View>
+                {JobDetails?.job_description?.responsibilities?.length > 0 && (
+                  <View style={styles.jobDetailsContainer}>
+                    <Text style={styles.jobDescriptionheader}>
+                      Responsibilities:
+                    </Text>
+                    {JobDetails?.job_description?.responsibilities?.map(
+                      (item, index) => (
+                        <View key={index} style={styles.bulletContainer}>
+                          <Text style={styles.bullet}>●</Text>
+                          <Text style={styles.jobDescription}>{item}</Text>
+                        </View>
+                      ),
+                    )}
+                  </View>
+                )}
+                {JobDetails?.key_skills?.length > 0 && (
+                  <View style={styles.jobDetailsContainer}>
+                    <Text style={styles.jobDescriptionheader}>Skills:</Text>
+                    <View style={styles.chipContainer}>
+                      {JobDetails?.key_skills?.map((skill, index) => (
+                        <View key={index} style={styles.chip}>
+                          <Text style={styles.chipText}>{skill}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
 
-                <View style={styles.jobDepartmentContainer}>
-                  {JobDetails?.education?.length > 0 && (
-                    <>
-                      <Text style={styles.jobDetailsheader}>Education:</Text>
-                      <View style={styles.educationItemsContainer}>
-                        {JobDetails.education.map((course, index) => (
-                          <Text key={index} style={styles.jobDetails1}>
-                            {course?.course_name}
-                            {course?.specialization
-                              ? ` - ${course.specialization},`
-                              : ','}
-                          </Text>
-                        ))}
-                      </View>
-                    </>
-                  )}
-                </View>
+                {JobDetails?.department?.length > 0 && (
+                  <View style={styles.jobDepartmentContainer}>
+                    <Text style={styles.jobDetailsheader}>Department:</Text>
+                    <Text style={styles.jobDetails1}>
+                      {JobDetails?.department?.join(', ')}
+                    </Text>
+                  </View>
+                )}
 
-                <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Working Modes:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {JobDetails?.work_modes?.join(', ')}
-                  </Text>
-                </View>
+                {JobDetails?.employment_types?.length > 0 && (
+                  <View style={styles.jobDepartmentContainer}>
+                    <Text style={styles.jobDetailsheader}>
+                      Employment types:
+                    </Text>
+                    <Text style={styles.jobDetails1}>
+                      {JobDetails?.employment_types?.join(', ')}
+                    </Text>
+                  </View>
+                )}
 
-                <View style={styles.jobDepartmentContainer}>
-                  <Text style={styles.jobDetailsheader}>Industry Type:</Text>
-                  <Text style={styles.jobDetails1}>
-                    {JobDetails?.industry_type?.industry_name}
-                  </Text>
-                </View>
+                {JobDetails?.education?.length > 0 && (
+                  <View style={styles.jobDepartmentContainer}>
+                    <Text style={styles.jobDetailsheader}>Education:</Text>
+                    <View style={styles.educationItemsContainer}>
+                      {JobDetails.education.map((course, index) => (
+                        <Text key={index} style={styles.jobDetails1}>
+                          {course?.course_name}
+                          {course?.specialization
+                            ? ` - ${course.specialization},`
+                            : ','}
+                        </Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {JobDetails?.work_modes?.length > 0 && (
+                  <View style={styles.jobDepartmentContainer}>
+                    <Text style={styles.jobDetailsheader}>Working Modes:</Text>
+                    <Text style={styles.jobDetails1}>
+                      {JobDetails?.work_modes?.join(', ')}
+                    </Text>
+                  </View>
+                )}
+
+                {JobDetails?.industry_type?.industry_name && (
+                  <View style={styles.jobDepartmentContainer}>
+                    <Text style={styles.jobDetailsheader}>Industry Type:</Text>
+                    <Text style={styles.jobDetails1}>
+                      {JobDetails?.industry_type?.industry_name}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -265,37 +269,47 @@ const JobDetailScreen = ({route}) => {
       case 'Company':
         return (
           <View>
-            <Text style={styles.jobDescriptionheader}>
-              {JobDetails?.company?.company_name}
-            </Text>
-
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>About:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.company_description}
+            {JobDetails?.company?.company_name && (
+              <Text style={styles.jobDescriptionheader}>
+                {JobDetails?.company?.company_name}
               </Text>
-            </View>
+            )}
 
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>Industry:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.industry?.industry_name}
-              </Text>
-            </View>
+            {JobDetails?.company?.company_description && (
+              <View style={styles.jobDepartmentContainer}>
+                <Text style={styles.jobDetailsheader}>About:</Text>
+                <Text style={styles.jobDetails1}>
+                  {JobDetails?.company?.company_description}
+                </Text>
+              </View>
+            )}
 
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>Location:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.headquarters}
-              </Text>
-            </View>
+            {JobDetails?.company?.industry?.industry_name && (
+              <View style={styles.jobDepartmentContainer}>
+                <Text style={styles.jobDetailsheader}>Industry:</Text>
+                <Text style={styles.jobDetails1}>
+                  {JobDetails?.company?.industry?.industry_name}
+                </Text>
+              </View>
+            )}
 
-            <View style={styles.jobDepartmentContainer}>
-              <Text style={styles.jobDetailsheader}>Website:</Text>
-              <Text style={styles.jobDetails1}>
-                {JobDetails?.company?.website}
-              </Text>
-            </View>
+            {JobDetails?.company?.headquarters && (
+              <View style={styles.jobDepartmentContainer}>
+                <Text style={styles.jobDetailsheader}>Location:</Text>
+                <Text style={styles.jobDetails1}>
+                  {JobDetails?.company?.headquarters}
+                </Text>
+              </View>
+            )}
+
+            {JobDetails?.company?.website && (
+              <View style={styles.jobDepartmentContainer}>
+                <Text style={styles.jobDetailsheader}>Website:</Text>
+                <Text style={styles.jobDetails1}>
+                  {JobDetails?.company?.website}
+                </Text>
+              </View>
+            )}
           </View>
         );
       case 'Review':
@@ -466,15 +480,17 @@ const JobDetailScreen = ({route}) => {
                       {
                         icon: 'cash',
                         label: 'Salary Range',
-                        value: `${formatAmount(
-                          JobDetails?.salary?.yearly?.min,
-                        )} - ${formatAmount(JobDetails?.salary?.yearly?.max)} ${
+                        value: ` ${
                           JobDetails?.salary?.yearly?.currency
-                        }`,
+                        } ${useCustomFormatAmount(
+                          Number(JobDetails?.salary?.yearly?.min),
+                        )} - ${useCustomFormatAmount(
+                          Number(JobDetails?.salary?.yearly?.max),
+                        )} `,
                       },
                       {
                         icon: 'signal-cellular-3',
-                        label: 'Level',
+                        label: 'Experience',
                         value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
                       },
                       {
@@ -619,27 +635,27 @@ const JobDetailScreen = ({route}) => {
                                       style={{
                                         flexDirection: 'row',
                                         alignItems: 'center',
+                                        gap: 4,
                                       }}>
-                                      <CustomFormatAmount
-                                        amount={item.salary?.yearly?.min}
-                                      />
-
-                                      <Text style={{color: colors.primary}}>
-                                        {' '}
-                                        -{' '}
-                                      </Text>
-                                      <CustomFormatAmount
-                                        amount={item?.salary?.yearly?.max}
-                                      />
-
                                       <Text
                                         style={{
-                                          fontSize: 10,
-                                          fontWeight: 'bold',
-                                          color: 'gray',
+                                          fontSize: 11,
+                                          color: colors.primary,
                                         }}>
-                                        {' '}
                                         {item.salary.yearly.currency}
+                                      </Text>
+                                      <Text
+                                        style={{
+                                          color: colors.primary,
+                                          fontSize: 11,
+                                        }}>
+                                        {useCustomFormatAmount(
+                                          Number(item.salary?.yearly?.min),
+                                        )}{' '}
+                                        -{' '}
+                                        {useCustomFormatAmount(
+                                          Number(item?.salary?.yearly?.max),
+                                        )}
                                       </Text>
                                     </View>
                                   </View>

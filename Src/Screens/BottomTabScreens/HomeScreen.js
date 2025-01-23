@@ -26,9 +26,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
-import CustomFormatAmount from '../../Constant/CustomFormatAmount';
 import {Toast} from 'react-native-toast-notifications';
 import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
+import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -171,19 +171,28 @@ const HomeScreen = () => {
           </View>
 
           <View style={JobCardStyle.location}>
-            {jobdata && jobdata.job_location && (
+            {jobdata?.experience_level && (
               <>
-                <IconButton
-                  icon="map-marker"
-                  iconColor={colors.primary}
-                  size={18}
-                  style={{padding: 0, marginLeft: -10, height: 20}}
-                />
+                <Ionicons name="briefcase" size={14} color="#004466" />
                 <Text style={JobCardStyle.jobCardLocation}>
-                  {jobdata.job_location.join(', ')}
+                  {jobdata?.experience_level &&
+                    `${jobdata.experience_level.minYear || ''} - ${
+                      jobdata.experience_level.maxYear || ''
+                    } years`}
                 </Text>
               </>
             )}
+            {jobdata &&
+              jobdata.job_location &&
+              jobdata.job_location.length > 0 && (
+                <>
+                  <Ionicons name="location" size={14} color="#004466" />
+                  <Text style={JobCardStyle.jobCardLocation}>
+                    {jobdata.job_location.slice(0, 2).join(', ')}
+                    {jobdata.job_location.length > 2 ? '...' : ''}
+                  </Text>
+                </>
+              )}
           </View>
 
           <View style={JobCardStyle.line}></View>
@@ -192,17 +201,18 @@ const HomeScreen = () => {
             {jobdata?.salary && jobdata.salary.yearly && (
               <View style={JobCardStyle.experienceContainer}>
                 <Ionicons name="cash" size={14} color="#004466" />
+                {jobdata.salary.yearly.currency && (
+                  <Text
+                    style={{fontSize: 10, fontWeight: 'bold', color: 'gray'}}>
+                    {jobdata.salary.yearly.currency}
+                  </Text>
+                )}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <CustomFormatAmount amount={jobdata.salary?.yearly?.min} />
-                  <Text style={{color: colors.primary}}> - </Text>
-                  <CustomFormatAmount amount={jobdata.salary?.yearly?.max} />
-
-                  {jobdata.salary.yearly.currency && (
-                    <Text
-                      style={{fontSize: 10, fontWeight: 'bold', color: 'gray'}}>
-                      {jobdata.salary.yearly.currency}
-                    </Text>
-                  )}
+                  <Text style={{color: 'gray', fontSize: 11,fontWeight:'bold'}}>
+                    {useCustomFormatAmount(Number(jobdata.salary?.yearly?.min))} -{' '}
+                    {useCustomFormatAmount(Number(jobdata.salary?.yearly?.max))}
+                  </Text>
+                  {/* <CustomFormatAmount amount={jobdata.salary?.yearly?.max} /> */}
                 </View>
               </View>
             )}

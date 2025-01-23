@@ -18,6 +18,7 @@ import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {Toast} from 'react-native-toast-notifications';
+import useCustomFormatAmount from '../CustomHooks/CustomFormatAmount';
 
 const CustomInvitePage = ({route}) => {
   const dispatch = useDispatch();
@@ -107,17 +108,6 @@ const CustomInvitePage = ({route}) => {
       {cancelable: false},
     );
   };
-  function formatAmount(value) {
-    if (value >= 10000000) {
-      return (value / 10000000).toFixed(1) + ' Cr';
-    } else if (value >= 100000) {
-      return (value / 100000).toFixed(1) + ' Lac';
-    } else if (value >= 1000) {
-      return (value / 1000).toFixed(1) + ' K';
-    } else {
-      return value.toString();
-    }
-  }
 
   return (
     <View style={styles.mainContainer}>
@@ -161,9 +151,14 @@ const CustomInvitePage = ({route}) => {
             <View style={styles.experienceContainer}>
               <Ionicons name="cash" size={14} color={colors.primary} />
               <Text style={styles.detailsText}>
-                {formatAmount(inviteData?.job?.salary?.yearly?.min)} -
-                {formatAmount(inviteData?.job?.salary?.yearly?.max)}{' '}
-                {inviteData?.job?.salary?.yearly?.currency}
+                {inviteData?.job?.salary?.yearly?.currency}{' '}
+                {useCustomFormatAmount(
+                  Number(inviteData?.job?.salary?.yearly?.min),
+                )}{' '}
+                -{' '}
+                {useCustomFormatAmount(
+                  Number(inviteData?.job?.salary?.yearly?.max),
+                )}
               </Text>
             </View>
           )}
@@ -250,7 +245,7 @@ const CustomInvitePage = ({route}) => {
             </Text>
           </View>
         )}
-
+        {console.log(inviteData?.job?.id)}
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('JobDetailScreen', {

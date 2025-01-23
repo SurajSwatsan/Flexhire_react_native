@@ -66,6 +66,8 @@ const JobCardStyle = StyleSheet.create({
     fontWeight: '600',
   },
   location: {
+    paddingVertical: 6,
+    gap: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -95,7 +97,7 @@ const JobCardStyle = StyleSheet.create({
   jobCardLocation: {
     fontSize: 11,
     color: '#555',
-    marginLeft: -4,
+    marginRight: 8,
   },
   jobPostedDate: {
     fontSize: 12,

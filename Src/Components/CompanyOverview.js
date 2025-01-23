@@ -24,8 +24,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../Services/baseAPI';
 import moment from 'moment';
 import JobCardStyle from '../Global_CSS/JobCardStyle';
-import CustomFormatAmount from '../Constant/CustomFormatAmount';
 import WebView from 'react-native-webview';
+import useCustomFormatAmount from '../CustomHooks/CustomFormatAmount';
 
 const {width, height} = Dimensions.get('window'); // Get the screen width
 
@@ -288,16 +288,12 @@ const CompanyOverviewScreen = ({route}) => {
                             <View style={JobCardStyle.location}>
                               {jobData?.job_location && (
                                 <>
-                                  <IconButton
-                                    icon="map-marker"
-                                    iconColor={colors.primary}
-                                    size={18}
-                                    style={{
-                                      padding: 0,
-                                      marginLeft: -10,
-                                      height: 20,
-                                    }}
+                                  <Ionicons
+                                    name="location"
+                                    size={14}
+                                    color="#004466"
                                   />
+
                                   <Text style={JobCardStyle.jobCardLocation}>
                                     {jobData.job_location.join(', ')}
                                   </Text>
@@ -319,27 +315,30 @@ const CompanyOverviewScreen = ({route}) => {
                                     style={{
                                       flexDirection: 'row',
                                       alignItems: 'center',
+                                      gap: 4,
                                     }}>
-                                    <CustomFormatAmount
-                                      amount={jobData.salary.yearly.min}
-                                    />
-                                    <Text style={{color: colors.primary}}>
-                                      {' '}
-                                      -{' '}
-                                    </Text>
-                                    <CustomFormatAmount
-                                      amount={jobData.salary.yearly.max}
-                                    />
                                     {jobData.salary.yearly.currency && (
                                       <Text
                                         style={{
-                                          fontSize: 10,
-                                          fontWeight: 'bold',
-                                          color: 'gray',
+                                          fontSize: 11,
+                                          color: colors.primary,
                                         }}>
                                         {jobData.salary.yearly.currency}
                                       </Text>
                                     )}
+                                    <Text
+                                      style={{
+                                        color: colors.primary,
+                                        fontSize: 11,
+                                      }}>
+                                      {useCustomFormatAmount(
+                                        Number(jobData.salary.yearly.min),
+                                      )}
+                                      {' - '}
+                                      {useCustomFormatAmount(
+                                        Number(jobData.salary.yearly.max),
+                                      )}
+                                    </Text>
                                   </View>
                                 </View>
                               )}
@@ -730,16 +729,12 @@ const CompanyOverviewScreen = ({route}) => {
                           <View style={JobCardStyle.location}>
                             {jobData?.job_location && (
                               <>
-                                <IconButton
-                                  icon="map-marker"
-                                  iconColor={colors.primary}
-                                  size={18}
-                                  style={{
-                                    padding: 0,
-                                    marginLeft: -10,
-                                    height: 20,
-                                  }}
+                                <Ionicons
+                                  name="location"
+                                  size={14}
+                                  color="#004466"
                                 />
+
                                 <Text style={JobCardStyle.jobCardLocation}>
                                   {jobData.job_location.join(', ')}
                                 </Text>
@@ -761,27 +756,30 @@ const CompanyOverviewScreen = ({route}) => {
                                   style={{
                                     flexDirection: 'row',
                                     alignItems: 'center',
+                                    gap: 4,
                                   }}>
-                                  <CustomFormatAmount
-                                    amount={jobData.salary.yearly.min}
-                                  />
-                                  <Text style={{color: colors.primary}}>
-                                    {' '}
-                                    -{' '}
-                                  </Text>
-                                  <CustomFormatAmount
-                                    amount={jobData.salary.yearly.max}
-                                  />
                                   {jobData.salary.yearly.currency && (
                                     <Text
                                       style={{
-                                        fontSize: 10,
-                                        fontWeight: 'bold',
-                                        color: 'gray',
+                                        fontSize: 11,
+                                        color: colors.primary,
                                       }}>
                                       {jobData.salary.yearly.currency}
                                     </Text>
                                   )}
+                                  <Text
+                                    style={{
+                                      color: colors.primary,
+                                      fontSize: 11,
+                                    }}>
+                                    {useCustomFormatAmount(
+                                      Number(jobData.salary.yearly.min),
+                                    )}
+                                    {' - '}
+                                    {useCustomFormatAmount(
+                                      Number(jobData.salary.yearly.max),
+                                    )}
+                                  </Text>
                                 </View>
                               </View>
                             )}
