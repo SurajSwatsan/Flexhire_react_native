@@ -24,11 +24,14 @@ import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import Slider from '@react-native-community/slider';
 import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
+import JobListLoader from '../../Loaders/JobListLoader';
+import JobDetailsLoader from '../../Loaders/JobDetailsLoader';
 
 const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
   const {searchQuery} = route?.params || '';
   const [id, setId] = useState(null);
+  const [jobId, setJobId] = useState();
   const [query, setQuery] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
   const [searchQueryData, setSearchQueryData] = useState('');
@@ -81,7 +84,6 @@ const JobScreen = ({route}) => {
       try {
         const userId = await AsyncStorage.getItem('user_data');
         setId(userId);
-
         if (userId) {
           if (JobList.length === 0) {
             dispatch(GetJobList(userId, 1));
@@ -138,6 +140,8 @@ const JobScreen = ({route}) => {
   // Function to create a lookup map from SavedJobs
 
   const toggleSaveJob = jobId => {
+    setJobId(jobId);
+
     const requestData = {job: jobId, user_id: id};
     dispatch(SaveJob(requestData)); // Pass only the job ID
   };
@@ -483,6 +487,58 @@ const JobScreen = ({route}) => {
       }
     }
   };
+  if (
+    isLoading ||
+    // id !== jobListToRender?.id ||
+    Object.keys(jobListToRender).length === 0
+  ) {
+    return (
+      <>
+        <View style={{
+            flexDirection: 'row',
+            backgroundColor: colors.primary,
+            height: 70,
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 20,
+            justifyContent: 'center',
+            paddingHorizontal: 12,
+            gap: 8,
+            // marginBottom: 12,
+          }}>
+          <View style={styles.searchbarContainer}>
+            <TextInput
+              placeholder="Search"
+              // onChangeText={setQuery}
+              onChangeText={text => {
+                if (text.length === 0) {
+                  setJobListToRender(JobList);
+                }
+                setQuery(text); // Update query state
+                // SearchJobs(text); // Trigger dynamic search
+              }}
+              value={query}
+              style={styles.searchbar}
+              placeholderTextColor="#000"
+            />
+            <IconButton
+              style={styles.searchIcon}
+              icon="magnify"
+              iconColor="#004466"
+              size={26}
+              onPress={() => SearchJobs(query)}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.filterIconContainer}
+            onPress={openFiltermodal}>
+            <Ionicons name="filter-outline" size={32} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        <JobListLoader />
+      </>
+    );
+  }
   return (
     <View style={styles.bodycontainer}>
       <View style={styles.container}>
@@ -516,23 +572,6 @@ const JobScreen = ({route}) => {
         </TouchableOpacity>
       </View>
       <>
-        {/* isLoading ? (
-          <Spinner
-            visible={isLoading}
-            textContent={'Believe in the journey – we’re here for you!'}
-            textStyle={styles.spinnerTextStyle}
-            overlayColor="rgba(0, 0, 0, 0.5)"
-            animation="fade"
-            size="large"
-            customIndicator={
-              <Image
-                source={require('../../Assets/CompanyLogo/Swatsan.png')}
-                style={GlobalStyle.loaderimage}
-                resizeMode="center"
-              />
-            }
-          />
-        ) : */}
         {jobListToRender?.length > 0 ? (
           <FlatList
             data={jobListToRender}

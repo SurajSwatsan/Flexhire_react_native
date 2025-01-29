@@ -114,7 +114,7 @@ const JobViewController = () => {
   };
 
   const ApplyJob = requestData => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
+    // dispatch({type: 'LOADING', payload: true});
 
     try {
       const response = await instance.post(`/job-application/`, requestData);
@@ -202,7 +202,7 @@ const JobViewController = () => {
   };
 
   const SaveJob = requestData => async dispatch => {
-    dispatch({type: 'LOADING', payload: true});
+    // dispatch({type: 'LOADING', payload: true});
 
     try {
       const response = await axios.post(

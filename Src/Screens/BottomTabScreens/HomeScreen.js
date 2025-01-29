@@ -29,6 +29,9 @@ import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import {Toast} from 'react-native-toast-notifications';
 import UserProfileViewController from '../../Redux/Action/UserProfileViewController';
 import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
+import HomePageLoader from '../../Loaders/HomePageLoader';
+import JobCardLoader from '../../Loaders/JobCardLoader';
+import JobListLoader from '../../Loaders/JobListLoader';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -208,8 +211,10 @@ const HomeScreen = () => {
                   </Text>
                 )}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={{color: 'gray', fontSize: 11,fontWeight:'bold'}}>
-                    {useCustomFormatAmount(Number(jobdata.salary?.yearly?.min))} -{' '}
+                  <Text
+                    style={{color: 'gray', fontSize: 11, fontWeight: 'bold'}}>
+                    {useCustomFormatAmount(Number(jobdata.salary?.yearly?.min))}{' '}
+                    -{' '}
                     {useCustomFormatAmount(Number(jobdata.salary?.yearly?.max))}
                   </Text>
                   {/* <CustomFormatAmount amount={jobdata.salary?.yearly?.max} /> */}
@@ -262,8 +267,11 @@ const HomeScreen = () => {
               />
             </View>
           </View>
-
           <ScrollView style={{flex: 1, marginVertical: 12}}>
+            {/* <HomePageLoader /> */}
+            {/* <JobCardLoader/> */}
+            {/* <JobListLoader/> */}
+
             <TouchableOpacity
               onPress={() => navigation.navigate('userProfileScreen')}
               style={styles.profileContainer}>

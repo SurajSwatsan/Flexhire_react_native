@@ -19,6 +19,8 @@ const SplashScreen = () => {
     const initializeApp = async () => {
       try {
         const token = await AsyncStorage.getItem('token'); // Get token from AsyncStorage
+        console.log('Token:', token);
+        
         if (token) {
           const _user_id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
           setId(_user_id);
