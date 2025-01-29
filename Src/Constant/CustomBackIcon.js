@@ -1,8 +1,7 @@
 import React from 'react';
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons'; // You can use any icon library
-
+import Icon from 'react-native-vector-icons/Ionicons';
 const CustomHeader = () => {
   const navigation = useNavigation();
 
@@ -26,11 +25,10 @@ const styles = StyleSheet.create({
   iconContainer: {
     backgroundColor: '#f1f1f1',
     padding: 8,
-
-    borderRadius: 30, // Makes the container circular
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1, // Border width
+    borderWidth: 1,
     borderColor: 'black',
   },
 });
