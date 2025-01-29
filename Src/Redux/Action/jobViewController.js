@@ -211,7 +211,7 @@ const JobViewController = () => {
       const data = JSON.parse(jsonString);
 
       dispatch({type: 'JOB_SAVED_SUCCESSFULLY', payload: requestData.job});
-      console.log('requestData.job', requestData.job);
+      console.log('requestData.job', requestData);
 
       // // dispatch(GetJobList(requestData.user_id, pageNo));
       // // dispatch(GetFilterdJobs(requestData.user_id, pageNo));

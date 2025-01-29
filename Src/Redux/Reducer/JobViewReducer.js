@@ -88,11 +88,9 @@ const jobReducer = (state = initialState, action) => {
     case 'JOB_SAVED_SUCCESSFULLY':
       console.log(
         'state.FilterJobList',
-        state.FilterJobList.map(job => ({
-          id: job.id,
-          is_saved: job.is_saved,
-        })),
+        state.FilterJobList
       );
+      console.log('action.payload', action.payload);
 
       return {
         ...state,
