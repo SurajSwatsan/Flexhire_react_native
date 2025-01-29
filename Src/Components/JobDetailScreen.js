@@ -406,11 +406,8 @@ const JobDetailScreen = ({route}) => {
                 </Text>
               )}
               <View style={styles.locationContainer}>
-                <IconButton
-                  icon="map-marker"
-                  iconColor={colors.primary}
-                  style={{padding: 0}}
-                />
+                <Ionicons name="location" size={18} color={colors.primary} />
+
                 {JobDetails?.job_location?.map((location, idx) => (
                   <Text key={idx} style={styles.locationText}>
                     {location}
@@ -717,6 +714,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    gap: 4,
   },
   locationText: {
     fontSize: 12,

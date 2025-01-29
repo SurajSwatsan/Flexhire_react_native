@@ -43,12 +43,6 @@ const SavedJobScreen = () => {
     getUserData();
   }, [isFocus]);
 
-  const isBookmarked = job_id => {
-    return Array.isArray(SavedJobs?.saved_jobs)
-      ? SavedJobs.saved_jobs.some(savedJob => savedJob.job?.id === job_id)
-      : false;
-  };
-
   const toggleBookmark = job_id => {
     const data = {
       job: job_id,
@@ -144,11 +138,7 @@ const SavedJobScreen = () => {
                     onPress={() => toggleBookmark(savedJob.job.id)}
                     style={styles.bookmarkIconContainer}>
                     <Ionicons
-                      name={
-                        isBookmarked(savedJob?.job?.id)
-                          ? 'bookmark'
-                          : 'bookmark-outline'
-                      }
+                      name={savedJob?.job?.id ? 'bookmark' : 'bookmark-outline'}
                       size={22}
                       color={colors.primary}
                     />

@@ -216,10 +216,6 @@ const JobViewController = () => {
       dispatch({type: 'JOB_SAVED_SUCCESSFULLY', payload: requestData.job});
       console.log('requestData.job', requestData);
 
-      // // dispatch(GetJobList(requestData.user_id, pageNo));
-      // // dispatch(GetFilterdJobs(requestData.user_id, pageNo));
-      // dispatch(GetJobDetails(requestData.job, requestData.user_id));
-      // dispatch(GetHomePageData(requestData.user_id));
       dispatch(GetSavedJobs(requestData.user_id));
 
       dispatch({type: 'LOADING', payload: false});
