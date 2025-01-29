@@ -118,10 +118,6 @@ const JobViewController = () => {
 
     try {
       const response = await instance.post(`/job-application/`, requestData);
-      // console.log(
-      //   '****************************job-application response***************************',
-      // );
-      // console.log(response);
 
       const jsonString = JSON.stringify(response.data);
       const data = JSON.parse(jsonString);
@@ -129,6 +125,13 @@ const JobViewController = () => {
       dispatch({type: 'JOB_APPLIED_SUCCESSFULLY', payload: data});
 
       dispatch({type: 'LOADING', payload: false});
+      Toast.show('Application submitted successfully!', {
+        type: 'success',
+        placement: 'top',
+        duration: 3000,
+        offset: 50,
+        animationType: 'slide-in',
+      });
     } catch (error) {
       console.log('error', error.response);
 

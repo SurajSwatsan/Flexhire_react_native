@@ -19,8 +19,8 @@ const GlobalStyle = StyleSheet.create({
   headerStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 12,
-    marginVertical: 18,
+    paddingHorizontal: 12,
+    marginVertical: 0,
     justifyContent: 'space-between',
   },
   headerText: {

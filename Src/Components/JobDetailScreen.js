@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,32 +13,24 @@ import {
 import CustomHeader from '../Constant/CustomBackIcon';
 import GlobalStyle from '../Global_CSS/GlobalStyle';
 import {colors} from '../Global_CSS/TheamColors';
-import {ActivityIndicator, IconButton} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReviewPage from '../Constant/CustomReviewPage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import JobViewController from '../Redux/Action/jobViewController';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {BASE_URL} from '../Services/baseAPI';
-import {Toast} from 'react-native-toast-notifications';
-import JobCardStyle from '../Global_CSS/JobCardStyle';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
 import useCustomFormatAmount from '../CustomHooks/CustomFormatAmount';
+import JobDetailsLoader from '../Loaders/JobDetailsLoader';
 
 const JobDetailScreen = ({route}) => {
-  const {job_id} = route.params; // Get company data from params
-
+  const {job_id} = route.params;
   const [activeTab, setActiveTab] = useState('About');
-  const [id, setId] = useState();
-  const [applyButtonColor, setApplyButtonColor] = useState('#b3d7ff');
+  const [user_id, setUserId] = useState();
   const [jobId, setJobId] = useState();
-  const [selectedJobId, setSelectedJobId] = useState(null);
-  const navigation = useNavigation(); // Get the navigation prop
-  const [isApplied, setIsApplied] = useState(false);
   const dispatch = useDispatch();
-  const scrollViewRef = useRef(null);
   const {GetJobDetails, ApplyJob, SaveJob} = JobViewController();
   const {JobDetails, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
@@ -46,80 +38,37 @@ const JobDetailScreen = ({route}) => {
   const [coverLetter, setCoverLetter] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  // useEffect(() => {
-  //   console.log("____",JobDetails?.is_saved);
-
-  // }, [JobDetails]);
   useEffect(() => {
+    dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
     const getUserData = async () => {
       try {
-        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
-        setId(id);
+        const id = await AsyncStorage.getItem('user_data');
+        setUserId(id);
         setJobId(job_id);
-
         dispatch(GetJobDetails(job_id, id));
-        // dispatch(GetJobApplications(id));
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
     };
     dispatch({type: 'CLEAR_JOB_LIST', payload: ''});
+
     getUserData();
   }, [isFocus]);
 
-  // const jobIds = Array.isArray(JobApplications)
-  //   ? JobApplications.map(application => application?.job?.id)
-  //   : [];
-
-  // console.log('JobDetails', JSON.stringify(JobDetails, null, 2));
-
-  // const handleApply = () => {
-  //   const data = {
-  //     user_id: id,
-  //     job: JobDetails.id,
-  //     cover_letter: coverLetter,
-  //   };
-  //   console.log(data);
-  //   // dispatch(ApplyJob(data));
-  //   setIsModalVisible(false);
-  // };
-
   const handleApply = () => {
     const data = {
-      user_id: id,
+      user_id: user_id,
       job: JobDetails.id,
       cover_letter: coverLetter,
     };
 
     dispatch(ApplyJob(data))
       .then(() => {
-        // Update local state
-        setIsApplied(true);
-        setApplyButtonColor('green');
-        JobDetails.is_applied = true; // Optionally update JobDetails
-
-        // Show success toast
-        Toast.show('Application submitted successfully!', {
-          type: 'success',
-          placement: 'top',
-          duration: 3000,
-          offset: 50,
-          animationType: 'slide-in',
-        });
-
-        setIsModalVisible(false); // Close the modal
+        JobDetails.is_applied = true;
+        setIsModalVisible(false);
       })
       .catch(error => {
         console.error('Error applying for the job:', error);
-
-        // Show error toast
-        Toast.show('Failed to apply for the job. Please try again.', {
-          type: 'danger',
-          placement: 'top',
-          duration: 3000,
-          offset: 50,
-          animationType: 'slide-in',
-        });
       });
   };
 
@@ -143,7 +92,7 @@ const JobDetailScreen = ({route}) => {
 
   // Function to create a lookup map from SavedJobs
   const toggleSaveJob = jobId => {
-    const requestData = {job: jobId, user_id: id};
+    const requestData = {job: jobId, user_id: user_id};
     dispatch(SaveJob(requestData)); // Pass only the job ID
   };
 
@@ -322,440 +271,415 @@ const JobDetailScreen = ({route}) => {
         return null;
     }
   };
-  const handleJobCardPress = jobId => {
+  const onRelatedJobClick = jobId => {
     setJobId(jobId);
-    dispatch(GetJobDetails(jobId, id));
-    scrollViewRef.current?.scrollTo({x: 0, y: 0, animated: true});
-
-    // console.log('JobCardPress triggered for ID:', jobId);
+    dispatch(GetJobDetails(jobId, user_id));
   };
+  if (
+    isLoading ||
+    jobId !== JobDetails?.id ||
+    Object.keys(JobDetails).length === 0
+  ) {
+    return (
+      <>
+        <View style={GlobalStyle.headerStyle}>
+          <CustomHeader />
+          <View style={styles.headerRightContainer}>
+            <IconButton
+              icon="bookmark-outline"
+              iconColor={colors.primary}
+              size={32}
+            />
+            <IconButton
+              icon="share-variant-outline"
+              iconColor={colors.primary}
+              size={32}
+              style={styles.icon}
+            />
+          </View>
+        </View>
 
+        <JobDetailsLoader />
+      </>
+    );
+  }
   return (
     <>
       <View style={styles.container}>
-        {/* <Spinner
-          visible={isLoading || jobId != JobDetails?.id}
-          textContent={'Believe in the journey – we’re here for you!'}
-          textStyle={styles.spinnerTextStyle}
-          overlayColor="rgba(0, 0, 0, 0.5)"
-          animation="fade"
-          size="large"
-          customIndicator={
-            <Image
-              source={require('../Assets/CompanyLogo/Swatsan.png')}
-              style={GlobalStyle.loaderimage}
-              resizeMode="center"
+        <View style={GlobalStyle.headerStyle}>
+          <CustomHeader />
+          <View style={styles.headerRightContainer}>
+            <IconButton
+              icon={JobDetails?.is_saved ? 'bookmark' : 'bookmark-outline'}
+              iconColor={colors.primary}
+              size={32}
+              onPress={() => toggleSaveJob(JobDetails?.id)}
             />
-          }></Spinner> */}
-        {jobId == JobDetails?.id && (
-          <>
-            <View style={GlobalStyle.headerStyle}>
-              <CustomHeader />
-              <View style={styles.headerRightContainer}>
-                <IconButton
-                  icon={JobDetails?.is_saved ? 'bookmark' : 'bookmark-outline'}
-                  iconColor={colors.primary}
-                  size={32}
-                  onPress={() => toggleSaveJob(JobDetails?.id)}
-                />
 
-                <IconButton
-                  icon="share-variant-outline"
-                  iconColor={colors.primary}
-                  size={32}
-                  style={styles.icon}
-                  onPress={() => setModalVisible(true)}
-                />
-              </View>
-              {/* Modal for sharing social media icons */}
-              <Modal
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}>
-                <View style={styles.SharemodalBackground}>
-                  <View style={styles.SharemodalContent}>
-                    <Text style={styles.SharemodalTitle}>Share this on:</Text>
+            <IconButton
+              icon="share-variant-outline"
+              iconColor={colors.primary}
+              size={32}
+              style={styles.icon}
+              onPress={() => setModalVisible(true)}
+            />
+          </View>
+          {/* Modal for sharing social media icons */}
+          <Modal
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}>
+            <View style={styles.SharemodalBackground}>
+              <View style={styles.SharemodalContent}>
+                <Text style={styles.SharemodalTitle}>Share this on:</Text>
 
-                    {/* Social Media Icons */}
-                    <View style={styles.socialIconsContainer}>
-                      <TouchableOpacity onPress={() => handleShare('whatsapp')}>
-                        <Ionicons
-                          name="logo-whatsapp"
-                          size={40}
-                          color={'#25D366'}
-                        />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity onPress={() => handleShare('facebook')}>
-                        <Ionicons
-                          name="logo-facebook"
-                          size={40}
-                          color={'#1877F2'}
-                        />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity onPress={() => handleShare('twitter')}>
-                        <Ionicons
-                          name="logo-twitter"
-                          size={40}
-                          color={'#1DA1F2'}
-                        />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity onPress={() => handleShare('linkedin')}>
-                        <Ionicons
-                          name="logo-linkedin"
-                          size={40}
-                          color={'#0077B5'}
-                        />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        onPress={() => handleShare('instagram')}>
-                        <Ionicons
-                          name="logo-instagram"
-                          size={40}
-                          color={'#E1306C'}
-                        />
-                      </TouchableOpacity>
-                    </View>
-
-                    {/* Close Button */}
-                    <TouchableOpacity onPress={() => setModalVisible(false)}>
-                      <Text style={styles.SharecloseButton}>Close</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Modal>
-            </View>
-            <ScrollView style={styles.scrollView} ref={scrollViewRef}>
-              <View style={styles.companyInfoContainer}>
-                <View style={styles.companyInfo}>
-                  <View style={styles.logoContainer}>
-                    {JobDetails?.company?.logo ? (
-                      <Image
-                        source={{uri: BASE_URL + JobDetails?.company?.logo}}
-                        style={styles.logo}
-                      />
-                    ) : (
-                      <Ionicons
-                        name="business"
-                        size={36}
-                        color="gray"
-                        // style={styles.logo}
-                      />
-                    )}
-                  </View>
-                  <Text style={styles.jobTitle}>
-                    {JobDetails?.job_title?.title}
-                  </Text>
-
-                  {(JobDetails?.company_name ||
-                    JobDetails?.company?.company_name) && (
-                    <Text style={styles.companyName}>
-                      {JobDetails?.company?.company_name
-                        ? JobDetails?.company?.company_name
-                        : JobDetails?.company_name}
-                    </Text>
-                  )}
-                  <View style={styles.locationContainer}>
-                    <IconButton
-                      icon="map-marker"
-                      iconColor={colors.primary}
-                      size={18}
-                      style={{padding: 0, marginLeft: -10, height: 20}}
+                {/* Social Media Icons */}
+                <View style={styles.socialIconsContainer}>
+                  <TouchableOpacity onPress={() => handleShare('whatsapp')}>
+                    <Ionicons
+                      name="logo-whatsapp"
+                      size={40}
+                      color={'#25D366'}
                     />
-                    {JobDetails?.job_location?.map((location, idx) => (
-                      <Text key={idx} style={styles.locationText}>
-                        {location}
-                        {JobDetails?.job_location?.length - 1 !== idx
-                          ? ', '
-                          : ''}
-                      </Text>
-                    ))}
-                  </View>
+                  </TouchableOpacity>
 
-                  <View style={styles.mainfildContainer}>
-                    {[
-                      {
-                        icon: 'cash',
-                        label: 'Salary Range',
-                        value: ` ${
-                          JobDetails?.salary?.yearly?.currency
-                        } ${useCustomFormatAmount(
-                          Number(JobDetails?.salary?.yearly?.min),
-                        )} - ${useCustomFormatAmount(
-                          Number(JobDetails?.salary?.yearly?.max),
-                        )} `,
-                      },
-                      {
-                        icon: 'signal-cellular-3',
-                        label: 'Experience',
-                        value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
-                      },
-                      {
-                        icon: 'account',
-                        label: 'Openings',
-                        value: JobDetails?.openings,
-                      },
-                      {
-                        icon: 'account-group',
-                        label: 'Applications',
-                        value: JobDetails?.applicant_count,
-                      },
-                    ].map((item, index) => (
-                      <View key={index} style={styles.fildContainer}>
-                        <IconButton
-                          icon={item.icon}
-                          iconColor={colors.primary}
-                          size={24}
-                          style={styles.iconstyle}
-                        />
-                        <View style={styles.fildinerContainer}>
-                          <Text style={styles.jobDetails1}>{item.label}</Text>
-                          <Text style={styles.jobDetails}>{item.value}</Text>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
+                  <TouchableOpacity onPress={() => handleShare('facebook')}>
+                    <Ionicons
+                      name="logo-facebook"
+                      size={40}
+                      color={'#1877F2'}
+                    />
+                  </TouchableOpacity>
 
-                  <View style={styles.tabContainer}>
-                    <TouchableOpacity
-                      style={[
-                        styles.tabButton,
-                        activeTab === 'About' && styles.activeTab,
-                      ]}
-                      onPress={() => setActiveTab('About')}>
-                      <Text style={styles.tabText}>About</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.tabButton,
-                        activeTab === 'Company' && styles.activeTab,
-                      ]}
-                      onPress={() => setActiveTab('Company')}>
-                      <Text style={styles.tabText}>Company</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.tabButton,
-                        activeTab === 'Review' && styles.activeTab,
-                      ]}
-                      onPress={() => setActiveTab('Review')}>
-                      <Text style={styles.tabText}>Review</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.contentContainer}>{renderTabs()}</View>
+                  <TouchableOpacity onPress={() => handleShare('twitter')}>
+                    <Ionicons name="logo-twitter" size={40} color={'#1DA1F2'} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => handleShare('linkedin')}>
+                    <Ionicons
+                      name="logo-linkedin"
+                      size={40}
+                      color={'#0077B5'}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => handleShare('instagram')}>
+                    <Ionicons
+                      name="logo-instagram"
+                      size={40}
+                      color={'#E1306C'}
+                    />
+                  </TouchableOpacity>
                 </View>
-                <View style={{flex: 1, minHeight: 50}}>
-                  {JobDetails?.related_jobs?.length > 0 && (
-                    <>
-                      <Text
-                        style={[
-                          styles.jobDescriptionheader,
-                          {
-                            marginHorizontal: 12,
-                            marginBottom: 8,
-                            color: colors.secondary,
-                          },
-                        ]}>
-                        Related Jobs
-                      </Text>
-                      {JobDetails?.related_jobs?.map((item, index) => (
-                        <View
-                          key={item?.id || index}
-                          style={{marginBottom: 14}}>
-                          <TouchableOpacity
-                            key={item.id}
-                            onPress={() => handleJobCardPress(item.id)}>
-                            <View style={styles.jobCard}>
-                              <View style={styles.cardcompanyInfo}>
-                                <View style={styles.companylogo}>
-                                  {item?.company?.logo ? (
-                                    <Image
-                                      source={{
-                                        uri: BASE_URL + item?.company?.logo,
-                                      }}
-                                      style={styles.companyImage}
-                                    />
-                                  ) : (
-                                    <Ionicons
-                                      name="business"
-                                      size={36}
-                                      color="gray"
-                                    />
-                                  )}
-                                  <View style={styles.textName}>
-                                    <Text style={styles.jobTitle}>
-                                      {item?.job_title?.title}
-                                    </Text>
-                                    <Text style={styles.companyName}>
-                                      {/* {item?.company_name} */}
-                                      {item?.company?.company_name
-                                        ? item?.company?.company_name
-                                        : item?.company_name}
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
 
-                              <View style={styles.workModeContainer}>
-                                {item?.work_modes?.map((mode, idx) => (
-                                  <View key={idx} style={styles.workModeChip}>
-                                    <Text style={styles.cardchipText}>
-                                      {mode}
-                                    </Text>
-                                  </View>
-                                ))}
-                              </View>
-
-                              <View style={styles.cardlocation}>
-                                <Ionicons
-                                  name="location-outline"
-                                  size={18}
-                                  color={colors.primary}
-                                />
-
-                                <Text style={styles.jobCardLocation}>
-                                  {item?.job_location.join(', ')}
-                                </Text>
-                              </View>
-
-                              <View style={styles.line}></View>
-
-                              <View style={styles.jobFooter}>
-                                {item?.salary?.yearly && (
-                                  <View style={styles.experienceContainer}>
-                                    <Ionicons
-                                      name="cash"
-                                      size={14}
-                                      color="#004466"
-                                    />
-                                    <View
-                                      style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                      }}>
-                                      <Text
-                                        style={{
-                                          fontSize: 11,
-                                          color: colors.primary,
-                                        }}>
-                                        {item.salary.yearly.currency}
-                                      </Text>
-                                      <Text
-                                        style={{
-                                          color: colors.primary,
-                                          fontSize: 11,
-                                        }}>
-                                        {useCustomFormatAmount(
-                                          Number(item.salary?.yearly?.min),
-                                        )}{' '}
-                                        -{' '}
-                                        {useCustomFormatAmount(
-                                          Number(item?.salary?.yearly?.max),
-                                        )}
-                                      </Text>
-                                    </View>
-                                  </View>
-                                )}
-                                {/* Assuming there's no reviews array in the data, use created_at or other relevant dates */}
-                                <Text style={styles.jobPostedDate}>
-                                  {moment(item?.created_at).fromNow()}{' '}
-                                  {/* Format created_at date */}
-                                </Text>
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      ))}
-                    </>
-                  )}
-                </View>
-              </View>
-            </ScrollView>
-
-            <View style={styles.applyButtonContainer}>
-              <View style={styles.applyButtonContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.applyButton,
-                    {
-                      backgroundColor: JobDetails?.is_applied
-                        ? '#d4edda'
-                        : applyButtonColor, // Dynamically set background color
-                    },
-                  ]}
-                  onPress={() => {
-                    if (JobDetails?.is_applied) {
-                      Toast.show('Already applied for this job!', {
-                        type: 'warning',
-                        placement: 'top',
-                        duration: 4000,
-                        offset: 100,
-                        animationType: 'slide-in',
-                      });
-                    } else {
-                      setIsModalVisible(true); // Open modal when not applied
-                    }
-                  }}
-                  disabled={JobDetails?.is_applied} // Disable button if already applied
-                >
-                  <Text
-                    style={[
-                      styles.applyButtonText,
-                      {
-                        color: JobDetails?.is_applied ? '#28a745' : '#004466',
-                      },
-                    ]}>
-                    {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
-                  </Text>
+                {/* Close Button */}
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Text style={styles.SharecloseButton}>Close</Text>
                 </TouchableOpacity>
               </View>
             </View>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={isModalVisible}
-              onRequestClose={() => setIsModalVisible(false)}>
-              <View style={styles.modalBackground}>
-                <View style={styles.modalContainer}>
-                  <Text style={styles.modalTitle}>Apply for the Job</Text>
-
-                  <Text style={styles.jobTitleModal}>
-                    {JobDetails?.job_title?.title}
-                  </Text>
-
-                  {/* Cover Letter Input */}
-                  <TextInput
-                    placeholderTextColor={colors.primary}
-                    style={[styles.input, styles.coverLetterInput]}
-                    placeholder="Cover Letter"
-                    multiline
-                    value={coverLetter}
-                    onChangeText={setCoverLetter}
-                    color={colors.primary}
+          </Modal>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.companyInfoContainer}>
+            <View style={styles.companyInfo}>
+              <View style={styles.logoContainer}>
+                {JobDetails?.company?.logo ? (
+                  <Image
+                    source={{uri: BASE_URL + JobDetails?.company?.logo}}
+                    style={styles.logo}
                   />
-
-                  {/* Apply Button in Modal */}
-                  <TouchableOpacity
-                    style={styles.applyButton}
-                    onPress={handleApply}>
-                    <Text style={styles.applyButtonText}>Apply</Text>
-                  </TouchableOpacity>
-
-                  {/* Close Modal Button */}
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsModalVisible(false)}>
-                    <Text style={styles.closeButtonText}>Close</Text>
-                  </TouchableOpacity>
-                </View>
+                ) : (
+                  <Ionicons name="business" size={36} color="gray" />
+                )}
               </View>
-            </Modal>
-          </>
-        )}
+              <Text style={styles.jobTitle}>
+                {JobDetails?.job_title?.title}
+              </Text>
+
+              {(JobDetails?.company_name ||
+                JobDetails?.company?.company_name) && (
+                <Text style={styles.companyName}>
+                  {JobDetails?.company?.company_name
+                    ? JobDetails?.company?.company_name
+                    : JobDetails?.company_name}
+                </Text>
+              )}
+              <View style={styles.locationContainer}>
+                <IconButton
+                  icon="map-marker"
+                  iconColor={colors.primary}
+                  style={{padding: 0}}
+                />
+                {JobDetails?.job_location?.map((location, idx) => (
+                  <Text key={idx} style={styles.locationText}>
+                    {location}
+                    {JobDetails?.job_location?.length - 1 !== idx ? ', ' : ''}
+                  </Text>
+                ))}
+              </View>
+
+              <View style={styles.mainfildContainer}>
+                {[
+                  {
+                    icon: 'cash',
+                    label: 'Salary Range',
+                    value: ` ${
+                      JobDetails?.salary?.yearly?.currency
+                    } ${useCustomFormatAmount(
+                      Number(JobDetails?.salary?.yearly?.min),
+                    )} - ${useCustomFormatAmount(
+                      Number(JobDetails?.salary?.yearly?.max),
+                    )} `,
+                  },
+                  {
+                    icon: 'signal-cellular-3',
+                    label: 'Experience',
+                    value: `${JobDetails?.experience_level?.minYear} - ${JobDetails?.experience_level?.maxYear} Years`,
+                  },
+                  {
+                    icon: 'account',
+                    label: 'Openings',
+                    value: JobDetails?.openings,
+                  },
+                  {
+                    icon: 'account-group',
+                    label: 'Applications',
+                    value: JobDetails?.applicant_count,
+                  },
+                ].map((item, index) => (
+                  <View key={index} style={styles.fildContainer}>
+                    <IconButton
+                      icon={item.icon}
+                      iconColor={colors.primary}
+                      size={24}
+                      style={styles.iconstyle}
+                    />
+                    <View style={styles.fildinerContainer}>
+                      <Text style={styles.jobDetails1}>{item.label}</Text>
+                      <Text style={styles.jobDetails}>{item.value}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.tabContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'About' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('About')}>
+                  <Text style={styles.tabText}>About</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'Company' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('Company')}>
+                  <Text style={styles.tabText}>Company</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'Review' && styles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab('Review')}>
+                  <Text style={styles.tabText}>Review</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.contentContainer}>{renderTabs()}</View>
+            </View>
+            <View style={{flex: 1, minHeight: 50}}>
+              {JobDetails?.related_jobs?.length > 0 && (
+                <>
+                  <Text
+                    style={[
+                      styles.jobDescriptionheader,
+                      {
+                        marginHorizontal: 12,
+                        marginBottom: 8,
+                        color: colors.secondary,
+                      },
+                    ]}>
+                    Related Jobs
+                  </Text>
+                  {JobDetails?.related_jobs?.map((item, index) => (
+                    <View key={item?.id || index} style={{marginBottom: 14}}>
+                      <TouchableOpacity
+                        key={item.id}
+                        onPress={() => onRelatedJobClick(item.id)}>
+                        <View style={styles.jobCard}>
+                          <View style={styles.cardcompanyInfo}>
+                            <View style={styles.companylogo}>
+                              {item?.company?.logo ? (
+                                <Image
+                                  source={{
+                                    uri: BASE_URL + item?.company?.logo,
+                                  }}
+                                  style={styles.companyImage}
+                                />
+                              ) : (
+                                <Ionicons
+                                  name="business"
+                                  size={36}
+                                  color="gray"
+                                />
+                              )}
+                              <View style={styles.textName}>
+                                <Text style={styles.jobTitle}>
+                                  {item?.job_title?.title}
+                                </Text>
+                                <Text style={styles.companyName}>
+                                  {item?.company?.company_name
+                                    ? item?.company?.company_name
+                                    : item?.company_name}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          <View style={styles.workModeContainer}>
+                            {item?.work_modes?.map((mode, idx) => (
+                              <View key={idx} style={styles.workModeChip}>
+                                <Text style={styles.cardchipText}>{mode}</Text>
+                              </View>
+                            ))}
+                          </View>
+
+                          <View style={styles.cardlocation}>
+                            <Ionicons
+                              name="location-outline"
+                              size={18}
+                              color={colors.primary}
+                            />
+
+                            <Text style={styles.jobCardLocation}>
+                              {item?.job_location.join(', ')}
+                            </Text>
+                          </View>
+
+                          <View style={styles.line}></View>
+
+                          <View style={styles.jobFooter}>
+                            {item?.salary?.yearly && (
+                              <View style={styles.experienceContainer}>
+                                <Ionicons
+                                  name="cash"
+                                  size={14}
+                                  color="#004466"
+                                />
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                  }}>
+                                  <Text
+                                    style={{
+                                      fontSize: 11,
+                                      color: colors.primary,
+                                    }}>
+                                    {item.salary.yearly.currency}
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      color: colors.primary,
+                                      fontSize: 11,
+                                    }}>
+                                    {useCustomFormatAmount(
+                                      Number(item.salary?.yearly?.min),
+                                    )}{' '}
+                                    -{' '}
+                                    {useCustomFormatAmount(
+                                      Number(item?.salary?.yearly?.max),
+                                    )}
+                                  </Text>
+                                </View>
+                              </View>
+                            )}
+                            <Text style={styles.jobPostedDate}>
+                              {moment(item?.created_at).fromNow()}{' '}
+                            </Text>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </>
+              )}
+            </View>
+          </View>
+        </ScrollView>
+
+        <View style={styles.applyButtonContainer}>
+          <View style={styles.applyButtonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.applyButton,
+                {
+                  backgroundColor: JobDetails?.is_applied
+                    ? '#d4edda'
+                    : '#b3d7ff',
+                },
+              ]}
+              onPress={() => {
+                setIsModalVisible(true);
+              }}
+              disabled={JobDetails?.is_applied}>
+              <Text
+                style={[
+                  styles.applyButtonText,
+                  {
+                    color: JobDetails?.is_applied ? '#28a745' : '#004466',
+                  },
+                ]}>
+                {JobDetails?.is_applied ? 'Applied' : 'Apply Now'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => setIsModalVisible(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Apply for the Job</Text>
+
+              <Text style={styles.jobTitleModal}>
+                {JobDetails?.job_title?.title}
+              </Text>
+
+              {/* Cover Letter Input */}
+              <TextInput
+                placeholderTextColor={colors.primary}
+                style={[styles.input, styles.coverLetterInput]}
+                placeholder="Cover Letter"
+                multiline
+                value={coverLetter}
+                onChangeText={setCoverLetter}
+                color={colors.primary}
+              />
+
+              {/* Apply Button in Modal */}
+              <TouchableOpacity
+                style={styles.applyButton}
+                onPress={handleApply}>
+                <Text style={styles.applyButtonText}>Apply</Text>
+              </TouchableOpacity>
+
+              {/* Close Modal Button */}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </>
   );
@@ -768,13 +692,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
-  icon: {
-    // justifyContent: 'flex-end',
-  },
 
   headerRightContainer: {
     flexDirection: 'row',
-    // gap: 18,
   },
   scrollView: {
     flex: 1,
@@ -792,6 +712,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   locationContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
@@ -809,10 +730,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between', // Adjusts space between items
+    justifyContent: 'space-between',
   },
   fildContainer: {
-    width: '48%', // Ensures two items per row, adjustable for spacing
+    width: '48%',
     marginBottom: 10, // Space between rows
     flexDirection: 'row',
     alignItems: 'center',
@@ -837,7 +758,6 @@ const styles = StyleSheet.create({
   },
   companyInfo: {
     top: -40,
-    // marginHorizontal: 12,
   },
   jobDetails: {
     fontSize: 12,
@@ -859,7 +779,6 @@ const styles = StyleSheet.create({
     borderColor: colors.lightgaryText,
     backgroundColor: colors.cardBgcolor,
     borderRadius: 100, // Ensures circular shape
-    // top: -60,
     width: 80,
     height: 80,
     overflow: 'hidden', // Ensures the image does not exceed the container bounds
@@ -878,7 +797,6 @@ const styles = StyleSheet.create({
     // borderTopWidth: 1,
   },
   applyButton: {
-    // marginTop: 24,
     marginBottom: 12,
     padding: 12,
     backgroundColor: colors.primary,
@@ -886,13 +804,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 18,
   },
-
-  // displayContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   alignItems: 'center',
-  //   marginBottom: 12,
-  // },
 
   applyButtonText: {
     color: 'white',
