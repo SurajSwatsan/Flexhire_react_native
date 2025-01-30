@@ -596,7 +596,7 @@ const JobScreen = ({route}) => {
                           style={JobCardStyle.companyImage}
                         />
                       ) : (
-                        <Ionicons name="business" size={42} color="gray" />
+                        <Ionicons name="business" size={42} color="gray" style={JobCardStyle.companyImage}/>
                       )}
                       <View style={JobCardStyle.textName}>
                         <Text style={JobCardStyle.jobTitle}>
