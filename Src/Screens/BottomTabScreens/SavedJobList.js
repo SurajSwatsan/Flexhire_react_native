@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
+import JobListLoader from '../../Loaders/JobListLoader';
 const {width} = Dimensions.get('window'); // Get the screen width
 
 const SavedJobScreen = () => {
@@ -25,7 +26,7 @@ const SavedJobScreen = () => {
 
   const dispatch = useDispatch();
   const {GetSavedJobs, SaveJob} = JobViewController();
-  const {SavedJobs} = useSelector(state => state.job);
+  const {SavedJobs, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const navigation = useNavigation();
 
@@ -50,11 +51,14 @@ const SavedJobScreen = () => {
     };
     dispatch(SaveJob(data, 'HomeScreen'));
   };
+  if (isLoading || !SavedJobs) {
+    return <JobListLoader />;
+  }
   return (
     <View style={styles.container}>
       <ScrollView style={styles.cardContainer}>
         {Array.isArray(SavedJobs?.saved_jobs) &&
-        SavedJobs.saved_jobs.length > 0 ? (
+        SavedJobs?.saved_jobs?.length > 0 ? (
           SavedJobs.saved_jobs.map(savedJob => (
             <TouchableOpacity key={savedJob.job.id} style={styles.card}>
               <View style={styles.cardContent}>
