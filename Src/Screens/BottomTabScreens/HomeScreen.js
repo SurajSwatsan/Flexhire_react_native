@@ -38,7 +38,7 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
   const {GetHomePageData, SaveJob} = JobViewController();
-  const {HomeData} = useSelector(state => state.job);
+  const {HomeData, isLoading} = useSelector(state => state.job);
   const {GetProfileDetails} = UserProfileViewController();
   const {profileDetails} = useSelector(state => state.profile);
   const [id, setId] = useState();
@@ -231,22 +231,33 @@ const HomeScreen = () => {
       </TouchableOpacity>
     );
   };
+  if (isLoading || !HomeData || Object.keys(HomeData).length === 0) {
+    return (
+      <View style={{flex: 1, width: '100%', backgroundColor: '#f1f1f1'}}>
+        <View style={styles.container}>
+          <View style={styles.searchbarContainer}>
+            <TextInput
+              placeholder="Search"
+              onChangeText={setSearchQuery}
+              value={searchQuery}
+              style={styles.searchbar}
+              placeholderTextColor="#000"
+            />
+            <IconButton
+              style={styles.searchIcon}
+              icon="magnify"
+              iconColor="#004466"
+              size={26}
+              onPress={handleSearch}
+            />
+          </View>
+        </View>
+        <HomePageLoader />
+      </View>
+    );
+  }
   return (
     <View style={styles.bodycontainer}>
-      {/* <Spinner
-        visible={isLoading}
-        textContent={'Believe in the journey – we’re here for you!'}
-        textStyle={styles.spinnerTextStyle}
-        overlayColor="rgba(0, 0, 0, 0.5)"
-        animation="fade"
-        size="large"
-        customIndicator={
-          <Image
-            source={require('../../Assets/CompanyLogo/Swatsan.png')}
-            style={GlobalStyle.loaderimage}
-            resizeMode="center"
-          />
-        }></Spinner> */}
       {HomeData && (
         <>
           <View style={styles.container}>
@@ -268,10 +279,6 @@ const HomeScreen = () => {
             </View>
           </View>
           <ScrollView style={{flex: 1, marginVertical: 12}}>
-            {/* <HomePageLoader /> */}
-            {/* <JobCardLoader/> */}
-            {/* <JobListLoader/> */}
-
             <TouchableOpacity
               onPress={() => navigation.navigate('userProfileScreen')}
               style={styles.profileContainer}>
@@ -357,31 +364,6 @@ const HomeScreen = () => {
                       <Text style={styles.seeAll}>See All</Text>
                     </TouchableOpacity>
                   </View>
-
-                  {/* <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.scrollContainer}
-                    contentContainerStyle={styles.chipContainer}>
-                    {chipLabels.map((label, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        style={[
-                          styles.chip,
-                          selectedChip === label && styles.selectedChip, // Apply selected chip style
-                        ]}
-                        onPress={() => setSelectedChip(label)} // Update selected chip on press
-                      >
-                        <Text
-                          style={[
-                            styles.chipText,
-                            selectedChip === label && styles.selectedChipText, // Apply text color change if selected
-                          ]}>
-                          {label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView> */}
 
                   <ScrollView
                     horizontal
@@ -486,7 +468,6 @@ const styles = StyleSheet.create({
   bodycontainer: {
     backgroundColor: colors.background,
     flex: 1,
-    width: '100%',
   },
   container: {
     backgroundColor: colors.primary,
