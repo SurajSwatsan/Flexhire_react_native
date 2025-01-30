@@ -106,12 +106,13 @@ const Keyskills = profileDetails => {
   };
 
   const toggleSkillSelection = skillLabel => {
-    setSelectedSkills(
-      prevSkills =>
-        prevSkills.includes(skillLabel)
-          ? prevSkills.filter(value => value !== skillLabel) // Remove skill
-          : [...prevSkills, skillLabel], // Add skill
-    );
+    setSelectedSkills(prevSkills => {
+      const skillsArray = Array.isArray(prevSkills) ? prevSkills : []; // Ensure it's an array
+
+      return skillsArray.includes(skillLabel)
+        ? skillsArray.filter(value => value !== skillLabel) // Remove skill
+        : [...skillsArray, skillLabel]; // Add skill
+    });
   };
   const openModal = () => setModalVisible(true);
   const closeModal = () => {

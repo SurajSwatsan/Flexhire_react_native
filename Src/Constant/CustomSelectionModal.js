@@ -101,6 +101,13 @@ const CustomSelectionModal = ({
     setSearchText('');
     setFilteredData(data);
     setValidationError(null);
+    setSelected(
+      Array.isArray(selectedItems)
+        ? [...selectedItems]
+        : selectedItems
+        ? [selectedItems]
+        : [],
+    );
     onCancel && onCancel();
   };
 
@@ -223,9 +230,6 @@ const Styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     height: 36,
-    // backgroundColor: '#e29494',
-    // paddingHorizontal: 8,
-    // marginTop: 12,
   },
   itemText: {
     fontSize: 13,

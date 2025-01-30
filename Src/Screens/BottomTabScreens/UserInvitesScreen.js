@@ -31,10 +31,16 @@ const UserInvitesScreen = () => {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
-        setId(id);
-        dispatch(GetInvitation(id));
-        console.log(id); // Log the value once it's retrieved
+        const user_id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
+        setId(user_id);
+        if (
+          user_id ||
+          (Array.isArray(JobInvitation) && JobInvitation.length === 0)
+        ) {
+          dispatch(GetInvitation(user_id));
+          console.log('====== 1st Api call');
+        }
+        console.log(user_id); // Log the value once it's retrieved
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }
@@ -96,6 +102,7 @@ const UserInvitesScreen = () => {
       </View>
     );
   }
+  console.log('JobInvitation', JobInvitation);
 
   return (
     <View style={styles.inviteContainer}>

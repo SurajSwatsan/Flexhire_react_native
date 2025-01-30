@@ -32,7 +32,10 @@ const UserApplies = () => {
       try {
         const id = await AsyncStorage.getItem('user_data'); // Wait for the value to be retrieved
         set_userId(id);
-        dispatch(GetJobApplications(id));
+        if (JobApplications.length === 0) {
+          dispatch(GetJobApplications(id));
+          console.log('====== 1st Api call');
+        }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
       }

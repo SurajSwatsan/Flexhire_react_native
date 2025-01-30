@@ -83,10 +83,9 @@ const JobScreen = ({route}) => {
       try {
         const userId = await AsyncStorage.getItem('user_data');
         setId(userId);
-        if (userId) {
-          if (JobList.length === 0) {
-            dispatch(GetJobList(userId, 1));
-          }
+        if (JobList?.length === 0) {
+          dispatch(GetJobList(userId, 1));
+          console.log('====== 1st Api call');
         }
       } catch (error) {
         console.error('Error reading value from AsyncStorage', error);
@@ -596,7 +595,12 @@ const JobScreen = ({route}) => {
                           style={JobCardStyle.companyImage}
                         />
                       ) : (
-                        <Ionicons name="business" size={42} color="gray" style={JobCardStyle.companyImage}/>
+                        <Ionicons
+                          name="business"
+                          size={42}
+                          color="gray"
+                          style={JobCardStyle.companyImage}
+                        />
                       )}
                       <View style={JobCardStyle.textName}>
                         <Text style={JobCardStyle.jobTitle}>
