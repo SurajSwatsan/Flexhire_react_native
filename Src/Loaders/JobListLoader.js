@@ -20,7 +20,7 @@ const JobListLoader = () => {
         <Circle cx="60" cy="50" r="30" fill="#d9d9d9" />
         <Rect x="110" y="30" width="180" height="15" fill="#d9d9d9" />
         <Rect x="110" y="50" width="180" height="15" fill="#d9d9d9" />
-        <Rect x="350" y="30" width="20" height="25" fill="#bfbfbf" />
+        <Rect x="360" y="30" width="15" height="20" fill="#bfbfbf" />
         <Rect x="30" y="95" width="190" height="15" fill="#d9d9d9" />
         <Rect x="30" y="115" width="190" height="15" fill="#bfbfbf" />
         <Rect x="20" y="140" width="360" height="1" fill="#d9d9d9" />
@@ -39,7 +39,7 @@ const JobListLoader = () => {
         <Circle cx="60" cy="240" r="30" fill="#d9d9d9" />
         <Rect x="110" y="220" width="180" height="15" fill="#d9d9d9" />
         <Rect x="110" y="240" width="180" height="15" fill="#d9d9d9" />
-        <Rect x="350" y="220" width="20" height="25" fill="#bfbfbf" />
+        <Rect x="360" y="220" width="15" height="20" fill="#bfbfbf" />
         <Rect x="30" y="285" width="190" height="15" fill="#d9d9d9" />
         <Rect x="30" y="305" width="190" height="15" fill="#bfbfbf" />
         <Rect x="20" y="330" width="360" height="1" fill="#d9d9d9" />
@@ -58,7 +58,7 @@ const JobListLoader = () => {
         <Circle cx="60" cy="430" r="30" fill="#d9d9d9" />
         <Rect x="110" y="410" width="180" height="15" fill="#d9d9d9" />
         <Rect x="110" y="430" width="180" height="15" fill="#d9d9d9" />
-        <Rect x="350" y="410" width="20" height="25" fill="#bfbfbf" />
+        <Rect x="360" y="410" width="15" height="20" fill="#bfbfbf" />
         <Rect x="30" y="475" width="190" height="15" fill="#d9d9d9" />
         <Rect x="30" y="495" width="190" height="15" fill="#bfbfbf" />
         <Rect x="20" y="520" width="360" height="1" fill="#d9d9d9" />
@@ -78,7 +78,7 @@ const JobListLoader = () => {
         <Circle cx="60" cy="620" r="30" fill="#d9d9d9" />
         <Rect x="110" y="600" width="180" height="15" fill="#d9d9d9" />
         <Rect x="110" y="620" width="180" height="15" fill="#d9d9d9" />
-        <Rect x="350" y="600" width="20" height="25" fill="#bfbfbf" />
+        <Rect x="360" y="600" width="15" height="20" fill="#bfbfbf" />
         <Rect x="30" y="665" width="190" height="15" fill="#d9d9d9" />
         <Rect x="30" y="685" width="190" height="15" fill="#bfbfbf" />
         <Rect x="20" y="710" width="360" height="1" fill="#d9d9d9" />

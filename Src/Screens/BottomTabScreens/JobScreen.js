@@ -10,7 +10,6 @@ import {
   Modal,
   Dimensions,
   FlatList,
-  ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,7 +24,7 @@ import JobCardStyle from '../../Global_CSS/JobCardStyle';
 import Slider from '@react-native-community/slider';
 import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
 import JobListLoader from '../../Loaders/JobListLoader';
-import JobDetailsLoader from '../../Loaders/JobDetailsLoader';
+import JobCardLoader from '../../Loaders/JobCardLoader';
 
 const {width} = Dimensions.get('window'); // Get the screen width
 const JobScreen = ({route}) => {
@@ -488,13 +487,13 @@ const JobScreen = ({route}) => {
     }
   };
   if (
-    isLoading ||
-    // id !== jobListToRender?.id ||
+    (isLoading && !jobListToRender.length) ||
     Object.keys(jobListToRender).length === 0
   ) {
     return (
       <>
-        <View style={{
+        <View
+          style={{
             flexDirection: 'row',
             backgroundColor: colors.primary,
             height: 70,
@@ -597,20 +596,12 @@ const JobScreen = ({route}) => {
                           style={JobCardStyle.companyImage}
                         />
                       ) : (
-                        <Ionicons
-                          name="business" // Icon for the fallback
-                          size={42}
-                          color="gray"
-                        />
+                        <Ionicons name="business" size={42} color="gray" />
                       )}
-
                       <View style={JobCardStyle.textName}>
                         <Text style={JobCardStyle.jobTitle}>
                           {item?.job_title?.title}
                         </Text>
-                        {/* <Text style={JobCardStyle.companyName}>
-                      {jobData?.company_name}
-                    </Text> */}
                         {(item?.company_name ||
                           item?.company?.company_name) && (
                           <Text style={JobCardStyle.companyName}>
@@ -621,7 +612,6 @@ const JobScreen = ({route}) => {
                         )}
                       </View>
                     </View>
-
                     <IconButton
                       icon={item?.is_saved ? 'bookmark' : 'bookmark-outline'}
                       iconColor="#004466"
@@ -632,7 +622,7 @@ const JobScreen = ({route}) => {
                   </View>
                   <View style={JobCardStyle.workModeContainer}>
                     {item?.work_modes &&
-                      item?.work_modes?.map((mode, idx) => (
+                      item?.work_modes.map((mode, idx) => (
                         <View key={idx} style={JobCardStyle.workModeChip}>
                           <Text style={JobCardStyle.chipText}>{mode}</Text>
                         </View>
@@ -640,11 +630,10 @@ const JobScreen = ({route}) => {
                   </View>
                   <View style={JobCardStyle.location}>
                     <Ionicons name="location" size={14} color="#004466" />
-
                     {item?.job_location?.map((location, locIndex) => (
                       <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
                         {location}
-                        {locIndex < item?.job_location?.length - 1 && ',  '}
+                        {locIndex < item?.job_location?.length - 1 && ', '}
                       </Text>
                     ))}
                   </View>
@@ -659,11 +648,7 @@ const JobScreen = ({route}) => {
                             alignItems: 'center',
                             gap: 4,
                           }}>
-                          <Text
-                            style={{
-                              fontSize: 11,
-                              color: colors.primary,
-                            }}>
+                          <Text style={{fontSize: 11, color: colors.primary}}>
                             {item?.salary?.yearly?.currency}
                           </Text>
                           <Text style={{color: colors.primary, fontSize: 11}}>
@@ -685,132 +670,17 @@ const JobScreen = ({route}) => {
                 </View>
               </TouchableOpacity>
             )}
-            onEndReached={loadMoreJobs} // Trigger when the end of the list is reached
-            onEndReachedThreshold={0.5} // When half of the list is visible
-            ListFooterComponent={
-              isLoading ? <ActivityIndicator size="large" /> : null
-            }
+            onEndReached={loadMoreJobs}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={isLoading ? <JobCardLoader /> : null}
           />
         ) : (
-          // <ScrollView
-          //   style={JobCardStyle.companyContainer}
-          //   contentContainerStyle={{paddingBottom: 16}}
-          //   scrollEventThrottle={16}>
-          //   {jobListToRender?.map(jobData => (
-          //     <TouchableOpacity
-          //       key={jobData.id}
-          //       onPress={() => {
-          //         setQuery('');
-          //         navigation.navigate('JobDetailScreen', {
-          //           job_id: jobData.id,
-          //         });
-          //       }}>
-          //       <View style={JobCardStyle.jobCard}>
-          //         <View style={JobCardStyle.companyInfo}>
-          //           <View style={JobCardStyle.companylogo}>
-          //             {jobData?.company?.logo ? (
-          //               <Image
-          //                 source={{uri: BASE_URL + jobData?.company?.logo}}
-          //                 style={JobCardStyle.companyImage}
-          //               />
-          //             ) : (
-          //               <Ionicons
-          //                 name="business" // Icon for the fallback
-          //                 size={42}
-          //                 color="gray"
-          //               />
-          //             )}
-
-          //             <View style={JobCardStyle.textName}>
-          //               <Text style={JobCardStyle.jobTitle}>
-          //                 {jobData?.job_title?.title}
-          //               </Text>
-          //               {/* <Text style={JobCardStyle.companyName}>
-          //                 {jobData?.company_name}
-          //               </Text> */}
-          //               {(jobData?.company_name ||
-          //                 jobData?.company?.company_name) && (
-          //                 <Text style={JobCardStyle.companyName}>
-          //                   {jobData?.company?.company_name
-          //                     ? jobData?.company?.company_name
-          //                     : jobData?.company_name}
-          //                 </Text>
-          //               )}
-          //             </View>
-          //           </View>
-
-          //           <IconButton
-          //             icon={jobData?.is_saved ? 'bookmark' : 'bookmark-outline'}
-          //             iconColor="#004466"
-          //             size={24}
-          //             style={{padding: 0}}
-          //             onPress={() => toggleSaveJob(jobData?.id)}
-          //           />
-          //         </View>
-          //         <View style={JobCardStyle.workModeContainer}>
-          //           {jobData.work_modes &&
-          //             jobData.work_modes.map((mode, idx) => (
-          //               <View key={idx} style={JobCardStyle.workModeChip}>
-          //                 <Text style={JobCardStyle.chipText}>{mode}</Text>
-          //               </View>
-          //             ))}
-          //         </View>
-          //         <View style={JobCardStyle.location}>
-          //           <IconButton
-          //             icon="map-marker"
-          //             iconColor={colors.primary}
-          //             size={18}
-          //             style={{padding: 0, marginLeft: -10, height: 20}}
-          //           />
-          //           {jobData.job_location.map((location, locIndex) => (
-          //             <Text key={locIndex} style={JobCardStyle.jobCardLocation}>
-          //               {location}
-          //               {locIndex < jobData.job_location.length - 1 && ',  '}
-          //             </Text>
-          //           ))}
-          //         </View>
-          //         <View style={JobCardStyle.line} />
-          //         <View style={JobCardStyle.jobFooter}>
-          //           {jobData?.salary && jobData.salary.yearly && (
-          //             <View style={JobCardStyle.experienceContainer}>
-          //               <Ionicons name="cash" size={14} color="#004466" />
-          //               <View
-          //                 style={{
-          //                   flexDirection: 'row',
-          //                   alignItems: 'center',
-          //                 }}>
-          //                 <CustomFormatAmount
-          //                   amount={jobData.salary?.yearly?.min}
-          //                 />
-          //                 <Text style={{color: colors.primary}}> - </Text>
-          //                 <CustomFormatAmount
-          //                   amount={jobData.salary?.yearly?.max}
-          //                 />
-          //                 <Text
-          //                   style={{
-          //                     fontSize: 10,
-          //                     fontWeight: 'bold',
-          //                     color: 'gray',
-          //                   }}>
-          //                   {jobData.salary.yearly.currency}
-          //                 </Text>
-          //               </View>
-          //             </View>
-          //           )}
-          //           <Text style={JobCardStyle.jobPostedDate}>
-          //             {moment(jobData?.created_at).fromNow()}
-          //           </Text>
-          //         </View>
-          //       </View>
-          //     </TouchableOpacity>
-          //   ))}
-          // </ScrollView>
-          <View style={[JobCardStyle.noJobsContainer]}>
+          <View style={JobCardStyle.noJobsContainer}>
             <Image
               style={JobCardStyle.jobimage}
               source={require('../../Assets/invitesImages/Jobsearch.png')}
             />
-            <Text style={[JobCardStyle.noJobsText]}>
+            <Text style={JobCardStyle.noJobsText}>
               No jobs found..... Keep exploring!
             </Text>
           </View>
