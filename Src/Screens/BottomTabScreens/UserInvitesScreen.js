@@ -16,6 +16,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../Services/baseAPI';
 import useCustomFormatAmount from '../../CustomHooks/CustomFormatAmount';
+import JobListLoader from '../../Loaders/JobListLoader';
 
 const UserInvitesScreen = () => {
   const [id, setId] = useState();
@@ -23,7 +24,7 @@ const UserInvitesScreen = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState('All'); // State to manage the toggle
   const {GetInvitation, ReadInvitation} = JobViewController();
-  const {JobInvitation} = useSelector(state => state.job);
+  const {JobInvitation, isLoading} = useSelector(state => state.job);
   const isFocus = useIsFocused();
   const navigation = useNavigation();
 
@@ -46,6 +47,55 @@ const UserInvitesScreen = () => {
     filter === 'All'
       ? JobInvitation
       : JobInvitation?.filter(invite => !invite.is_read);
+  if (isLoading || !JobInvitation) {
+    return (
+      <View style={{backgroundColor: '#f1f1f1', flex: 1}}>
+        <View style={styles.textContainer}>
+          <Text style={styles.inviteText}>
+            Invites: Your invitation to apply
+          </Text>
+          <Text style={styles.contentText}>
+            Recruiters have chosen you from a large pool of candidates to apply
+            to these jobs.
+          </Text>
+        </View>
+        <View style={[styles.toggleContainer]}>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              {backgroundColor: filter === 'All' ? colors.primary : '#f1f1f1'},
+            ]}
+            onPress={() => setFilter('All')}>
+            <Text
+              style={{
+                color: filter === 'All' ? '#fff' : colors.primary,
+                fontSize: 12,
+              }}>
+              All ({JobInvitation?.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              {
+                backgroundColor:
+                  filter === 'Unread' ? colors.primary : '#f1f1f1',
+              },
+            ]}
+            onPress={() => setFilter('Unread')}>
+            <Text
+              style={{
+                color: filter === 'Unread' ? '#fff' : colors.primary,
+                fontSize: 12,
+              }}>
+              Unread ({JobInvitation?.filter(invite => !invite.is_read).length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <JobListLoader />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.inviteContainer}>
@@ -89,8 +139,6 @@ const UserInvitesScreen = () => {
 
       <ScrollView style={styles.cardContainer}>
         {filteredInvites?.map((invite, index) => {
-          // Directly access job properties using optional chaining
-
           return (
             <TouchableOpacity
               key={invite.id || `invite-${index}`} // Fallback to a unique key if invite.id is missing
@@ -192,9 +240,11 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     flexDirection: 'row',
+    marginBottom: 12,
+    marginHorizontal: 12,
+    gap: 12,
     paddingHorizontal: 12,
     marginVertical: 8,
-    gap: 12,
   },
   toggleButton: {
     paddingHorizontal: 8,
