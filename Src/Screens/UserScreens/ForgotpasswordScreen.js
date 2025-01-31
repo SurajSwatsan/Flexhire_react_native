@@ -8,18 +8,25 @@ import GlobalStyle from '../../Global_CSS/GlobalStyle';
 const ForgotpasswordScreen = () => {
   const navigation = useNavigation();
   const forgotPasswordSchema = Yup.object().shape({
-    email: Yup.string()
-      .email('Please enter a valid email address')
-      .required('Email is required'),
+    identifier: Yup.string()
+      .test(
+        'identifier',
+        'Please enter a valid email or phone number',
+        value =>
+          Yup.string().email().isValidSync(value) || /^[0-9]{10}$/.test(value),
+      )
+      .required('Email or phone number is required'),
   });
 
   const handleSendOtp = values => {
-    navigation.navigate('OtpVerificationScreen', {email: values.email});
+    navigation.navigate('OtpVerificationScreen', {
+      identifier: values.identifier,
+    });
   };
   return (
     <SafeAreaView style={styles.maincontainer}>
       <Formik
-        initialValues={{email: ''}}
+        initialValues={{identifier: ''}}
         validationSchema={forgotPasswordSchema}
         onSubmit={handleSendOtp}>
         {({
@@ -32,30 +39,38 @@ const ForgotpasswordScreen = () => {
           handleSubmit,
         }) => (
           <View style={styles.Formcontainer}>
-            <Image
-              style={styles.imageContainer}
-              source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
-            />
-            <Text style={styles.headingText}>Forgot password</Text>
+            {/* <Text style={styles.companyname}>FlexHire</Text> */}
+
+            <View style={{marginBottom: 18}}>
+              <Text style={styles.title1}>OTP</Text>
+              <Text style={styles.title2}>
+                VERIFICATION
+                <Text style={{color: '#0088cc', fontSize: 48}}>.</Text>
+              </Text>
+            </View>
+            <Text style={{color: '#004466', fontSize: 14, marginBottom: 18}}>
+              We will send you an One Time Password on this email address or
+              mobile number
+            </Text>
             <TextInput
               mode="outlined"
               style={styles.textarea}
-              label="Enter User Email"
+              label="Enter Email / Mobile Number"
               textColor="black"
-              value={values.email}
-              onChangeText={handleChange('email')}
-              onBlur={() => setFieldTouched('email')}
+              value={values.identifier}
+              onChangeText={handleChange('identifier')}
+              onBlur={() => setFieldTouched('identifier')}
               activeOutlineColor="lightgray"
-              error={!!errors.email}
+              error={!!errors.identifier}
             />
-            {errors.email && touched.email ? (
-              <Text style={GlobalStyle.errorText}>{errors.email}</Text>
+            {errors.identifier && touched.identifier ? (
+              <Text style={GlobalStyle.errorText}>{errors.identifier}</Text>
             ) : null}
             <View style={styles.buttonContainer}>
               <Button
                 labelStyle={GlobalStyle.labelStyle}
                 onPress={handleSubmit}>
-                Send OTP
+                GET OTP
               </Button>
             </View>
           </View>
@@ -72,13 +87,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffff',
   },
   Formcontainer: {
-    margin: 12,
+    margin: 18,
   },
-  imageContainer: {
-    width: 250,
-    height: 130,
-    alignSelf: 'center',
-    marginVertical: 20,
+  companyname: {
+    textAlign: 'center',
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#004466',
+  },
+  title1: {
+    fontSize: 32,
+    color: '#0088cc',
+    fontWeight: 'bold',
+    marginBottom: -10,
+  },
+  title2: {
+    fontSize: 32,
+    color: '#004466',
+    fontWeight: 'bold',
   },
   headingText: {
     marginVertical: 20,

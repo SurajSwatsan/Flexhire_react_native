@@ -91,10 +91,8 @@ const SignupScreen = () => {
         }) => (
           <ScrollView>
             <View style={styles.formContainer}>
-              <Image
-                style={styles.loginpng}
-                source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
-              />
+              <Text style={styles.companyname}>FlexHire</Text>
+
               <Text style={styles.heading}>Signup</Text>
 
               <TextInput
@@ -252,6 +250,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     margin: 12,
+  },
+  companyname: {
+    textAlign: 'center',
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#004466',
   },
   textarea: {
     marginVertical: 12,

@@ -46,11 +46,13 @@ const ResetPasswordScreen = () => {
           touched,
         }) => (
           <View style={styles.formContainer}>
-            <Image
-              style={styles.imageContainer}
-              source={require('../../Assets/CompanyLogo/flexhire-logo.png')}
-            />
-            <Text style={styles.headingText}>Set New Password</Text>
+            <View style={{marginBottom: 18}}>
+              <Text style={styles.title1}>SET</Text>
+              <Text style={styles.title2}>
+                NEW PASSWORD
+                <Text style={{color: '#0088cc', fontSize: 48}}>.</Text>
+              </Text>
+            </View>
             <View style={styles.passwordContainer}>
               <TextInput
                 mode="outlined"
@@ -126,6 +128,17 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     margin: 12,
+  },
+  title1: {
+    fontSize: 32,
+    color: '#0088cc',
+    fontWeight: 'bold',
+    marginBottom: -10,
+  },
+  title2: {
+    fontSize: 32,
+    color: '#004466',
+    fontWeight: 'bold',
   },
   imageContainer: {
     width: 250,
