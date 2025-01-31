@@ -73,7 +73,9 @@ const ProfileHeadline = profileDetails => {
   const handleFormSubmit = values => {
     // Prepare the updated profile headline data
     const updatedData = {
-      id: profileDetails?.profileDetails?.job_seeker_profile?.id || '', // Use existing ID or an empty string for a new entry
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
       user_id: id,
       profile_headline: values.profile_headline.trim(),
     };

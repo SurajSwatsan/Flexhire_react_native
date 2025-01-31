@@ -69,7 +69,7 @@ const AuthViewController = () => {
       });
 
       // Navigation to another screen if needed
-      // navigation.navigate('VerifyOtp');
+      navigation.navigate('LoginScreen');
     } catch (error) {
       dispatch({type: 'LOADING', payload: false});
 

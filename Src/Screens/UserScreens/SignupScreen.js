@@ -59,7 +59,7 @@ const SignupScreen = () => {
         password: values.password,
       };
       console.log(UserData);
-      
+
       dispatch(register(UserData));
       // await AsyncStorage.setItem('userdata', JSON.stringify(UserData));
       // navigation.navigate('LoginScreen');
@@ -150,7 +150,9 @@ const SignupScreen = () => {
                 onBlur={handleBlur('mobile_number')}
               />
               {errors.mobile_number && touched.mobile_number && (
-                <Text style={GlobalStyle.errorText}>{errors.mobile_number}</Text>
+                <Text style={GlobalStyle.errorText}>
+                  {errors.mobile_number}
+                </Text>
               )}
 
               {/* Password Input */}

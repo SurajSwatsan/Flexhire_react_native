@@ -206,7 +206,10 @@ const Availability = profileDetails => {
 
     // Format the data for submission
     const formattedData = {
-      id: profileDetails?.profileDetails?.id,
+      id: profileDetails?.profileDetails?.id
+        ? profileDetails?.profileDetails?.id
+        : '',
+      user_id: id,
       work_availability: updatedAvailabilities.map(values => ({
         mode: values.mode,
         slots: values.slots.map(slot => ({
