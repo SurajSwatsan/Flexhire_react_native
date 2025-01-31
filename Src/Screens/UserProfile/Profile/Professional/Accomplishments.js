@@ -414,7 +414,7 @@ const Accomplishments = profileDetails => {
             />
 
             <ReusableDatePicker
-              label="Published Date"
+              label="Published Date*"
               value={
                 values.published_date ? new Date(values.published_date) : null
               } // Convert to Date object
@@ -425,7 +425,7 @@ const Accomplishments = profileDetails => {
 
             <ReusableTextInput
               name="description"
-              label="Description"
+              label="Description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
@@ -482,7 +482,7 @@ const Accomplishments = profileDetails => {
             )}
             <ReusableTextInput
               name="description"
-              label="Patent description"
+              label="Patent description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
@@ -515,18 +515,18 @@ const Accomplishments = profileDetails => {
             />
             <ReusableTextInput
               name="url"
-              label="Certification URL (recommended)"
+              label="Certification URL*"
               value={values.url}
               onChangeText={handleChange('url')}
             />
             <ReusableTextInput
               name="description"
-              label="Profile description"
+              label="Certification description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
             <ReusableDatePicker
-              label="Valid from"
+              label="Valid from*"
               value={values.from ? new Date(values.from) : null}
               onChange={date => setFieldValue('from', date)}
               error={errors.from}
@@ -535,7 +535,7 @@ const Accomplishments = profileDetails => {
 
             {!values.noExpiry && (
               <ReusableDatePicker
-                label="Valid till"
+                label="Valid till*"
                 value={values.till ? new Date(values.till) : null}
                 onChange={date => setFieldValue('till', date)}
                 error={errors.till}
@@ -579,7 +579,7 @@ const Accomplishments = profileDetails => {
             />
 
             <ReusableDatePicker
-              label="Worked from"
+              label="Worked from*"
               value={values.from ? new Date(values?.from) : null}
               onChange={date => setFieldValue('from', date)}
               error={errors.from}
@@ -588,7 +588,7 @@ const Accomplishments = profileDetails => {
 
             {!values.stillWorking && (
               <ReusableDatePicker
-                label="Worked till"
+                label="Worked till*"
                 value={values.till ? new Date(values?.till) : null}
                 onChange={date => setFieldValue('till', date)}
                 error={errors.till}
@@ -608,7 +608,7 @@ const Accomplishments = profileDetails => {
             </View>
             <ReusableTextInput
               name="description"
-              label="Work Sample description"
+              label="Work Sample description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
@@ -635,7 +635,7 @@ const Accomplishments = profileDetails => {
             />
             <ReusableTextInput
               name="description"
-              label="Profile description"
+              label="Profile description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
@@ -663,7 +663,7 @@ const Accomplishments = profileDetails => {
             />
             <ReusableTextInput
               name="description"
-              label="Presentation description"
+              label="Presentation description*"
               value={values.description}
               onChangeText={handleChange('description')}
             />
